@@ -29,7 +29,7 @@
 
         .video-container {
             margin-top: 2rem;
-            width: 56.25%; /* Maintain 9:16 aspect ratio */
+            width: 50%; /* Adjust width for vertical video */
             max-width: 500px;
         }
 
@@ -41,13 +41,23 @@
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
         }
 
+        .easter-egg {
+            position: absolute;
+            bottom: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            opacity: 0; /* Hidden by default */
+            text-decoration: none;
+            color: transparent; /* Fully invisible */
+        }
+
         @media (max-width: 768px) {
             h1 {
                 font-size: 2rem;
             }
 
             iframe {
-                height: calc(100% / (16 / 9)); /* Adjust ratio for smaller screens */
+                height: calc(100% * (16 / 9)); /* Maintain ratio for smaller screens */
             }
         }
     </style>
@@ -55,7 +65,8 @@
 <body>
     <h1>Welcome to the Freejoy Club</h1>
     <div class="video-container">
-        <iframe src="https://drive.google.com/file/d/1o7WsJ8HkkzKazoIiXuJvtHi93XI-Iktg/preview" allow="autoplay"></iframe>
+        <iframe src="https://drive.google.com/file/d/1o7WsJ8HkkzKazoIiXuJvtHi93XI-Iktg/preview" allow="autoplay" autoplay></iframe>
     </div>
+    <a href="https://www.clearpioneer.com" class="easter-egg">Secret Link</a>
 </body>
 </html>
