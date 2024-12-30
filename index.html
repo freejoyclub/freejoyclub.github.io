@@ -139,22 +139,24 @@
         const emailForm = document.getElementById('emailForm');
         const lightbox = document.getElementById('thankYouLightbox');
 
+        // Show the form when the button is clicked
         mailingListButton.addEventListener('click', () => {
             emailForm.style.display = 'flex';
         });
 
+        // Handle form submission
         emailForm.addEventListener('submit', (e) => {
             e.preventDefault(); // Prevent form submission
-            emailForm.style.display = 'none';
-            lightbox.classList.add('active');
+            emailForm.style.display = 'none'; // Hide the form
+            lightbox.classList.add('active'); // Show the lightbox
             
-            // Fade out after 3 seconds
+            // Automatically hide the lightbox after 2 seconds
             setTimeout(() => {
-                lightbox.classList.remove('active');
+                lightbox.classList.remove('active'); // Start fading out
                 setTimeout(() => {
                     lightbox.style.display = 'none'; // Ensure it's completely hidden
-                }, 500); // Allow time for transition to complete
-            }, 3000);
+                }, 500); // Wait for fade-out transition to complete
+            }, 2000); // Keep the lightbox visible for 2 seconds
         });
     </script>
 </body>
