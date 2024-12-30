@@ -8,7 +8,7 @@
         /* Define the local font using @font-face from GitHub */
         @font-face {
             font-family: 'GoldenTrail';
-            src: url('https://raw.githubusercontent.com/freejoyclub/freejoyclub.github.io/main/GoldenTrail-KC.otf') format('opentype');
+            src: url('https://raw.githubusercontent.com/freejoyclub/freejoyclub.github.io/main/fonts/GoldenTrail-KC.otf') format('opentype');
             font-weight: normal;
             font-style: normal;
         }
@@ -28,16 +28,16 @@
 
         h1 {
             font-family: 'GoldenTrail', sans-serif; /* Apply the custom font here */
-            font-size: 3rem;
+            font-size: 3.6rem; /* Increased font size by 20% */
             font-weight: bold;
-            text-shadow: 2px 2px 7px rgba(0, 0, 0, 0.7), -2px -2px 7px rgba(255, 255, 255, 0.7);
+            text-shadow: 2px 2px 7px rgba(50, 50, 50, 0.7), -2px -2px 7px rgba(50, 50, 50, 0.7); /* Dark gray shadow */
             margin: 0;
             transform: rotate(-2deg);
             transform-origin: center;
         }
 
         .video-container {
-            margin-top: 2rem;
+            margin-top: 2.4rem; /* Increased margin for bigger elements */
             width: 50%;
             max-width: 500px;
         }
@@ -52,11 +52,11 @@
 
         .postbox-button {
             display: inline-block;
-            margin-top: 2rem;
-            padding: 15px 25px;
+            margin-top: 2.4rem; /* Increased margin for better spacing */
+            padding: 18px 30px; /* Increased padding */
             background-color: black;
             color: white;
-            font-size: 1em;
+            font-size: 1.2em; /* Increased button text size */
             font-weight: bold;
             text-align: center;
             border-radius: 50%;
@@ -80,38 +80,40 @@
             display: none;
             flex-direction: column;
             align-items: center;
-            margin-top: 2rem;
+            margin-top: 2.4rem; /* Increased margin for better spacing */
         }
 
         form label {
-            margin-bottom: 10px;
+            margin-bottom: 12px; /* Increased margin */
             color: white;
+            font-size: 1.2em; /* Increased text size */
         }
 
         form input[type="email"],
         form textarea {
-            padding: 10px;
+            padding: 12px;
             border: 1px solid #ccc;
             border-radius: 5px;
-            font-size: 1rem;
-            margin-bottom: 10px;
-            width: 250px;
+            font-size: 1.2rem; /* Increased font size */
+            margin-bottom: 12px; /* Increased margin */
+            width: 280px; /* Slightly wider input fields */
         }
 
         form button {
-            padding: 10px 20px;
+            padding: 12px 24px; /* Increased padding */
             border: none;
             border-radius: 5px;
             background-color: black;
             color: white;
-            font-size: 1rem;
+            font-size: 1.2rem; /* Increased button font size */
             cursor: pointer;
         }
 
         .success-message {
             display: none;
             color: lightgreen;
-            margin-top: 1rem;
+            margin-top: 1.2rem; /* Increased margin */
+            font-size: 1.2em; /* Increased font size */
         }
     </style>
 </head>
