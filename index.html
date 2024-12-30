@@ -83,12 +83,14 @@
             font-size: 1.5rem;
             z-index: 1000;
             opacity: 0;
+            pointer-events: none; /* Prevent blocking interactions */
             transition: opacity 0.5s ease-in-out;
         }
 
         .lightbox.active {
             display: flex;
             opacity: 1;
+            pointer-events: auto; /* Enable interaction only when active */
         }
 
         form {
