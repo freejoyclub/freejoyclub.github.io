@@ -51,6 +51,31 @@
             color: transparent; /* Fully invisible */
         }
 
+        .postbox-button {
+            display: inline-block;
+            margin-top: 2rem;
+            padding: 15px 25px;
+            background-color: #ff4757;
+            color: #ffffff;
+            font-size: 1em;
+            font-weight: bold;
+            text-align: center;
+            border-radius: 50%;
+            border: none;
+            text-decoration: none;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s, background-color 0.2s;
+        }
+
+        .postbox-button:hover {
+            background-color: #e84118;
+            transform: scale(1.1);
+        }
+
+        .postbox-button:active {
+            transform: scale(0.95);
+        }
+
         @media (max-width: 768px) {
             h1 {
                 font-size: 2rem;
@@ -68,5 +93,6 @@
         <iframe src="https://drive.google.com/file/d/1o7WsJ8HkkzKazoIiXuJvtHi93XI-Iktg/preview" allow="autoplay" autoplay></iframe>
     </div>
     <a href="https://www.clearpioneer.com" class="easter-egg">Secret Link</a>
+    <a href="mailto:mgmt@freejoy.club" class="postbox-button">Reach Us</a>
 </body>
 </html>
