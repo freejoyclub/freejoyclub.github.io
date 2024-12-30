@@ -29,34 +29,24 @@
 
         .video-container {
             margin-top: 2rem;
-            width: 50%; /* Adjust width for vertical video */
+            width: 50%;
             max-width: 500px;
         }
 
         iframe {
             width: 100%;
-            height: calc(100% * (16 / 9)); /* Calculate height for 9:16 aspect ratio */
+            height: calc(100% * (16 / 9));
             border: none;
             border-radius: 10px;
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
-        }
-
-        .easter-egg {
-            position: absolute;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            opacity: 1; /* Hidden by default */
-            text-decoration: none;
-            color: transparent; /* Fully invisible */
         }
 
         .postbox-button {
             display: inline-block;
             margin-top: 2rem;
             padding: 15px 25px;
-            background-color: #000000;
-            color: #ffffff;
+            background-color: black;
+            color: white;
             font-size: 1em;
             font-weight: bold;
             text-align: center;
@@ -65,10 +55,11 @@
             text-decoration: none;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
             transition: transform 0.2s, background-color 0.2s;
+            cursor: pointer;
         }
 
         .postbox-button:hover {
-            background-color: #e84118;
+            background-color: #333333;
             transform: scale(1.1);
         }
 
@@ -76,14 +67,50 @@
             transform: scale(0.95);
         }
 
-        @media (max-width: 768px) {
-            h1 {
-                font-size: 2rem;
-            }
+        .lightbox {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            font-size: 1.5rem;
+            z-index: 1000;
+        }
 
-            iframe {
-                height: calc(100% * (9 / 16)); /* Maintain ratio for smaller screens */
-            }
+        .lightbox.active {
+            display: flex;
+        }
+
+        form {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 2rem;
+        }
+
+        form input[type="email"] {
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 1rem;
+            margin-bottom: 10px;
+        }
+
+        form button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            background-color: black;
+            color: white;
+            font-size: 1rem;
+            cursor: pointer;
         }
     </style>
 </head>
@@ -92,7 +119,35 @@
     <div class="video-container">
         <iframe src="https://drive.google.com/file/d/1o7WsJ8HkkzKazoIiXuJvtHi93XI-Iktg/preview" allow="autoplay" autoplay></iframe>
     </div>
-    <a href="https://www.clearpioneer.com" class="easter-egg">Secret Link</a>
     <a href="mailto:mgmt@freejoy.club" class="postbox-button">Reach Us</a>
+    <button class="postbox-button" id="mailingListButton">Send Me the Album</button>
+
+    <form id="emailForm">
+        <input type="email" id="emailInput" placeholder="Enter your email" required />
+        <button type="submit">Submit</button>
+    </form>
+
+    <div class="lightbox" id="thankYouLightbox">
+        Thanks, you'll be notified when it's released! (No spam!)
+    </div>
+
+    <script>
+        const mailingListButton = document.getElementById('mailingListButton');
+        const emailForm = document.getElementById('emailForm');
+        const lightbox = document.getElementById('thankYouLightbox');
+
+        mailingListButton.addEventListener('click', () => {
+            emailForm.style.display = 'flex';
+        });
+
+        emailForm.addEventListener('submit', (e) => {
+            e.preventDefault(); // Prevent form submission
+            emailForm.style.display = 'none';
+            lightbox.classList.add('active');
+            setTimeout(() => {
+                lightbox.classList.remove('active');
+            }, 3000); // Close the lightbox after 3 seconds
+        });
+    </script>
 </body>
 </html>
