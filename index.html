@@ -30,6 +30,9 @@
             font-family: 'GoldenTrail', sans-serif;
             font-size: 3.6rem; /* Increased font size by 20% */
             font-weight: bold;
+            background: linear-gradient(to bottom, silver, #b0b0b0); /* Gradient from silver to a darker gray */
+            -webkit-background-clip: text;
+            color: transparent;
             text-shadow: 2px 2px 7px rgba(50, 50, 50, 0.7), -2px -2px 7px rgba(50, 50, 50, 0.7); /* Dark gray shadow */
             margin: 0;
             transform: rotate(-2deg);
@@ -66,7 +69,8 @@
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
             transition: transform 0.2s, background-color 0.2s;
             cursor: pointer;
-            letter-spacing: 3px; /* Increased letter spacing for better readability */
+            letter-spacing: 2px; /* 2px letter spacing */
+            font-family: Arial, sans-serif; /* Changed font to Arial for this button */
         }
 
         .postbox-button:hover {
