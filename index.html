@@ -74,12 +74,19 @@
             margin-top: 2rem;
         }
 
-        form input[type="email"] {
+        form label {
+            margin-bottom: 10px;
+            color: white;
+        }
+
+        form input[type="email"],
+        form textarea {
             padding: 10px;
             border: 1px solid #ccc;
             border-radius: 5px;
             font-size: 1rem;
             margin-bottom: 10px;
+            width: 250px;
         }
 
         form button {
@@ -101,9 +108,12 @@
     <a href="mailto:mgmt@freejoy.club" class="postbox-button">Reach Us</a>
     <button class="postbox-button" id="mailingListButton">Send Me the Album</button>
 
-    <form id="emailForm">
-        <input type="email" id="emailInput" placeholder="Enter your email" required />
-        <button type="submit">Submit</button>
+    <form id="emailForm" action="https://formspree.io/f/mpwwljpd" method="POST">
+        <label for="email">Your email:</label>
+        <input type="email" id="email" name="email" required placeholder="Enter your email" />
+        <label for="message">Your message:</label>
+        <textarea name="message" id="message" placeholder="Your message" required></textarea>
+        <button type="submit">Send</button>
     </form>
 
     <script>
@@ -113,13 +123,6 @@
         // Show the form when the button is clicked
         mailingListButton.addEventListener('click', () => {
             emailForm.style.display = 'flex';
-        });
-
-        // Handle form submission
-        emailForm.addEventListener('submit', (e) => {
-            e.preventDefault(); // Prevent default form submission
-            alert('Thanks for signing up! You’ll be notified when the album is released.'); // Alert user
-            emailForm.style.display = 'none'; // Hide the form after submission
         });
     </script>
 </body>
