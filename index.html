@@ -82,10 +82,13 @@
             text-align: center;
             font-size: 1.5rem;
             z-index: 1000;
+            opacity: 0;
+            transition: opacity 0.5s ease-in-out;
         }
 
         .lightbox.active {
             display: flex;
+            opacity: 1;
         }
 
         form {
@@ -144,9 +147,14 @@
             e.preventDefault(); // Prevent form submission
             emailForm.style.display = 'none';
             lightbox.classList.add('active');
+            
+            // Fade out after 3 seconds
             setTimeout(() => {
                 lightbox.classList.remove('active');
-            }, 3000); // Close the lightbox after 3 seconds
+                setTimeout(() => {
+                    lightbox.style.display = 'none'; // Ensure it's completely hidden
+                }, 500); // Allow time for transition to complete
+            }, 3000);
         });
     </script>
 </body>
