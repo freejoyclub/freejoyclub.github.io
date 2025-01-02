@@ -10,15 +10,34 @@
         #panorama {
             width: 100%;
             height: 100vh;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            margin: 0;
         }
     </style>
 </head>
 <body>
     <div id="panorama"></div>
     <script>
+        // Initialize the panorama viewer directly on page load
         pannellum.viewer('panorama', {
-            "type": "equirectangular",
-            "panorama": "/images/from-tree.jpg"
+            "default": {
+                "sceneFadeDuration": 1000
+            },
+            "scenes": {
+                "main": {
+                    "type": "equirectangular",
+                    "panorama": "/images/from-tree.jpg",
+                    "hfov": 110, // Optional: Adjust the horizontal field of view
+                    "pitch": 0,  // Optional: Set the initial pitch angle
+                    "yaw": 0,    // Optional: Set the initial yaw angle
+                    "title": "360 Panorama" // Optional: Add a title for the scene
+                }
+            },
+            "firstScene": "main"
         });
     </script>
 </body>
