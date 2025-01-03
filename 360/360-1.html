@@ -22,32 +22,24 @@
             "panorama": "images/360-try-2.jpg",
             "hotSpots": [
                 {
-                    "pitch": 10, // Up-down angle in degrees (0 = horizon, + = up, - = down)
-                    "yaw": 100,  // Left-right angle in degrees (0 = center, +/- values rotate left/right)
+                    "pitch": 5,
+                    "yaw": 50,
                     "type": "scene",
-                    "text": "room2",
-                    "sceneId": "room2"
+                    "text": "Go to the next room",
+                    "sceneId": "room2" // Ensure this matches "room2" in the scenes object
                 }
             ],
             "scenes": {
-                "room2": {
-                    "type": "equirectangular",
-                    "panorama": "images/room2.jpg",
-                    "hotSpots": [
-                        {
-                            "pitch": 0,
-                            "yaw": -50,
-                            "type": "scene",
-                            "text": "Go back to room1",
-                            "sceneId": "room1"
-                        }
-                    ]
-                },
                 "room1": {
                     "type": "equirectangular",
                     "panorama": "images/360-try-2.jpg"
+                },
+                "room2": {
+                    "type": "equirectangular",
+                    "panorama": "images/room2.jpg" // Ensure this file exists
                 }
             }
+
         });
     </script>
 </body>
