@@ -115,7 +115,6 @@
 <body>
     <h1>Welcome to the Freejoy Club</h1>
 
-    
     <iframe 
       src="https://samply.app/embed/347SJuDJQmYf8BWVJWvf" 
       frameborder="20"
@@ -127,7 +126,7 @@
     <button class="postbox-button" id="mailingListButton">Send Me the Album</button>
     <a href="https://samply.app/p/347SJuDJQmYf8BWVJWvf" class="postbox-button">Our Music</a>
 
-    <form id="emailForm">
+    <form id="emailForm" action="https://formspree.io/f/mpwwljpd" method="POST">
         <label for="email">Your email:</label>
         <input type="email" id="email" name="email" required placeholder="Enter your email" />
         <label for="message">Your message:</label>
@@ -135,54 +134,13 @@
         <button type="submit">Send</button>
     </form>
 
-    <p class="success-message" id="successMessage">Thanks for subscribing! You'll be notified when it's released. (No spam!)</p>
-
     <script>
         const mailingListButton = document.getElementById('mailingListButton');
         const emailForm = document.getElementById('emailForm');
-        const successMessage = document.getElementById('successMessage');
 
         // Show the form when the button is clicked
         mailingListButton.addEventListener('click', () => {
             emailForm.style.display = 'flex';
-        });
-
-        // Handle form submission with JavaScript
-        emailForm.addEventListener('submit', async (event) => {
-
-            // Collect form data
-            const formData = new FormData(emailForm);
-
-            // Send form data to Formspree
-            try {
-                const response = await fetch('https://formspree.io/f/mpwwljpd', {
-                    method: 'POST',
-                    headers: {
-                        Accept: 'application/json',
-                    },
-                    body: formData,
-                });
-
-                if (response.ok) {
-                    // Show success message
-                    successMessage.style.display = 'block';
-
-                    // Clear the form
-                    emailForm.reset();
-
-                    // Hide the form after submission
-                    emailForm.style.display = 'none';
-
-                    // Hide the success message after 3 seconds
-                    setTimeout(() => {
-                        successMessage.style.display = 'none';
-                    }, 3000);
-                } else {
-                    alert('There was a problem submitting the form. Please try again.');
-                }
-            } catch (error) {
-                alert('There was an error submitting the form. Please try again.');
-            }
         });
     </script>
 </body>
