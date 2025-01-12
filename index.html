@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Freejoy Club</title>
     <style>
-        /* Define the local fonts using @font-face from GitHub (root folder) */
         @font-face {
             font-family: 'GoldenTrail';
             src: url('https://raw.githubusercontent.com/freejoyclub/freejoyclub.github.io/main/GoldenTrail-KC.otf') format('opentype');
@@ -22,8 +21,8 @@
 
         body {
             margin: 0;
-            padding: 100px 25px; /* Permanent padding of 100px top and bottom, 25px on the sides */
-            font-family: 'GoldenTrail', sans-serif; /* Apply the custom font here for all text */
+            padding: 30px 8px; /* Updated padding: 30px top/bottom, 8px sides */
+            font-family: 'GoldenTrail', sans-serif;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -37,24 +36,24 @@
 
         h1 {
             font-family: 'GoldenTrail', sans-serif;
-            font-size: 4.2rem; /* Increased font size by 20% */
+            font-size: 4.2rem;
             font-weight: normal;
             background: linear-gradient(to bottom, silver, #ffffff);
             -webkit-background-clip: text;
             color: transparent;
-            text-shadow: 2px 2px 2px rgba(50, 50, 50, 0.5), -2px -2px -7px rgba(50, 50, 50, 0.5); /* Dark gray shadow */
+            text-shadow: 2px 2px 2px rgba(50, 50, 50, 0.5), -2px -2px -7px rgba(50, 50, 50, 0.5);
             margin: 0;
             transform: rotate(-2deg);
             transform-origin: center;
-            letter-spacing: 2px; /* Increased letter spacing */
+            letter-spacing: 2px;
         }
 
         .floating-text {
             font-family: 'KCOraleSans', sans-serif;
-            font-size: 3.36rem; /* Increased font size by 60% */
-            margin: 60px 180px; /* Increased horizontal padding by 80% */
+            font-size: 2.35rem; /* Decreased font size by 30% */
+            margin: 60px 180px;
             animation: float 3s ease-in-out infinite;
-            line-height: 1.6; /* Added for better readability */
+            line-height: 1.6;
         }
 
         @keyframes float {
@@ -62,7 +61,7 @@
                 transform: translateY(0);
             }
             50% {
-                transform: translateY(-10px); /* Moves up by 10 pixels */
+                transform: translateY(-10px);
             }
         }
 
@@ -72,7 +71,7 @@
             padding: 18px 30px;
             background-color: black;
             color: white;
-            font-size: 2.64em; /* Increased font size by 120% */
+            font-size: 2.64em;
             font-weight: bold;
             text-align: center;
             border-radius: 50%;
@@ -81,8 +80,8 @@
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
             transition: transform 0.2s, background-color 0.2s;
             cursor: pointer;
-            letter-spacing: 2px; /* 2px letter spacing */
-            font-family: 'KCOraleSans', sans-serif; /* Changed font to KCOraleSans */
+            letter-spacing: 2px;
+            font-family: 'KCOraleSans', sans-serif;
         }
 
         .postbox-button:hover {
@@ -105,7 +104,7 @@
             margin-bottom: 12px;
             color: white;
             font-size: 1.2em;
-            letter-spacing: 1px; /* Increased letter spacing */
+            letter-spacing: 1px;
         }
 
         form input[type="email"],
@@ -116,7 +115,7 @@
             font-size: 1.2rem;
             margin-bottom: 12px;
             width: 280px;
-            letter-spacing: 1px; /* Increased letter spacing */
+            letter-spacing: 1px;
         }
 
         form button {
@@ -127,15 +126,15 @@
             color: white;
             font-size: 1.2rem;
             cursor: pointer;
-            letter-spacing: 2px; /* Increased letter spacing */
+            letter-spacing: 2px;
         }
 
         .success-message {
             display: none;
             color: lightgreen;
             margin-top: 1.2rem;
-            font-size: 1.8em; /* Increased font size by 50% */
-            font-family: 'KCOraleSans', sans-serif; /* Changed font to KCOraleSans */
+            font-size: 1.8em;
+            font-family: 'KCOraleSans', sans-serif;
         }
     </style>
 </head>
@@ -169,19 +168,15 @@
         const emailForm = document.getElementById('emailForm');
         const successMessage = document.getElementById('successMessage');
 
-        // Show the form when the button is clicked
         mailingListButton.addEventListener('click', () => {
             emailForm.style.display = 'flex';
         });
 
-        // Handle form submission with JavaScript
         emailForm.addEventListener('submit', async (event) => {
-            event.preventDefault(); // Prevent default form submission behavior
+            event.preventDefault();
 
-            // Collect form data
             const formData = new FormData(emailForm);
 
-            // Send form data to Formspree
             try {
                 const response = await fetch('https://formspree.io/f/mpwwljpd', {
                     method: 'POST',
@@ -192,16 +187,10 @@
                 });
 
                 if (response.ok) {
-                    // Show success message
                     successMessage.style.display = 'block';
-
-                    // Clear the form
                     emailForm.reset();
-
-                    // Hide the form after submission
                     emailForm.style.display = 'none';
 
-                    // Hide the success message after 3 seconds
                     setTimeout(() => {
                         successMessage.style.display = 'none';
                     }, 3000);
