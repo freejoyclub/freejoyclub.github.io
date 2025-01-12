@@ -14,8 +14,8 @@
         }
 
         @font-face {
-            font-family: 'KCTripSerif';
-            src: url('https://raw.githubusercontent.com/freejoyclub/freejoyclub.github.io/main/KCTripSerif.otf') format('opentype');
+            font-family: 'KCOraleSans';
+            src: url('https://raw.githubusercontent.com/freejoyclub/freejoyclub.github.io/main/KCOraleSans.otf') format('opentype');
             font-weight: normal;
             font-style: normal;
         }
@@ -31,6 +31,7 @@
             background: linear-gradient(to bottom, black, #301934);
             color: silver;
             text-align: center;
+            padding-bottom: 100px; /* Permanent padding under all content */
         }
 
         h1 {
@@ -48,9 +49,9 @@
         }
 
         .floating-text {
-            font-family: 'KCTripSerif', sans-serif;
+            font-family: 'KCOraleSans', sans-serif;
             font-size: 2.1rem; /* Half the size of the header */
-            margin: 60px 100px; /* Increased spacing above and below, and added padding left and right */
+            margin: 60px 180px; /* Increased horizontal padding by 80% */
             animation: float 3s ease-in-out infinite;
             line-height: 1.6; /* Added for better readability */
         }
@@ -80,7 +81,7 @@
             transition: transform 0.2s, background-color 0.2s;
             cursor: pointer;
             letter-spacing: 2px; /* 2px letter spacing */
-            font-family: Arial, sans-serif; /* Changed font to Arial for this button */
+            font-family: 'KCOraleSans', sans-serif; /* Changed font to KCOraleSans */
         }
 
         .postbox-button:hover {
@@ -133,6 +134,7 @@
             color: lightgreen;
             margin-top: 1.2rem;
             font-size: 1.2em;
+            font-family: 'KCOraleSans', sans-serif; /* Changed font to KCOraleSans */
         }
     </style>
 </head>
