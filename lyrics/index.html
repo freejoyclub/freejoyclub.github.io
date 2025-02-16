@@ -98,21 +98,24 @@
     <button class="home-button" onclick="window.location.href='https://freejoy.club'">🏠</button>
 
     <script>
-        const folderId = "1X3AbAV6poAGM58tuHHNDhvO1PlmXzohv"; // Replace with your actual folder ID
-        const apiKey = "AIzaSyBgvkSYVAVHZMrgCkBIUH0TZgEmUWWT3WA"; // Replace with your actual API key
+async function fetchDriveFiles() {
+    const response = await fetch("http://localhost:3000/api-key");
+    const data = await response.json();
+    const apiKey = data.apiKey;  // Get the API key from the backend
 
-        async function fetchDriveFiles() {
-            const url = `https://www.googleapis.com/drive/v3/files?q='${folderId}'+in+parents&key=${apiKey}`;
-            const response = await fetch(url);
-            const data = await response.json();
+    const folderId = "1X3AbAV6poAGM58tuHHNDhvO1PlmXzohv";  // Replace with your folder ID
+    const url = `https://www.googleapis.com/drive/v3/files?q='${folderId}'+in+parents&key=${apiKey}`;
+    
+    const fileResponse = await fetch(url);
+    const fileData = await fileResponse.json();
 
-            const fileList = document.getElementById("file-list");
-            fileList.innerHTML = "<ul>" + data.files.map(file =>
-                `<li><a href="https://drive.google.com/file/d/${file.id}/view" target="_blank">${file.name}</a></li>`
-            ).join("") + "</ul>";
-        }
+    const fileList = document.getElementById("file-list");
+    fileList.innerHTML = "<ul>" + fileData.files.map(file =>
+        `<li><a href="https://drive.google.com/file/d/${file.id}/view" target="_blank">${file.name}</a></li>`
+    ).join("") + "</ul>";
+}
 
-        fetchDriveFiles();
+fetchDriveFiles();
     </script>
 </body>
 </html>
