@@ -21,10 +21,10 @@
 
         h1 {
             font-family: 'GoldenTrail', sans-serif;
-            font-size: 3.45rem; /* Increased by 15% */
-            letter-spacing: 2px; /* Added spacing */
+            font-size: 3.45rem;
+            letter-spacing: 2px;
             margin-bottom: 20px;
-            display: inline-block;
+            display: block; /* Ensure it takes full width */
             animation: float 3s ease-in-out infinite;
         }
 
@@ -51,7 +51,7 @@
         li {
             margin: 10px 0;
             padding: 10px;
-            background: linear-gradient(to bottom, #5e4610, #856917); /* 20% darker on top */
+            background: linear-gradient(to bottom, #5e4610, #856917);
             color: white;
             border-radius: 5px;
             transition: transform 0.2s, background 0.2s;
@@ -71,54 +71,65 @@
             border-radius: 5px;
         }
 
-        .home-button {
-            font-family: Arial, sans-serif;
-            font-size: 3.45rem; /* Same size as the title */
-            background: #5f0d75;
+        .button-container {
+            margin-top: 10px;
+        }
+
+        .custom-button {
+            font-size: 1.5rem;
+            background: linear-gradient(to bottom, #5e4610, #856917);
             color: white;
-            padding: 20px 40px;
+            padding: 15px 30px;
             border: none;
             border-radius: 10px;
             cursor: pointer;
-            margin-top: 30px;
-            transition: background 0.3s;
+            transition: transform 0.2s, background 0.2s;
+            margin: 10px;
+            display: inline-block;
         }
 
-        .home-button:hover {
-            background: #3e084f;
+        .custom-button:hover {
+            transform: scale(1.05);
+            background: linear-gradient(to bottom, #49390d, #6e5613);
         }
     </style>
 </head>
 <body>
-    <h1>Lyrics / Chords</h1> 
-    <button class="home-button" onclick="window.open('https://drive.google.com/drive/folders/1X3AbAV6poAGM58tuHHNDhvO1PlmXzohv', '_blank')">
-        📂 Lyric/Chord Drive Folder 📂
-    </button>
+    <h1>Lyrics / Chords</h1>
+
+    <div class="button-container">
+        <button class="custom-button" onclick="window.open('https://drive.google.com/drive/folders/1X3AbAV6poAGM58tuHHNDhvO1PlmXzohv', '_blank')">
+            📂 Lyric/Chord Drive Folder 📂
+        </button>
+    </div>
+
     <div id="file-list">
         <p>Loading files...</p>
     </div>
 
-    <button class="home-button" onclick="window.location.href='https://freejoy.club'">🏠</button>
+    <div class="button-container">
+        <button class="custom-button" onclick="window.location.href='https://freejoy.club'">🏠</button>
+    </div>
 
     <script>
-async function fetchDriveFiles() {
-    const response = await fetch("http://localhost:3000/api-key");
-    const data = await response.json();
-    const apiKey = data.apiKey;  // Get the API key from the backend
+        async function fetchDriveFiles() {
+            const response = await fetch("http://localhost:3000/api-key");
+            const data = await response.json();
+            const apiKey = data.apiKey;
 
-    const folderId = "1X3AbAV6poAGM58tuHHNDhvO1PlmXzohv";  // Replace with your folder ID
-    const url = `https://www.googleapis.com/drive/v3/files?q='${folderId}'+in+parents&key=${apiKey}`;
-    
-    const fileResponse = await fetch(url);
-    const fileData = await fileResponse.json();
+            const folderId = "1X3AbAV6poAGM58tuHHNDhvO1PlmXzohv";
+            const url = `https://www.googleapis.com/drive/v3/files?q='${folderId}'+in+parents&key=${apiKey}`;
+            
+            const fileResponse = await fetch(url);
+            const fileData = await fileResponse.json();
 
-    const fileList = document.getElementById("file-list");
-    fileList.innerHTML = "<ul>" + fileData.files.map(file =>
-        `<li><a href="https://drive.google.com/file/d/${file.id}/view" target="_blank">${file.name}</a></li>`
-    ).join("") + "</ul>";
-}
+            const fileList = document.getElementById("file-list");
+            fileList.innerHTML = "<ul>" + fileData.files.map(file =>
+                `<li><a href="https://drive.google.com/file/d/${file.id}/view" target="_blank">${file.name}</a></li>`
+            ).join("") + "</ul>";
+        }
 
-fetchDriveFiles();
+        fetchDriveFiles();
     </script>
 </body>
 </html>
