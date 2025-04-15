@@ -1,145 +1,179 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Freejoy Club</title>
-    <style>
-        @font-face {
-            font-family: 'GoldenTrail';
-            src: url('https://raw.githubusercontent.com/freejoyclub/freejoyclub.github.io/main/GoldenTrail-KC.otf') format('opentype');
-            font-weight: normal;
-            font-style: normal;
-        }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Freejoy Club</title>
+  <style>
+    @font-face {
+      font-family: 'GoldenTrail';
+      src: url('https://raw.githubusercontent.com/freejoyclub/freejoyclub.github.io/main/GoldenTrail-KC.otf') format('opentype');
+      font-weight: normal;
+      font-style: normal;
+    }
 
-        @font-face {
-            font-family: 'KCOraleSans';
-            src: url('https://raw.githubusercontent.com/freejoyclub/freejoyclub.github.io/main/KCOraleSans.otf') format('opentype');
-            font-weight: normal;
-            font-style: normal;
-        }
+    @font-face {
+      font-family: 'KCOraleSans';
+      src: url('https://raw.githubusercontent.com/freejoyclub/freejoyclub.github.io/main/KCOraleSans.otf') format('opentype');
+      font-weight: normal;
+      font-style: normal;
+    }
 
-        body {
-            margin: 0;
-            padding: 30px 8px;
-            font-family: 'GoldenTrail', sans-serif;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            min-height: 100vh;
-            background: linear-gradient(to bottom right, #2a3d66, #3b2a66);
-            color: silver;
-            text-align: center;
-            box-sizing: border-box;
-            transition: background 2s ease;
-        }
+    html, body {
+      margin: 0;
+      padding: 0;
+      font-family: 'GoldenTrail', sans-serif;
+      height: 100%;
+      overflow-x: hidden;
+    }
 
-        h1 {
-            font-family: 'GoldenTrail', sans-serif;
-            font-size: 4.2rem;
-            font-weight: normal;
-            background: linear-gradient(to bottom, silver, #ffffff);
-            -webkit-background-clip: text;
-            color: transparent;
-            text-shadow: 2px 2px 2px rgba(50, 50, 50, 0.5), -2px -2px -7px rgba(50, 50, 50, 0.5);
-            margin: 0;
-            transform: rotate(-2deg);
-            transform-origin: center;
-            letter-spacing: 2px;
-        }
+    .gradient-layer {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -2;
+      transition: opacity 2s ease;
+      background: linear-gradient(to bottom, #111, #222);
+    }
 
-        .floating-text {
-            font-family: 'KCOraleSans', sans-serif;
-            font-size: 2.35rem;
-            margin: 30px 60px;
-            animation: float 3s ease-in-out infinite;
-            line-height: 1.6;
-        }
+    #background1 {
+      opacity: 1;
+    }
 
-        @keyframes float {
-            0%, 100% {
-                transform: translateY(0);
-            }
-            50% {
-                transform: translateY(-10px);
-            }
-        }
+    #background2 {
+      opacity: 0;
+    }
 
-        .postbox-button {
-            display: inline-block;
-            margin-top: 2.4rem;
-            padding: 18px 30px;
-            background-color: black;
-            color: white;
-            font-size: 2.64em;
-            font-weight: bold;
-            text-align: center;
-            border-radius: 18px;
-            border: none;
-            text-decoration: none;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            transition: transform 0.2s, background-color 0.2s;
-            cursor: pointer;
-            letter-spacing: 2px;
-            font-family: 'KCOraleSans', sans-serif;
-        }
+    .content {
+      position: relative;
+      z-index: 1;
+      padding: 30px 8px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      box-sizing: border-box;
+      color: silver;
+      text-align: center;
+    }
 
-        .postbox-button:hover {
-            background-color: #333333;
-            transform: scale(1.1);
-        }
+    h1 {
+      font-family: 'GoldenTrail', sans-serif;
+      font-size: 4.2rem;
+      font-weight: normal;
+      background: linear-gradient(to bottom, silver, #ffffff);
+      -webkit-background-clip: text;
+      color: transparent;
+      text-shadow: 2px 2px 2px rgba(50, 50, 50, 0.5), -2px -2px -7px rgba(50, 50, 50, 0.5);
+      margin: 0;
+      transform: rotate(-2deg);
+      transform-origin: center;
+      letter-spacing: 2px;
+    }
 
-        .postbox-button:active {
-            transform: scale(0.95);
-        }
+    .floating-text {
+      font-family: 'KCOraleSans', sans-serif;
+      font-size: 2.35rem;
+      margin: 30px 60px;
+      animation: float 3s ease-in-out infinite;
+      line-height: 1.6;
+    }
 
-        form {
-            display: none;
-            flex-direction: column;
-            align-items: center;
-            margin-top: 2.4rem;
-        }
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
 
-        form label {
-            margin-bottom: 12px;
-            color: white;
-            font-size: 1.2em;
-            letter-spacing: 1px;
-        }
+    .postbox-button {
+      display: inline-block;
+      margin-top: 2.4rem;
+      padding: 18px 30px;
+      background-color: black;
+      color: white;
+      font-size: 2.64em;
+      font-weight: bold;
+      text-align: center;
+      border-radius: 18px;
+      border: none;
+      text-decoration: none;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      transition: transform 0.2s, background-color 0.2s;
+      cursor: pointer;
+      letter-spacing: 2px;
+      font-family: 'KCOraleSans', sans-serif;
+    }
 
-        form input[type="email"],
-        form textarea {
-            padding: 12px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            font-size: 1.2rem;
-            margin-bottom: 12px;
-            width: 280px;
-            letter-spacing: 1px;
-        }
+    .postbox-button:hover {
+      background-color: #333333;
+      transform: scale(1.1);
+    }
 
-        form button {
-            padding: 12px 24px;
-            border: none;
-            border-radius: 5px;
-            background-color: black;
-            color: white;
-            font-size: 1.2rem;
-            cursor: pointer;
-            letter-spacing: 2px;
-        }
+    .postbox-button:active {
+      transform: scale(0.95);
+    }
 
-        .success-message {
-            display: none;
-            color: lightgreen;
-            margin-top: 1.2rem;
-            font-size: 1.8em;
-            font-family: 'KCOraleSans', sans-serif;
-        }
-    </style>
+    form {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      margin-top: 2.4rem;
+    }
+
+    form label {
+      margin-bottom: 12px;
+      color: white;
+      font-size: 1.2em;
+      letter-spacing: 1px;
+    }
+
+    form input[type="email"],
+    form textarea {
+      padding: 12px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      font-size: 1.2rem;
+      margin-bottom: 12px;
+      width: 280px;
+      letter-spacing: 1px;
+    }
+
+    form button {
+      padding: 12px 24px;
+      border: none;
+      border-radius: 5px;
+      background-color: black;
+      color: white;
+      font-size: 1.2rem;
+      cursor: pointer;
+      letter-spacing: 2px;
+    }
+
+    .success-message {
+      display: none;
+      color: lightgreen;
+      margin-top: 1.2rem;
+      font-size: 1.8em;
+      font-family: 'KCOraleSans', sans-serif;
+    }
+
+    @keyframes floatUpDown {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-5px); }
+    }
+
+    .floating-logo {
+      animation: floatUpDown 4s ease-in-out infinite;
+    }
+  </style>
 </head>
 <body>
+  <div id="background1" class="gradient-layer"></div>
+  <div id="background2" class="gradient-layer"></div>
+
+  <div class="content">
     <h1>We're Fearjoy</h1>
 
     <p class="floating-text">Our debut album is on the way. Here's a track for now:</p>
@@ -154,102 +188,91 @@
     <p class="floating-text">Help us name this song! DM us:</p>
 
     <a href="https://www.instagram.com/fearjoymusic" target="_blank">
-    <img src="images/instagram-logo.png" alt="Instagram" class="floating-logo" style="width: 70px; height: 70px;">
-</a>
+      <img src="images/instagram-logo.png" alt="Instagram" class="floating-logo" style="width: 70px; height: 70px;">
+    </a>
 
-<style>
-    @keyframes floatUpDown {
-        0%, 100% { transform: translateY(0); }
-        50% { transform: translateY(-5px); }
-    }
+    <p class="floating-text">Our Twitch:</p>
 
-    .floating-logo {
-        animation: floatUpDown 3s ease-in-out infinite;
-    }
-</style>
-        <p class="floating-text">Our Twitch:</p>
     <a href="https://www.twitch.tv/fearjoymusic" target="_blank">
-    <img src="images/twitch-logo2.png" alt="Twitch" class="floating-logo" style="width: 70px; height: 70px;">
-</a>
-<style>
-    @keyframes floatUpDown {
-        0%, 100% { transform: translateY(0); }
-        50% { transform: translateY(-4px); }
-    }
-
-    .floating-logo {
-        animation: floatUpDown 4s ease-in-out infinite;
-    }
-</style>
+      <img src="images/twitch-logo2.png" alt="Twitch" class="floating-logo" style="width: 70px; height: 70px;">
+    </a>
 
     <a href="mailto:mgmt@freejoy.club" class="postbox-button">Reach Us</a>
     <button class="postbox-button" id="mailingListButton">Send Me the Album</button>
 
     <form id="emailForm">
-        <label for="email">Your email:</label>
-        <input type="email" id="email" name="email" required placeholder="Enter your email" />
-        <label for="message">Your message:</label>
-        <textarea name="message" id="message" placeholder="Your message" required></textarea>
-        <button type="submit">Send</button>
+      <label for="email">Your email:</label>
+      <input type="email" id="email" name="email" required placeholder="Enter your email" />
+      <label for="message">Your message:</label>
+      <textarea name="message" id="message" placeholder="Your message" required></textarea>
+      <button type="submit">Send</button>
     </form>
 
     <p class="success-message" id="successMessage">Thanks for subscribing! You'll be notified when it's released. (No spam!)</p>
+  </div>
 
-    <script>
-        const mailingListButton = document.getElementById('mailingListButton');
-        const emailForm = document.getElementById('emailForm');
-        const successMessage = document.getElementById('successMessage');
+  <script>
+    const mailingListButton = document.getElementById('mailingListButton');
+    const emailForm = document.getElementById('emailForm');
+    const successMessage = document.getElementById('successMessage');
 
-        mailingListButton.addEventListener('click', () => {
-            emailForm.style.display = 'flex';
+    mailingListButton.addEventListener('click', () => {
+      emailForm.style.display = 'flex';
+    });
+
+    emailForm.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      const formData = new FormData(emailForm);
+
+      try {
+        const response = await fetch('https://formspree.io/f/mpwwljpd', {
+          method: 'POST',
+          headers: { Accept: 'application/json' },
+          body: formData,
         });
 
-        emailForm.addEventListener('submit', async (event) => {
-            event.preventDefault();
-
-            const formData = new FormData(emailForm);
-
-            try {
-                const response = await fetch('https://formspree.io/f/mpwwljpd', {
-                    method: 'POST',
-                    headers: {
-                        Accept: 'application/json',
-                    },
-                    body: formData,
-                });
-
-                if (response.ok) {
-                    successMessage.style.display = 'block';
-                    emailForm.reset();
-                    emailForm.style.display = 'none';
-
-                    setTimeout(() => {
-                        successMessage.style.display = 'none';
-                    }, 3000);
-                } else {
-                    alert('There was a problem submitting the form. Please try again.');
-                }
-            } catch (error) {
-                alert('There was an error submitting the form. Please try again.');
-            }
-        });
-
-        function generateColor() {
-            const hue = Math.floor(Math.random() * 50 + 200); // blue to teal to purple
-            const saturation = Math.floor(Math.random() * 20 + 50); // 50–70%
-            const lightness = Math.floor(Math.random() * 15 + 25); // 25–40% darker
-            return `hsl(${hue}, ${saturation}%, ${lightness}%)`;
+        if (response.ok) {
+          successMessage.style.display = 'block';
+          emailForm.reset();
+          emailForm.style.display = 'none';
+          setTimeout(() => successMessage.style.display = 'none', 3000);
+        } else {
+          alert('There was a problem submitting the form. Please try again.');
         }
+      } catch (error) {
+        alert('There was an error submitting the form. Please try again.');
+      }
+    });
 
-        function updateBackground() {
-            const color1 = generateColor();
-            const color2 = generateColor();
-            const directions = ['to right', 'to left', 'to bottom', 'to top', '135deg', '225deg'];
-            const direction = directions[Math.floor(Math.random() * directions.length)];
-            document.body.style.background = `linear-gradient(${direction}, ${color1}, ${color2})`;
-        }
+    // Smooth gradient fade logic
+    const bg1 = document.getElementById('background1');
+    const bg2 = document.getElementById('background2');
+    let toggle = true;
 
-        setInterval(updateBackground, 3000);
-    </script>
+    function generateCoolGradient() {
+      const hues = [180, 200, 220, 240, 260];
+      const h1 = hues[Math.floor(Math.random() * hues.length)];
+      const h2 = hues[Math.floor(Math.random() * hues.length)];
+      const s1 = Math.floor(Math.random() * 10) + 45;
+      const s2 = Math.floor(Math.random() * 10) + 45;
+      const l1 = Math.floor(Math.random() * 10) + 30;
+      const l2 = Math.floor(Math.random() * 10) + 30;
+      const dir = ['to right', 'to left', 'to top', 'to bottom', '45deg', '135deg'][Math.floor(Math.random() * 6)];
+
+      return `linear-gradient(${dir}, hsl(${h1}, ${s1}%, ${l1}%), hsl(${h2}, ${s2}%, ${l2}%))`;
+    }
+
+    function fadeToNewGradient() {
+      const next = toggle ? bg2 : bg1;
+      const current = toggle ? bg1 : bg2;
+      next.style.background = generateCoolGradient();
+      next.style.opacity = '1';
+      current.style.opacity = '0';
+      toggle = !toggle;
+    }
+
+    setInterval(fadeToNewGradient, 3000);
+    fadeToNewGradient(); // initial call
+  </script>
 </body>
 </html>
