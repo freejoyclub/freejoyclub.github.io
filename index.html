@@ -2,21 +2,16 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Freejoy Club</title>
   <style>
     @font-face {
       font-family: 'GoldenTrail';
       src: url('https://raw.githubusercontent.com/freejoyclub/freejoyclub.github.io/main/GoldenTrail-KC.otf') format('opentype');
-      font-weight: normal;
-      font-style: normal;
     }
-
     @font-face {
       font-family: 'KCOraleSans';
       src: url('https://raw.githubusercontent.com/freejoyclub/freejoyclub.github.io/main/KCOraleSans.otf') format('opentype');
-      font-weight: normal;
-      font-style: normal;
     }
 
     body {
@@ -28,11 +23,34 @@
       align-items: center;
       justify-content: center;
       min-height: 100vh;
-      background: linear-gradient(to bottom, #111, #222);
       color: silver;
       text-align: center;
       box-sizing: border-box;
-      transition: background 2s ease;
+      overflow-x: hidden;
+    }
+
+    .gradient-layer {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -2;
+      transition: opacity 2s ease;
+      background: linear-gradient(to bottom, #111, #222);
+    }
+
+    #background1 {
+      opacity: 1;
+    }
+
+    #background2 {
+      opacity: 0;
+    }
+
+    .content {
+      position: relative;
+      z-index: 1;
     }
 
     h1 {
@@ -58,12 +76,8 @@
     }
 
     @keyframes float {
-      0%, 100% {
-        transform: translateY(0);
-      }
-      50% {
-        transform: translateY(-10px);
-      }
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
     }
 
     .postbox-button {
@@ -137,67 +151,84 @@
       font-size: 1.8em;
       font-family: 'KCOraleSans', sans-serif;
     }
-  </style>
-</head>
-<body>
-  <h1>We're Fearjoy</h1>
-
-  <p class="floating-text">Our debut album is on the way. Here's a track for now:</p>
-
-  <iframe 
-    src="https://samply.app/embed/347SJuDJQmYf8BWVJWvf" 
-    frameborder="20"
-    allowtransparency="true"
-    style="width: 80%; height: 130px; border-radius: 25px; border: 20px solid rgba(255, 255, 255, 0.12)"
-  ></iframe>
-
-  <p class="floating-text">Help us name this song! DM us:</p>
-
-  <a href="https://www.instagram.com/fearjoymusic" target="_blank">
-    <img src="images/instagram-logo.png" alt="Instagram" class="floating-logo" style="width: 70px; height: 70px;">
-  </a>
-
-  <style>
-    @keyframes floatUpDown {
-      0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(-5px); }
-    }
-
-    .floating-logo {
-      animation: floatUpDown 3s ease-in-out infinite;
-    }
-  </style>
-
-  <p class="floating-text">Our Twitch:</p>
-  <a href="https://www.twitch.tv/fearjoymusic" target="_blank">
-    <img src="images/twitch-logo2.png" alt="Twitch" class="floating-logo" style="width: 70px; height: 70px;">
-  </a>
-
-  <style>
-    @keyframes floatUpDown {
-      0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(-4px); }
-    }
 
     .floating-logo {
       animation: floatUpDown 4s ease-in-out infinite;
     }
+
+    @keyframes floatUpDown {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-4px); }
+    }
   </style>
+</head>
+<body>
+  <div id="background1" class="gradient-layer"></div>
+  <div id="background2" class="gradient-layer"></div>
 
-  <a href="mailto:mgmt@freejoy.club" class="postbox-button">Reach Us</a>
-  <button class="postbox-button" id="mailingListButton">Send Me the Album</button>
+  <div class="content">
+    <h1>We're Fearjoy</h1>
+    <p class="floating-text">Our debut album is on the way. Here's a track for now:</p>
+    <iframe 
+      src="https://samply.app/embed/347SJuDJQmYf8BWVJWvf" 
+      frameborder="20"
+      allowtransparency="true"
+      style="width: 80%; height: 130px; border-radius: 25px; border: 20px solid rgba(255, 255, 255, 0.12)"
+    ></iframe>
 
-  <form id="emailForm">
-    <label for="email">Your email:</label>
-    <input type="email" id="email" name="email" required placeholder="Enter your email" />
-    <label for="message">Your message:</label>
-    <textarea name="message" id="message" placeholder="Your message" required></textarea>
-    <button type="submit">Send</button>
-  </form>
+    <p class="floating-text">Help us name this song! DM us:</p>
+    <a href="https://www.instagram.com/fearjoymusic" target="_blank">
+      <img src="images/instagram-logo.png" alt="Instagram" class="floating-logo" style="width: 70px; height: 70px;">
+    </a>
 
-  <p class="success-message" id="successMessage">Thanks for subscribing! You'll be notified when it's released. (No spam!)</p>
+    <p class="floating-text">Our Twitch:</p>
+    <a href="https://www.twitch.tv/fearjoymusic" target="_blank">
+      <img src="images/twitch-logo2.png" alt="Twitch" class="floating-logo" style="width: 70px; height: 70px;">
+    </a>
+
+    <a href="mailto:mgmt@freejoy.club" class="postbox-button">Reach Us</a>
+    <button class="postbox-button" id="mailingListButton">Send Me the Album</button>
+
+    <form id="emailForm">
+      <label for="email">Your email:</label>
+      <input type="email" id="email" name="email" required placeholder="Enter your email" />
+      <label for="message">Your message:</label>
+      <textarea name="message" id="message" placeholder="Your message" required></textarea>
+      <button type="submit">Send</button>
+    </form>
+
+    <p class="success-message" id="successMessage">Thanks for subscribing! You'll be notified when it's released. (No spam!)</p>
+  </div>
 
   <script>
+    const bg1 = document.getElementById('background1');
+    const bg2 = document.getElementById('background2');
+    let toggle = true;
+
+    function generateCoolGradient() {
+      const hues = [180, 200, 220, 240, 260];
+      const h1 = hues[Math.floor(Math.random() * hues.length)];
+      const h2 = hues[Math.floor(Math.random() * hues.length)];
+      const s1 = Math.floor(Math.random() * 10) + 45;
+      const s2 = Math.floor(Math.random() * 10) + 45;
+      const l1 = Math.floor(Math.random() * 10) + 30;
+      const l2 = Math.floor(Math.random() * 10) + 30;
+      const dir = ['to right', 'to left', 'to top', 'to bottom', '45deg', '135deg'][Math.floor(Math.random() * 6)];
+      return `linear-gradient(${dir}, hsl(${h1}, ${s1}%, ${l1}%), hsl(${h2}, ${s2}%, ${l2}%))`;
+    }
+
+    function fadeToNewGradient() {
+      const next = toggle ? bg2 : bg1;
+      const current = toggle ? bg1 : bg2;
+      next.style.background = generateCoolGradient();
+      next.style.opacity = '1';
+      current.style.opacity = '0';
+      toggle = !toggle;
+    }
+
+    setInterval(fadeToNewGradient, 3000);
+    fadeToNewGradient();
+
     const mailingListButton = document.getElementById('mailingListButton');
     const emailForm = document.getElementById('emailForm');
     const successMessage = document.getElementById('successMessage');
@@ -221,10 +252,7 @@
           successMessage.style.display = 'block';
           emailForm.reset();
           emailForm.style.display = 'none';
-
-          setTimeout(() => {
-            successMessage.style.display = 'none';
-          }, 3000);
+          setTimeout(() => { successMessage.style.display = 'none'; }, 3000);
         } else {
           alert('There was a problem submitting the form. Please try again.');
         }
@@ -232,34 +260,6 @@
         alert('There was an error submitting the form. Please try again.');
       }
     });
-
-    // 🎨 Smooth color fading background animation
-    const body = document.body;
-
-    function generateSoftCoolColor() {
-      const hues = [180, 190, 200, 210, 220, 230, 240, 250, 260]; // cool hues
-      const hue = hues[Math.floor(Math.random() * hues.length)];
-      const saturation = Math.floor(Math.random() * 10) + 45; // 45–55%
-      const lightness = Math.floor(Math.random() * 10) + 30; // 30–40% — darker
-      return `hsl(${hue}, ${saturation}%, ${lightness}%)`;
-    }
-
-    function getRandomDirection() {
-      const directions = ['to right', 'to left', 'to top', 'to bottom', '45deg', '135deg', '225deg', '315deg'];
-      return directions[Math.floor(Math.random() * directions.length)];
-    }
-
-    function updateGradientBackground() {
-      const color1 = generateSoftCoolColor();
-      const color2 = generateSoftCoolColor();
-      const direction = getRandomDirection();
-      body.style.transition = 'background 2s ease';
-      body.style.background = `linear-gradient(${direction}, ${color1}, ${color2})`;
-    }
-
-    // Initialize and update every 3 seconds
-    updateGradientBackground();
-    setInterval(updateGradientBackground, 3000);
   </script>
 </body>
 </html>
