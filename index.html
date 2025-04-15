@@ -32,6 +32,7 @@
             color: silver;
             text-align: center;
             box-sizing: border-box;
+            transition: background 3s ease;
         }
 
         h1 {
@@ -152,7 +153,7 @@
 
     <p class="floating-text">Help us name this song! DM us:</p>
 
-    <a href="https://www.instagram.com/freejoy.club?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==" target="_blank">
+    <a href="https://www.instagram.com/fearjoymusic" target="_blank">
     <img src="images/instagram-logo.png" alt="Instagram" class="floating-logo" style="width: 70px; height: 70px;">
 </a>
 
@@ -232,6 +233,31 @@
                 alert('There was an error submitting the form. Please try again.');
             }
         });
+
+        // Gradient Background Animation Script
+        function generateSoftCoolColor() {
+            const hues = [200, 210, 220, 230, 240, 250, 260, 180, 190]; // blues, purples, cool greens
+            const hue = hues[Math.floor(Math.random() * hues.length)];
+            const saturation = Math.floor(Math.random() * 15) + 45; // 45%–60%
+            const lightness = Math.floor(Math.random() * 15) + 40; // 40%–55%
+            return `hsl(${hue}, ${saturation}%, ${lightness}%)`;
+        }
+
+        function getRandomDirection() {
+            const directions = ['to right', 'to left', 'to top', 'to bottom', '45deg', '135deg', '225deg', '315deg'];
+            return directions[Math.floor(Math.random() * directions.length)];
+        }
+
+        function updateGradientBackground() {
+            const color1 = generateSoftCoolColor();
+            const color2 = generateSoftCoolColor();
+            const direction = getRandomDirection();
+            document.body.style.background = `linear-gradient(${direction}, ${color1}, ${color2})`;
+        }
+
+        // Initialize and update every 3 seconds
+        updateGradientBackground();
+        setInterval(updateGradientBackground, 3000);
     </script>
 </body>
 </html>
