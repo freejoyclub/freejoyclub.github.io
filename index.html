@@ -72,25 +72,6 @@
       transform: rotate(-2deg);
       transform-origin: center;
       letter-spacing: 2px;
-      animation: wave 5s ease-in-out infinite;
-    }
-
-    @keyframes wave {
-      0% {
-        transform: translateY(0) rotate(-2deg);
-      }
-      25% {
-        transform: translateY(-10px) rotate(-2deg);
-      }
-      50% {
-        transform: translateY(10px) rotate(-2deg);
-      }
-      75% {
-        transform: translateY(-10px) rotate(-2deg);
-      }
-      100% {
-        transform: translateY(0) rotate(-2deg);
-      }
     }
 
     .floating-text {
@@ -216,7 +197,7 @@
       <img src="images/twitch-logo2.png" alt="Twitch" class="floating-logo" style="width: 70px; height: 70px;">
     </a>
 
-    <a href="mailto:mgmt@freejoy.club" class="postbox-button">Reach Us</a>
+    <a href="mgmt@freejoy.club" class="postbox-button">Reach Us</a>
     <button class="postbox-button" id="mailingListButton">Send Me the Album</button>
 
     <form id="emailForm">
@@ -264,10 +245,34 @@
     });
 
     // Smooth gradient fade logic
-    setInterval(() => {
-      document.getElementById('background1').style.opacity = document.getElementById('background1').style.opacity == 1 ? 0 : 1;
-      document.getElementById('background2').style.opacity = document.getElementById('background2').style.opacity == 1 ? 0 : 1;
-    }, 3000);
+    const bg1 = document.getElementById('background1');
+    const bg2 = document.getElementById('background2');
+    let toggle = true;
+
+    function generateCoolGradient() {
+      const hues = [180, 200, 220, 240, 260];
+      const h1 = hues[Math.floor(Math.random() * hues.length)];
+      const h2 = hues[Math.floor(Math.random() * hues.length)];
+      const s1 = Math.floor(Math.random() * 10) + 45;
+      const s2 = Math.floor(Math.random() * 10) + 45;
+      const l1 = Math.floor(Math.random() * 10) + 30;
+      const l2 = Math.floor(Math.random() * 10) + 30;
+      const dir = ['to right', 'to left', 'to top', 'to bottom', '45deg', '135deg'][Math.floor(Math.random() * 6)];
+
+      return `linear-gradient(${dir}, hsl(${h1}, ${s1}%, ${l1}%), hsl(${h2}, ${s2}%, ${l2}%))`;
+    }
+
+    function fadeToNewGradient() {
+      const next = toggle ? bg2 : bg1;
+      const current = toggle ? bg1 : bg2;
+      next.style.background = generateCoolGradient();
+      next.style.opacity = '1';
+      current.style.opacity = '0';
+      toggle = !toggle;
+    }
+
+    setInterval(fadeToNewGradient, 3000);
+    fadeToNewGradient(); // initial call
   </script>
 </body>
 </html>
