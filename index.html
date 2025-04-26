@@ -232,16 +232,17 @@
     </a>
   </div>
 
+ <!-- Button group with tighter spacing -->
+<div style="display: flex; flex-direction: column; align-items: center; gap: 1.6rem; margin-top: 2.4rem;">
   <a href="mailto:grant@freejoy.club" class="postbox-button">Reach Us</a>
+  <button class="postbox-button" id="mailingListButton">Send Me the Album</button>
+</div>
 
-<p style="text-align: center; margin-top: 1.2rem;">
-  <a href="mailto:mgmt@freejoy.club" style="color: silver; text-decoration: underline; font-family: 'KCOraleSans', sans-serif; font-size: 1.6rem;">
-    mgmt@freejoy.club
-  </a>
+<!-- Code-style plaintext email -->
+<p style="text-align: center; margin-top: 1rem;">
+  <span style="font-family: monospace; font-size: 1.5rem; color: silver;">mgmt@freejoy.club</span>
 </p>
   
-  <button class="postbox-button" id="mailingListButton">Send Me the Album</button>
-
   <form id="emailForm">
     <label for="email">Your email:</label>
     <input type="email" id="email" name="email" required placeholder="Enter your email" />
