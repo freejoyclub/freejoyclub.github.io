@@ -231,18 +231,11 @@
       <img src="images/twitch-logo2.png" alt="Twitch" class="floating-logo" style="width: 70px; height: 70px;">
     </a>
   </div>
-
- <!-- Button group with tighter spacing -->
-<div style="display: flex; flex-direction: column; align-items: center; gap: 1.6rem; margin-top: 2.4rem;">
+<div style="display: flex; flex-direction: column; align-items: center; gap: 1.6rem; margin-top: 1.4rem;">
   <a href="mailto:grant@freejoy.club" class="postbox-button">Reach Us</a>
   <button class="postbox-button" id="mailingListButton">Send Me the Album</button>
 </div>
-
-<!-- Code-style plaintext email -->
-<p style="text-align: center; margin-top: 1rem;">
-  <span style="font-family: monospace; font-size: 1.5rem; color: silver;">mgmt@freejoy.club</span>
 </p>
-  
   <form id="emailForm">
     <label for="email">Your email:</label>
     <input type="email" id="email" name="email" required placeholder="Enter your email" />
@@ -250,16 +243,13 @@
     <textarea name="message" id="message" placeholder="Your message" required></textarea>
     <button type="submit">Send</button>
   </form>
-
   <p class="success-message" id="successMessage">Thanks for subscribing! We'll send you the album!</p>
-
   <!-- New buttons at the bottom -->
   <div style="margin-top: 60px; display: flex; justify-content: center; gap: 24px; flex-wrap: wrap;">
     <a href="https://freejoy.club/breathe" class="postbox-button">Breathe</a>
     <a href="https://freejoy.club/move" class="postbox-button">Move</a>
   </div>
 </div>
-  
   <script>
     const mailingListButton = document.getElementById('mailingListButton');
     const emailForm = document.getElementById('emailForm');
