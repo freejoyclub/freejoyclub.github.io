@@ -1,21 +1,21 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Move - Freejoy</title>
   <style>
     body {
       font-family: Arial, sans-serif;
       font-size: 11pt;
-      max-width: 800px;
-      margin: 40px auto;
-      padding: 20px;
-      line-height: 1.2;
       font-weight: bold;
+      text-align: center;
       color: white;
+      margin: 0;
+      padding: 40px 20px;
+      line-height: 1.2;
+      text-shadow: 1px 1px 2px black;
       animation: bgfade 12s infinite;
-      text-shadow: 1px 1px 2px #ff5500;
       transition: background 3s ease-in-out;
     }
 
@@ -28,12 +28,30 @@
     }
 
     a {
+      display: block;
       color: #FFD580;
       text-decoration: none;
+      margin: 8px 0;
     }
 
     a:hover {
       text-decoration: underline;
+    }
+
+    h1 {
+      margin-bottom: 40px;
+      font-size: 2em;
+      animation: float 8s infinite ease-in-out;
+      display: inline-block;
+      position: relative;
+    }
+
+    @keyframes float {
+      0%   { top: 0; left: 0; }
+      25%  { top: -3px; left: 3px; }
+      50%  { top: 3px; left: -2px; }
+      75%  { top: -2px; left: -3px; }
+      100% { top: 0; left: 0; }
     }
 
     p {
@@ -55,7 +73,7 @@
     <a href="https://youtu.be/FsBMyiLP_G0?si=_18taQonNYa3Rzet">10m tim 1</a>
     <a href="https://youtu.be/w2xk84OCTVo">10m MOVE</a>
     <a href="https://youtu.be/O38rtX9Luds?si=U6_gx3qtm0CpqvWL">🔟 Qi Gong</a>
-    <a href="https://youtu.be/aRVFt79LqCM?si=DDI1aaVau7hk_zcq">10 min mobility- julia</a>
+    <a href="https://youtu.be/aRVFt79LqCM?si=DDI1aaVau7hk_zcq">10 min mobility - julia</a>
     <a href="https://youtu.be/UxU8OCsNbYY?si=Nxth9WFZF6nZCBMx">12 min yoga - mid gentle</a>
     <a href="https://youtu.be/keyWzojUHbs?si=maaCunund07mWxF-">14m 🔥 🌟 ENGAGE 💪 Tim</a>
     <a href="https://youtu.be/4xLEDm6xjgg?si=0jIIY0z3hE_smPcl">14m 🌟 FULL mobility</a>
@@ -81,5 +99,13 @@
     <a href="https://youtu.be/LzR0uz61MYw">🧿 wim hof w drums</a>
     <a href="https://www.youtube.com/channel/UCciuZl2ydLCvN5txlLW0rIg">🧘‍♂️ tim channel</a>
   </p>
+
+  <!-- Makes all links open in a new tab -->
+  <script>
+    document.querySelectorAll('a').forEach(link => {
+      link.setAttribute('target', '_blank');
+      link.setAttribute('rel', 'noopener noreferrer');
+    });
+  </script>
 </body>
 </html>
