@@ -1,1 +1,116 @@
-hi
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>BREATHE</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      font-size: 13pt;
+      font-weight: bold;
+      text-align: center;
+      color: white;
+      margin: 0;
+      padding: 40px 20px;
+      line-height: 1;
+      text-shadow: 1px 1px 2px black;
+      animation: bgfade 12s infinite;
+      transition: background 3s ease-in-out;
+    }
+
+    @keyframes bgfade {
+      0% { background-color: #7a5d0b; }
+      25% { background-color: #741782; }
+      50% { background-color: #800000; }
+      75% { background-color: #4B1C1C; }
+      100% { background-color: #8B0000; }
+    }
+
+    a {
+      display: block;
+      color: #FFD580;
+      text-decoration: none;
+      margin: 6px 0;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+
+    h1 {
+      margin-bottom: 12px; /* reduced by ~70% */
+      font-size: 2em;
+      animation: float 8s infinite ease-in-out;
+      display: inline-block;
+      position: relative;
+    }
+
+    @keyframes float {
+      0%   { top: 0; left: 0; }
+      25%  { top: -3px; left: 3px; }
+      50%  { top: 3px; left: -2px; }
+      75%  { top: -2px; left: -3px; }
+      100% { top: 0; left: 0; }
+    }
+
+    p {
+      white-space: pre-line;
+      margin-bottom: 40px;
+    }
+
+    .breathe-button {
+      background-color: black;
+      color: white;
+      padding: 10px 20px;
+      font-size: 2em;
+      font-family: Arial, sans-serif;
+      font-weight: bold;
+      border: none;
+      border-radius: 12px;
+      text-decoration: none;
+      display: inline-block;
+      margin: 20px auto 8px;
+      cursor: pointer;
+    }
+
+    .home-link {
+      font-size: 1.5em;
+      color: white;
+      text-decoration: none;
+      display: block;
+      margin-bottom: 10px;
+    }
+  </style>
+</head>
+<body>
+  <h1>MOVEMENT</h1>
+  <p>
+     <a href="https://youtu.be/d3-K6FZAXLM?si=YbNrhwn8UCmhfcgw">4 ✌️ 🫁 fizzy 4m</a>
+    <a href="https://youtu.be/LFyVJIlSYkA?si=c4xG2RF8aNz0OA0E">5 🫁🐍📦🔥+</a>
+    <a href="https://www.youtube.com/live/bBX611RjR6k?si=a0YUo5G82nbo4wGU">1-10 🫁🐍⛰️ TT1+</a>
+    <a href="https://youtu.be/GwIqNs8wWyY?si=ER4rsLZFErIV6o6H">chill 🫁 Tim 🐌 3 part</a>
+    <a href="https://youtu.be/61-mn1d5RIM?si=_ahykPFeZLUpN569">7 🔋🫁 :🔋 > 🐌 > 🐍 > 7m</a>
+    <a href="https://youtu.be/errP3gH9OlE?si=CXDNMDXpRC2liS0_">🫁 🐍</a>
+    <a href="https://youtu.be/0zjNHFq_NX8?si=0ITe0YZNX_qJklIF">5-20, choose 😃 🐍 🌄 🫁 5-20</a>
+    <a href="https://youtu.be/Vi0_7idqcFI?si=aJM80ueaO1_GCj7u">5 🐌 5m Rubin / Huber 🫀</a>
+    <a href="https://youtu.be/cIApIwfQDm0?si=HPBLRvhm8XPfa7Xs">11 😄 🫁 ☕️ 🐌 11</a>
+    <a href="https://youtu.be/YtAD8pDUEzo?si=2OWwVeSxniFTfctu">10 🔋 🫁 ☕️ 10</a>
+    <a href="https://youtu.be/5m2s8TTOKIA?si=s0TiVIUSYEkq6bY6">TT5</a>
+    <a href="https://youtube.com/playlist?list=PLBecXMryivYtOfjKHCOAYTrI6OCd7zn88">QUICK 🔋 PLAYLIST</a>
+    <a href="https://youtu.be/esr7Wug7-88">8 min: 🔋 🐇</a>
+    <a href="https://youtu.be/ThV8kV_mnz4">10m Tummo - TT10 light</a>
+    <a href="https://youtu.be/iTiDZNhr1WI">5min breathe w/ arms</a>
+  </p>
+
+  <a class="breathe-button" href="https://freejoy.club/move" target="_blank" rel="noopener noreferrer">breathe</a>
+  <a class="home-link" href="https://freejoy.club" target="_blank" rel="noopener noreferrer">🏠</a>
+
+  <script>
+    document.querySelectorAll('a').forEach(link => {
+      link.setAttribute('target', '_blank');
+      link.setAttribute('rel', 'noopener noreferrer');
+    });
+  </script>
+</body>
+</html>
