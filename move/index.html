@@ -5,10 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Move - Freejoy</title>
   <style>
-    html {
-      scroll-behavior: smooth;
-    }
-
     body {
       font-family: Arial, sans-serif;
       font-size: 13pt;
@@ -17,7 +13,7 @@
       color: white;
       margin: 0;
       padding: 40px 20px;
-      line-height: 1.0;
+      line-height: 1;
       text-shadow: 1px 1px 2px black;
       animation: bgfade 12s infinite;
       transition: background 3s ease-in-out;
@@ -25,9 +21,9 @@
 
     @keyframes bgfade {
       0% { background-color: #8B0000; }
-      25% { background-color: #703b09; }
+      25% { background-color: #3B0A0A; }
       50% { background-color: #800000; }
-      75% { background-color: #571e46; }
+      75% { background-color: #4B1C1C; }
       100% { background-color: #8B0000; }
     }
 
@@ -35,7 +31,7 @@
       display: block;
       color: #FFD580;
       text-decoration: none;
-      margin: 8px 0;
+      margin: 6px 0;
     }
 
     a:hover {
@@ -43,7 +39,7 @@
     }
 
     h1 {
-      margin-bottom: 12px; /* Reduced from 40px */
+      margin-bottom: 12px; /* reduced by ~70% */
       font-size: 2em;
       animation: float 8s infinite ease-in-out;
       display: inline-block;
@@ -60,6 +56,30 @@
 
     p {
       white-space: pre-line;
+      margin-bottom: 40px;
+    }
+
+    .breathe-button {
+      background-color: black;
+      color: white;
+      padding: 10px 20px;
+      font-size: 2em;
+      font-family: Arial, sans-serif;
+      font-weight: bold;
+      border: none;
+      border-radius: 12px;
+      text-decoration: none;
+      display: inline-block;
+      margin: 20px auto 8px;
+      cursor: pointer;
+    }
+
+    .home-link {
+      font-size: 1.5em;
+      color: white;
+      text-decoration: none;
+      display: block;
+      margin-bottom: 10px;
     }
   </style>
 </head>
@@ -103,6 +123,9 @@
     <a href="https://youtu.be/LzR0uz61MYw">🧿 wim hof w drums</a>
     <a href="https://www.youtube.com/channel/UCciuZl2ydLCvN5txlLW0rIg">🧘‍♂️ tim channel</a>
   </p>
+
+  <a class="breathe-button" href="https://freejoy.club/breathe" target="_blank" rel="noopener noreferrer">breathe</a>
+  <a class="home-link" href="https://freejoy.club" target="_blank" rel="noopener noreferrer">🏠</a>
 
   <script>
     document.querySelectorAll('a').forEach(link => {
