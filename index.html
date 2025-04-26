@@ -207,44 +207,48 @@
   <div id="background1" class="gradient-layer"></div>
   <div id="background2" class="gradient-layer"></div>
 
-  <div class="content">
-    <h1>We're Fearjoy</h1>
+<div class="content">
+  <h1>We're Fearjoy</h1>
 
-    <p class="floating-text">Our debut album is on the way. Here's a track for now:</p>
+  <p class="floating-text">Our debut album is on the way. Here's a track for now:</p>
 
-    <iframe 
-      src="https://samply.app/embed/347SJuDJQmYf8BWVJWvf" 
-      frameborder="20"
-      allowtransparency="true"
-      style="width: 80%; height: 130px; border-radius: 25px; border: 20px solid rgba(255, 255, 255, 0.12)"
-    ></iframe>
+  <iframe 
+    src="https://samply.app/embed/347SJuDJQmYf8BWVJWvf" 
+    frameborder="20"
+    allowtransparency="true"
+    style="width: 80%; height: 130px; border-radius: 25px; border: 20px solid rgba(255, 255, 255, 0.12)"
+  ></iframe>
 
-    <p class="floating-text">Help us name this song! Message us:</p>
-
+  <!-- social logos as a group -->
+  <div style="display: flex; justify-content: center; gap: 24px; margin: 32px 0;">
     <a href="https://www.instagram.com/fearjoymusic" target="_blank">
       <img src="images/instagram-logo.png" alt="Instagram" class="floating-logo" style="width: 70px; height: 70px;">
     </a>
-
-    <p class="floating-text">Our Twitch:</p>
-
     <a href="https://www.twitch.tv/fearjoymusic" target="_blank">
       <img src="images/twitch-logo2.png" alt="Twitch" class="floating-logo" style="width: 70px; height: 70px;">
     </a>
-
-    <a href="mgmt@freejoy.club" class="postbox-button">Reach Us</a>
-    <button class="postbox-button" id="mailingListButton">Send Me the Album</button>
-
-    <form id="emailForm">
-      <label for="email">Your email:</label>
-      <input type="email" id="email" name="email" required placeholder="Enter your email" />
-      <label for="message">Your message:</label>
-      <textarea name="message" id="message" placeholder="Your message" required></textarea>
-      <button type="submit">Send</button>
-    </form>
-
-    <p class="success-message" id="successMessage">Thanks for subscribing! You'll be notified when it's released. (No spam!)</p>
   </div>
 
+  <a href="mgmt@freejoy.club" class="postbox-button">Reach Us</a>
+  <button class="postbox-button" id="mailingListButton">Send Me the Album</button>
+
+  <form id="emailForm">
+    <label for="email">Your email:</label>
+    <input type="email" id="email" name="email" required placeholder="Enter your email" />
+    <label for="message">Your message:</label>
+    <textarea name="message" id="message" placeholder="Your message" required></textarea>
+    <button type="submit">Send</button>
+  </form>
+
+  <p class="success-message" id="successMessage">Thanks for subscribing! You'll be notified when it's released. (No spam!)</p>
+
+  <!-- New buttons at the bottom -->
+  <div style="margin-top: 60px; display: flex; justify-content: center; gap: 24px; flex-wrap: wrap;">
+    <a href="https://freejoy.club/breathe" class="postbox-button">Breathe</a>
+    <a href="https://freejoy.club/move" class="postbox-button">Move</a>
+  </div>
+</div>
+  
   <script>
     const mailingListButton = document.getElementById('mailingListButton');
     const emailForm = document.getElementById('emailForm');
