@@ -11,13 +11,13 @@
 
     body {
       font-family: Arial, sans-serif;
-      font-size: 11pt;
+      font-size: 13pt;
       font-weight: bold;
       text-align: center;
       color: white;
       margin: 0;
       padding: 40px 20px;
-      line-height: 1.2;
+      line-height: 1.0;
       text-shadow: 1px 1px 2px black;
       animation: bgfade 12s infinite;
       transition: background 3s ease-in-out;
@@ -25,9 +25,9 @@
 
     @keyframes bgfade {
       0% { background-color: #8B0000; }
-      25% { background-color: #3B0A0A; }
+      25% { background-color: #703b09; }
       50% { background-color: #800000; }
-      75% { background-color: #4B1C1C; }
+      75% { background-color: #571e46; }
       100% { background-color: #8B0000; }
     }
 
@@ -43,7 +43,7 @@
     }
 
     h1 {
-      margin-bottom: 40px;
+      margin-bottom: 12px; /* Reduced from 40px */
       font-size: 2em;
       animation: float 8s infinite ease-in-out;
       display: inline-block;
@@ -104,7 +104,6 @@
     <a href="https://www.youtube.com/channel/UCciuZl2ydLCvN5txlLW0rIg">🧘‍♂️ tim channel</a>
   </p>
 
-  <!-- Makes all links open in a new tab -->
   <script>
     document.querySelectorAll('a').forEach(link => {
       link.setAttribute('target', '_blank');
