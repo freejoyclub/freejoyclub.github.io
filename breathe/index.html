@@ -12,8 +12,8 @@
       text-align: center;
       color: white;
       margin: 0;
-      padding: 40px 20px;
-      line-height: 1;
+      padding: 30px 20px;
+      line-height: .9;
       text-shadow: 1px 1px 2px black;
       animation: bgfade 12s infinite;
       transition: background 3s ease-in-out;
@@ -24,7 +24,8 @@
       25% { background-color: #741782; }
       50% { background-color: #800000; }
       75% { background-color: #4B1C1C; }
-      100% { background-color: #8B0000; }
+      85% { background-color: #8B0000; }      
+      100% { background-color: #7a5d0b; }
     }
 
     a {
@@ -81,6 +82,35 @@
       display: block;
       margin-bottom: 10px;
     }
+
+    /* NEW: Styling for the MOVE button */
+    .move-button {
+      background-color: black;
+      color: #FFD580;
+      padding: 12px 24px;
+      border-radius: 12px;
+      font-size: 1.8em;
+      display: inline-block;
+      margin: 30px auto;
+      transition: all 0.4s ease;
+      animation: move-float 10s infinite ease-in-out;
+      position: relative;
+      text-decoration: none;
+    }
+
+    .move-button:hover {
+      text-decoration: underline;
+      transform: scale(1.08);
+      background-color: #222; /* brighten slightly */
+    }
+
+    @keyframes move-float {
+      0%   { top: 0; left: 0; }
+      25%  { top: -4px; left: 4px; }
+      50%  { top: 4px; left: -3px; }
+      75%  { top: -3px; left: -4px; }
+      100% { top: 0; left: 0; }
+    }
   </style>
 </head>
 <body>
@@ -104,12 +134,15 @@
   </p>
 
   <a class="move-button" href="https://freejoy.club/move">👉 MOVE 👈</a>
+  
   <a class="home-link" href="https://freejoy.club" target="_blank" rel="noopener noreferrer">🏠</a>
 
   <script>
     document.querySelectorAll('a').forEach(link => {
-      link.setAttribute('target', '_blank');
-      link.setAttribute('rel', 'noopener noreferrer');
+      if (!link.classList.contains('move-button')) {
+        link.setAttribute('target', '_blank');
+        link.setAttribute('rel', 'noopener noreferrer');
+      }
     });
   </script>
 </body>
