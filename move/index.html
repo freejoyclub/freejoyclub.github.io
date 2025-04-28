@@ -15,7 +15,7 @@
       padding: 40px 20px;
       line-height: 1;
       text-shadow: 1px 1px 2px black;
-      animation: bgfade 12s infinite alternate;
+      animation: bgfade 12s infinite;
       transition: background 3s ease-in-out;
     }
 
@@ -39,7 +39,7 @@
     }
 
     h1 {
-      margin-bottom: 12px; /* reduced by ~70% */
+      margin-bottom: 12px;
       font-size: 2em;
       animation: float 8s infinite ease-in-out;
       display: inline-block;
@@ -72,23 +72,6 @@
       display: inline-block;
       margin: 20px auto 8px;
       cursor: pointer;
-      position: relative;
-      animation: float-button 6s ease-in-out infinite;
-      transition: transform 0.3s ease, background-color 0.3s ease;
-    }
-
-    .breathe-button:hover {
-      background-color: #222;
-      transform: scale(1.1);
-      text-decoration: underline;
-    }
-
-    @keyframes float-button {
-      0% { top: 0; left: 0; }
-      25% { top: -4px; left: 4px; }
-      50% { top: 4px; left: -3px; }
-      75% { top: -3px; left: -4px; }
-      100% { top: 0; left: 0; }
     }
 
     .home-link {
@@ -98,47 +81,60 @@
       display: block;
       margin-bottom: 10px;
     }
+
+    .section-header {
+      color: #CCCCCC;
+      margin: 20px 0 10px;
+      font-size: 1.2em;
+      font-weight: normal;
+    }
+    
+    .time-badge {
+      color: #BBBBBB;
+      margin-left: 6px;
+      font-size: 0.9em;
+      font-weight: normal;
+    }
   </style>
 </head>
 <body>
   <h1>💪 MOVEMENT 🦵</h1>
   <p>
-    <a href="https://youtu.be/oVzwUB28nLQ?si=-CzmJFyiayiTQnTc">5m ☯️ Qi Gong🚶‍♂️!</a>
-    <a href="https://youtu.be/w24t5yPYnIY">1 MIN MOVE</a>
-    <a href="https://youtube.com/playlist?list=PLoAnh-GiKoq1d2f-wDgI1RInJYbvhGlm5&si=A6IKDN45BqWveUNy">5m ☯️ Qi Gong ▶️ playlist</a>
-    <a href="https://youtu.be/VG3j8r2Ag_k?si=hY5wXV8_oC5b0CJs">5 min 🧘‍♂️ Tim</a>
-    <a href="https://youtu.be/gSPgDpebM-Y">5 min 🧘‍♂️ B&F</a>
-    <a href="https://youtube.com/playlist?list=PL9T0rODp2rcscM3lL6ugReiHxMeb7t6Th&si=iHNmjQYQxdjYJUMM">🧘‍♂️ 🕐 10-20 ▶️ playlist</a>
-    <a href="https://youtube.com/playlist?list=PLoAnh-GiKoq1j96ez4CaqbnI-LejbBhLH&si=s3A4MCdUtjqIjtWQ">10m ☯️ Qi Gong ▶️ playlist</a>
-    <a href="https://youtu.be/-Vd4OFpIDp8?si=4osm_hl7zTJ4a6mm">10m 🕐🧘‍♂️🐐🔟</a>
-    <a href="https://youtu.be/FsBMyiLP_G0?si=_18taQonNYa3Rzet">10m tim 1</a>
-    <a href="https://youtu.be/w2xk84OCTVo">10m MOVE</a>
-    <a href="https://youtu.be/O38rtX9Luds?si=U6_gx3qtm0CpqvWL">🔟 Qi Gong</a>
-    <a href="https://youtu.be/aRVFt79LqCM?si=DDI1aaVau7hk_zcq">10 min mobility - julia</a>
-    <a href="https://youtu.be/UxU8OCsNbYY?si=Nxth9WFZF6nZCBMx">12 min yoga - mid gentle</a>
-    <a href="https://youtu.be/keyWzojUHbs?si=maaCunund07mWxF-">14m 🔥 🌟 ENGAGE 💪 Tim</a>
-    <a href="https://youtu.be/4xLEDm6xjgg?si=0jIIY0z3hE_smPcl">14m 🌟 FULL mobility</a>
-    <a href="https://youtu.be/4xLEDm6xjgg?si=0jIIY0z3hE_smPcl">14m 🌟 FULL body mobility</a>
-    <a href="https://youtu.be/loIwcMca6n8?si=NctTBaWvNUSScXER">15 tim semi chill</a>
-    <a href="https://youtube.com/playlist?list=PLoAnh-GiKoq23GOzEVwDqG5blezv7TCvH&si=TbBpjL2WzShqbDY5">15m ☯️ Qi ▶️ list</a>
-    <a href="https://youtu.be/fAuqtYPoHpk?si=9xKekSOrAHs9eruD">Ultimate 20 TIM</a>
-    <a href="https://youtu.be/YgVblti33RQ?si=vIeqhdQky1vvMwN6">🇬🇧 "best best 20" Tim</a>
-    <a href="https://youtu.be/_c9MDeDJ7IA?si=7132eY_cMkFBAUdD">20 tim banger</a>
-    <a href="https://youtu.be/NC2WavCsu-s?si=AssVp-O0TdtTTRN8">20 TIM 🔥 😎</a>
-    <a href="https://youtu.be/PuUEbOjK9gw?si=Qc62EywyWu3z-WYo">21 min 🧘‍♂️ 🕉 🌞 🫡tim</a>
-    <a href="https://youtu.be/DxN0HZA-Ayo?si=vkWitq3kIlEc2eVy">22 min 🧘‍♂️ Tim Daily</a>
-    <a href="https://youtu.be/5cubPXdQ0ds?si=XpgIHa-dXOawimFO">Feel good 30 rolls PRIMAL!</a>
-    <a href="https://youtu.be/612k-CjtoqU?si=2Ns9gTVz0pdLJnH_">41 min 🧘‍♀️ Tim</a>
-    <a href="https://www.youtube.com/channel/UCciuZl2ydLCvN5txlLW0rIg">🧘‍♂️ tim channel</a>
-    <a href="https://youtu.be/PVi1Vh6Dcok">10 min TIM mobility! 🧘‍♂️</a>
-    <a href="https://youtu.be/qVSgyTYqBQU">15 min 🧘‍♂️ tim !</a>
-    <a href="https://youtu.be/YxySUy2jU_s">15 min 🧘‍♂️ b&f 🔥</a>
-    <a href="https://youtu.be/a9ZNCoNM604">25 min 🧘‍♀️ TIM</a>
-    <a href="https://youtu.be/_U6cRWRaawg">Strength side 10-20 stretch</a>
-    <a href="https://youtu.be/w2xk84OCTVo">10 min 🧘‍♀️ TIM :)</a>
-    <a href="https://youtu.be/tq-vxTqoiHw">18 min 🧘‍♀️ TIM - GREAT</a>
-    <a href="https://youtu.be/LzR0uz61MYw">🧿 wim hof w drums</a>
-    <a href="https://www.youtube.com/channel/UCciuZl2ydLCvN5txlLW0rIg">🧘‍♂️ tim channel</a>
+    <a href="https://youtu.be/w24t5yPYnIY">1 MIN MOVE <span class="time-badge">[1m]</span></a>
+    <a href="https://youtu.be/oVzwUB28nLQ?si=-CzmJFyiayiTQnTc">☯️ Qi Gong 🚶‍♂️! <span class="time-badge">[5m]</span></a>
+    <a href="https://youtu.be/gSPgDpebM-Y">🧘‍♂️ B&F <span class="time-badge">[5m]</span></a>
+    <a href="https://youtu.be/VG3j8r2Ag_k?si=hY5wXV8_oC5b0CJs">🧘‍♂️ Tim <span class="time-badge">[5m]</span></a>
+    <a href="https://youtu.be/PVi1Vh6Dcok">Tim mobility! 🧘‍♂️ <span class="time-badge">[10m]</span></a>
+    <a href="https://youtu.be/FsBMyiLP_G0?si=_18taQonNYa3Rzet">Tim 1 <span class="time-badge">[10m]</span></a>
+    <a href="https://youtu.be/w2xk84OCTVo">MOVE <span class="time-badge">[10m]</span></a>
+    <a href="https://youtu.be/O38rtX9Luds?si=U6_gx3qtm0CpqvWL">🔟 Qi Gong <span class="time-badge">[10m]</span></a>
+    <a href="https://youtu.be/aRVFt79LqCM?si=DDI1aaVau7hk_zcq">Mobility - Julia <span class="time-badge">[10m]</span></a>
+    <a href="https://youtu.be/UxU8OCsNbYY?si=Nxth9WFZF6nZCBMx">Yoga - mid gentle <span class="time-badge">[12m]</span></a>
+    <a href="https://youtu.be/keyWzojUHbs?si=maaCunund07mWxF-">🔥 🌟 ENGAGE 💪 Tim <span class="time-badge">[14m]</span></a>
+    <a href="https://youtu.be/4xLEDm6xjgg?si=0jIIY0z3hE_smPcl">🌟 FULL body mobility <span class="time-badge">[14m]</span></a>
+    <a href="https://youtu.be/loIwcMca6n8?si=NctTBaWvNUSScXER">Tim semi chill <span class="time-badge">[15m]</span></a>
+    <a href="https://youtu.be/qVSgyTYqBQU">🧘‍♂️ Tim! <span class="time-badge">[15m]</span></a>
+    <a href="https://youtu.be/YxySUy2jU_s">🧘‍♂️ B&F 🔥 <span class="time-badge">[15m]</span></a>
+    <a href="https://youtu.be/tq-vxTqoiHw">🧘‍♀️ TIM - GREAT <span class="time-badge">[18m]</span></a>
+    <a href="https://youtu.be/fAuqtYPoHpk?si=9xKekSOrAHs9eruD">Ultimate TIM <span class="time-badge">[20m]</span></a>
+    <a href="https://youtu.be/YgVblti33RQ?si=vIeqhdQky1vvMwN6">🇬🇧 "Best 20" Tim <span class="time-badge">[20m]</span></a>
+    <a href="https://youtu.be/_c9MDeDJ7IA?si=7132eY_cMkFBAUdD">Tim banger <span class="time-badge">[20m]</span></a>
+    <a href="https://youtu.be/NC2WavCsu-s?si=AssVp-O0TdtTTRN8">TIM 🔥 😎 <span class="time-badge">[20m]</span></a>
+    <a href="https://youtu.be/PuUEbOjK9gw?si=Qc62EywyWu3z-WYo">🧘‍♂️ 🕉 🌞 🫡 Tim <span class="time-badge">[21m]</span></a>
+    <a href="https://youtu.be/DxN0HZA-Ayo?si=vkWitq3kIlEc2eVy">🧘‍♂️ Tim Daily <span class="time-badge">[22m]</span></a>
+    <a href="https://youtu.be/a9ZNCoNM604">🧘‍♀️ TIM <span class="time-badge">[25m]</span></a>
+    <a href="https://youtu.be/5cubPXdQ0ds?si=XpgIHa-dXOawimFO">Feel good rolls PRIMAL! <span class="time-badge">[30m]</span></a>
+    <a href="https://youtu.be/612k-CjtoqU?si=2Ns9gTVz0pdLJnH_">🧘‍♀️ Tim <span class="time-badge">[41m]</span></a>
+
+    <div class="section-header">▶️ Playlists</div>
+    <a href="https://youtube.com/playlist?list=PLoAnh-GiKoq1d2f-wDgI1RInJYbvhGlm5&si=A6IKDN45BqWveUNy">☯️ Qi Gong playlist [5m]</a>
+    <a href="https://youtube.com/playlist?list=PL9T0rODp2rcscM3lL6ugReiHxMeb7t6Th&si=iHNmjQYQxdjYJUMM">🧘‍♂️ 🕐 10-20 playlist</a>
+    <a href="https://youtube.com/playlist?list=PLoAnh-GiKoq1j96ez4CaqbnI-LejbBhLH&si=s3A4MCdUtjqIjtWQ">☯️ Qi Gong playlist [10m]</a>
+    <a href="https://youtube.com/playlist?list=PLoAnh-GiKoq23GOzEVwDqG5blezv7TCvH&si=TbBpjL2WzShqbDY5">☯️ Qi list [15m]</a>
+
+    <div class="section-header">📺 Channels</div>
+    <a href="https://youtu.be/LzR0uz61MYw">🧿 Wim Hof w/ drums</a>
+    <a href="https://www.youtube.com/channel/UCciuZl2ydLCvN5txlLW0rIg">🧘‍♂️ Tim channel</a>
   </p>
 
   <a class="breathe-button" href="https://freejoy.club/breathe">breathe</a>
