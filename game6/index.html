@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Fearjoy - v6.7 Full Tour Recap</title>
+    <title>Fearjoy - v6.8 Final Restoration</title>
     <style>
         :root {
             --wood-dark: #2a180b; --wood-mid: #3d2616; --wood-light: #4e3625;
@@ -28,8 +28,8 @@
         .blank { opacity: 0.2; transform: scale(0.8); border-style: dashed; cursor: default; }
         .tracklist-space { background: var(--vinyl) !important; border: 3px double #444 !important; box-shadow: inset 0 0 12px #000; transform: scale(1.15); z-index: 5; font-size: 0.6rem !important; }
         
-        .joy-space { border-color: #00ff00 !important; color: #00ff00 !important; }
-        .fear-space { border-color: #ff0000 !important; color: #ff0000 !important; }
+        .joy-space { border-color: var(--joy-glow) !important; color: var(--joy-glow) !important; }
+        .fear-space { border-color: var(--fear-glow) !important; color: var(--fear-glow) !important; }
         .hybrid { border-style: dotted; border-width: 3px; border-color: white; }
 
         #ui-layer { display: flex; align-items: center; gap: 30px; background: var(--ui-bg); padding: 25px 40px; border-radius: 12px; margin: 15px 0; border: 1px solid rgba(255,255,255,0.1); width: 950px; justify-content: space-between; z-index: 10; }
@@ -43,21 +43,23 @@
         .player { width: 75px; height: 75px; position: absolute; z-index: 100; transition: all 0.7s cubic-bezier(0.18, 0.89, 0.32, 1.28); background-size: contain; background-repeat: no-repeat; background-position: center bottom; }
 
         .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.96); z-index: 2000; display: none; align-items: center; justify-content: center; }
-        .popup { background: #111; padding: 40px; border-radius: 25px; border: 2px solid #444; width: 650px; text-align: center; max-height: 80vh; overflow-y: auto; }
+        .popup { background: #111; padding: 40px; border-radius: 25px; border: 2px solid #444; width: 650px; text-align: center; max-height: 85vh; overflow-y: auto; }
         
         #rule-sidebar { position: fixed; right: -320px; top: 120px; width: 280px; background: var(--ui-bg); padding: 30px; border-radius: 20px; border: 2px solid var(--joy-glow); transition: 0.6s; z-index: 100; }
         #rule-sidebar.active { right: 25px; }
 
-        .tag { font-size: 0.5rem; padding: 2px 5px; border-radius: 3px; margin-left: 5px; vertical-align: middle; }
+        .tag { font-size: 0.5rem; padding: 2px 5px; border-radius: 3px; margin-left: 5px; vertical-align: middle; font-weight: bold; }
         .tag-investor { background: var(--gold); color: black; }
         .tag-sellout { background: var(--fear-glow); color: white; }
         
-        .stat-row { display: flex; align-items: center; justify-content: space-between; background: #222; margin: 5px 0; padding: 10px; border-radius: 10px; }
+        .stat-card { background: #222; margin: 10px 0; padding: 15px; border-radius: 12px; display: flex; align-items: center; justify-content: space-between; border: 1px solid #333; }
+        #coin { width: 130px; height: 130px; background: var(--gold); border: 8px solid #b8860b; border-radius: 50%; margin: 25px auto; display: none; align-items: center; justify-content: center; font-size: 2.8rem; font-weight: bold; color: #5c4305; }
+        .flipping { animation: flipCoin 1.2s cubic-bezier(0.45, 0.05, 0.55, 0.95) forwards; }
     </style>
 </head>
 <body>
 
-    <div id="merch-tracker" style="position: fixed; left: 20px; top: 100px; width: 240px; background: var(--ui-bg); border-radius: 12px; padding: 15px; border: 1px solid #333; z-index: 5;">
+    <div id="merch-tracker" style="position: fixed; left: 20px; top: 100px; width: 260px; background: var(--ui-bg); border-radius: 12px; padding: 15px; border: 1px solid #333; z-index: 5;">
         <h4 style="margin:0 0 10px 0; font-size: 0.6rem; letter-spacing: 2px; opacity: 0.6; color: var(--joy-glow);">ARTIST ROSTER</h4>
         <div id="tracker-list"></div>
     </div>
@@ -65,7 +67,7 @@
     <div id="ui-layer">
         <div style="position:relative; width:85px; height:85px;">
             <div id="dice-box">?</div>
-            <div id="float-icon" class="floating-icon" style="position:absolute; top:0; left:25%; font-size:2.5rem; display:none;">👕</div>
+            <div id="float-icon" class="floating-icon" style="position:absolute; top:0; left:25%; font-size:2.5rem; display:none; z-index:200;">👕</div>
         </div>
         <div id="status-text" style="font-size:3rem; font-weight:900;">WELCOME</div>
         <button id="roll-btn" onclick="doRoll()" disabled style="background: var(--joy-glow); color: black; width: 150px; font-weight:bold; padding:15px; border:none; border-radius:8px; cursor:pointer;">ROLL</button>
@@ -76,12 +78,14 @@
     <div id="overlay-event" class="overlay">
         <div class="popup">
             <h1 id="event-title"></h1>
-            <div id="event-desc" style="font-size: 1.2rem; color: #ccc; margin-bottom:20px;"></div>
-            <div id="coin" style="width:120px; height:120px; background:#ffd700; border:8px solid #b8860b; border-radius:50%; margin:20px auto; display:none; align-items:center; justify-content:center; font-size:3rem; font-weight:bold; color:#b8860b;">?</div>
+            <div id="event-desc" style="font-size: 1.1rem; color: #ccc; margin-bottom:25px; line-height: 1.6;"></div>
+            <div id="coin">?</div>
             <div id="timer-ui" style="font-size: 4rem; color: var(--joy-glow); margin: 20px 0; display: none;"></div>
             <div id="final-stats"></div>
-            <button id="event-btn-primary" style="padding:15px 30px; font-weight:bold; cursor:pointer;"></button>
-            <button id="event-btn-secondary" style="display:none; background: #444; color: white; padding:15px 30px; font-weight:bold; cursor:pointer; margin-left:10px; border:none;"></button>
+            <div id="action-bar">
+                <button id="event-btn-primary" style="padding:15px 35px; font-weight:bold; cursor:pointer; border-radius:8px; border:none;"></button>
+                <button id="event-btn-secondary" style="display:none; background: #444; color: white; padding:15px 35px; font-weight:bold; cursor:pointer; margin-left:15px; border:none; border-radius:8px;"></button>
+            </div>
         </div>
     </div>
 
@@ -92,32 +96,32 @@
 <script>
     const boardLayout = [
         "START", "blank", "blank", "blank", "DAYSPRING", "blank", "FEARJOY", "blank", "FIGMENT", "blank", 
-        "THE REMEDY", "blank", "VAN BREAKS DOWN", "JOY (+1)", "blank", "DMITRI", "blank", "FEARJOY", "NIGHTDRIVE", "blank", 
-        "INVEST IN MERCH", "FEAR (-1)", "blank", "5TH DIMENSION", "blank", "WIN A GRAMMY", "blank", "blank", "MAYA", "blank", 
-        "blank", "OPENING ACT", "FEAR (-1)", "JOY (+1)", "blank", "TELLUS", "blank", "FEARJOY", "blank", "ENCORE", 
+        "THE REMEDY", "blank", "VAN BREAKS DOWN", "JOY", "blank", "DMITRI", "blank", "FEARJOY", "NIGHTDRIVE", "blank", 
+        "INVEST IN MERCH", "FEAR", "blank", "5TH DIMENSION", "blank", "WIN A GRAMMY", "blank", "blank", "MAYA", "blank", 
+        "blank", "OPENING ACT", "FEAR", "JOY", "blank", "TELLUS", "blank", "FEARJOY", "blank", "ENCORE", 
         "blank", "blank", "VOID", "blank", "blank", "THE ENDLESS SMILE", "GATEKEEPER", "blank", "blank", "blank", 
         "FEARJOY", "VAN BREAKS DOWN", "blank", "LOST RECORDING", "blank", "blank", "blank", "FINISH"
     ];
 
     const rules = {
-        4: { title: "DAYSPRING", emoji: "☀️", shift: 3 },
-        6: { title: "FEARJOY", emoji: "☯️", isFearjoy: true },
-        8: { title: "FIGMENT", emoji: "🛸", desc: "60s outside for +2 next roll. Skip for -1.", timer: 60, skipShift: -1, bonus: 2, isTrack: true },
-        10: { title: "THE REMEDY", emoji: "💊", choice: 'remedy', isTrack: true },
-        12: { title: "VAN BREAKS DOWN", skipTurns: 1 },
-        13: { title: "JOY", emoji: "✨", shift: 1 },
-        15: { title: "DMITRI", emoji: "👨‍🚀", desc: "10s breath for +2 next roll. Skip for -2.", timer: 10, skipShift: -2, bonus: 2, isTrack: true },
-        17: { title: "FEARJOY", isFearjoy: true },
-        18: { title: "NIGHTDRIVE", emoji: "🌙", isTrack: true },
-        20: { title: "INVEST IN MERCH", emoji: "👕", choice: 'merch', isTrack: true },
-        21: { title: "FEAR", shift: -1 },
-        25: { title: "WIN A GRAMMY", emoji: "🏆", achievement: "GRAMMY WINNER", desc: "The industry notices. You are now a Grammy winner." },
-        31: { title: "FEAR", shift: -1 },
-        32: { title: "JOY", shift: 1 },
-        37: { title: "FEARJOY", isFearjoy: true },
-        46: { title: "GATEKEEPER", emoji: "🚧", isGate: true, desc: "Must land exactly or stop early." },
-        50: { title: "FEARJOY", isFearjoy: true },
-        51: { title: "VAN BREAKS DOWN", skipTurns: 1 }
+        4: { title: "DAYSPRING", emoji: "☀️", desc: "A sudden burst of creative clarity! The sun peaks through the clouds and the road ahead clears. Move forward 3 spaces immediately.", shift: 3, needsPopup: true },
+        6: { title: "FEARJOY", emoji: "☯️", isFearjoy: true, needsPopup: true },
+        8: { title: "FIGMENT", emoji: "🛸", desc: "You feel the urge to step outside and look at the stars. Spend 60s in the quiet to gain +2 to your next roll, or rush back inside and rewind 1 space.", timer: 60, skipShift: -1, bonus: 2, isTrack: true, needsPopup: true },
+        10: { title: "THE REMEDY", emoji: "💊", desc: "A sleek label rep offers you 'The Remedy'. Move 6 spaces ahead right now to secure the deal. However, the side effects are permanent: any 6 you roll for the rest of the game will instead become a -2 rewind.", choice: 'remedy', isTrack: true, needsPopup: true },
+        12: { title: "VAN BREAKS DOWN", emoji: "🛠", desc: "Smoke billows from the hood. The tour stops here while you wait for a tow. Skip your next turn.", skipTurns: 1, needsPopup: true },
+        13: { title: "JOY", emoji: "✨", desc: "Pure momentum. Move forward 1.", shift: 1, isAuto: true },
+        15: { title: "DMITRI", emoji: "👨‍🚀", desc: "Dmitri offers a moment of meditation. Breathe with him for 10s to find your center and gain +2 on your next roll, or ignore him and rewind 2 spaces.", timer: 10, skipShift: -2, bonus: 2, isTrack: true, needsPopup: true },
+        17: { title: "FEARJOY", isFearjoy: true, needsPopup: true },
+        18: { title: "NIGHTDRIVE", emoji: "🌙", desc: "The road is dark and hypnotic. Stay focused or lose your way.", isTrack: true, needsPopup: false },
+        20: { title: "INVEST IN MERCH", emoji: "👕", desc: "The band needs shirts. Invest now by rewinding 4 spaces to set up the shop. For the rest of the game, any 1 or 2 you roll will be doubled as your fans buy out the inventory.", choice: 'merch', isTrack: true, needsPopup: true },
+        21: { title: "FEAR", emoji: "💀", desc: "Doubt creeps in. Move back 1.", shift: -1, isAuto: true },
+        25: { title: "WIN A GRAMMY", emoji: "🏆", achievement: "GRAMMY WINNER", desc: "The industry takes notice. You’ve won a Grammy! Your career is forever changed.", needsPopup: true },
+        31: { title: "FEAR", emoji: "💀", desc: "The critics are harsh. Move back 1.", shift: -1, isAuto: true },
+        32: { title: "JOY", emoji: "✨", desc: "The crowd goes wild. Move forward 1.", shift: 1, isAuto: true },
+        37: { title: "FEARJOY", isFearjoy: true, needsPopup: true },
+        46: { title: "GATEKEEPER", emoji: "🚧", isGate: true, desc: "A industry gatekeeper blocks the path. You must land exactly on this space to pass, or your movement stops here.", needsPopup: true },
+        50: { title: "FEARJOY", isFearjoy: true, needsPopup: true },
+        51: { title: "VAN BREAKS DOWN", skipTurns: 1, needsPopup: true }
     };
 
     let players = [], turnIdx = 0, isMoving = false, totalP = 0, currentSetupP = 0, selectedAvatar = null, sidebarTimer = null;
@@ -140,11 +144,12 @@
             if(name === "blank") s.classList.add('blank');
             else {
                 s.innerHTML = name; s.classList.add('special');
-                if(rules[i] && rules[i].isTrack) s.classList.add('tracklist-space');
-                if(i === 21 || i === 31) s.classList.add('fear-space');
-                if(i === 13 || i === 32) s.classList.add('joy-space');
+                const r = rules[i];
+                if(r && r.isTrack) s.classList.add('tracklist-space');
+                if(i === 21 || i === 31 || name === "FEAR") s.classList.add('fear-space');
+                if(i === 13 || i === 32 || name === "JOY") s.classList.add('joy-space');
                 if(name === "FEARJOY") s.classList.add('hybrid');
-                s.onclick = () => showSidebar(name, rules[i] ? rules[i].desc || "A tour event." : "Standard tour stop.");
+                s.onclick = () => showSidebar(name, r ? r.desc || "A stop on the tour." : "A standard space.");
             }
             let row = Math.floor(i / 10), col = (row % 2 === 0) ? (i % 10) : (9 - (i % 10));
             s.style.gridRow = 6 - row; s.style.gridColumn = col + 1;
@@ -170,7 +175,7 @@
         const list = document.getElementById('tracker-list'); list.innerHTML = '';
         players.forEach(pl => {
             let tags = (pl.isInvestor ? '<span class="tag tag-investor">INVESTOR</span>' : '') + (pl.isSellout ? '<span class="tag tag-sellout">SELLOUT</span>' : '');
-            list.innerHTML += `<div style="margin-bottom:12px; border-bottom:1px solid #333; padding-bottom:5px;"><div style="display:flex;align-items:center;gap:10px;"><img src="${pl.avatar.img}" style="width:30px;"><div><div style="font-size:0.7rem;">${pl.name}${tags}</div><div style="font-size:1.1rem;">${"👕".repeat(pl.merchHits)}${"💊".repeat(pl.remedyHits)}</div></div></div></div>`;
+            list.innerHTML += `<div style="margin-bottom:15px; border-bottom:1px solid #333; padding-bottom:8px;"><div style="display:flex;align-items:center;gap:12px;"><img src="${pl.avatar.img}" style="width:35px;height:35px;border-radius:50%;background:#111;"><div><div style="font-size:0.75rem;font-weight:bold;">${pl.name}${tags}</div><div style="font-size:1.1rem;letter-spacing:2px;">${"👕".repeat(pl.merchHits)}${"💊".repeat(pl.remedyHits)}</div></div></div></div>`;
         });
     }
 
@@ -192,7 +197,7 @@
 
         if(p.skipCount > 0) {
             p.skipCount--;
-            showCentralPopup("VAN REPAIRS", "Repairs taking time. Turn skipped.", "CONTINUE", () => endTurn());
+            showCentralPopup("VAN REPAIRS", "You are stuck at the garage. Turn skipped while the mechanics work.", "CONTINUE", () => endTurn());
             return;
         }
 
@@ -204,23 +209,24 @@
 
         if(p.isInvestor && (roll === 1 || roll === 2)) {
             icon.innerText = '👕'; icon.style.display = 'block'; icon.style.animation = 'floatUp 1s forwards';
-            showSidebar("MERCH SOLD", "Investor payoff doubled the roll!");
+            showSidebar("MERCH SOLD", "Your investment paid off! Roll doubled.");
             dice.classList.add('sparkle-dice');
             await new Promise(r => setTimeout(r, 800));
-            roll *= 2; dice.innerText = roll;
+            roll *= 2; dice.innerText = roll; p.merchHits++;
             await new Promise(r => setTimeout(r, 800));
         } else if(p.isSellout && roll === 6) {
             icon.innerText = '💊'; icon.style.display = 'block'; icon.style.animation = 'floatUp 1s forwards';
-            showSidebar("BAD DEAL", "Label penalty! Rewind 2.");
+            showSidebar("CONTRACT DEBT", "The label takes their cut. Rewind 2.");
             dice.classList.add('bad-dice');
             await new Promise(r => setTimeout(r, 800));
-            roll = -2; dice.innerText = "!";
+            roll = -2; dice.innerText = "!"; p.remedyHits++;
             await new Promise(r => setTimeout(r, 800));
         }
 
         if(p.nextBonus > 0) {
+            showSidebar("INSPIRATION", `Applying the +${p.nextBonus} bonus!`);
             dice.classList.add('bonus-dice');
-            await new Promise(r => setTimeout(r, 600));
+            await new Promise(r => setTimeout(r, 800));
             roll += p.nextBonus; p.nextBonus = 0; dice.innerText = roll;
             await new Promise(r => setTimeout(r, 800));
         }
@@ -242,38 +248,49 @@
         if(!r) { endTurn(); return; }
 
         if(r.achievement && !p.achievements.includes(r.achievement)) p.achievements.push(r.achievement);
-        if(r.choice === 'merch' && p.isInvestor) { showSidebar("ALREADY INVESTED", "The investment is active."); endTurn(); return; }
-        if(r.choice === 'remedy' && p.isSellout) { showSidebar("CONTRACT ACTIVE", "You already sold out."); endTurn(); return; }
+        
+        // Block redundant investments
+        if(r.choice === 'merch' && p.isInvestor) { showSidebar("MERCH", "You already invested in the merch line."); endTurn(); return; }
+        if(r.choice === 'remedy' && p.isSellout) { showSidebar("THE REMEDY", "The contract is already signed."); endTurn(); return; }
+
+        if(r.isAuto) {
+            showSidebar(r.title, r.desc);
+            setTimeout(() => movePlayer(r.shift), 500);
+            return;
+        }
+
+        if(!r.needsPopup && !r.choice && !r.timer && !r.isFearjoy) { endTurn(); return; }
 
         const title = document.getElementById('event-title'), desc = document.getElementById('event-desc'), pBtn = document.getElementById('event-btn-primary'), sBtn = document.getElementById('event-btn-secondary'), timerUI = document.getElementById('timer-ui'), coin = document.getElementById('coin');
         
         title.innerText = (r.title || "EVENT") + " " + (r.emoji || "");
-        desc.innerText = r.desc || "Tour event.";
+        desc.innerText = r.desc || "A tour event.";
         pBtn.innerText = "CONTINUE"; pBtn.style.display = 'inline-block'; pBtn.disabled = false;
         sBtn.style.display = 'none'; timerUI.style.display = 'none'; coin.style.display = 'none';
+        document.getElementById('final-stats').innerHTML = "";
         modal.style.display = 'flex';
 
         if(r.isFearjoy) {
-            pBtn.innerText = "FLIP FOR FATE";
+            pBtn.innerText = "FLIP THE COIN";
             pBtn.onclick = () => {
-                pBtn.style.display = 'none'; coin.style.display = 'flex'; coin.innerText = "?"; coin.style.background = "#ffd700"; coin.classList.add('flipping');
+                pBtn.style.display = 'none'; coin.style.display = 'flex'; coin.innerText = "?"; coin.style.background = "var(--gold)"; coin.classList.add('flipping');
                 setTimeout(() => {
                     coin.classList.remove('flipping');
                     const win = Math.random() > 0.5;
                     coin.innerText = win ? "JOY" : "FEAR";
-                    coin.style.background = win ? "#00ff88" : "#ff4444";
-                    setTimeout(() => { modal.style.display = 'none'; movePlayer(win ? 1 : -1); }, 1000);
+                    coin.style.background = win ? "var(--joy-glow)" : "var(--fear-glow)";
+                    setTimeout(() => { modal.style.display = 'none'; movePlayer(win ? 1 : -1); }, 1200);
                 }, 1200);
             };
         } else if(r.choice) {
-            pBtn.innerText = r.choice === 'remedy' ? "SELL OUT (+6)" : "INVEST (-4)";
+            pBtn.innerText = r.choice === 'remedy' ? "SIGN THE DEAL (+6)" : "INVEST IN MERCH (-4)";
             sBtn.innerText = "PASS"; sBtn.style.display = 'inline-block';
             pBtn.onclick = () => { modal.style.display='none'; if(r.choice==='remedy'){p.isSellout=true; movePlayer(6);} else {p.isInvestor=true; movePlayer(-4);} };
             sBtn.onclick = () => { modal.style.display='none'; endTurn(); };
         } else if(r.timer) {
             pBtn.disabled = true; let t = r.timer; timerUI.style.display = 'block'; timerUI.innerText = t;
-            sBtn.style.display = 'inline-block'; sBtn.innerText = "SKIP";
-            const clock = setInterval(() => { t--; timerUI.innerText = t; if(t<=0){ clearInterval(clock); pBtn.disabled=false; timerUI.innerText="DONE"; } }, 1000);
+            sBtn.style.display = 'inline-block'; sBtn.innerText = "SKIP TASK";
+            const clock = setInterval(() => { t--; timerUI.innerText = t; if(t<=0){ clearInterval(clock); pBtn.disabled=false; timerUI.innerText="TASK COMPLETE"; } }, 1000);
             pBtn.onclick = () => { clearInterval(clock); modal.style.display='none'; if(r.bonus) p.nextBonus = r.bonus; endTurn(); };
             sBtn.onclick = () => { clearInterval(clock); modal.style.display='none'; movePlayer(r.skipShift); };
         } else {
@@ -295,21 +312,22 @@
         const winner = players[turnIdx];
         const modal = document.getElementById('overlay-event');
         const statsArea = document.getElementById('final-stats');
-        document.getElementById('event-title').innerText = winner.name + " FINISHED THE TOUR!";
-        document.getElementById('event-desc').innerText = "FINAL ARTIST STANDINGS";
+        document.getElementById('event-title').innerText = winner.name + " HAS COMPLETED THE TOUR!";
+        document.getElementById('event-desc').innerText = "FINAL TOUR ROSTER SUMMARY";
         document.getElementById('event-btn-secondary').style.display='none';
         
         statsArea.innerHTML = "";
         players.forEach(p => {
             statsArea.innerHTML += `
-                <div class="stat-row">
-                    <img src="${p.avatar.img}" style="width:50px;">
-                    <div style="flex:1; padding:0 20px; text-align:left;">
-                        <div style="font-weight:bold;">${p.name}</div>
-                        <div style="font-size:0.7rem; color: #888;">${p.achievements.join(' | ') || 'Indie Artist'}</div>
+                <div class="stat-card">
+                    <img src="${p.avatar.img}" style="width:60px; height:60px; border-radius:50%; border: 2px solid ${p.avatar.color};">
+                    <div style="flex:1; padding:0 25px; text-align:left;">
+                        <div style="font-weight:bold; font-size:1.2rem;">${p.name} ${p.pos >= 57 ? '🏆' : ''}</div>
+                        <div style="font-size:0.75rem; color: #aaa;">${p.achievements.join(' • ') || 'Independent Route'}</div>
                     </div>
-                    <div style="text-align:right; font-size:0.8rem;">
-                        👕:${p.merchHits} | 💊:${p.remedyHits}<br>Σ Rolls: ${p.totalRolls}
+                    <div style="text-align:right; font-weight:bold;">
+                        <span title="Shirts Sold">👕</span> ${p.merchHits} | <span title="Pills Taken">💊</span> ${p.remedyHits}<br>
+                        <span style="font-size:0.7rem; color:#666;">Roll Total: ${p.totalRolls}</span>
                     </div>
                 </div>`;
         });
