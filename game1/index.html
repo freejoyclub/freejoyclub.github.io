@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Fearjoy - v5.4</title>
+    <title>Fearjoy - v5.5</title>
     <style>
         :root {
             --wood-dark: #2a180b; --wood-mid: #3d2616; --wood-light: #4e3625;
@@ -58,6 +58,9 @@
         .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.92); z-index: 2000; display: none; align-items: center; justify-content: center; }
         .popup { background: #111; padding: 40px; border-radius: 20px; border: 2px solid #444; width: 480px; text-align: center; }
         button { padding: 12px 25px; font-family: inherit; font-weight: bold; cursor: pointer; background: #fff; border: none; border-radius: 4px; text-transform: uppercase; font-size: 0.9rem; margin: 10px; }
+
+        #rule-sidebar { position: fixed; right: 20px; top: 50%; transform: translateY(-50%) translateX(400px); width: 240px; background: var(--ui-bg); padding: 25px; border-radius: 15px; border: 2px solid var(--joy-glow); transition: 0.5s; z-index: 100; text-align: center; }
+        #rule-sidebar.active { transform: translateY(-50%) translateX(0); }
     </style>
 </head>
 <body>
@@ -70,6 +73,12 @@
     <div id="merch-tracker">
         <h4 style="margin:0 0 10px 0; font-size: 0.6rem; letter-spacing: 2px; opacity: 0.6;">PROJECT DATA</h4>
         <div id="tracker-list"></div>
+    </div>
+
+    <div id="rule-sidebar" onclick="this.classList.remove('active')">
+        <h3 id="sidebar-title" style="color: var(--joy-glow); font-size: 1.5rem; margin-top: 0;"></h3>
+        <p id="sidebar-desc" style="font-size: 1rem; line-height: 1.4;"></p>
+        <p style="font-size: 0.7rem; opacity: 0.5; margin-top: 20px;">(CLICK TO DISMISS)</p>
     </div>
 
     <div id="overlay-win" class="overlay"><div class="popup" style="border-color: var(--joy-glow);"><h1>SUCCESS</h1><p>THE TOUR IS OVER.</p><button onclick="location.reload()">REPLAY</button></div></div>
@@ -110,15 +119,15 @@
     let players = [], setupIdx = 0, totalPlayers = 0, tempHead = null, turnIndex = 0, isMoving = false;
 
     const rules = {
-        4: { id:'joy', emoji:"☀️", shift: 3 },
-        8: { id:'merch', emoji:"👕" },
-        11: { id:'joy', emoji:"JOY", shift: 1 },
-        13: { id:'remedy', emoji:"💊" },
-        18: { id:'fear', emoji:"FEAR", shift: -1 },
-        22: { id:'van', emoji:"🛠", count: 1 },
-        28: { id:'fear', emoji:"FEAR", shift: -2 },
-        32: { id:'joy', emoji:"JOY", shift: 2 },
-        36: { id:'fear', emoji:"FEAR", shift: -1 }
+        4: { id:'joy', title:"DAYSPRING", emoji:"☀️", desc:"The sun rises! Spring ahead 3 spaces.", shift: 3 },
+        8: { id:'merch', title:"INVESTMENT", emoji:"👕", desc:"Buy into the merch line. High risk, high payoff." },
+        11: { id:'joy', title:"JOY", emoji:"JOY", desc:"Momentum is building. Move forward 1 space.", shift: 1 },
+        13: { id:'remedy', title:"THE REMEDY", emoji:"💊", desc:"A shortcut with a bitter aftertaste. Choose wisely." },
+        18: { id:'fear', title:"FEAR", emoji:"FEAR", desc:"Self-doubt slows the van. Move back 1 space.", shift: -1 },
+        22: { id:'van', title:"BREAKDOWN", emoji:"🛠", desc:"Mechanical issues. Skip your next turn.", count: 1 },
+        28: { id:'fear', title:"FEAR", emoji:"FEAR", desc:"The road is long. Move back 2 spaces.", shift: -2 },
+        32: { id:'joy', title:"JOY", emoji:"JOY", desc:"The crowd is cheering. Move forward 2 spaces.", shift: 2 },
+        36: { id:'fear', title:"FEAR", emoji:"FEAR", desc:"Fatigue sets in. Move back 1 space.", shift: -1 }
     };
 
     function startSetup(n) { totalPlayers = n; document.getElementById('overlay-count').style.display = 'none'; document.getElementById('overlay-names').style.display = 'flex'; }
@@ -142,6 +151,7 @@
                 if(rules[i].id === 'remedy') s.classList.add('remedy-space');
                 if(rules[i].id === 'fear') s.classList.add('fear');
                 if(rules[i].id === 'joy' && rules[i].emoji === 'JOY') s.classList.add('joy');
+                s.onclick = (e) => { e.stopPropagation(); triggerRuleSidebar(i); };
             } else s.innerText = (i===0) ? "START" : (i===39) ? "END" : i;
             
             let row = Math.floor(i/8);
@@ -155,6 +165,16 @@
             updatePiecePos(i);
         });
         document.getElementById('roll-btn').disabled = false; updateUI();
+    }
+
+    function triggerRuleSidebar(idx) {
+        const r = rules[idx];
+        if(!r) return;
+        document.getElementById('sidebar-title').innerText = r.title;
+        document.getElementById('sidebar-desc').innerText = r.desc;
+        const bar = document.getElementById('rule-sidebar');
+        bar.style.borderColor = r.id === 'fear' ? 'var(--fear-glow)' : r.id === 'remedy' ? 'var(--remedy-blue)' : 'var(--joy-glow)';
+        bar.classList.add('active');
     }
 
     function updatePiecePos(idx) {
@@ -179,6 +199,7 @@
 
     async function doRoll() {
         if(isMoving) return;
+        document.getElementById('rule-sidebar').classList.remove('active');
         const p = players[turnIndex];
         if(p.skipCount > 0) { p.skipCount--; updateUI(); endTurn(); return; }
         
@@ -206,10 +227,19 @@
     async function checkFinal() {
         const p = players[turnIndex], r = rules[p.pos];
         if(r) {
+            triggerRuleSidebar(p.pos);
+            await new Promise(res => setTimeout(res, 600));
+
             if(r.id === 'merch') document.getElementById('overlay-merch').style.display = 'flex';
             else if(r.id === 'remedy') document.getElementById('overlay-remedy').style.display = 'flex';
             else if(r.id === 'van') { p.skipCount = r.count; endTurn(); }
-            else if(r.shift) { await new Promise(r => setTimeout(r, 500)); p.pos += r.shift; updatePiecePos(turnIndex); endTurn(); }
+            else if(r.shift) { 
+                await new Promise(res => setTimeout(res, 800)); 
+                p.pos += r.shift; 
+                if(p.pos < 0) p.pos = 0;
+                updatePiecePos(turnIndex); 
+                endTurn(); 
+            }
         } else if(p.pos >= 39) { document.getElementById('overlay-win').style.display = 'flex'; }
         else endTurn();
     }
