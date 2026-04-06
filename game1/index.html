@@ -37,7 +37,6 @@
             color: white; font-family: 'Courier New', monospace; display: flex; flex-direction: column; align-items: center; margin: 0; min-height: 100vh; overflow: hidden;
         }
 
-        /* Sidebars & Nav */
         #merch-tracker {
             position: fixed; left: 20px; top: 120px; width: 200px; background: var(--ui-bg); border-radius: 12px; padding: 15px; border: 1px solid rgba(255,255,255,0.1); z-index: 5;
         }
@@ -49,17 +48,16 @@
         .nav-btn { background: rgba(255,255,255,0.1); color: white; border: 1px solid rgba(255,255,255,0.3); padding: 8px 15px; border-radius: 4px; text-decoration: none; font-size: 0.7rem; font-weight: bold; transition: 0.3s; }
         .nav-btn:hover { background: white; color: black; }
 
-        /* UI Elements */
         #ui-layer { display: flex; align-items: center; gap: 30px; background: var(--ui-bg); padding: 25px 40px; border-radius: 12px; margin: 20px 0; border: 1px solid rgba(255,255,255,0.1); width: 850px; justify-content: space-between; z-index: 10; }
         #dice-box { position: relative; width: 80px; height: 80px; background: white; color: black; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 3.5rem; font-weight: bold; box-shadow: 0 6px 0 #bbb; }
         #dice-box.payoff { animation: sparkle 0.8s ease-in-out infinite; color: #000; background: var(--gold); border: 2px solid white; }
         #status-text { font-size: 3.8rem; font-weight: 900; text-transform: uppercase; line-height: 0.9; letter-spacing: -2px; transition: 0.5s; }
 
         #board-container { display: grid; grid-template-columns: repeat(6, 1fr); grid-template-rows: repeat(5, 1fr); gap: 18px; padding: 25px; background: rgba(0,0,0,0.1); border-radius: 20px; position: relative; width: 750px; height: 500px; }
-        .space { width: 100%; height: 100%; border-radius: 50%; border: 3px solid var(--tape-white); display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 0.9rem; background: rgba(255,255,255,0.05); }
-        .special { border-color: var(--gold); color: var(--gold); font-size: 3rem !important; cursor: pointer; }
-        .fear { border-color: var(--fear-glow); color: var(--fear-glow); font-size: 1.5rem !important; }
-        .joy { border-color: var(--joy-glow); color: var(--joy-glow); font-size: 1.5rem !important; }
+        .space { width: 100%; height: 100%; border-radius: 50%; border: 3px solid var(--tape-white); display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 0.9rem; background: rgba(255,255,255,0.05); text-align: center; }
+        .special { border-color: var(--gold); color: var(--gold); font-size: 2.8rem !important; cursor: pointer; }
+        .fear { border-color: var(--fear-glow); color: var(--fear-glow); font-size: 1.1rem !important; font-weight: 900; }
+        .joy { border-color: var(--joy-glow); color: var(--joy-glow); font-size: 1.1rem !important; font-weight: 900; }
 
         .player { width: 85px; height: 85px; position: absolute; z-index: 100; transition: all 0.6s cubic-bezier(0.18, 0.89, 0.32, 1.28); background-size: contain; background-repeat: no-repeat; background-position: center bottom; pointer-events: none; }
         .merch-pop { position: absolute; left: -50%; width: 200%; font-weight: 900; color: #fff; pointer-events: none; animation: merchPopScale 1.8s forwards; z-index: 500; font-size: 1.8rem; text-shadow: 0 0 15px var(--gold), 0 0 5px black; text-align: center; }
@@ -156,13 +154,13 @@
     let isMoving = false;
 
     const rules = {
-        4: { id:'skip', title:"🌊 Dayspring Trap", emoji:"🌊", desc:"The water is deep here. Skip 3 turns.", count: 3 },
+        4: { id:'joy', title:"☀️ Dayspring", emoji:"☀️", desc:"Morning sun! Spring ahead 3 spaces.", shift: 3 },
         8: { id:'merch', title:"👕 Invest in Merch", emoji:"👕", desc:"Rewind 4. Double rolls 1 & 2." },
-        11: { id:'joy', title:"✨ Found Joy", emoji:"✨", desc:"Momentum! Move forward 1 space.", shift: 1 },
+        11: { id:'joy', title:"JOY", emoji:"JOY", desc:"Momentum! Move forward 1 space.", shift: 1 },
         14: { id:'van', title:"🛠 Van Breakdown", emoji:"🛠", desc:"Mechanical failure. Skip 1 turn.", count: 1 },
-        18: { id:'fear', title:"💀 Paralyzed by Fear", emoji:"💀", desc:"Doubt creeps in. Move back 1 space.", shift: -1 },
+        18: { id:'fear', title:"FEAR", emoji:"FEAR", desc:"Doubt creeps in. Move back 1 space.", shift: -1 },
         22: { id:'van', title:"🛠 Van Breakdown", emoji: "🛠", desc:"Skip 1 turn.", count: 1 },
-        26: { id:'joy', title:"✨ Pure Joy", emoji:"✨", desc:"Almost there! Move forward 1 space.", shift: 1 }
+        26: { id:'joy', title:"JOY", emoji:"JOY", desc:"Almost there! Move forward 1 space.", shift: 1 }
     };
 
     function startSetup(num) {
@@ -202,7 +200,7 @@
                 s.innerText = rules[i].emoji;
                 s.classList.add('special');
                 if(rules[i].id === 'fear') s.classList.add('fear');
-                if(rules[i].id === 'joy') s.classList.add('joy');
+                if(rules[i].id === 'joy' && rules[i].emoji === 'JOY') s.classList.add('joy');
                 s.onclick = (e) => { e.stopPropagation(); triggerRuleSidebar(i); };
             } else {
                 s.innerText = (i===0) ? "START" : (i===29) ? "END" : i;
@@ -258,7 +256,7 @@
 
         if(p.skipCount > 0) {
             document.getElementById('skip-player-name').innerText = p.name;
-            document.getElementById('skip-reason').innerText = (p.skipCount > 1) ? `Still stuck... ${p.skipCount} turns left.` : "One more turn until you're back on the road!";
+            document.getElementById('skip-reason').innerText = "One more turn until you're back on the road!";
             document.getElementById('overlay-skip').style.display = 'flex';
             return;
         }
@@ -303,7 +301,7 @@
         const rule = rules[p.pos];
         if(rule) {
             if(rule.id === 'merch') document.getElementById('overlay-merch').style.display = 'flex';
-            else if(rule.id === 'van' || rule.id === 'skip') {
+            else if(rule.id === 'van') {
                 p.skipCount = rule.count;
                 triggerRuleSidebar(p.pos);
                 setTimeout(endTurn, 1500);
@@ -311,6 +309,7 @@
                 triggerRuleSidebar(p.pos);
                 await new Promise(r => setTimeout(r, 1200));
                 p.pos += rule.shift;
+                if(p.pos < 0) p.pos = 0;
                 updatePiecePos(turnIndex);
                 setTimeout(endTurn, 800);
             }
