@@ -6,137 +6,154 @@
     <title>Fearjoy - Play This</title>
     <style>
         :root {
-            --wood-grain: #3d2616;
-            --wood-light: #5d3a24;
-            --tape-white: #f0f0f0;
+            --wood-flat: #3d2616; /* Deep solid wood color */
+            --tape-white: #fdfdfd;
             --joy-glow: #00ff88;
             --fear-glow: #ff4444;
         }
 
         body {
-            /* Rich Wood Gradient */
-            background: radial-gradient(circle at center, var(--wood-light) 0%, var(--wood-grain) 100%);
-            background-attachment: fixed;
+            background-color: var(--wood-flat);
             color: white;
             font-family: 'Courier New', monospace;
             display: flex;
             flex-direction: column;
             align-items: center;
-            padding: 20px;
+            padding: 40px 20px;
             margin: 0;
             min-height: 100vh;
         }
 
         h1 { 
-            font-size: 2.2rem; 
-            margin: 10px 0; 
+            font-size: 2.8rem; 
+            margin: 0 0 30px 0; 
             text-transform: uppercase; 
-            letter-spacing: 5px;
-            text-shadow: 3px 3px 5px rgba(0,0,0,0.5);
+            letter-spacing: 8px;
+            font-weight: 900;
         }
 
-        /* The Control Panel */
+        /* UI Panel */
         #ui-layer {
             display: flex;
             align-items: center;
-            gap: 30px;
-            background: rgba(0,0,0,0.4);
-            padding: 20px 40px;
-            border-radius: 15px;
-            margin-bottom: 25px;
-            border: 1px solid rgba(255,255,255,0.1);
-            backdrop-filter: blur(5px);
+            gap: 40px;
+            background: rgba(0,0,0,0.5);
+            padding: 25px 50px;
+            border-radius: 10px;
+            margin-bottom: 40px;
+            border: 2px solid rgba(255,255,255,0.1);
         }
 
-        /* The Dice Visual */
         #dice-box {
-            width: 60px;
-            height: 60px;
+            width: 70px;
+            height: 70px;
             background: white;
             color: black;
-            border-radius: 10px;
+            border-radius: 8px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 2rem;
+            font-size: 2.5rem;
             font-weight: bold;
-            box-shadow: inset 0 0 10px rgba(0,0,0,0.2), 0 5px 15px rgba(0,0,0,0.5);
+            box-shadow: 0 8px 0 #ccc;
         }
 
-        /* The Board (6 columns x 5 rows = 30 spaces) */
+        /* The Board - 6x5 Grid */
         #board-container {
             display: grid;
-            grid-template-columns: repeat(6, 80px);
-            grid-template-rows: repeat(5, 80px);
-            gap: 20px;
-            padding: 30px;
-            background: rgba(0,0,0,0.2);
-            border-radius: 15px;
+            grid-template-columns: repeat(6, 110px); /* Bigger circles */
+            grid-template-rows: repeat(5, 110px);    /* More spacing */
+            gap: 35px; /* Farther apart */
+            padding: 50px;
+            background: rgba(0,0,0,0.15);
+            border-radius: 20px;
             position: relative;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
         }
 
         .space {
-            width: 70px;
-            height: 70px;
+            width: 100px;
+            height: 100px;
             border-radius: 50%;
-            border: 3px solid var(--tape-white);
+            border: 4px solid var(--tape-white);
             display: flex;
             align-items: center;
             justify-content: center;
             font-weight: bold;
-            font-size: 0.9rem;
-            background: rgba(255,255,255,0.05);
-            transition: 0.3s;
+            font-size: 1.1rem;
+            background: rgba(255,255,255,0.03);
+            position: relative;
         }
 
-        .joy { border-color: var(--joy-glow); box-shadow: 0 0 15px var(--joy-glow); color: var(--joy-glow); }
-        .fear { border-color: var(--fear-glow); box-shadow: 0 0 15px var(--fear-glow); color: var(--fear-glow); }
+        .joy { border-color: var(--joy-glow); color: var(--joy-glow); box-shadow: 0 0 20px rgba(0,255,136,0.3); }
+        .fear { border-color: var(--fear-glow); color: var(--fear-glow); box-shadow: 0 0 20px rgba(255,68,68,0.3); }
 
-        /* Players */
+        /* Player Markers */
         .player {
-            width: 35px;
-            height: 35px;
+            width: 32px;
+            height: 32px;
             border-radius: 50%;
             position: absolute;
-            z-index: 20;
-            transition: all 0.5s cubic-bezier(0.5, -0.5, 0.5, 1.5);
+            z-index: 100;
+            transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1); /* Slower, smoother slide */
             border: 2px solid white;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.8);
         }
-        #p1 { background: #007bff; box-shadow: 0 0 10px #007bff; }
-        #p2 { background: #ffcc00; box-shadow: 0 0 10px #ffcc00; color: black;}
+
+        /* Setup Screen Overlay */
+        #setup-overlay {
+            position: fixed;
+            top:0; left:0; width:100%; height:100%;
+            background: rgba(0,0,0,0.9);
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
 
         button {
-            padding: 12px 25px;
+            padding: 15px 35px;
             font-family: inherit;
             font-weight: bold;
-            text-transform: uppercase;
+            font-size: 1.1rem;
             cursor: pointer;
-            background: #eee;
+            background: #fff;
             border: none;
-            border-radius: 5px;
+            border-radius: 4px;
+            transition: transform 0.1s;
         }
-        button:hover:not(:disabled) { background: var(--joy-glow); }
-        button:disabled { opacity: 0.5; cursor: not-allowed; }
-
+        button:active { transform: scale(0.95); }
+        button:disabled { opacity: 0.3; cursor: not-allowed; }
+        
+        .setup-btn { margin: 10px; width: 200px; }
     </style>
 </head>
 <body>
+
+    <div id="setup-overlay">
+        <h2>HOW MANY PLAYERS?</h2>
+        <div>
+            <button class="setup-btn" onclick="startGame(1)">1 Player</button>
+            <button class="setup-btn" onclick="startGame(2)">2 Players</button>
+            <button class="setup-btn" onclick="startGame(3)">3 Players</button>
+            <button class="setup-btn" onclick="startGame(4)">4 Players</button>
+            <button class="setup-btn" onclick="startGame(5)">5 Players</button>
+            <button class="setup-btn" onclick="startGame(6)">6 Players</button>
+        </div>
+    </div>
 
     <h1>Fearjoy - Play This</h1>
 
     <div id="ui-layer">
         <div id="dice-box">?</div>
-        <div style="text-align: left;">
-            <div id="status-text">Ready to roll...</div>
-            <div id="turn-text" style="font-size: 0.8rem; opacity: 0.7; margin-top: 5px;">Player 1's turn</div>
+        <div style="text-align: left; min-width: 200px;">
+            <div id="status-text">Select players to start</div>
+            <div id="turn-text" style="font-size: 0.9rem; opacity: 0.6; margin-top: 5px;">---</div>
         </div>
-        <button id="roll-btn" onclick="handleRoll()">Roll Tape</button>
+        <button id="roll-btn" onclick="handleRoll()" disabled>ROLL</button>
     </div>
 
     <div id="board-container">
-        <div id="p1" class="player"></div>
-        <div id="p2" class="player"></div>
         </div>
 
 <script>
@@ -144,23 +161,32 @@
     const cols = 6;
     const rows = 5;
     
-    let playerPos = [0, 0];
+    let playerPositions = [];
     let currentPlayer = 0;
     let isMoving = false;
+    let playerCount = 0;
 
-    // Define special indices
     const joySpaces = [5, 12, 21, 27];
     const fearSpaces = [3, 15, 19, 25];
+    const playerColors = ['#007bff', '#ffcc00', '#ff00ff', '#00ffd5', '#ff5e00', '#ffffff'];
+
+    function startGame(num) {
+        playerCount = num;
+        playerPositions = new Array(num).fill(0);
+        document.getElementById('setup-overlay').style.display = 'none';
+        document.getElementById('roll-btn').disabled = false;
+        initBoard();
+    }
 
     function initBoard() {
         const container = document.getElementById('board-container');
         
+        // 1. Create Spaces
         for (let i = 0; i < spacesCount; i++) {
             const space = document.createElement('div');
             space.id = `space-${i}`;
             space.className = 'space';
             
-            // Text labeling
             if (i === 0) space.innerText = "START";
             else if (i === 29) space.innerText = "END";
             else if (joySpaces.includes(i)) { space.innerText = "JOY"; space.classList.add('joy'); }
@@ -168,88 +194,100 @@
             else space.innerText = i;
 
             // B-L to U-R Snake Logic
-            let row = Math.floor(i / cols); // 0 to 4
-            let col = i % cols;           // 0 to 5
-
-            // Reverse columns on odd rows (1, 3) to create the snake winding
+            let row = Math.floor(i / cols);
+            let col = i % cols;
             let displayCol = (row % 2 === 1) ? (cols - 1 - col) : col;
             
-            // grid-row: 1 is top, 5 is bottom. So "row 0" needs to be grid-row 5.
             space.style.gridRow = (rows - row);
             space.style.gridColumn = (displayCol + 1);
-
             container.appendChild(space);
         }
-        updatePieces(0);
-        updatePieces(1);
+
+        // 2. Create Players
+        for (let p = 0; p < playerCount; p++) {
+            const pElem = document.createElement('div');
+            pElem.id = `p${p}`;
+            pElem.className = 'player';
+            pElem.style.backgroundColor = playerColors[p];
+            container.appendChild(pElem);
+            updatePiece(p);
+        }
+
+        document.getElementById('turn-text').innerText = `Player 1's turn`;
     }
 
-    function updatePieces(pIdx) {
-        const pElem = document.getElementById(`p${pIdx+1}`);
-        const target = document.getElementById(`space-${playerPos[pIdx]}`);
+    function updatePiece(pIdx) {
+        const pElem = document.getElementById(`p${pIdx}`);
+        const target = document.getElementById(`space-${playerPositions[pIdx]}`);
         
-        // Centering logic
-        const x = target.offsetLeft + (target.offsetWidth / 2) - (pElem.offsetWidth / 2);
-        const y = target.offsetTop + (target.offsetHeight / 2) - (pElem.offsetHeight / 2);
+        // Circular distribution so multiple players don't stack perfectly
+        const angle = (pIdx / playerCount) * 2 * Math.PI;
+        const radius = 20; 
+        const offsetX = Math.cos(angle) * radius;
+        const offsetY = Math.sin(angle) * radius;
+
+        const x = target.offsetLeft + (target.offsetWidth / 2) - (pElem.offsetWidth / 2) + offsetX;
+        const y = target.offsetTop + (target.offsetHeight / 2) - (pElem.offsetHeight / 2) + offsetY;
         
-        // Slight offset for P2 so they don't hide P1
-        const offset = pIdx === 1 ? 10 : -10;
-        pElem.style.left = `${x + offset}px`;
-        pElem.style.top = `${y + offset}px`;
+        pElem.style.left = `${x}px`;
+        pElem.style.top = `${y}px`;
     }
 
     async function handleRoll() {
         if (isMoving) return;
         isMoving = true;
-        document.getElementById('roll-btn').disabled = true;
+        const rollBtn = document.getElementById('roll-btn');
+        rollBtn.disabled = true;
 
-        // 1. Visual Dice Roll
+        // 1. Visual Dice Flicker
         const diceBox = document.getElementById('dice-box');
         let roll = 0;
-        for(let i=0; i<10; i++) {
+        for(let i=0; i<12; i++) {
             roll = Math.floor(Math.random() * 6) + 1;
             diceBox.innerText = roll;
-            await new Promise(r => setTimeout(r, 60));
+            await new Promise(r => setTimeout(r, 70));
         }
         
         document.getElementById('status-text').innerText = `Player ${currentPlayer+1} rolled a ${roll}!`;
 
-        // 2. Sequential Hops
+        // 2. PAUSE AFTER ROLL (As requested)
+        await new Promise(r => setTimeout(r, 900));
+
+        // 3. Sequential Slower Hops
         for(let j=0; j < roll; j++) {
-            if (playerPos[currentPlayer] < spacesCount - 1) {
-                playerPos[currentPlayer]++;
-                updatePieces(currentPlayer);
-                await new Promise(r => setTimeout(r, 250));
+            if (playerPositions[currentPlayer] < spacesCount - 1) {
+                playerPositions[currentPlayer]++;
+                updatePiece(currentPlayer);
+                await new Promise(r => setTimeout(r, 450)); // Slower movement speed
             }
         }
 
-        // 3. Special Space Check
-        const finalSpace = playerPos[currentPlayer];
+        // 4. Rule Check
+        const finalSpace = playerPositions[currentPlayer];
         if (joySpaces.includes(finalSpace)) {
-            document.getElementById('status-text').innerText = "JOY! Bursting forward...";
-            await new Promise(r => setTimeout(r, 600));
-            playerPos[currentPlayer] = Math.min(29, playerPos[currentPlayer] + 1);
+            document.getElementById('status-text').innerText = "JOY! Advancing...";
+            await new Promise(r => setTimeout(r, 800));
+            playerPositions[currentPlayer] = Math.min(29, playerPositions[currentPlayer] + 1);
         } else if (fearSpaces.includes(finalSpace)) {
-            document.getElementById('status-text').innerText = "FEAR. Slipping back...";
-            await new Promise(r => setTimeout(r, 600));
-            playerPos[currentPlayer] = Math.max(0, playerPos[currentPlayer] - 1);
+            document.getElementById('status-text').innerText = "FEAR. Retreating...";
+            await new Promise(r => setTimeout(r, 800));
+            playerPositions[currentPlayer] = Math.max(0, playerPositions[currentPlayer] - 1);
         }
-        updatePieces(currentPlayer);
+        updatePiece(currentPlayer);
 
-        // 4. Win Check
-        if (playerPos[currentPlayer] === 29) {
+        // 5. Win Logic
+        if (playerPositions[currentPlayer] === 29) {
             document.getElementById('status-text').innerText = `🏆 PLAYER ${currentPlayer+1} WINS!`;
             return;
         }
 
-        // 5. Swap Turns
-        currentPlayer = currentPlayer === 0 ? 1 : 0;
+        // 6. Turn Switch
+        currentPlayer = (currentPlayer + 1) % playerCount;
         document.getElementById('turn-text').innerText = `Player ${currentPlayer+1}'s turn`;
-        document.getElementById('roll-btn').disabled = false;
+        document.getElementById('turn-text').style.color = playerColors[currentPlayer];
+        rollBtn.disabled = false;
         isMoving = false;
     }
-
-    initBoard();
 </script>
 </body>
 </html>
