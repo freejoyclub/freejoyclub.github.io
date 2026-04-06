@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Fearjoy - v7.4 Layering Fix</title>
+    <title>Fearjoy - v7.6 Narrative Restoration</title>
     <style>
         :root {
             --wood-dark: #2a180b; --wood-mid: #3d2616; --wood-light: #4e3625;
@@ -25,7 +25,6 @@
             color: white; font-family: 'Courier New', monospace; display: flex; flex-direction: column; align-items: center; margin: 0; min-height: 100vh; overflow: hidden;
         }
 
-        /* BOARD LAYER */
         #board-container { display: grid; grid-template-columns: repeat(10, 1fr); grid-template-rows: repeat(6, 1fr); gap: 18px; padding: 50px; width: 1100px; height: 700px; position: relative; z-index: 5; }
         
         .space { width: 85px; height: 85px; border-radius: 50%; border: 1px solid var(--tape-white); display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 0.7rem; background: rgba(255,255,255,0.05); text-align: center; cursor: pointer; transition: 0.3s; position: relative; }
@@ -37,16 +36,15 @@
         .fear-space { border-color: var(--fear-glow) !important; color: var(--fear-glow) !important; }
         .hybrid { border-style: dotted; border-width: 3px; border-color: white; }
 
-        /* UI ELEMENTS */
         #ui-layer { display: flex; align-items: center; gap: 30px; background: var(--ui-bg); padding: 25px 40px; border-radius: 12px; margin: 15px 0; border: 1px solid rgba(255,255,255,0.1); width: 1000px; justify-content: space-between; z-index: 10; }
         #dice-box { width: 85px; height: 85px; background: white; color: black; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 3.5rem; font-weight: bold; transition: 0.3s; }
         
-        /* ROSTER - SHIFTED BEHIND */
         #merch-tracker { position: fixed; left: 20px; top: 120px; width: 300px; background: var(--ui-bg); border-radius: 12px; padding: 20px; border: 1px solid #333; z-index: 1; pointer-events: none; }
         .player-entry { margin-bottom: 18px; border-bottom: 1px solid #444; padding-bottom: 12px; pointer-events: auto; }
         .avatar-roster { width: 50px; height: 50px; border-radius: 50%; background: #111; border: 2px solid #555; }
         
         .player { width: 75px; height: 75px; position: absolute; z-index: 100; transition: all 0.7s cubic-bezier(0.18, 0.89, 0.32, 1.28); background-size: contain; background-repeat: no-repeat; background-position: center bottom; cursor: pointer; }
+        .active-player { z-index: 150 !important; }
         .swap-target { filter: drop-shadow(0 0 15px var(--joy-glow)); animation: bonusPulse 1s infinite; }
 
         .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.96); z-index: 2000; display: none; align-items: center; justify-content: center; }
@@ -116,7 +114,7 @@
         6: { title: "FEARJOY", emoji: "☯️", isFearjoy: true },
         8: { title: "FIGMENT", emoji: "🛸", desc: "Spend 60s in the quiet to gain +2, or rush back for -1 rewind.", timer: 60, skipShift: -1, bonus: 2, isTrack: true },
         9: { title: "JOY", emoji: "✨", desc: "A burst of momentum! Move forward 1.", shift: 1, isAuto: true },
-        10: { title: "THE REMEDY", emoji: "💊", desc: "Fast forward 6 now, but future 6s become -2 rewinds.", choice: 'remedy', isTrack: true },
+        10: { title: "THE REMEDY", emoji: "💊", desc: "A major label offers a shortcut to the top. Sign the contract to jump ahead 6 spaces now, but you'll owe them—every 6 you roll in the future will become a -2 rewind.", choice: 'remedy', isTrack: true },
         11: { title: "FEAR", emoji: "💀", desc: "Doubt slows you down. Move back 1.", shift: -1, isAuto: true },
         12: { title: "VAN BREAKS DOWN", emoji: "🛠", desc: "Steam from the hood. Skip 1 turn.", skipTurns: 1 },
         13: { title: "JOY", emoji: "✨", desc: "Perfect harmony. Move forward 1.", shift: 1, isAuto: true },
@@ -124,7 +122,7 @@
         17: { title: "FEARJOY", isFearjoy: true },
         18: { title: "NIGHTDRIVE", emoji: "🌙", desc: "Eyes closed until next turn! If you peek? REWIND TWO.", isNightDrive: true, isTrack: true },
         19: { title: "JOY", emoji: "✨", desc: "Forward motion! Move forward 1.", shift: 1, isAuto: true },
-        20: { title: "INVEST IN MERCH", emoji: "👕", desc: "Invest by rewinding 4. All 1s and 2s will be doubled.", choice: 'merch' },
+        20: { title: "INVEST IN MERCH", emoji: "👕", desc: "Sacrifice immediate progress to fund the tour. Rewind 4 spaces now, but you've printed a mountain of shirts—every 1 or 2 you roll for the rest of the game will be doubled.", choice: 'merch' },
         21: { title: "FEAR", emoji: "💀", desc: "Second guessing. Move back 1.", shift: -1, isAuto: true },
         23: { title: "5TH DIMENSION", emoji: "✨", desc: "The portal opens. Fast forward ONE SPACE now.", shift: 1, isAuto: true },
         25: { title: "IT HAPPENS", emoji: "⚡", desc: "Everything aligns. Take an extra turn!", isItHappens: true, isTrack: true },
@@ -138,12 +136,12 @@
         37: { title: "FEARJOY", isFearjoy: true },
         39: { title: "ENCORE", emoji: "🎸", desc: "Two more songs! FAST FORWARD TWO SPACES.", shift: 2, isAuto: true },
         42: { title: "VOID", emoji: "🌀", desc: "Fall through a black hole! REWIND FOUR SPACES.", shift: -4, isAuto: true, isTrack: true },
-        45: { title: "THE ENDLESS SMILE", emoji: "🙂", desc: "A permanent state.", isTrack: true },
+        45: { title: "THE ENDLESS SMILE", emoji: "🙂", isTrack: true },
         46: { title: "GATEKEEPER", emoji: "🚧", isGate: true, desc: "Land exactly to pass!" },
         50: { title: "FEARJOY", isFearjoy: true },
         51: { title: "VAN BREAKS DOWN", emoji: "🛠", skipTurns: 1 },
         53: { title: "LOST RECORDING", emoji: "📼", desc: "Tape erased! Roll again and REWIND that amount.", isLostRecording: true },
-        57: { title: "SWIMMIN", emoji: "🌊", desc: "The tour was a success.", isTrack: true }
+        57: { title: "SWIMMIN", emoji: "🌊", desc: "Success.", isTrack: true }
     };
 
     let players = [], turnIdx = 0, isMoving = false, isSwapping = false, totalP = 0, currentSetupP = 0, selectedAvatar = null, sidebarTimer = null;
@@ -182,14 +180,26 @@
         players.forEach((p, i) => {
             const el = document.createElement('div'); el.id = 'p'+i; el.className = 'player';
             el.style.backgroundImage = `url('${p.avatar.img}')`; el.onclick = () => handlePlayerClick(i);
-            board.appendChild(el); updateVisualPos(i);
+            board.appendChild(el);
         });
+        updateAllVisualPositions();
         document.getElementById('roll-btn').disabled = false; updateUI();
     }
 
-    function updateVisualPos(idx) {
-        const p = players[idx], target = document.getElementById('s'+p.pos), el = document.getElementById('p'+idx);
-        el.style.left = target.offsetLeft + 5 + "px"; el.style.top = target.offsetTop + 5 + "px";
+    function updateAllVisualPositions() {
+        const countMap = {};
+        players.forEach((p, i) => {
+            const target = document.getElementById('s'+p.pos), el = document.getElementById('p'+i);
+            const posKey = p.pos;
+            if(!countMap[posKey]) countMap[posKey] = 0;
+            const stackIdx = countMap[posKey];
+            const xOffset = stackIdx * 8;
+            const yOffset = stackIdx * 8;
+            el.style.left = (target.offsetLeft + 5 + xOffset) + "px";
+            el.style.top = (target.offsetTop + 5 + yOffset) + "px";
+            el.classList.toggle('active-player', i === turnIdx);
+            countMap[posKey]++;
+        });
     }
 
     function updateUI() {
@@ -197,10 +207,12 @@
         document.getElementById('status-text').innerText = p.name + "'S TURN";
         document.getElementById('status-text').style.color = p.avatar.color;
         const list = document.getElementById('tracker-list'); list.innerHTML = '';
-        players.forEach(pl => {
+        players.forEach((pl, i) => {
             let tags = (pl.isInvestor ? '<span class="tag tag-investor">INVESTOR</span>' : '') + (pl.isSellout ? '<span class="tag tag-sellout">SELLOUT</span>' : '');
             list.innerHTML += `<div class="player-entry"><div style="display:flex;align-items:center;gap:12px;"><img src="${pl.avatar.img}" class="avatar-roster"><div><div style="font-size:0.9rem;font-weight:bold;">${pl.name}${tags}</div><div style="font-size:1.1rem;letter-spacing:4px;">${"👕".repeat(pl.merchHits)}${"💊".repeat(pl.remedyHits)}${"🏆".repeat(pl.grammys)}</div></div></div></div>`;
+            document.getElementById('p'+i).classList.toggle('active-player', i === turnIdx);
         });
+        updateAllVisualPositions();
     }
 
     function showSidebar(t, d) {
@@ -214,9 +226,9 @@
         if(isMoving || isSwapping) return;
         const p = players[turnIdx];
         document.getElementById('rule-sidebar').classList.remove('active');
-        if(p.nightDriveActive) { showNightDriveCheck(); return; }
-        if(p.ghostCounter > 0) { showGhostCheck(); return; }
-        if(p.skipCount > 0) { p.skipCount--; showCentralPopup("🛠 VAN REPAIRS", "The tour is on hold while repairs are made.", "CONTINUE", () => endTurn()); return; }
+        if(p.nightDriveActive) { showCentralPopup("🌙 EYES OPEN?", "Did you keep your eyes closed?", "YES", () => { p.nightDriveActive = false; doRoll(); }, "NO", () => { p.nightDriveActive = false; movePlayer(-2); }); return; }
+        if(p.ghostCounter > 0) { showCentralPopup("👻 STAYED SILENT?", "Did you remain silent for the full 2 turns?", "YES", () => { p.ghostCounter = 0; doRoll(); }, "NO", () => { p.ghostCounter = 0; movePlayer(-1); }); return; }
+        if(p.skipCount > 0) { p.skipCount--; showCentralPopup("🛠 VAN REPAIRS", "Waiting on parts. Tour paused.", "CONTINUE", () => endTurn()); return; }
 
         isMoving = true; document.getElementById('roll-btn').disabled = true;
         const dice = document.getElementById('dice-box'), icon = document.getElementById('float-icon');
@@ -228,12 +240,12 @@
 
         if(p.isInvestor && (roll === 1 || roll === 2)) {
             icon.innerText = '👕'; icon.style.display = 'block'; icon.style.animation = 'floatUp 1s forwards';
-            showSidebar("👕 MERCH PAYOFF", `Doubling your ${roll} to ${roll*2}!`);
+            showSidebar("👕 MERCH PAYOFF", `Your investment paid off. Doubling ${roll} to ${roll*2}!`);
             dice.classList.add('sparkle-dice'); await new Promise(r => setTimeout(r, 800));
             roll *= 2; dice.innerText = roll; p.merchHits++; await new Promise(r => setTimeout(r, 800));
         } else if(p.isSellout && roll === 6) {
             icon.innerText = '💊'; icon.style.display = 'block'; icon.style.animation = 'floatUp 1s forwards';
-            showSidebar("💊 CONTRACT DEBT", "Your 6 is now a -2 rewind.");
+            showSidebar("💊 CONTRACT DEBT", "The label demands a cut. Your 6 is now a -2 rewind.");
             dice.classList.add('bad-dice'); await new Promise(r => setTimeout(r, 800));
             roll = -2; dice.innerText = "!"; p.remedyHits++; await new Promise(r => setTimeout(r, 800));
         }
@@ -247,7 +259,7 @@
         const dir = roll > 0 ? 1 : -1;
         for(let i=0; i<Math.abs(roll); i++) {
             if(p.pos + dir >= 0 && p.pos + dir < boardLayout.length) {
-                p.pos += dir; updateVisualPos(turnIdx);
+                p.pos += dir; updateAllVisualPositions();
                 if(rules[p.pos] && rules[p.pos].isGate) { i = 999; }
                 await new Promise(r => setTimeout(r, 250));
                 if(p.pos >= 57) { showWinScreen(); return; }
@@ -255,9 +267,6 @@
         }
         checkSpace();
     }
-
-    function showNightDriveCheck() { showCentralPopup("🌙 EYES OPEN?", "Did you keep your eyes closed?", "YES", () => { players[turnIdx].nightDriveActive = false; doRoll(); }, "NO", () => { players[turnIdx].nightDriveActive = false; movePlayer(-2); }); }
-    function showGhostCheck() { showCentralPopup("👻 STAYED SILENT?", "Did you remain silent for 2 turns?", "YES", () => { players[turnIdx].ghostCounter = 0; doRoll(); }, "NO", () => { players[turnIdx].ghostCounter = 0; movePlayer(-1); }); }
 
     async function checkSpace() {
         const p = players[turnIdx], r = rules[p.pos], modal = document.getElementById('overlay-event');
@@ -270,7 +279,6 @@
         }
 
         const title = document.getElementById('event-title'), desc = document.getElementById('event-desc'), pBtn = document.getElementById('event-btn-primary'), sBtn = document.getElementById('event-btn-secondary'), timerUI = document.getElementById('timer-ui'), coin = document.getElementById('coin');
-        
         title.innerText = (r.title || "EVENT") + " " + (r.emoji || ""); desc.innerText = r.desc || "A tour event.";
         pBtn.innerText = "CONTINUE"; pBtn.style.display = 'inline-block'; pBtn.disabled = false;
         sBtn.style.display = 'none'; timerUI.style.display = 'none'; coin.style.display = 'none';
@@ -301,14 +309,14 @@
         else if(r.isItHappens) { pBtn.innerText = "🔔 ROLL AGAIN"; pBtn.onclick = () => { modal.style.display='none'; isMoving=false; doRoll(); }; }
         else if(r.isGrammy) {
             let leader = players.reduce((prev, current) => (prev.pos > current.pos) ? prev : current);
-            if(leader === p) { desc.innerText += "\n\nLeader status! Forward 2!"; pBtn.onclick = () => { p.grammys++; modal.style.display='none'; movePlayer(2); }; }
-            else { desc.innerText += `\n\nTake the spotlight from ${leader.name}!`; pBtn.onclick = () => { p.grammys++; modal.style.display='none'; let lp = leader.pos; leader.pos = p.pos; p.pos = lp; updateVisualPos(players.indexOf(leader)); updateVisualPos(turnIdx); endTurn(); }; }
+            if(leader === p) { desc.innerText += "\n\nLeading the charts! Take 2 bonus steps."; pBtn.onclick = () => { p.grammys++; modal.style.display='none'; movePlayer(2); }; }
+            else { desc.innerText += `\n\nTake the spotlight from ${leader.name}!`; pBtn.onclick = () => { p.grammys++; modal.style.display='none'; let lp = leader.pos; leader.pos = p.pos; p.pos = lp; updateAllVisualPositions(); endTurn(); }; }
         } else if(r.isOpeningAct) {
             let leader = players.reduce((prev, current) => (prev.pos > current.pos) ? prev : current);
             if(leader === p) { desc.innerText += "\n\nLeading pressure! Rewind 2."; pBtn.onclick = () => { modal.style.display='none'; movePlayer(-2); }; }
-            else { desc.innerText += "\n\nOpening act slot! Slide behind leader."; pBtn.onclick = () => { modal.style.display='none'; p.pos = Math.max(0, leader.pos - 2); updateVisualPos(turnIdx); endTurn(); }; }
+            else { desc.innerText += "\n\nOpening act slot! Slide behind the leader."; pBtn.onclick = () => { modal.style.display='none'; p.pos = Math.max(0, leader.pos - 2); updateAllVisualPositions(); endTurn(); }; }
         } else if(r.isTellus) {
-            desc.innerText += "\n\nSelect another artist to swap."; pBtn.style.display = 'none'; isSwapping = true;
+            desc.innerText += "\n\nSelect another artist on the board to swap positions."; pBtn.style.display = 'none'; isSwapping = true;
             players.forEach((_, i) => { if(i !== turnIdx) document.getElementById('p'+i).classList.add('swap-target'); });
         } else if(r.choice) {
             pBtn.innerText = r.choice === 'remedy' ? "SIGN CONTRACT (+6)" : "INVEST (-4)"; sBtn.innerText = "PASS"; sBtn.style.display = 'inline-block';
@@ -326,7 +334,7 @@
         if(!isSwapping || targetIdx === turnIdx) return;
         const p = players[turnIdx], target = players[targetIdx], lp = target.pos;
         target.pos = p.pos; p.pos = lp;
-        updateVisualPos(targetIdx); updateVisualPos(turnIdx); isSwapping = false;
+        updateAllVisualPositions(); isSwapping = false;
         document.querySelectorAll('.player').forEach(el => el.classList.remove('swap-target'));
         document.getElementById('overlay-event').style.display = 'none'; endTurn();
     }
@@ -335,7 +343,7 @@
         const p = players[turnIdx]; const dir = n > 0 ? 1 : -1;
         for(let i=0; i<Math.abs(n); i++) {
             p.pos += dir; if(p.pos < 0) p.pos = 0;
-            updateVisualPos(turnIdx); await new Promise(r => setTimeout(r, 250));
+            updateAllVisualPositions(); await new Promise(r => setTimeout(r, 250));
             if(p.pos >= 57) { showWinScreen(); return; }
         }
         checkSpace();
