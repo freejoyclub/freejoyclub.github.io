@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Fearjoy - v7.6 Narrative Restoration</title>
+    <title>Fearjoy - v7.7 Dmitri 5D Update</title>
     <style>
         :root {
             --wood-dark: #2a180b; --wood-mid: #3d2616; --wood-light: #4e3625;
@@ -118,7 +118,7 @@
         11: { title: "FEAR", emoji: "💀", desc: "Doubt slows you down. Move back 1.", shift: -1, isAuto: true },
         12: { title: "VAN BREAKS DOWN", emoji: "🛠", desc: "Steam from the hood. Skip 1 turn.", skipTurns: 1 },
         13: { title: "JOY", emoji: "✨", desc: "Perfect harmony. Move forward 1.", shift: 1, isAuto: true },
-        15: { title: "DMITRI", emoji: "👨‍🚀", desc: "Meditate for 10s for +2 bonus, or rewind 2.", timer: 10, skipShift: -2, bonus: 2, isTrack: true },
+        15: { title: "DMITRI", emoji: "👨‍🚀", desc: "Take 5 deep breaths to move to the 5th Dimension (Space 23). Skip the breathing? REWIND TWO SPACES.", timer: 15, skipShift: -2, isDmitri: true, isTrack: true },
         17: { title: "FEARJOY", isFearjoy: true },
         18: { title: "NIGHTDRIVE", emoji: "🌙", desc: "Eyes closed until next turn! If you peek? REWIND TWO.", isNightDrive: true, isTrack: true },
         19: { title: "JOY", emoji: "✨", desc: "Forward motion! Move forward 1.", shift: 1, isAuto: true },
@@ -325,7 +325,14 @@
         } else if(r.timer) {
             pBtn.disabled = true; let t = r.timer; timerUI.style.display = 'block'; timerUI.innerText = t; sBtn.style.display = 'inline-block'; sBtn.innerText = "SKIP";
             const clock = setInterval(() => { t--; timerUI.innerText = t; if(t<=0){ clearInterval(clock); pBtn.disabled=false; timerUI.innerText="DONE"; } }, 1000);
-            pBtn.onclick = () => { clearInterval(clock); modal.style.display='none'; if(r.bonus) p.nextBonus = r.bonus; endTurn(); };
+            pBtn.onclick = () => { 
+                clearInterval(clock); modal.style.display='none'; 
+                if(r.isDmitri) {
+                    p.pos = 23; updateAllVisualPositions(); endTurn();
+                } else {
+                    if(r.bonus) p.nextBonus = r.bonus; endTurn(); 
+                }
+            };
             sBtn.onclick = () => { clearInterval(clock); modal.style.display='none'; movePlayer(r.skipShift); };
         } else { pBtn.onclick = () => { modal.style.display='none'; if(r.shift) movePlayer(r.shift); else if(r.skipTurns){ p.skipCount=r.skipTurns; endTurn(); } else endTurn(); }; }
     }
