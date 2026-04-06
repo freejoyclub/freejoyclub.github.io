@@ -16,101 +16,58 @@
         }
 
         body {
-            /* Faded Wood Plank Pattern */
             background-color: var(--wood-mid);
             background-image: 
-                repeating-linear-gradient(90deg, 
-                    transparent, 
-                    transparent 80px, 
-                    rgba(0,0,0,0.1) 80px, 
-                    rgba(0,0,0,0.1) 82px),
-                linear-gradient(to right, 
-                    var(--wood-dark), 
-                    var(--wood-mid) 20%, 
-                    var(--wood-light) 40%, 
-                    var(--wood-mid) 60%, 
-                    var(--wood-dark) 80%, 
-                    var(--wood-mid) 100%);
-            color: white; 
-            font-family: 'Courier New', monospace; 
-            display: flex; 
-            flex-direction: column; 
-            align-items: center; 
-            margin: 0; 
-            min-height: 100vh; 
-            overflow: hidden;
+                repeating-linear-gradient(90deg, transparent, transparent 80px, rgba(0,0,0,0.1) 80px, rgba(0,0,0,0.1) 82px),
+                linear-gradient(to right, var(--wood-dark), var(--wood-mid) 20%, var(--wood-light) 40%, var(--wood-mid) 60%, var(--wood-dark) 80%, var(--wood-mid) 100%);
+            color: white; font-family: 'Courier New', monospace; display: flex; flex-direction: column; align-items: center; margin: 0; min-height: 100vh; overflow: hidden;
         }
 
         h1 { font-size: 2.2rem; margin: 20px 0; text-transform: uppercase; letter-spacing: 0.4em; font-weight: 900; }
 
-        /* UI Panel */
         #ui-layer { 
-            display: flex; align-items: center; gap: 20px; 
-            background: var(--ui-bg); padding: 20px 30px; 
-            border-radius: 12px; margin-bottom: 20px; 
-            border: 1px solid rgba(255,255,255,0.1); 
-            width: 700px; justify-content: space-between;
-            z-index: 10;
+            display: flex; align-items: center; gap: 20px; background: var(--ui-bg); padding: 20px 30px; 
+            border-radius: 12px; margin-bottom: 20px; border: 1px solid rgba(255,255,255,0.1); width: 700px; justify-content: space-between; z-index: 10;
         }
         
         #dice-box { width: 60px; height: 60px; background: white; color: black; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 2.5rem; font-weight: bold; box-shadow: 0 5px 0 #bbb; }
-        
         #turn-text-container { flex-grow: 1; padding: 0 30px; text-align: left; }
         #status-text { font-size: 1rem; opacity: 0.6; margin-bottom: 4px; }
-        #turn-text { 
-            font-size: 2.8rem; /* MASSIVE FONT */
-            font-weight: 900; 
-            color: white; 
-            text-transform: uppercase; 
-            line-height: 1;
-        }
+        #turn-text { font-size: 2.8rem; font-weight: 900; color: white; text-transform: uppercase; line-height: 1; }
 
         /* Rule Sidebar (Fixed to Right) */
         #rule-sidebar { 
-            position: fixed; right: 40px; top: 50%; transform: translateY(-50%) translateX(300px);
-            width: 240px; background: var(--ui-bg); padding: 25px; 
-            border-radius: 15px; border: 2px solid var(--joy-glow); 
-            transition: 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            text-align: left; z-index: 100;
+            position: fixed; right: 40px; top: 50%; transform: translateY(-50%) translateX(400px);
+            width: 240px; background: var(--ui-bg); padding: 25px; border-radius: 15px; border: 2px solid var(--joy-glow); transition: 0.5s; text-align: left; z-index: 100;
         }
         #rule-sidebar.active { transform: translateY(-50%) translateX(0); }
         #rule-sidebar h3 { color: var(--joy-glow); margin: 0 0 10px 0; font-size: 1.2rem; }
-        #rule-sidebar p { font-size: 0.95rem; line-height: 1.5; color: #eee; margin: 0; }
 
-        /* The Board (Centered) */
+        /* Choice Overlay */
+        #choice-overlay {
+            position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            background: #111; padding: 40px; border-radius: 20px; border: 3px solid #ffd700;
+            z-index: 2000; display: none; flex-direction: column; align-items: center; text-align: center; width: 400px;
+        }
+
         #board-container { 
             display: grid; grid-template-columns: repeat(6, 1fr); grid-template-rows: repeat(5, 1fr); 
-            gap: 25px; padding: 40px; background: rgba(0,0,0,0.1); 
-            border-radius: 20px; position: relative; 
-            width: 750px; height: 550px;
+            gap: 25px; padding: 40px; background: rgba(0,0,0,0.1); border-radius: 20px; position: relative; width: 750px; height: 550px;
         }
 
         .space { 
-            width: 100%; height: 100%; border-radius: 50%; 
-            border: 3px solid var(--tape-white); 
-            display: flex; align-items: center; justify-content: center; 
-            font-weight: bold; font-size: 1.2rem; 
-            background: rgba(255,255,255,0.05); position: relative; 
+            width: 100%; height: 100%; border-radius: 50%; border: 3px solid var(--tape-white); 
+            display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 1.2rem; background: rgba(255,255,255,0.05); position: relative; 
         }
-        .special { border-color: #ffd700; color: #ffd700; font-size: 2rem; }
+        /* TWICE AS BIG EMOJIS */
+        .special { border-color: #ffd700; color: #ffd700; font-size: 3.5rem !important; }
 
-        /* Raw PNG Players (No Circles) */
-        .player { 
-            width: 85px; height: 85px; /* 80% Bigger */
-            position: absolute; z-index: 100; 
-            transition: all 0.7s cubic-bezier(0.4, 0, 0.2, 1); 
-            background-size: contain; background-repeat: no-repeat; 
-            background-position: center bottom; pointer-events: none;
-        }
+        .player { width: 85px; height: 85px; position: absolute; z-index: 100; transition: all 0.7s cubic-bezier(0.4, 0, 0.2, 1); background-size: contain; background-repeat: no-repeat; background-position: center bottom; pointer-events: none; }
 
-        /* Setup Overlays */
         .overlay { position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.98); z-index: 1000; display: flex; flex-direction: column; align-items: center; justify-content: center; }
-        .popup-window { background: #111; padding: 50px; border-radius: 20px; border: 1px solid #333; text-align: center; width: 500px; }
-        .avatar-option { width: 80px; height: 80px; background-size: contain; background-repeat: no-repeat; cursor: pointer; border: 2px solid transparent; padding: 5px; }
-        .avatar-option:hover { transform: scale(1.1); }
-        .avatar-option.selected { border-bottom: 4px solid var(--joy-glow); }
-        
-        button { padding: 15px 30px; font-family: inherit; font-weight: bold; cursor: pointer; background: #fff; border: none; border-radius: 5px; text-transform: uppercase; font-size: 1rem; }
+        button { padding: 15px 30px; font-family: inherit; font-weight: bold; cursor: pointer; background: #fff; border: none; border-radius: 5px; text-transform: uppercase; font-size: 1rem; margin: 10px; }
+        .invest-btn { background: var(--joy-glow); color: black; }
+        .pass-btn { background: #444; color: white; }
     </style>
 </head>
 <body>
@@ -121,17 +78,15 @@
             <button onclick="initSetup(1)">1</button>
             <button onclick="initSetup(2)">2</button>
             <button onclick="initSetup(3)">3</button>
-            <button onclick="initSetup(4)">4</button>
         </div>
     </div>
 
-    <div id="setup-names" class="overlay" style="display:none">
-        <div class="popup-window">
-            <h2 id="setup-title">PLAYER 1</h2>
-            <input type="text" id="p-name" placeholder="ENTER NAME" style="width: 80%; padding: 15px; background: #222; color: white; border: 1px solid #444; font-family: inherit; font-size: 1.2rem; margin-bottom: 20px;">
-            <div id="avatar-list" style="display: flex; justify-content: center; gap: 20px; margin-bottom: 30px;">
-                </div>
-            <button onclick="savePlayer()">NEXT PLAYER</button>
+    <div id="choice-overlay">
+        <h2 id="choice-title">INVEST?</h2>
+        <p id="choice-desc"></p>
+        <div style="display:flex;">
+            <button class="invest-btn" onclick="handleChoice(true)">INVEST</button>
+            <button class="pass-btn" onclick="handleChoice(false)">PASS</button>
         </div>
     </div>
 
@@ -161,68 +116,21 @@
     ];
 
     const rules = {
-        3: { title: "🛠 Van Breaks Down", emoji: "🛠", desc: "Mechanical failure. Skip your next turn.", type: "skip" },
-        12: { title: "🌞 Dayspring", emoji: "🌞", desc: "The sun rises. Fast forward 3 spaces!", type: "forward", val: 3 },
-        19: { title: "🛠 Van Breaks Down", emoji: "🛠", desc: "Mechanical failure. Skip your next turn.", type: "skip" },
-        25: { title: "🌞 Dayspring", emoji: "🌞", desc: "The sun rises. Fast forward 3 spaces!", type: "forward", val: 3 }
+        2: { title: "👕 Invest in Merch", emoji: "👕", desc: "Rewind 4 spaces now? PAYOFF: Double all future 1s and 2s.", type: "choice" },
+        8: { title: "🛠 Van Breaks Down", emoji: "🛠", desc: "Mechanical failure. Skip your next turn.", type: "skip" },
+        15: { title: "🌞 Dayspring", emoji: "🌞", desc: "The sun rises. Fast forward 3 spaces!", type: "forward", val: 3 }
     };
 
     let players = [];
-    let totalCount = 0;
-    let setupIndex = 0;
-    let selectedAv = null;
     let turnIndex = 0;
     let moving = false;
 
-    // --- SETUP LOGIC ---
     function initSetup(num) {
-        totalCount = num;
-        document.getElementById('setup-count').style.display = 'none';
-        document.getElementById('setup-names').style.display = 'flex';
-        renderAvatars();
-    }
-
-    function renderAvatars() {
-        const list = document.getElementById('avatar-list');
-        list.innerHTML = '';
-        avatarData.forEach(av => {
-            const div = document.createElement('div');
-            div.className = 'avatar-option';
-            div.style.backgroundImage = `url(${av.img})`;
-            div.onclick = () => {
-                document.querySelectorAll('.avatar-option').forEach(el => el.classList.remove('selected'));
-                div.classList.add('selected');
-                selectedAv = av;
-            };
-            list.appendChild(div);
-        });
-    }
-
-    function savePlayer() {
-        const nameInput = document.getElementById('p-name');
-        if(!selectedAv) return alert("Select your head!");
-        
-        players.push({
-            name: nameInput.value || `PLAYER ${setupIndex + 1}`,
-            avatar: selectedAv,
-            pos: 0,
-            skip: false
-        });
-
-        setupIndex++;
-        if(setupIndex < totalCount) {
-            nameInput.value = '';
-            selectedAv = null;
-            document.querySelectorAll('.avatar-option').forEach(el => el.classList.remove('selected'));
-            document.getElementById('setup-title').innerText = `PLAYER ${setupIndex + 1}`;
-        } else {
-            startGame();
+        // Simplified auto-setup for demo flow
+        for(let i=0; i<num; i++) {
+            players.push({ name: avatarData[i].id.toUpperCase(), avatar: avatarData[i], pos: 0, skip: false, isInvestor: false });
         }
-    }
-
-    // --- GAME ENGINE ---
-    function startGame() {
-        document.getElementById('setup-names').style.display = 'none';
+        document.getElementById('setup-count').style.display = 'none';
         document.getElementById('roll-btn').disabled = false;
         initBoard();
         updateUI();
@@ -240,13 +148,11 @@
             } else {
                 s.innerText = (i===0) ? "START" : (i===29) ? "END" : i;
             }
-            // Snake logic
             let r = Math.floor(i/6);
             s.style.gridRow = (5 - r);
             s.style.gridColumn = (r%2 === 1) ? (6 - (i%6)) : (i%6) + 1;
             board.appendChild(s);
         }
-
         players.forEach((p, i) => {
             const pElem = document.createElement('div');
             pElem.id = `piece${i}`;
@@ -261,14 +167,13 @@
         const p = players[idx];
         const target = document.getElementById(`s${p.pos}`);
         const pElem = document.getElementById(`piece${idx}`);
-        const offset = (idx * 8) - (players.length * 4); // Slight overlap spread
-        pElem.style.left = `${target.offsetLeft + (target.offsetWidth/2) - 42 + offset}px`;
+        pElem.style.left = `${target.offsetLeft + (target.offsetWidth/2) - 42}px`;
         pElem.style.top = `${target.offsetTop + (target.offsetHeight/2) - 60}px`;
     }
 
     function updateUI() {
         const p = players[turnIndex];
-        document.getElementById('status-text').innerText = p.skip ? "NEXT TURN SKIPPED" : "YOUR TURN";
+        document.getElementById('status-text').innerText = p.isInvestor ? "MERCH INVESTOR ACTIVE" : "YOUR TURN";
         document.getElementById('turn-text').innerText = p.name;
         document.getElementById('turn-text').style.textShadow = `0 0 20px ${p.avatar.color}`;
     }
@@ -286,11 +191,22 @@
             return;
         }
 
-        let roll = 0;
+        let roll = Math.floor(Math.random() * 6) + 1;
+        
+        // --- INVESTOR PAYOFF LOGIC ---
+        let originalRoll = roll;
+        if(players[turnIndex].isInvestor && (roll === 1 || roll === 2)) {
+            roll *= 2;
+        }
+
         for(let i=0; i<10; i++) {
-            roll = Math.floor(Math.random() * 6) + 1;
-            document.getElementById('dice-box').innerText = roll;
+            let temp = Math.floor(Math.random() * 6) + 1;
+            document.getElementById('dice-box').innerText = temp;
             await new Promise(r => setTimeout(r, 60));
+        }
+        document.getElementById('dice-box').innerText = roll;
+        if(originalRoll !== roll) {
+            document.getElementById('status-text').innerText = `INVESTMENT PAID OFF! (${originalRoll}nd x 2)`;
         }
 
         await new Promise(r => setTimeout(r, 900));
@@ -299,37 +215,68 @@
             if(players[turnIndex].pos < 29) {
                 players[turnIndex].pos++;
                 placePiece(turnIndex);
-                await new Promise(r => setTimeout(r, 450));
+                await new Promise(r => setTimeout(r, 400));
             }
         }
 
-        // Rule Trigger
         const finalPos = players[turnIndex].pos;
         if(rules[finalPos]) {
             const rule = rules[finalPos];
-            document.getElementById('rule-title').innerText = rule.title;
-            document.getElementById('rule-desc').innerText = rule.desc;
-            document.getElementById('rule-sidebar').classList.add('active');
-            
-            await new Promise(r => setTimeout(r, 2000));
-            
+            if(rule.type === "choice") {
+                triggerChoice(rule);
+            } else {
+                triggerStaticRule(rule);
+            }
+        } else {
+            endTurn();
+        }
+    }
+
+    function triggerStaticRule(rule) {
+        document.getElementById('rule-title').innerText = rule.title;
+        document.getElementById('rule-desc').innerText = rule.desc;
+        document.getElementById('rule-sidebar').classList.add('active');
+        
+        setTimeout(async () => {
             if(rule.type === 'forward') {
                 players[turnIndex].pos = Math.min(29, players[turnIndex].pos + rule.val);
                 placePiece(turnIndex);
             } else if(rule.type === 'skip') {
                 players[turnIndex].skip = true;
             }
-        }
-
-        if(players[turnIndex].pos === 29) {
-            alert(players[turnIndex].name + " WON THE TAPE!");
-            location.reload();
-        } else {
+            await new Promise(r => setTimeout(r, 1000));
             endTurn();
+        }, 1500);
+    }
+
+    function triggerChoice(rule) {
+        document.getElementById('choice-overlay').style.display = 'flex';
+        document.getElementById('choice-title').innerText = rule.title;
+        document.getElementById('choice-desc').innerText = rule.desc;
+    }
+
+    async function handleChoice(didInvest) {
+        document.getElementById('choice-overlay').style.display = 'none';
+        if(didInvest) {
+            players[turnIndex].isInvestor = true;
+            // REWIND 4
+            for(let i=0; i<4; i++) {
+                if(players[turnIndex].pos > 0) {
+                    players[turnIndex].pos--;
+                    placePiece(turnIndex);
+                    await new Promise(r => setTimeout(r, 300));
+                }
+            }
         }
+        endTurn();
     }
 
     function endTurn() {
+        if(players[turnIndex].pos >= 29) {
+            alert(players[turnIndex].name + " WON!");
+            location.reload();
+            return;
+        }
         turnIndex = (turnIndex + 1) % players.length;
         updateUI();
         moving = false;
