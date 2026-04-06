@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Fearjoy - v8.5.8 Stable</title>
+    <title>Fearjoy - v8.5.9 Final Stats</title>
     <style>
         :root {
             --wood-dark: #2a180b; --wood-mid: #3d2616; --wood-light: #4e3625;
@@ -23,7 +23,6 @@
         }
 
         #board-container { display: grid; grid-template-columns: repeat(10, 1fr); grid-template-rows: repeat(6, 1fr); gap: 18px; padding: 50px; width: 1100px; height: 700px; position: relative; z-index: 5; }
-        
         #arrow-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; pointer-events: none; }
 
         .space { width: 85px; height: 85px; border-radius: 50%; border: 1px solid var(--tape-white); display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 0.7rem; background: rgba(255,255,255,0.05); text-align: center; position: relative; transition: 0.3s; cursor: help; }
@@ -125,7 +124,7 @@
         9: { title: "JOY", emoji: "✨", shift: 1, isAuto: true, desc: "Momentum! Forward 1." },
         10: { title: "THE REMEDY", emoji: "💊", choice: 'remedy', isTrack: true, desc: "A major label exec offers a deal: move ahead 6 now, but every 6 you roll later becomes -2. (They own you now, but the views are great.)" },
         11: { title: "FEAR", emoji: "💀", shift: -1, isAuto: true, desc: "Doubt slows you. Back 1." },
-        12: { title: "VAN BREAKS DOWN", emoji: "🛠", skipTurns: 1, desc: "Skip 1 turn while waiting for repairs." },
+        12: { title: "VAN BREAKS DOWN", emoji: "🛠", skipTurns: 1, desc: "Bummer! Waiting for repairs. Turn consumed." },
         13: { title: "JOY", emoji: "✨", shift: 1, isAuto: true, desc: "Everything aligns. Forward 1." },
         15: { title: "DMITRI", emoji: "👨‍🚀", timer: 15, isDmitri: true, isTrack: true, desc: "Breathe (15s) for the 5D shortcut. Skip = Rewind 2." },
         17: { title: "FEARJOY", emoji: "☯️", isFearjoy: true, desc: "Flip for destiny." },
@@ -146,7 +145,7 @@
         44: { title: "VOID", emoji: "🌀", shift: -4, isAuto: true, isTrack: true, desc: "Creative block. Rewind 4." },
         48: { title: "GATEKEEPER", emoji: "🚪", isGate: true, desc: "Roll exactly to pass." },
         52: { title: "FEARJOY", emoji: "☯️", isFearjoy: true, desc: "Flip for destiny." },
-        53: { title: "VAN BREAKS DOWN", emoji: "🛠", skipTurns: 1, desc: "Skip 1 turn while waiting for repairs." },
+        53: { title: "VAN BREAKS DOWN", emoji: "🛠", skipTurns: 1, desc: "Bummer! Waiting for repairs. Turn consumed." },
         55: { title: "LOST RECORDING", emoji: " cassette", isLostRecording: true, desc: "Tape erased! Roll and rewind that amount." },
         59: { title: "SWIMMIN'", emoji: "🌊", desc: "The tour is over. Legend status achieved." }
     };
@@ -159,21 +158,10 @@
     function confirmArtist() {
         const name = document.getElementById('name-input').value.toUpperCase() || `ARTIST ${currentSetupP+1}`;
         if(!selectedAvatar) return;
-        players.push({ name, pos: 0, avatar: selectedAvatar, skipCount: 0, isInvestor: false, isSellout: false, grammys: 0, shirtsSold: 0, pillsTaken: 0, nightDriveActive: false, ghostCounter: 0 });
+        players.push({ name, pos: 0, avatar: selectedAvatar, skipCount: 0, isInvestor: false, isSellout: false, grammys: 0, shirtsSold: 0, pillsTaken: 0, nightDriveActive: false, ghostCounter: 0, totalRollValue: 0 });
         currentSetupP++;
         if(currentSetupP >= totalP) { document.getElementById('overlay-setup').style.display='none'; initBoard(); }
         else { document.getElementById('name-input').value=''; selectedAvatar=null; }
-    }
-
-    function drawArrow(x1, y1, x2, y2) {
-        const layer = document.getElementById('arrow-layer');
-        const arrow = document.createElementNS("http://www.w3.org/2000/svg", "path");
-        const dx = x2 - x1, dy = y2 - y1, len = Math.sqrt(dx*dx + dy*dy);
-        const ox = (dx/len) * 45, oy = (dy/len) * 45;
-        arrow.setAttribute("d", `M ${x1+ox} ${y1+oy} L ${x2-ox} ${y2-oy}`);
-        arrow.setAttribute("stroke", "#d2b48c"); arrow.setAttribute("stroke-width", "3");
-        arrow.setAttribute("stroke-dasharray", "5,5"); arrow.setAttribute("marker-end", "url(#arrowhead)");
-        layer.appendChild(arrow);
     }
 
     function initBoard() {
@@ -196,10 +184,8 @@
             const r = s.getBoundingClientRect();
             spaceCoords.push({ x: r.left + r.width/2 - containerRect.left, y: r.top + r.height/2 - containerRect.top });
         });
-
         drawArrow(spaceCoords[15].x, spaceCoords[15].y, spaceCoords[23].x, spaceCoords[23].y);
         drawArrow(spaceCoords[44].x, spaceCoords[44].y, spaceCoords[40].x, spaceCoords[40].y);
-
         players.forEach((p, i) => {
             const el = document.createElement('div'); el.id = 'p'+i; el.className = 'player';
             el.style.backgroundImage = `url('${p.avatar.img}')`;
@@ -240,9 +226,16 @@
         if(isMoving || isSwapping) return;
         document.getElementById('rule-sidebar').classList.remove('active');
         const p = players[turnIdx];
+        
+        if(p.skipCount > 0) { 
+            p.skipCount--; 
+            showStatusPopup("🛠 BUMMER", "Van is still in the shop. Turn skipped.", "OK", () => { endTurn(); }, "DARN", () => { endTurn(); });
+            return; 
+        }
+
         if(p.nightDriveActive) { showStatusPopup("🌙 NIGHTDRIVE CHECK", "Did you keep your eyes closed?", "YES", () => { p.nightDriveActive = false; performActualRoll(); }, "NO", () => { p.nightDriveActive = false; movePlayer(-2); }); return; }
         if(p.ghostCounter > 0) { showStatusPopup("👻 GHOST CHECK", "Did you remain quiet?", "YES", () => { p.ghostCounter--; performActualRoll(); }, "NO", () => { p.ghostCounter = 0; movePlayer(-1); }); return; }
-        if(p.skipCount > 0) { p.skipCount--; endTurn(); return; }
+        
         performActualRoll();
     }
 
@@ -273,6 +266,7 @@
             await new Promise(r => setTimeout(r, 2000)); 
         }
         
+        p.totalRollValue += Math.abs(roll);
         await new Promise(r => setTimeout(r, 250)); dice.classList.remove('dice-cinematic', 'dice-red', 'dice-gold');
         await new Promise(r => setTimeout(r, 250)); movePlayer(roll);
     }
@@ -300,14 +294,8 @@
         const p = players[turnIdx], r = rules[p.pos];
         if(!r) { endTurn(); return; }
         
-        if(r.choice === 'remedy' && p.isSellout) {
-            showSidebar("CONTRACT ACTIVE", "You already signed your soul away. No more deals.");
-            endTurn(); return;
-        }
-        if(r.choice === 'merch' && p.isInvestor) {
-            showSidebar("ALREADY INVESTED", "You have enough merch in the van. Keep driving.");
-            endTurn(); return;
-        }
+        if(r.choice === 'remedy' && p.isSellout) { showSidebar("CONTRACT ACTIVE", "You already signed your soul away."); endTurn(); return; }
+        if(r.choice === 'merch' && p.isInvestor) { showSidebar("ALREADY INVESTED", "You have enough merch inventory."); endTurn(); return; }
 
         if(r.isAuto) {
             showSidebar(r.title, (r.emoji || "") + " " + (r.desc || "Moving..."));
@@ -318,7 +306,8 @@
         title.innerText = (r.emoji || "") + " " + r.title; desc.innerText = r.desc || "";
         pBtn.innerText = "CONTINUE"; sBtn.style.display = 'none'; timerUI.style.display = 'none'; modal.style.display = 'flex';
 
-        if(r.isFigment) {
+        if(r.skipTurns) { p.skipCount = r.skipTurns; pBtn.onclick = () => { modal.style.display='none'; endTurn(); }; }
+        else if(r.isFigment) {
             pBtn.innerText = "STEP OUTSIDE (1:00)"; sBtn.innerText = "RUSH BACK (-1)"; sBtn.style.display = 'inline-block';
             pBtn.onclick = () => {
                 pBtn.disabled = true; sBtn.style.display = 'none'; timerUI.style.display = 'block';
@@ -366,8 +355,8 @@
     function showStatusPopup(t, d, b1, c1, b2, c2) {
         const modal = document.getElementById('overlay-event');
         document.getElementById('event-title').innerText = t; document.getElementById('event-desc').innerText = d;
-        const pBtn = document.getElementById('event-btn-primary'); pBtn.innerText = b1; pBtn.onclick = async () => { modal.style.display='none'; await new Promise(r => setTimeout(r, 800)); c1(); };
-        const sBtn = document.getElementById('event-btn-secondary'); sBtn.style.display='inline-block'; sBtn.innerText = b2; sBtn.onclick = async () => { modal.style.display='none'; await new Promise(r => setTimeout(r, 800)); c2(); };
+        const pBtn = document.getElementById('event-btn-primary'); pBtn.innerText = b1; pBtn.onclick = async () => { modal.style.display='none'; await new Promise(r => setTimeout(r, 200)); c1(); };
+        const sBtn = document.getElementById('event-btn-secondary'); sBtn.style.display='inline-block'; sBtn.innerText = b2; sBtn.onclick = async () => { modal.style.display='none'; await new Promise(r => setTimeout(r, 200)); c2(); };
         modal.style.display='flex';
     }
 
@@ -379,9 +368,20 @@
     }
 
     function showWinScreen() { 
-        const p = players[turnIdx]; document.getElementById('event-title').innerText = "🌊 SWIMMIN'";
-        document.getElementById('event-desc').innerText = `${p.name} REACHED LEGEND STATUS.`;
+        const p = players[turnIdx];
+        let statsHtml = `<div style="text-align:left; margin-top:20px; font-family:monospace;">`;
+        players.forEach(pl => {
+            statsHtml += `<div style="margin-bottom:15px; border-bottom: 1px solid #444;">
+                <b style="color:${pl.avatar.color}">${pl.name}</b><br>
+                GRAMMYS: ${pl.grammys} | SHIRTS: ${pl.shirtsSold} | PILLS: ${pl.pillsTaken}<br>
+                TOTAL MILES ROLLED: ${pl.totalRollValue}
+            </div>`;
+        });
+        statsHtml += `</div>`;
+        document.getElementById('event-title').innerText = "🌊 SWIMMIN'";
+        document.getElementById('event-desc').innerHTML = `${p.name} REACHED LEGEND STATUS.<br>${statsHtml}`;
         document.getElementById('event-btn-primary').innerText = "RESTART TOUR"; document.getElementById('event-btn-primary').onclick = () => location.reload();
+        document.getElementById('event-btn-secondary').style.display = 'none';
         document.getElementById('overlay-event').style.display='flex'; 
     }
     
