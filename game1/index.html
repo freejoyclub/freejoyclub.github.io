@@ -6,19 +6,15 @@
     <title>Fearjoy - Play This</title>
     <style>
         :root {
-            --wood-dark: #2a180b;
-            --wood-mid: #3d2616;
-            --wood-light: #4e3625;
-            --tape-white: #fdfdfd;
-            --joy-glow: #00ff88;
-            --fear-glow: #ff4444;
+            --wood-dark: #2a180b; --wood-mid: #3d2616; --wood-light: #4e3625;
+            --tape-white: #fdfdfd; --joy-glow: #00ff88; --fear-glow: #ff4444;
             --ui-bg: rgba(0,0,0,0.85);
         }
 
         body {
             background-color: var(--wood-mid);
             background-image: 
-                repeating-linear-gradient(90deg, transparent, transparent 80px, rgba(0,0,0,0.1) 80px, rgba(0,0,0,0.1) 82px),
+                repeating-linear-gradient(90deg, transparent, transparent 80px, rgba(0,0,0,0.05) 80px, rgba(0,0,0,0.05) 82px),
                 linear-gradient(to right, var(--wood-dark), var(--wood-mid) 20%, var(--wood-light) 40%, var(--wood-mid) 60%, var(--wood-dark) 80%, var(--wood-mid) 100%);
             color: white; font-family: 'Courier New', monospace; display: flex; flex-direction: column; align-items: center; margin: 0; min-height: 100vh; overflow: hidden;
         }
@@ -32,7 +28,6 @@
         
         #dice-box { width: 60px; height: 60px; background: white; color: black; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 2.5rem; font-weight: bold; box-shadow: 0 5px 0 #bbb; }
         #turn-text-container { flex-grow: 1; padding: 0 30px; text-align: left; }
-        #status-text { font-size: 1rem; opacity: 0.6; margin-bottom: 4px; }
         #turn-text { font-size: 2.8rem; font-weight: 900; color: white; text-transform: uppercase; line-height: 1; }
 
         /* Rule Sidebar (Fixed to Right) */
@@ -41,14 +36,10 @@
             width: 240px; background: var(--ui-bg); padding: 25px; border-radius: 15px; border: 2px solid var(--joy-glow); transition: 0.5s; text-align: left; z-index: 100;
         }
         #rule-sidebar.active { transform: translateY(-50%) translateX(0); }
-        #rule-sidebar h3 { color: var(--joy-glow); margin: 0 0 10px 0; font-size: 1.2rem; }
 
-        /* Choice Overlay */
-        #choice-overlay {
-            position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
-            background: #111; padding: 40px; border-radius: 20px; border: 3px solid #ffd700;
-            z-index: 2000; display: none; flex-direction: column; align-items: center; text-align: center; width: 400px;
-        }
+        /* Popups */
+        .overlay { position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.9); z-index: 2000; display: none; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
+        .popup-window { background: #111; padding: 40px; border-radius: 20px; border: 3px solid #555; width: 450px; }
 
         #board-container { 
             display: grid; grid-template-columns: repeat(6, 1fr); grid-template-rows: repeat(5, 1fr); 
@@ -57,36 +48,41 @@
 
         .space { 
             width: 100%; height: 100%; border-radius: 50%; border: 3px solid var(--tape-white); 
-            display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 1.2rem; background: rgba(255,255,255,0.05); position: relative; 
+            display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 1.2rem; background: rgba(255,255,255,0.05); cursor: pointer;
         }
-        /* TWICE AS BIG EMOJIS */
         .special { border-color: #ffd700; color: #ffd700; font-size: 3.5rem !important; }
 
         .player { width: 85px; height: 85px; position: absolute; z-index: 100; transition: all 0.7s cubic-bezier(0.4, 0, 0.2, 1); background-size: contain; background-repeat: no-repeat; background-position: center bottom; pointer-events: none; }
 
-        .overlay { position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.98); z-index: 1000; display: flex; flex-direction: column; align-items: center; justify-content: center; }
         button { padding: 15px 30px; font-family: inherit; font-weight: bold; cursor: pointer; background: #fff; border: none; border-radius: 5px; text-transform: uppercase; font-size: 1rem; margin: 10px; }
-        .invest-btn { background: var(--joy-glow); color: black; }
-        .pass-btn { background: #444; color: white; }
+        .btn-gold { background: #ffd700; color: black; }
     </style>
 </head>
 <body>
 
-    <div id="setup-count" class="overlay">
-        <h2>HOW MANY PLAYERS?</h2>
-        <div style="display:flex; gap:15px;">
+    <div id="setup-count" class="overlay" style="display:flex;">
+        <div class="popup-window">
+            <h2>HOW MANY PLAYERS?</h2>
             <button onclick="initSetup(1)">1</button>
             <button onclick="initSetup(2)">2</button>
             <button onclick="initSetup(3)">3</button>
         </div>
     </div>
 
-    <div id="choice-overlay">
-        <h2 id="choice-title">INVEST?</h2>
-        <p id="choice-desc"></p>
-        <div style="display:flex;">
-            <button class="invest-btn" onclick="handleChoice(true)">INVEST</button>
-            <button class="pass-btn" onclick="handleChoice(false)">PASS</button>
+    <div id="skip-overlay" class="overlay">
+        <div class="popup-window" style="border-color: var(--fear-glow);">
+            <h2 id="skip-title">VAN IN THE SHOP</h2>
+            <p id="skip-msg" style="font-size: 1.2rem;"></p>
+            <button onclick="closeSkip()" style="background: var(--fear-glow); color: white;">BUMMER (SKIP TURN)</button>
+        </div>
+    </div>
+
+    <div id="choice-overlay" class="overlay">
+        <div class="popup-window" style="border-color: #ffd700;">
+            <h2 id="choice-title">INVEST?</h2>
+            <p id="choice-desc" style="line-height: 1.6;"></p>
+            <button class="btn-gold" onclick="handleChoice(true)">INVEST & REWIND</button>
+            <button onclick="handleChoice(false)">PASS</button>
         </div>
     </div>
 
@@ -95,7 +91,7 @@
     <div id="ui-layer">
         <div id="dice-box">?</div>
         <div id="turn-text-container">
-            <div id="status-text">WAITING...</div>
+            <div id="status-text" style="opacity: 0.6;">...</div>
             <div id="turn-text">---</div>
         </div>
         <button id="roll-btn" onclick="handleRoll()" disabled>ROLL</button>
@@ -103,9 +99,10 @@
 
     <div id="board-container"></div>
     
-    <div id="rule-sidebar">
+    <div id="rule-sidebar" onclick="this.classList.remove('active')">
         <h3 id="rule-title"></h3>
         <p id="rule-desc"></p>
+        <p style="font-size: 0.7rem; margin-top: 15px; opacity: 0.5;">(Click to close)</p>
     </div>
 
 <script>
@@ -116,9 +113,10 @@
     ];
 
     const rules = {
-        2: { title: "👕 Invest in Merch", emoji: "👕", desc: "Rewind 4 spaces now? PAYOFF: Double all future 1s and 2s.", type: "choice" },
+        2: { title: "👕 Invest in Merch", emoji: "👕", desc: "Pay the cost: Rewind 4 spaces. The Payoff: Double every 1 or 2 you roll for the rest of the game.", type: "choice" },
         8: { title: "🛠 Van Breaks Down", emoji: "🛠", desc: "Mechanical failure. Skip your next turn.", type: "skip" },
-        15: { title: "🌞 Dayspring", emoji: "🌞", desc: "The sun rises. Fast forward 3 spaces!", type: "forward", val: 3 }
+        15: { title: "🌞 Dayspring", emoji: "🌞", desc: "The sun rises. Fast forward 3 spaces!", type: "forward", val: 3 },
+        21: { title: "🛠 Van Breaks Down", emoji: "🛠", desc: "More van trouble. Skip your next turn.", type: "skip" }
     };
 
     let players = [];
@@ -126,7 +124,6 @@
     let moving = false;
 
     function initSetup(num) {
-        // Simplified auto-setup for demo flow
         for(let i=0; i<num; i++) {
             players.push({ name: avatarData[i].id.toUpperCase(), avatar: avatarData[i], pos: 0, skip: false, isInvestor: false });
         }
@@ -145,6 +142,7 @@
             if(rules[i]) {
                 s.innerText = rules[i].emoji;
                 s.classList.add('special');
+                s.onclick = (e) => { e.stopPropagation(); showSidebar(i); };
             } else {
                 s.innerText = (i===0) ? "START" : (i===29) ? "END" : i;
             }
@@ -163,17 +161,25 @@
         });
     }
 
+    function showSidebar(idx) {
+        const rule = rules[idx];
+        document.getElementById('rule-title').innerText = rule.title;
+        document.getElementById('rule-desc').innerText = rule.desc;
+        document.getElementById('rule-sidebar').classList.add('active');
+    }
+
     function placePiece(idx) {
         const p = players[idx];
         const target = document.getElementById(`s${p.pos}`);
         const pElem = document.getElementById(`piece${idx}`);
-        pElem.style.left = `${target.offsetLeft + (target.offsetWidth/2) - 42}px`;
-        pElem.style.top = `${target.offsetTop + (target.offsetHeight/2) - 60}px`;
+        const offset = (idx * 10) - (players.length * 5); 
+        pElem.style.left = `${target.offsetLeft + (target.offsetWidth/2) - 42 + offset}px`;
+        pElem.style.top = `${target.offsetTop + (target.offsetHeight/2) - 65}px`;
     }
 
     function updateUI() {
         const p = players[turnIndex];
-        document.getElementById('status-text').innerText = p.isInvestor ? "MERCH INVESTOR ACTIVE" : "YOUR TURN";
+        document.getElementById('status-text').innerText = p.isInvestor ? "INVESTOR (1-2x2)" : "YOUR TURN";
         document.getElementById('turn-text').innerText = p.name;
         document.getElementById('turn-text').style.textShadow = `0 0 20px ${p.avatar.color}`;
     }
@@ -184,32 +190,25 @@
         document.getElementById('roll-btn').disabled = true;
         document.getElementById('rule-sidebar').classList.remove('active');
 
+        // Check Skip
         if(players[turnIndex].skip) {
-            players[turnIndex].skip = false;
-            await new Promise(r => setTimeout(r, 1000));
-            endTurn();
-            return;
+            document.getElementById('skip-msg').innerText = `${players[turnIndex].name}, skip this turn while the mechanic works.`;
+            document.getElementById('skip-overlay').style.display = 'flex';
+            return; 
         }
 
         let roll = Math.floor(Math.random() * 6) + 1;
-        
-        // --- INVESTOR PAYOFF LOGIC ---
-        let originalRoll = roll;
-        if(players[turnIndex].isInvestor && (roll === 1 || roll === 2)) {
-            roll *= 2;
-        }
+        let original = roll;
+        if(players[turnIndex].isInvestor && roll <= 2) roll *= 2;
 
         for(let i=0; i<10; i++) {
-            let temp = Math.floor(Math.random() * 6) + 1;
-            document.getElementById('dice-box').innerText = temp;
+            document.getElementById('dice-box').innerText = Math.floor(Math.random()*6)+1;
             await new Promise(r => setTimeout(r, 60));
         }
         document.getElementById('dice-box').innerText = roll;
-        if(originalRoll !== roll) {
-            document.getElementById('status-text').innerText = `INVESTMENT PAID OFF! (${originalRoll}nd x 2)`;
-        }
-
-        await new Promise(r => setTimeout(r, 900));
+        
+        // Wait a little less now
+        await new Promise(r => setTimeout(r, 400));
 
         for(let step=0; step<roll; step++) {
             if(players[turnIndex].pos < 29) {
@@ -223,43 +222,37 @@
         if(rules[finalPos]) {
             const rule = rules[finalPos];
             if(rule.type === "choice") {
-                triggerChoice(rule);
+                document.getElementById('choice-overlay').style.display = 'flex';
+                document.getElementById('choice-desc').innerText = rule.desc;
             } else {
-                triggerStaticRule(rule);
+                showSidebar(finalPos);
+                await new Promise(r => setTimeout(r, 1500));
+                if(rule.type === 'forward') {
+                    for(let i=0; i<rule.val; i++) {
+                        players[turnIndex].pos = Math.min(29, players[turnIndex].pos + 1);
+                        placePiece(turnIndex);
+                        await new Promise(r => setTimeout(r, 300));
+                    }
+                } else if(rule.type === 'skip') {
+                    players[turnIndex].skip = true;
+                }
+                endTurn();
             }
         } else {
             endTurn();
         }
     }
 
-    function triggerStaticRule(rule) {
-        document.getElementById('rule-title').innerText = rule.title;
-        document.getElementById('rule-desc').innerText = rule.desc;
-        document.getElementById('rule-sidebar').classList.add('active');
-        
-        setTimeout(async () => {
-            if(rule.type === 'forward') {
-                players[turnIndex].pos = Math.min(29, players[turnIndex].pos + rule.val);
-                placePiece(turnIndex);
-            } else if(rule.type === 'skip') {
-                players[turnIndex].skip = true;
-            }
-            await new Promise(r => setTimeout(r, 1000));
-            endTurn();
-        }, 1500);
-    }
-
-    function triggerChoice(rule) {
-        document.getElementById('choice-overlay').style.display = 'flex';
-        document.getElementById('choice-title').innerText = rule.title;
-        document.getElementById('choice-desc').innerText = rule.desc;
+    function closeSkip() {
+        document.getElementById('skip-overlay').style.display = 'none';
+        players[turnIndex].skip = false;
+        endTurn();
     }
 
     async function handleChoice(didInvest) {
         document.getElementById('choice-overlay').style.display = 'none';
         if(didInvest) {
             players[turnIndex].isInvestor = true;
-            // REWIND 4
             for(let i=0; i<4; i++) {
                 if(players[turnIndex].pos > 0) {
                     players[turnIndex].pos--;
