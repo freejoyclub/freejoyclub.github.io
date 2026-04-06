@@ -2,13 +2,12 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Fearjoy - v8.5.5 Perfect Pathing</title>
+    <title>Fearjoy - v8.5.6 Functional Fixes</title>
     <style>
         :root {
             --wood-dark: #2a180b; --wood-mid: #3d2616; --wood-light: #4e3625;
             --tape-white: #fdfdfd; --joy-glow: #00ff88; --fear-glow: #ff4444;
             --gold: #ffd700; --ui-bg: rgba(0,0,0,0.98); --vinyl: #111111;
-            --path-tan: #d2b48c;
         }
 
         @keyframes woodFade { 0%, 100% { background-color: #2a180b; } 50% { background-color: #4e3625; } }
@@ -25,16 +24,12 @@
 
         #board-container { display: grid; grid-template-columns: repeat(10, 1fr); grid-template-rows: repeat(6, 1fr); gap: 18px; padding: 50px; width: 1100px; height: 700px; position: relative; z-index: 5; }
         
-        #winding-path, #arrow-layer {
+        #arrow-layer {
             position: absolute;
             top: 0; left: 0;
             width: 100%; height: 100%;
-            z-index: -2; /* Far back z-axis */
+            z-index: -1;
             pointer-events: none;
-        }
-        
-        #winding-path {
-            opacity: 0.2; /* 20% Opaque */
         }
 
         .space { width: 85px; height: 85px; border-radius: 50%; border: 1px solid var(--tape-white); display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 0.7rem; background: rgba(255,255,255,0.05); text-align: center; position: relative; transition: 0.3s; cursor: help; }
@@ -96,7 +91,6 @@
     </div>
 
     <div id="board-container">
-        <svg id="winding-path" viewbox="0 0 1100 700"></svg>
         <svg id="arrow-layer" viewbox="0 0 1100 700">
             <defs>
                 <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="0" refY="3.5" orient="auto">
@@ -150,7 +144,7 @@
         20: { title: "INVEST IN MERCH", emoji: "👕", choice: 'merch', desc: "Rewind 4 now, but every 1 or 2 you roll later will be doubled." },
         21: { title: "FEAR", emoji: "💀", shift: -1, isAuto: true, desc: "The road is long. Back 1." },
         23: { title: "5TH DIMENSION", emoji: "✨", shift: 1, isAuto: true, desc: "Higher frequency. Forward 1." },
-        25: { title: "IT HAPPENS", emoji: "⚡", isItHappens: true, isTrack: true, desc: "Suddenly, instantly, take an extra turn" },
+        25: { title: "IT HAPPENS", emoji: "⚡", isItHappens: true, isTrack: true, desc: "suddenly, instantly, take an extra turn" },
         27: { title: "GHOST 2", emoji: "👻", isGhost: true, isTrack: true, desc: "Silent for two turns. Noise = Rewind 1." },
         30: { title: "WIN A GRAMMY", emoji: "🏆", isGrammy: true, desc: "Switch places with the leader!" },
         33: { title: "OPENING ACT", emoji: "🎤", isOpeningAct: true, desc: "Slide to the space behind the leader." },
@@ -216,16 +210,7 @@
             spaceCoords.push({ x: r.left + r.width/2 - containerRect.left, y: r.top + r.height/2 - containerRect.top });
         });
 
-        // DRAW DIRECT PATH
-        const svgPath = document.getElementById('winding-path');
-        let pathD = `M ${spaceCoords[0].x} ${spaceCoords[0].y} `;
-        for (let i = 1; i < spaceCoords.length; i++) pathD += `L ${spaceCoords[i].x} ${spaceCoords[i].y} `;
-        const pathElement = document.createElementNS("http://www.w3.org/2000/svg", "path");
-        pathElement.setAttribute("d", pathD);
-        pathElement.setAttribute("stroke", "#d2b48c"); pathElement.setAttribute("stroke-width", "5px"); pathElement.setAttribute("fill", "none");
-        svgPath.appendChild(pathElement);
-
-        // Targeted Arrows
+        // Visual Arrows (Dmitri to 5D and Void back)
         drawArrow(spaceCoords[15].x, spaceCoords[15].y, spaceCoords[23].x, spaceCoords[23].y);
         drawArrow(spaceCoords[44].x, spaceCoords[44].y, spaceCoords[40].x, spaceCoords[40].y);
 
