@@ -6,168 +6,95 @@
     <title>Fearjoy - Play This</title>
     <style>
         :root {
-            /* Wood Grain Gradient Colors */
             --wood-base: #3d2616;
             --wood-grain-1: #4a2f1c;
             --wood-grain-2: #2e1d11;
-            
             --tape-white: #fdfdfd;
             --joy-glow: #00ff88;
             --fear-glow: #ff4444;
+            --ui-bg: rgba(0,0,0,0.8);
         }
 
         body {
-            /* Simulated Wood Grain Gradient */
-            background: linear-gradient(
-                90deg, 
-                var(--wood-base) 0%, 
-                var(--wood-grain-1) 15%, 
-                var(--wood-base) 30%, 
-                var(--wood-grain-2) 45%, 
-                var(--wood-base) 60%, 
-                var(--wood-grain-1) 75%, 
-                var(--wood-base) 100%
-            );
-            color: white;
-            font-family: 'Courier New', monospace;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            margin: 0;
-            min-height: 100vh;
-            overflow-x: hidden;
-            padding: 10px;
-            box-sizing: border-box;
+            background: linear-gradient(90deg, var(--wood-base) 0%, var(--wood-grain-1) 15%, var(--wood-base) 30%, var(--wood-grain-2) 45%, var(--wood-base) 60%, var(--wood-grain-1) 75%, var(--wood-base) 100%);
+            color: white; font-family: 'Courier New', monospace; display: flex; flex-direction: column; align-items: center; justify-content: center; margin: 0; min-height: 100vh; padding: 10px; box-sizing: border-box; overflow-x: hidden;
         }
 
-        h1 { 
-            font-size: clamp(1.5rem, 5vw, 2.5rem); /* Scales with screen */
-            margin: 10px 0; 
-            text-transform: uppercase; 
-            letter-spacing: 0.3em;
-            font-weight: 900;
-            text-align: center;
-        }
-
+        h1 { font-size: clamp(1.2rem, 5vw, 2.3rem); margin: 0 0 15px 0; text-transform: uppercase; letter-spacing: 0.3em; font-weight: 900; text-align: center; text-shadow: 2px 2px 4px rgba(0,0,0,0.5); }
+        
         /* UI Panel */
-        #ui-layer {
-            display: flex;
-            align-items: center;
-            gap: 20px;
-            background: rgba(0,0,0,0.6);
-            padding: 15px 25px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            border: 1px solid rgba(255,255,255,0.1);
-            width: 90%;
-            max-width: 600px;
-            justify-content: space-between;
-        }
+        #ui-layer { display: flex; align-items: center; gap: 15px; background: var(--ui-bg); padding: 12px 20px; border-radius: 8px; margin-bottom: 20px; border: 1px solid rgba(255,255,255,0.1); width: 90%; max-width: 600px; justify-content: space-between; }
+        #dice-box { width: 45px; height: 45px; background: white; color: black; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 1.8rem; font-weight: bold; box-shadow: 0 4px 0 #ccc; }
+        
+        /* Overlays / Popups */
+        .overlay { position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.96); z-index: 1000; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
+        .popup-window { background: rgba(20,20,20,0.9); padding: 40px; border-radius: 12px; border: 2px solid #555; max-width: 80%; }
+        
+        /* Setup Specifics */
+        .setup-btn { margin: 8px; width: 120px; font-size: 1rem; }
+        .avatar-options { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin-top: 15px; }
+        .avatar-thumb { width: 50px; height: 50px; border-radius: 50%; border: 2px solid transparent; cursor: pointer; background-size: cover; box-sizing: border-box;}
+        .avatar-thumb.selected { border-color: var(--joy-glow); box-shadow: 0 0 10px var(--joy-glow); }
+        #avatar-select-grid button { margin: 5px; }
+        
+        /* The Board */
+        #board-container { display: grid; grid-template-columns: repeat(6, 1fr); grid-template-rows: repeat(5, 1fr); gap: 2.2vmin; padding: 4vmin; background: rgba(0,0,0,0.2); border-radius: 15px; position: relative; width: 85vw; max-width: 650px; height: 70vw; max-height: 550px; }
+        .space { width: 100%; height: 100%; aspect-ratio: 1 / 1; border-radius: 50%; border: 2px solid var(--tape-white); display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: clamp(0.6rem, 2vw, 1.1rem); background: rgba(255,255,255,0.03); position: relative; box-sizing: border-box; }
+        .joy { border-color: var(--joy-glow); color: var(--joy-glow); }
+        .fear { border-color: var(--fear-glow); color: var(--fear-glow); }
+        
+        /* Players - Heads */
+        .player { width: 4.2vmin; height: 4.2vmin; min-width: 18px; min-height: 18px; max-width: 32px; max-height: 32px; border-radius: 50%; position: absolute; z-index: 100; transition: all 0.7s cubic-bezier(0.4, 0, 0.2, 1); border: 2px solid white; box-shadow: 0 2px 5px rgba(0,0,0,0.8); background-size: cover; background-position: center; }
 
-        #dice-box {
-            width: 50px;
-            height: 50px;
-            background: white;
-            color: black;
-            border-radius: 6px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.8rem;
-            font-weight: bold;
-            box-shadow: 0 4px 0 #ccc;
-        }
+        /* WIN POPUP */
+        #win-popup-avatar { width: 100px; height: 100px; border-radius: 50%; border: 4px solid var(--joy-glow); margin-bottom: 20px; background-size: cover; display: inline-block; }
 
-        /* Adaptive Board Layout */
-        #board-container {
-            display: grid;
-            grid-template-columns: repeat(6, 1fr);
-            grid-template-rows: repeat(5, 1fr);
-            gap: 2vmin; /* Gap scales with screen size */
-            padding: 4vmin;
-            background: rgba(0,0,0,0.2);
-            border-radius: 15px;
-            position: relative;
-            /* This ensures the board stays square-ish and fits the screen */
-            width: 85vw; 
-            max-width: 650px;
-            height: 70vw; 
-            max-height: 550px;
-        }
-
-        .space {
-            width: 100%;
-            height: 100%;
-            aspect-ratio: 1 / 1; /* Keeps them circular */
-            border-radius: 50%;
-            border: 2px solid var(--tape-white);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-            font-size: clamp(0.6rem, 2vw, 1rem);
-            background: rgba(255,255,255,0.03);
-            position: relative;
-            box-sizing: border-box;
-        }
-
-        .joy { border-color: var(--joy-glow); color: var(--joy-glow); box-shadow: 0 0 10px rgba(0,255,136,0.2); }
-        .fear { border-color: var(--fear-glow); color: var(--fear-glow); box-shadow: 0 0 10px rgba(255,68,68,0.2); }
-
-        /* Player Markers */
-        .player {
-            width: 4vmin;
-            height: 4vmin;
-            min-width: 15px;
-            min-height: 15px;
-            max-width: 30px;
-            max-height: 30px;
-            border-radius: 50%;
-            position: absolute;
-            z-index: 100;
-            transition: all 0.7s cubic-bezier(0.4, 0, 0.2, 1);
-            border: 1.5px solid white;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.8);
-        }
-
-        /* Overlay */
-        #setup-overlay {
-            position: fixed;
-            top:0; left:0; width:100%; height:100%;
-            background: rgba(0,0,0,0.95);
-            z-index: 1000;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-        }
-
-        button {
-            padding: 12px 24px;
-            font-family: inherit;
-            font-weight: bold;
-            cursor: pointer;
-            background: #fff;
-            border: none;
-            border-radius: 4px;
-        }
-        .setup-btn { margin: 5px; width: 140px; }
-        #roll-btn:disabled { opacity: 0.2; }
+        input[type="text"] { padding: 10px; font-family: inherit; font-size: 1rem; background: #222; color: white; border: 1px solid #555; margin-bottom: 10px; }
+        button { padding: 12px 24px; font-family: inherit; font-weight: bold; cursor: pointer; background: #fff; border: none; border-radius: 4px; text-transform: uppercase; }
+        button:disabled { opacity: 0.2; }
     </style>
 </head>
 <body>
 
-    <div id="setup-overlay">
+    <div id="setup-1-number" class="overlay">
         <h2>HOW MANY PLAYERS?</h2>
         <div style="display: flex; flex-wrap: wrap; justify-content: center;">
-            <button class="setup-btn" onclick="startGame(1)">1</button>
-            <button class="setup-btn" onclick="startGame(2)">2</button>
-            <button class="setup-btn" onclick="startGame(3)">3</button>
-            <button class="setup-btn" onclick="startGame(4)">4</button>
-            <button class="setup-btn" onclick="startGame(5)">5</button>
-            <button class="setup-btn" onclick="startGame(6)">6</button>
+            <button class="setup-btn" onclick="setupNames(1)">1</button>
+            <button class="setup-btn" onclick="setupNames(2)">2</button>
+            <button class="setup-btn" onclick="setupNames(3)">3</button>
+            <button class="setup-btn" onclick="setupNames(4)">4</button>
+            <button class="setup-btn" onclick="setupNames(5)">5</button>
+            <button class="setup-btn" onclick="setupNames(6)">6</button>
+        </div>
+    </div>
+
+    <div id="setup-2-names" class="overlay" style="display:none">
+        <div class="popup-window">
+            <h3>Player <span id="current-setup-pnum">1</span>, WHO ARE YOU?</h3>
+            <p style="font-size:0.8rem; opacity:0.7">Enter a name, then select your piece.</p>
+            <input type="text" id="p-name-input" placeholder="Your Name" maxlength="12">
+            
+            <div id="avatar-select-grid" class="avatar-options">
+                </div>
+            
+            <button id="next-p-btn" style="margin-top:25px;" onclick="confirmPlayerSetup()" disabled>Next Player</button>
+        </div>
+    </div>
+
+    <div id="setup-3-start" class="overlay" style="display:none">
+        <div class="popup-window">
+            <h3>Ready to play?</h3>
+            <div id="summary-list" style="text-align: left; margin-bottom: 20px;"></div>
+            <button onclick="finalStart()">START TAPE</button>
+        </div>
+    </div>
+
+    <div id="winner-overlay" class="overlay" style="display:none">
+        <div class="popup-window">
+            <div id="win-popup-avatar"></div>
+            <h1>Fearjoy!</h1>
+            <h2 id="win-msg" style="color:var(--joy-glow)">WINS!</h2>
+            <button onclick="resetGame()" style="margin-top: 20px; background: var(--joy-glow)">Play Again</button>
         </div>
     </div>
 
@@ -175,14 +102,14 @@
 
     <div id="ui-layer">
         <div id="dice-box">?</div>
-        <div style="flex-grow: 1; padding: 0 15px; font-size: 0.9rem;">
+        <div style="flex-grow: 1; padding: 0 15px; font-size: 0.9rem; min-width: 150px;">
             <div id="status-text">Select players</div>
-            <div id="turn-text" style="opacity: 0.6; margin-top: 3px;">---</div>
+            <div id="turn-text" style="opacity: 0.7; margin-top: 3px;">---</div>
         </div>
         <button id="roll-btn" onclick="handleRoll()" disabled>ROLL</button>
     </div>
 
-    <div id="board-container" id="board">
+    <div id="board-container">
         </div>
 
 <script>
@@ -190,86 +117,175 @@
     const cols = 6;
     const rows = 5;
     
-    let playerPositions = [];
-    let currentPlayer = 0;
-    let isMoving = false;
-    let playerCount = 0;
+    // --- GAME STATE ---
+    let totalPlayers = 0;
+    let currentPlayerSetupIndex = 0;
+    let players = []; // Stores objects: {name, avatar, position}
+    let currentPlayerTurnIndex = 0;
+    let isGameMoving = false;
 
+    // --- RULES & ASSETS ---
     const joySpaces = [5, 12, 21, 27];
     const fearSpaces = [3, 15, 19, 25];
-    const playerColors = ['#007bff', '#ffcc00', '#ff00ff', '#00ffd5', '#ff5e00', '#ffffff'];
 
-    function startGame(num) {
-        playerCount = num;
-        playerPositions = new Array(num).fill(0);
-        document.getElementById('setup-overlay').style.display = 'none';
+    // DEFINING THE HEADS: Map an avatar name to a PNG filename
+    // Update 'img.png' for others if you get them. Otherwise use generic 'p1.png' etc.
+    const avatarMap = [
+        { name: 'Jesse', img: 'jesse.png', fallbackColor: '#007bff' },
+        { name: 'Marco', img: 'marco.png', fallbackColor: '#ffcc00' },
+        { name: 'Grant', img: 'grant.png', fallbackColor: '#ff00ff' },
+        { name: 'Red Head', img: 'fallback_red.png', fallbackColor: '#ff4444' }, // Just examples
+        { name: 'Blue Head', img: 'fallback_blue.png', fallbackColor: '#0044ff' },
+        { name: 'Green Head', img: 'fallback_green.png', fallbackColor: '#00ff44' }
+    ];
+
+    let selectedAvatarIndex = -1;
+
+    // --- 1. SETTING UP NAMES & AVATARS ---
+    function setupNames(num) {
+        totalPlayers = num;
+        document.getElementById('setup-1-number').style.display = 'none';
+        document.getElementById('setup-2-names').style.display = 'flex';
+        showPlayerSetup(0);
+    }
+
+    // Refresh the name/avatar selection popup for a new player
+    function showPlayerSetup(pIdx) {
+        currentPlayerSetupIndex = pIdx;
+        selectedAvatarIndex = -1; // Reset selection
+        document.getElementById('next-p-btn').disabled = true;
+        document.getElementById('p-name-input').value = `Player ${pIdx + 1}`;
+        document.getElementById('current-setup-pnum').innerText = pIdx + 1;
+        
+        // Finalize button text on the last player
+        document.getElementById('next-p-btn').innerText = (pIdx === totalPlayers - 1) ? 'Confirm Team' : 'Next Player';
+
+        // Generate the grid of heads to pick from
+        const grid = document.getElementById('avatar-select-grid');
+        grid.innerHTML = ''; 
+        avatarMap.forEach((av, index) => {
+            const btn = document.createElement('div');
+            btn.className = 'avatar-thumb';
+            btn.title = av.name;
+            btn.style.backgroundColor = av.fallbackColor; // Shows if PNG is missing
+            btn.style.backgroundImage = `url('${av.img}')`; // Pointer to your files
+            btn.onclick = () => selectAvatar(index, btn);
+            grid.appendChild(btn);
+        });
+    }
+
+    function selectAvatar(index, element) {
+        selectedAvatarIndex = index;
+        // Visual feedback
+        document.querySelectorAll('.avatar-thumb').forEach(e => e.classList.remove('selected'));
+        element.classList.add('selected');
+        document.getElementById('next-p-btn').disabled = false;
+    }
+
+    // Save a player's customized info
+    function confirmPlayerSetup() {
+        if (selectedAvatarIndex === -1) return;
+        const name = document.getElementById('p-name-input').value || `Player ${currentPlayerSetupIndex+1}`;
+        
+        // Add personalized player object
+        players.push({
+            name: name,
+            avatarData: avatarMap[selectedAvatarIndex],
+            position: 0
+        });
+
+        // Continue setup or show summary
+        if (currentPlayerSetupIndex < totalPlayers - 1) {
+            showPlayerSetup(currentPlayerSetupIndex + 1);
+        } else {
+            // Show verification screen before final start
+            document.getElementById('setup-2-names').style.display = 'none';
+            showSummary();
+        }
+    }
+
+    function showSummary() {
+        document.getElementById('setup-3-start').style.display = 'flex';
+        const list = document.getElementById('summary-list');
+        list.innerHTML = '';
+        players.forEach(p => {
+            list.innerHTML += `<div style="margin:5px 0;">
+                <span style="display:inline-block; width:20px; height:20px; border-radius:50%; border:1px solid white; background-color:${p.avatarData.fallbackColor}; background-image:url('${p.avatarData.img}'); background-size:cover; vertical-align:middle;"></span>
+                ${p.name}
+            </div>`;
+        });
+    }
+
+    // --- 2. GAME SETUP ---
+    function finalStart() {
+        document.getElementById('setup-3-start').style.display = 'none';
         document.getElementById('roll-btn').disabled = false;
         initBoard();
-        window.addEventListener('resize', () => { // Reposition players if window resizes
-            for(let i=0; i<playerCount; i++) updatePiece(i);
-        });
+        
+        // Resize listener to keep pieces centered if window resizes
+        window.addEventListener('resize', () => { players.forEach((_, i) => updatePiece(i)); });
     }
 
     function initBoard() {
         const container = document.getElementById('board-container');
-        container.innerHTML = ''; // Clear for players
+        container.innerHTML = ''; 
         
+        // Generate Spaces (Same B-L winding logic)
         for (let i = 0; i < spacesCount; i++) {
             const space = document.createElement('div');
             space.id = `space-${i}`;
             space.className = 'space';
-            
             if (i === 0) space.innerText = "START";
             else if (i === 29) space.innerText = "END";
             else if (joySpaces.includes(i)) { space.innerText = "JOY"; space.classList.add('joy'); }
             else if (fearSpaces.includes(i)) { space.innerText = "FEAR"; space.classList.add('fear'); }
             else space.innerText = i;
-
             let row = Math.floor(i / cols);
             let col = i % cols;
-            let displayCol = (row % 2 === 1) ? (cols - 1 - col) : col;
-            
             space.style.gridRow = (rows - row);
-            space.style.gridColumn = (displayCol + 1);
+            space.style.gridColumn = ((row % 2 === 1) ? (cols - col) : col + 1);
             container.appendChild(space);
         }
 
-        for (let p = 0; p < playerCount; p++) {
+        // Generate Player pieces (Heads)
+        players.forEach((p, index) => {
             const pElem = document.createElement('div');
-            pElem.id = `p${p}`;
+            pElem.id = `player-piece-${index}`;
             pElem.className = 'player';
-            pElem.style.backgroundColor = playerColors[p];
+            pElem.style.backgroundColor = p.avatarData.fallbackColor;
+            pElem.style.backgroundImage = `url('${p.avatarData.img}')`; // Apply head
             container.appendChild(pElem);
-            updatePiece(p);
-        }
+            updatePiece(index);
+        });
 
         document.getElementById('status-text').innerText = "Game Start!";
-        document.getElementById('turn-text').innerText = `Player 1's turn`;
+        updateTurnUI();
     }
 
+    // Centering the heads on the spaces (with minimal cluster offset)
     function updatePiece(pIdx) {
-        const pElem = document.getElementById(`p${pIdx}`);
-        const target = document.getElementById(`space-${playerPositions[pIdx]}`);
+        const pElem = document.getElementById(`player-piece-${pIdx}`);
+        const target = document.getElementById(`space-${players[pIdx].position}`);
         if (!target) return;
-        
-        // Distribution so they don't overlap
-        const angle = (pIdx / playerCount) * 2 * Math.PI;
+        const angle = (pIdx / totalPlayers) * 2 * Math.PI;
         const radius = target.offsetWidth * 0.2; 
-        const offsetX = Math.cos(angle) * radius;
-        const offsetY = Math.sin(angle) * radius;
+        const x = target.offsetLeft + (target.offsetWidth / 2) - (pElem.offsetWidth / 2) + Math.cos(angle)*radius;
+        const y = target.offsetTop + (target.offsetHeight / 2) - (pElem.offsetHeight / 2) + Math.sin(angle)*radius;
+        pElem.style.left = `${x}px`; pElem.style.top = `${y}px`;
+    }
 
-        const x = target.offsetLeft + (target.offsetWidth / 2) - (pElem.offsetWidth / 2) + offsetX;
-        const y = target.offsetTop + (target.offsetHeight / 2) - (pElem.offsetHeight / 2) + offsetY;
-        
-        pElem.style.left = `${x}px`;
-        pElem.style.top = `${y}px`;
+    // --- 3. TURN LOGIC ---
+    function updateTurnUI() {
+        const p = players[currentPlayerTurnIndex];
+        const text = document.getElementById('turn-text');
+        text.innerText = `${p.name}'s turn`;
+        text.style.color = p.avatarData.fallbackColor; // Use fallback color for turn text glow
     }
 
     async function handleRoll() {
-        if (isMoving) return;
-        isMoving = true;
-        const rollBtn = document.getElementById('roll-btn');
-        rollBtn.disabled = true;
+        if (isGameMoving) return;
+        isGameMoving = true;
+        document.getElementById('roll-btn').disabled = true;
 
         const diceBox = document.getElementById('dice-box');
         let roll = 0;
@@ -278,42 +294,62 @@
             diceBox.innerText = roll;
             await new Promise(r => setTimeout(r, 70));
         }
-        
         document.getElementById('status-text').innerText = `Rolled a ${roll}!`;
+        await new Promise(r => setTimeout(r, 1000)); // Settle pause
 
-        await new Promise(r => setTimeout(r, 1000)); // Deliberate pause
-
+        // Sequential Slow Hops
         for(let j=0; j < roll; j++) {
-            if (playerPositions[currentPlayer] < spacesCount - 1) {
-                playerPositions[currentPlayer]++;
-                updatePiece(currentPlayer);
-                await new Promise(r => setTimeout(r, 550)); // Slowed down
+            if (players[currentPlayerTurnIndex].position < spacesCount - 1) {
+                players[currentPlayerTurnIndex].position++;
+                updatePiece(currentPlayerTurnIndex);
+                await new Promise(r => setTimeout(r, 550)); // Slowed hopping
             }
         }
 
-        const finalSpace = playerPositions[currentPlayer];
+        // Rule Check
+        const finalSpace = players[currentPlayerTurnIndex].position;
         if (joySpaces.includes(finalSpace)) {
             document.getElementById('status-text').innerText = "JOY! +1";
             await new Promise(r => setTimeout(r, 900));
-            playerPositions[currentPlayer] = Math.min(29, playerPositions[currentPlayer] + 1);
+            players[currentPlayerTurnIndex].position = Math.min(29, players[currentPlayerTurnIndex].position + 1);
         } else if (fearSpaces.includes(finalSpace)) {
             document.getElementById('status-text').innerText = "FEAR. -1";
             await new Promise(r => setTimeout(r, 900));
-            playerPositions[currentPlayer] = Math.max(0, playerPositions[currentPlayer] - 1);
+            players[currentPlayerTurnIndex].position = Math.max(0, players[currentPlayerTurnIndex].position - 1);
         }
-        updatePiece(currentPlayer);
+        updatePiece(currentPlayerTurnIndex);
 
-        if (playerPositions[currentPlayer] === 29) {
-            document.getElementById('status-text').innerText = `WINNER: PLAYER ${currentPlayer+1}!`;
+        // WIN CONDITION Check
+        if (players[currentPlayerTurnIndex].position === 29) {
+            triggerWin(players[currentPlayerTurnIndex]);
             return;
         }
 
-        currentPlayer = (currentPlayer + 1) % playerCount;
-        document.getElementById('turn-text').innerText = `Player ${currentPlayer+1}'s turn`;
-        document.getElementById('turn-text').style.color = playerColors[currentPlayer];
-        rollBtn.disabled = false;
-        isMoving = false;
+        // Swap Turn
+        currentPlayerTurnIndex = (currentPlayerTurnIndex + 1) % totalPlayers;
+        updateTurnUI();
+        document.getElementById('roll-btn').disabled = false;
+        isGameMoving = false;
     }
+
+    // --- 4. GAME OVER CELEBRATION ---
+    function triggerWin(pData) {
+        document.getElementById('roll-btn').disabled = true;
+        document.getElementById('status-text').innerText = "Finished!";
+        
+        // Prepare Win Popup
+        const av = document.getElementById('win-popup-avatar');
+        av.style.backgroundImage = `url('${pData.avatarData.img}')`;
+        av.style.backgroundColor = pData.avatarData.fallbackColor;
+        document.getElementById('win-msg').innerText = `${pData.name.toUpperCase()} WINS!`;
+        
+        // Show Win Popup
+        document.getElementById('winner-overlay').style.display = 'flex';
+    }
+
+    // Fully reload the webpage to reset state
+    function resetGame() { window.location.reload(); }
+
 </script>
 </body>
 </html>
