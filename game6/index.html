@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Fearjoy - v7.1 Expansion</title>
+    <title>Fearjoy - v7.2 Narrative & UI Refinement</title>
     <style>
         :root {
             --wood-dark: #2a180b; --wood-mid: #3d2616; --wood-light: #4e3625;
@@ -15,6 +15,7 @@
         @keyframes sparkle { 0% { box-shadow: 0 0 40px var(--gold); background: var(--gold) !important; transform: scale(1.1); } }
         @keyframes badPulse { 0% { box-shadow: 0 0 40px var(--fear-glow); background: var(--fear-glow) !important; color: white; transform: scale(1.1); } }
         @keyframes bonusPulse { 0% { box-shadow: 0 0 40px var(--joy-glow); background: var(--joy-glow); color: black; } }
+        @keyframes goldGlow { 0% { box-shadow: 0 0 10px var(--gold); } 100% { box-shadow: 0 0 30px var(--gold); border-color: var(--gold); } }
         @keyframes floatUp { 0% { transform: translateY(0); opacity: 1; } 100% { transform: translateY(-100px); opacity: 0; } }
         @keyframes flipCoin { 0% { transform: rotateY(0); } 100% { transform: rotateY(1800deg); } }
 
@@ -27,12 +28,13 @@
         .space { width: 85px; height: 85px; border-radius: 50%; border: 1px solid var(--tape-white); display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 0.7rem; background: rgba(255,255,255,0.05); text-align: center; cursor: pointer; transition: 0.3s; position: relative; }
         .blank { opacity: 0.2; transform: scale(0.8); border-style: dashed; cursor: default; }
         .tracklist-space { background: var(--vinyl) !important; border: 3px double #666 !important; box-shadow: inset 0 0 15px #000; transform: scale(1.15); z-index: 5; font-size: 0.6rem !important; color: white !important; }
+        .win-track { animation: goldGlow 1.5s infinite alternate; border: 4px solid var(--gold) !important; }
         
         .joy-space { border-color: var(--joy-glow) !important; color: var(--joy-glow) !important; }
         .fear-space { border-color: var(--fear-glow) !important; color: var(--fear-glow) !important; }
         .hybrid { border-style: dotted; border-width: 3px; border-color: white; }
 
-        #ui-layer { display: flex; align-items: center; gap: 30px; background: var(--ui-bg); padding: 25px 40px; border-radius: 12px; margin: 15px 0; border: 1px solid rgba(255,255,255,0.1); width: 950px; justify-content: space-between; z-index: 10; }
+        #ui-layer { display: flex; align-items: center; gap: 30px; background: var(--ui-bg); padding: 25px 40px; border-radius: 12px; margin: 15px 0; border: 1px solid rgba(255,255,255,0.1); width: 1000px; justify-content: space-between; z-index: 10; }
         #dice-box { width: 85px; height: 85px; background: white; color: black; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 3.5rem; font-weight: bold; transition: 0.3s; }
         
         .sparkle-dice { animation: sparkle 0.5s infinite alternate; }
@@ -49,7 +51,7 @@
         #rule-sidebar { position: fixed; right: -320px; top: 120px; width: 280px; background: var(--ui-bg); padding: 30px; border-radius: 20px; border: 2px solid var(--joy-glow); transition: 0.6s; z-index: 100; }
         #rule-sidebar.active { right: 25px; }
 
-        .tag { font-size: 0.5rem; padding: 2px 5px; border-radius: 3px; margin-left: 5px; vertical-align: middle; font-weight: bold; }
+        .tag { font-size: 0.75rem; padding: 4px 8px; border-radius: 5px; margin-left: 8px; vertical-align: middle; font-weight: bold; letter-spacing: 1px; }
         .tag-investor { background: var(--gold); color: black; }
         .tag-sellout { background: var(--fear-glow); color: white; }
         
@@ -61,14 +63,14 @@
 </head>
 <body>
 
-    <div id="merch-tracker" style="position: fixed; left: 20px; top: 100px; width: 300px; background: var(--ui-bg); border-radius: 12px; padding: 20px; border: 1px solid #333; z-index: 5;">
-        <h4 style="margin:0 0 15px 0; font-size: 0.7rem; letter-spacing: 2px; opacity: 0.6; color: var(--joy-glow);">ARTIST ROSTER</h4>
+    <div id="merch-tracker" style="position: fixed; left: 20px; top: 100px; width: 350px; background: var(--ui-bg); border-radius: 12px; padding: 25px; border: 1px solid #333; z-index: 5;">
+        <h4 style="margin:0 0 15px 0; font-size: 0.8rem; letter-spacing: 3px; opacity: 0.6; color: var(--joy-glow);">ARTIST ROSTER</h4>
         <div id="tracker-list"></div>
     </div>
 
     <div id="ui-layer">
-        <button id="roll-btn" onclick="doRoll()" disabled style="background: var(--joy-glow); color: black; width: 180px; font-size: 1.5rem; font-weight:bold; padding:15px; border:none; border-radius:8px; cursor:pointer;">ROLL</button>
-        <div id="status-text" style="font-size:3rem; font-weight:900;">WELCOME</div>
+        <button id="roll-btn" onclick="doRoll()" disabled style="background: var(--joy-glow); color: black; width: 220px; font-size: 1.6rem; font-weight:bold; padding:18px; border:none; border-radius:8px; cursor:pointer;">ROLL</button>
+        <div id="status-text" style="font-size:2.8rem; font-weight:900; flex: 1; text-align: center;">WELCOME</div>
         <div style="position:relative; width:85px; height:85px;">
             <div id="dice-box">?</div>
             <div id="float-icon" class="floating-icon" style="position:absolute; top:0; left:25%; font-size:2.5rem; display:none; z-index:200;">👕</div>
@@ -80,7 +82,7 @@
     <div id="overlay-event" class="overlay">
         <div class="popup">
             <h1 id="event-title"></h1>
-            <div id="event-desc" style="font-size: 1.1rem; color: #ccc; margin-bottom:25px; line-height: 1.6;"></div>
+            <div id="event-desc" style="font-size: 1.2rem; color: #ccc; margin-bottom:25px; line-height: 1.6;"></div>
             <div id="coin">?</div>
             <div id="timer-ui" style="font-size: 4rem; color: var(--joy-glow); margin: 20px 0; display: none;"></div>
             <div id="final-stats"></div>
@@ -106,46 +108,46 @@
     ];
 
     const rules = {
-        4: { title: "DAYSPRING", emoji: "☀️", desc: "Creative clarity! Move forward 3 spaces immediately.", shift: 3, needsPopup: true, isTrack: true },
-        6: { title: "FEARJOY", isFearjoy: true, needsPopup: true },
-        8: { title: "FIGMENT", emoji: "🛸", desc: "Step outside for 60s for +2 next roll, or rush back for -1.", timer: 60, skipShift: -1, bonus: 2, isTrack: true, needsPopup: true },
-        9: { title: "JOY", shift: 1, isAuto: true },
-        10: { title: "THE REMEDY", emoji: "💊", desc: "Move +6 now, but every 6 you roll becomes a -2 rewind.", choice: 'remedy', isTrack: true, needsPopup: true },
-        11: { title: "FEAR", shift: -1, isAuto: true },
-        12: { title: "VAN BREAKS DOWN", skipTurns: 1, needsPopup: true },
-        13: { title: "JOY", shift: 1, isAuto: true },
-        15: { title: "DMITRI", emoji: "👨‍🚀", desc: "Breathe with Dmitri for 10s for +2 bonus, or ignore for -2.", timer: 10, skipShift: -2, bonus: 2, isTrack: true, needsPopup: true },
+        4: { title: "DAYSPRING", emoji: "☀️", desc: "The clouds break and creative clarity strikes! The road ahead clears—move forward 3 spaces immediately.", shift: 3, needsPopup: true, isTrack: true },
+        6: { title: "FEARJOY", emoji: "☯️", isFearjoy: true, needsPopup: true },
+        8: { title: "FIGMENT", emoji: "🛸", desc: "The stars are calling. Spend 60s in the quiet to gain +2 to your next roll, or rush back for -1 rewind.", timer: 60, skipShift: -1, bonus: 2, isTrack: true, needsPopup: true },
+        9: { title: "JOY", emoji: "✨", desc: "A burst of momentum! Move forward 1.", shift: 1, isAuto: true },
+        10: { title: "THE REMEDY", emoji: "💊", desc: "A label rep offers 'The Remedy'. Fast forward 6 spaces now, but side effects are permanent: all future 6s become -2 rewinds.", choice: 'remedy', isTrack: true, needsPopup: true },
+        11: { title: "FEAR", emoji: "💀", desc: "Doubt slows you down. Move back 1.", shift: -1, isAuto: true },
+        12: { title: "VAN BREAKS DOWN", emoji: "🛠", desc: "Steam from the hood. Wait for the tow truck—skip 1 turn.", skipTurns: 1, needsPopup: true },
+        13: { title: "JOY", emoji: "✨", desc: "Perfect harmony. Move forward 1.", shift: 1, isAuto: true },
+        15: { title: "DMITRI", emoji: "👨‍🚀", desc: "Dmitri invites you to breathe. Meditate for 10s for a +2 bonus, or ignore the moment and rewind 2.", timer: 10, skipShift: -2, bonus: 2, isTrack: true, needsPopup: true },
         17: { title: "FEARJOY", isFearjoy: true, needsPopup: true },
-        18: { title: "NIGHTDRIVE", emoji: "🌙", desc: "Keep your eyes closed until your next turn. Open them early? REWIND TWO.", isNightDrive: true, isTrack: true, needsPopup: true },
-        19: { title: "JOY", shift: 1, isAuto: true },
-        20: { title: "INVEST IN MERCH", emoji: "👕", desc: "Invest 4 spaces back. All 1s and 2s are doubled for the rest of the tour.", choice: 'merch', needsPopup: true },
-        21: { title: "FEAR", shift: -1, isAuto: true },
-        23: { title: "5TH DIMENSION", desc: "Step into the unknown.", isTrack: true },
-        25: { title: "IT HAPPENS", emoji: "⚡", desc: "Suddenly, instantly, take an extra turn.", isItHappens: true, isTrack: true, needsPopup: true },
-        27: { title: "GHOST 2", emoji: "👻", desc: "Paralyzed in fear, stay silent for two turns. If you make a sound, REWIND ONE SPACE.", isGhost: true, isTrack: true, needsPopup: true },
-        28: { title: "MAYA", isTrack: true },
-        30: { title: "WIN A GRAMMY", emoji: "🏆", desc: "Switch with the lead! If you lead, FAST FORWARD 2.", isGrammy: true, needsPopup: true },
-        31: { title: "OPENING ACT", emoji: "🎤", desc: "Move 2 behind the leader. If you lead, REWIND 2.", isOpeningAct: true, needsPopup: true },
-        32: { title: "FEAR", shift: -1, isAuto: true },
-        33: { title: "JOY", shift: 1, isAuto: true },
-        35: { title: "TELLUS", emoji: "📣", desc: "You must swap places with any other player. Click their avatar on the board to swap!", isTellus: true, isTrack: true, needsPopup: true },
+        18: { title: "NIGHTDRIVE", emoji: "🌙", desc: "The highway hypnosis sets in. Keep your eyes closed until your next turn. If you peek? REWIND TWO.", isNightDrive: true, isTrack: true, needsPopup: true },
+        19: { title: "JOY", emoji: "✨", desc: "Forward motion! Move forward 1.", shift: 1, isAuto: true },
+        20: { title: "INVEST IN MERCH", emoji: "👕", desc: "Print the shirts! Invest by rewinding 4 spaces. All 1s and 2s will be doubled for the rest of the game.", choice: 'merch', needsPopup: true },
+        21: { title: "FEAR", emoji: "💀", desc: "Second guessing. Move back 1.", shift: -1, isAuto: true },
+        25: { title: "IT HAPPENS", emoji: "⚡", desc: "Suddenly, instantly, everything aligns. Take an extra turn right now!", isItHappens: true, isTrack: true, needsPopup: true },
+        27: { title: "GHOST 2", emoji: "👻", desc: "You are paralyzed in fear. Stay silent for two full turns. If you make a sound, REWIND ONE SPACE.", isGhost: true, isTrack: true, needsPopup: true },
+        28: { title: "MAYA", emoji: "🌊", desc: "Lost in the rhythm.", isTrack: true },
+        30: { title: "WIN A GRAMMY", emoji: "🏆", desc: "Industry recognition! Switch places with the leader. (If you lead, move forward 2).", isGrammy: true, needsPopup: true },
+        31: { title: "OPENING ACT", emoji: "🎤", desc: "The billing shifts. Move to 2 spaces behind the leader. (If you lead, rewind 2).", isOpeningAct: true, needsPopup: true },
+        32: { title: "FEAR", emoji: "💀", desc: "Bad review. Move back 1.", shift: -1, isAuto: true },
+        33: { title: "JOY", emoji: "✨", desc: "Encore vibes! Move forward 1.", shift: 1, isAuto: true },
+        35: { title: "TELLUS", emoji: "📣", desc: "The connection is absolute. Swap positions with any artist on the board—click their avatar to swap!", isTellus: true, isTrack: true, needsPopup: true },
         37: { title: "FEARJOY", isFearjoy: true, needsPopup: true },
-        42: { title: "VOID", isTrack: true },
-        45: { title: "THE ENDLESS SMILE", isTrack: true },
-        46: { title: "GATEKEEPER", emoji: "🚧", isGate: true, desc: "Must land exactly or stop here.", needsPopup: true },
+        42: { title: "VOID", emoji: "⚫", desc: "Staring into the abyss.", isTrack: true },
+        45: { title: "THE ENDLESS SMILE", emoji: "🙂", desc: "A permanent state.", isTrack: true },
+        46: { title: "GATEKEEPER", emoji: "🚧", isGate: true, desc: "The industry guard is here. You must land exactly on this space to pass, or stop here.", needsPopup: true },
         50: { title: "FEARJOY", isFearjoy: true, needsPopup: true },
-        51: { title: "VAN BREAKS DOWN", skipTurns: 1, needsPopup: true }
+        51: { title: "VAN BREAKS DOWN", emoji: "🛠", skipTurns: 1, needsPopup: true },
+        57: { title: "SWIMMIN", emoji: "🌊", desc: "Go Swimmin! The tour was a success.", isTrack: true }
     };
 
     let players = [], turnIdx = 0, isMoving = false, isSwapping = false, totalP = 0, currentSetupP = 0, selectedAvatar = null, sidebarTimer = null;
 
-    function setPlayerCount(n) { totalP = n; document.getElementById('setup-step-1').style.display='none'; document.getElementById('setup-step-2').style.display='block'; }
+    function setPlayerCount(n) { document.getElementById('setup-step-1').style.display='none'; document.getElementById('setup-step-2').style.display='block'; totalP = n; }
     function pickAvatar(id, color) { selectedAvatar = { id, color, img: id+'.png' }; document.querySelectorAll('#setup-step-2 img').forEach(i=>i.style.opacity='0.3'); document.getElementById('sel-'+id).style.opacity='1'; }
     
     function confirmArtist() {
         const name = document.getElementById('name-input').value.toUpperCase() || `ARTIST ${currentSetupP+1}`;
         if(!selectedAvatar) return;
-        players.push({ name, pos: 0, avatar: selectedAvatar, skipCount: 0, isInvestor: false, isSellout: false, merchHits: 0, remedyHits: 0, nextBonus: 0, totalRolls: 0, grammys: 0, nightDriveActive: false, ghostCounter: 0, achievements: [] });
+        players.push({ name, pos: 0, avatar: selectedAvatar, skipCount: 0, isInvestor: false, isSellout: false, merchHits: 0, remedyHits: 0, nextBonus: 0, totalRolls: 0, grammys: 0, nightDriveActive: false, ghostCounter: 0 });
         currentSetupP++;
         if(currentSetupP >= totalP) { document.getElementById('overlay-setup').style.display='none'; initBoard(); }
         else { document.getElementById('name-input').value=''; selectedAvatar=null; }
@@ -160,6 +162,7 @@
                 s.innerHTML = name; s.classList.add('special');
                 const r = rules[i];
                 if(r && r.isTrack) s.classList.add('tracklist-space');
+                if(i === 57) s.classList.add('win-track');
                 if(name === "FEAR") s.classList.add('fear-space');
                 if(name === "JOY") s.classList.add('joy-space');
                 if(name === "FEARJOY") s.classList.add('hybrid');
@@ -171,10 +174,8 @@
         });
         players.forEach((p, i) => {
             const el = document.createElement('div'); el.id = 'p'+i; el.className = 'player';
-            el.style.backgroundImage = `url('${p.avatar.img}')`; 
-            el.onclick = () => handlePlayerClick(i);
-            board.appendChild(el);
-            updateVisualPos(i);
+            el.style.backgroundImage = `url('${p.avatar.img}')`; el.onclick = () => handlePlayerClick(i);
+            board.appendChild(el); updateVisualPos(i);
         });
         document.getElementById('roll-btn').disabled = false; updateUI();
     }
@@ -186,19 +187,18 @@
 
     function updateUI() {
         const p = players[turnIdx];
-        document.getElementById('status-text').innerText = p.name;
+        document.getElementById('status-text').innerText = p.name + "'S TURN";
         document.getElementById('status-text').style.color = p.avatar.color;
         const list = document.getElementById('tracker-list'); list.innerHTML = '';
         players.forEach(pl => {
             let tags = (pl.isInvestor ? '<span class="tag tag-investor">INVESTOR</span>' : '') + (pl.isSellout ? '<span class="tag tag-sellout">SELLOUT</span>' : '');
-            list.innerHTML += `<div style="margin-bottom:20px; border-bottom:1px solid #444; padding-bottom:10px;"><div style="display:flex;align-items:center;gap:15px;"><img src="${pl.avatar.img}" style="width:45px;height:45px;border-radius:50%;background:#111;border:1px solid #444;"><div><div style="font-size:0.85rem;font-weight:bold;">${pl.name}${tags}</div><div style="font-size:1.2rem;letter-spacing:3px;">${"👕".repeat(pl.merchHits)}${"💊".repeat(pl.remedyHits)}${"🏆".repeat(pl.grammys)}</div></div></div></div>`;
+            list.innerHTML += `<div style="margin-bottom:25px; border-bottom:1px solid #444; padding-bottom:15px;"><div style="display:flex;align-items:center;gap:18px;"><img src="${pl.avatar.img}" style="width:65px;height:65px;border-radius:50%;background:#111;border:2px solid #555;"><div><div style="font-size:1.1rem;font-weight:bold;">${pl.name}${tags}</div><div style="font-size:1.4rem;letter-spacing:5px;">${"👕".repeat(pl.merchHits)}${"💊".repeat(pl.remedyHits)}${"🏆".repeat(pl.grammys)}</div></div></div></div>`;
         });
     }
 
     function showSidebar(t, d) {
         if(sidebarTimer) clearTimeout(sidebarTimer);
-        document.getElementById('side-title').innerText = t;
-        document.getElementById('side-desc').innerText = d;
+        document.getElementById('side-title').innerText = t; document.getElementById('side-desc').innerText = d;
         document.getElementById('rule-sidebar').classList.add('active');
         sidebarTimer = setTimeout(() => { document.getElementById('rule-sidebar').classList.remove('active'); }, 4000);
     }
@@ -207,18 +207,12 @@
         if(isMoving || isSwapping) return;
         const p = players[turnIdx];
         document.getElementById('rule-sidebar').classList.remove('active');
-        
         if(p.nightDriveActive) { showNightDriveCheck(); return; }
         if(p.ghostCounter > 0) { showGhostCheck(); return; }
-        if(p.skipCount > 0) {
-            p.skipCount--;
-            showCentralPopup("VAN REPAIRS", "Turn skipped for repairs.", "CONTINUE", () => endTurn());
-            return;
-        }
+        if(p.skipCount > 0) { p.skipCount--; showCentralPopup("🛠 VAN REPAIRS", "The tour is on hold while repairs are made.", "CONTINUE", () => endTurn()); return; }
 
         isMoving = true; document.getElementById('roll-btn').disabled = true;
-        const dice = document.getElementById('dice-box');
-        const icon = document.getElementById('float-icon');
+        const dice = document.getElementById('dice-box'), icon = document.getElementById('float-icon');
         dice.className = ''; icon.style.display = 'none';
 
         let roll = Math.floor(Math.random()*6)+1;
@@ -227,18 +221,18 @@
 
         if(p.isInvestor && (roll === 1 || roll === 2)) {
             icon.innerText = '👕'; icon.style.display = 'block'; icon.style.animation = 'floatUp 1s forwards';
-            showSidebar("MERCH PAYOFF", `Doubling your ${roll} to ${roll*2}!`);
+            showSidebar("👕 MERCH PAYOFF", `Investment pays off! Doubling your ${roll} to ${roll*2}!`);
             dice.classList.add('sparkle-dice'); await new Promise(r => setTimeout(r, 800));
             roll *= 2; dice.innerText = roll; p.merchHits++; await new Promise(r => setTimeout(r, 800));
         } else if(p.isSellout && roll === 6) {
             icon.innerText = '💊'; icon.style.display = 'block'; icon.style.animation = 'floatUp 1s forwards';
-            showSidebar("CONTRACT DEBT", "Your 6 becomes a -2 rewind.");
+            showSidebar("💊 CONTRACT DEBT", "The label takes their cut. Your 6 is now a -2 rewind.");
             dice.classList.add('bad-dice'); await new Promise(r => setTimeout(r, 800));
             roll = -2; dice.innerText = "!"; p.remedyHits++; await new Promise(r => setTimeout(r, 800));
         }
 
         if(p.nextBonus > 0) {
-            showSidebar("BONUS", `Applying the +${p.nextBonus} bonus!`);
+            showSidebar("✨ FIGMENT BONUS", `Applying the +${p.nextBonus} clarity bonus!`);
             dice.classList.add('bonus-dice'); await new Promise(r => setTimeout(r, 800));
             roll += p.nextBonus; p.nextBonus = 0; dice.innerText = roll; await new Promise(r => setTimeout(r, 800));
         }
@@ -256,13 +250,11 @@
     }
 
     function showNightDriveCheck() {
-        const p = players[turnIdx];
-        showCentralPopup("EYES OPEN?", "Did you keep your eyes closed since your last turn?", "YES", () => { p.nightDriveActive = false; doRoll(); }, "NO", () => { p.nightDriveActive = false; movePlayer(-2); });
+        showCentralPopup("🌙 EYES OPEN?", "The night drive was long. Did you keep your eyes closed for the duration?", "YES", () => { players[turnIdx].nightDriveActive = false; doRoll(); }, "NO", () => { players[turnIdx].nightDriveActive = false; movePlayer(-2); });
     }
 
     function showGhostCheck() {
-        const p = players[turnIdx];
-        showCentralPopup("STAYED SILENT?", "Did you remain completely silent for 2 turns?", "YES", () => { p.ghostCounter = 0; doRoll(); }, "NO", () => { p.ghostCounter = 0; movePlayer(-1); });
+        showCentralPopup("👻 STAYED SILENT?", "You were paralyzed in fear. Did you remain completely silent for 2 turns?", "YES", () => { players[turnIdx].ghostCounter = 0; doRoll(); }, "NO", () => { players[turnIdx].ghostCounter = 0; movePlayer(-1); });
     }
 
     async function checkSpace() {
@@ -270,19 +262,17 @@
         if(!r) { endTurn(); return; }
 
         if(r.isAuto) {
-            showSidebar(r.title || "MOMENTUM", r.desc || "Automatic Shift.");
-            await new Promise(r => setTimeout(r, 3000)); // Pause for chain reactions
-            movePlayer(r.shift);
-            return;
+            showSidebar(r.title + " " + r.emoji, r.desc);
+            await new Promise(r => setTimeout(r, 2000));
+            movePlayer(r.shift); return;
         }
 
-        if(r.choice === 'merch' && p.isInvestor) { showSidebar("MERCH", "Already invested."); endTurn(); return; }
-        if(r.choice === 'remedy' && p.isSellout) { showSidebar("THE REMEDY", "Contract signed."); endTurn(); return; }
+        if(r.choice === 'merch' && p.isInvestor) { showSidebar("👕 MERCH", "Merch is already operational."); endTurn(); return; }
+        if(r.choice === 'remedy' && p.isSellout) { showSidebar("💊 THE REMEDY", "Contract already signed."); endTurn(); return; }
 
         const title = document.getElementById('event-title'), desc = document.getElementById('event-desc'), pBtn = document.getElementById('event-btn-primary'), sBtn = document.getElementById('event-btn-secondary'), timerUI = document.getElementById('timer-ui'), coin = document.getElementById('coin');
         
-        title.innerText = (r.title || "EVENT") + " " + (r.emoji || "");
-        desc.innerText = r.desc || "A tour event.";
+        title.innerText = (r.title || "EVENT") + " " + (r.emoji || ""); desc.innerText = r.desc || "A tour event.";
         pBtn.innerText = "CONTINUE"; pBtn.style.display = 'inline-block'; pBtn.disabled = false;
         sBtn.style.display = 'none'; timerUI.style.display = 'none'; coin.style.display = 'none';
         document.getElementById('final-stats').innerHTML = ""; modal.style.display = 'flex';
@@ -293,8 +283,7 @@
                 pBtn.style.display = 'none'; coin.style.display = 'flex'; coin.innerText = "?"; coin.style.background = "var(--gold)"; coin.classList.add('flipping');
                 setTimeout(() => {
                     coin.classList.remove('flipping'); const win = Math.random() > 0.5;
-                    coin.innerText = win ? "JOY" : "FEAR";
-                    coin.style.background = win ? "var(--joy-glow)" : "var(--fear-glow)";
+                    coin.innerText = win ? "JOY" : "FEAR"; coin.style.background = win ? "var(--joy-glow)" : "var(--fear-glow)";
                     setTimeout(() => { modal.style.display = 'none'; movePlayer(win ? 1 : -1); }, 1200);
                 }, 1200);
             };
@@ -302,24 +291,22 @@
         else if(r.isGhost) { p.ghostCounter = 2; pBtn.onclick = () => { modal.style.display='none'; endTurn(); }; }
         else if(r.isItHappens) { pBtn.innerText = "🔔 ROLL AGAIN"; pBtn.onclick = () => { modal.style.display='none'; isMoving=false; doRoll(); }; }
         else if(r.isGrammy) {
-            p.grammys++; let leader = players.reduce((prev, current) => (prev.pos > current.pos) ? prev : current);
-            if(leader === p) { desc.innerText += "\n\nLEADING: Forward 2!"; pBtn.onclick = () => { modal.style.display='none'; movePlayer(2); }; }
-            else { desc.innerText += `\n\nSWAP WITH ${leader.name}!`; pBtn.onclick = () => { modal.style.display='none'; let leaderPos = leader.pos; leader.pos = p.pos; p.pos = leaderPos; updateVisualPos(players.indexOf(leader)); updateVisualPos(turnIdx); endTurn(); }; }
+            let leader = players.reduce((prev, current) => (prev.pos > current.pos) ? prev : current);
+            if(leader === p) { desc.innerText += "\n\nYou're already at the top! Forward 2!"; pBtn.onclick = () => { p.grammys++; modal.style.display='none'; movePlayer(2); }; }
+            else { desc.innerText += `\n\nTake the spotlight from ${leader.name}!`; pBtn.onclick = () => { p.grammys++; modal.style.display='none'; let lp = leader.pos; leader.pos = p.pos; p.pos = lp; updateVisualPos(players.indexOf(leader)); updateVisualPos(turnIdx); endTurn(); }; }
         } else if(r.isOpeningAct) {
             let leader = players.reduce((prev, current) => (prev.pos > current.pos) ? prev : current);
-            if(leader === p) { desc.innerText += "\n\nPRESSURE: Rewind 2."; pBtn.onclick = () => { modal.style.display='none'; movePlayer(-2); }; }
-            else { desc.innerText += "\n\nSLIDE: 2 spaces behind leader."; pBtn.onclick = () => { modal.style.display='none'; p.pos = Math.max(0, leader.pos - 2); updateVisualPos(turnIdx); endTurn(); }; }
+            if(leader === p) { desc.innerText += "\n\nThe pressure of leading! Rewind 2."; pBtn.onclick = () => { modal.style.display='none'; movePlayer(-2); }; }
+            else { desc.innerText += "\n\nOpening for the best! Sliding 2 spaces behind the leader."; pBtn.onclick = () => { modal.style.display='none'; p.pos = Math.max(0, leader.pos - 2); updateVisualPos(turnIdx); endTurn(); }; }
         } else if(r.isTellus) {
-            desc.innerText += "\n\nCLICK ANOTHER ARTIST ON THE BOARD TO SWAP PLACES.";
-            pBtn.style.display = 'none'; isSwapping = true;
+            desc.innerText += "\n\nSelect another artist on the board to initiate the swap."; pBtn.style.display = 'none'; isSwapping = true;
             players.forEach((_, i) => { if(i !== turnIdx) document.getElementById('p'+i).classList.add('swap-target'); });
         } else if(r.choice) {
-            pBtn.innerText = r.choice === 'remedy' ? "SIGN DEAL (+6)" : "INVEST (-4)"; sBtn.innerText = "PASS"; sBtn.style.display = 'inline-block';
+            pBtn.innerText = r.choice === 'remedy' ? "SIGN CONTRACT (+6)" : "INVEST (-4)"; sBtn.innerText = "PASS"; sBtn.style.display = 'inline-block';
             pBtn.onclick = () => { modal.style.display='none'; if(r.choice==='remedy'){p.isSellout=true; movePlayer(6);} else {p.isInvestor=true; movePlayer(-4);} };
             sBtn.onclick = () => { modal.style.display='none'; endTurn(); };
         } else if(r.timer) {
-            pBtn.disabled = true; let t = r.timer; timerUI.style.display = 'block'; timerUI.innerText = t;
-            sBtn.style.display = 'inline-block'; sBtn.innerText = "SKIP";
+            pBtn.disabled = true; let t = r.timer; timerUI.style.display = 'block'; timerUI.innerText = t; sBtn.style.display = 'inline-block'; sBtn.innerText = "SKIP";
             const clock = setInterval(() => { t--; timerUI.innerText = t; if(t<=0){ clearInterval(clock); pBtn.disabled=false; timerUI.innerText="DONE"; } }, 1000);
             pBtn.onclick = () => { clearInterval(clock); modal.style.display='none'; if(r.bonus) p.nextBonus = r.bonus; endTurn(); };
             sBtn.onclick = () => { clearInterval(clock); modal.style.display='none'; movePlayer(r.skipShift); };
@@ -328,10 +315,10 @@
 
     function handlePlayerClick(targetIdx) {
         if(!isSwapping || targetIdx === turnIdx) return;
-        const p = players[turnIdx], target = players[targetIdx], leaderPos = target.pos;
-        target.pos = p.pos; p.pos = leaderPos;
-        updateVisualPos(targetIdx); updateVisualPos(turnIdx);
-        isSwapping = false; document.querySelectorAll('.player').forEach(el => el.classList.remove('swap-target'));
+        const p = players[turnIdx], target = players[targetIdx], lp = target.pos;
+        target.pos = p.pos; p.pos = lp;
+        updateVisualPos(targetIdx); updateVisualPos(turnIdx); isSwapping = false;
+        document.querySelectorAll('.player').forEach(el => el.classList.remove('swap-target'));
         document.getElementById('overlay-event').style.display = 'none'; endTurn();
     }
 
@@ -346,13 +333,12 @@
     }
 
     function showWinScreen() {
-        const modal = document.getElementById('overlay-event');
-        const statsArea = document.getElementById('final-stats');
-        document.getElementById('event-title').innerText = "GO SWIMMIN'! THE TOUR WAS A SUCCESS.";
-        document.getElementById('event-desc').innerText = "FINAL TOUR ROSTER";
-        statsArea.innerHTML = "";
+        const modal = document.getElementById('overlay-event'), statsArea = document.getElementById('final-stats');
+        document.getElementById('event-title').innerText = "🌊 GO SWIMMIN'!";
+        document.getElementById('event-desc').innerText = "THE TOUR WAS A SUCCESS. FINAL ROSTER:";
+        document.getElementById('event-btn-secondary').style.display='none'; statsArea.innerHTML = "";
         players.forEach(p => { statsArea.innerHTML += `<div class="stat-card"><img src="${p.avatar.img}" style="width:60px; height:60px;"><div style="flex:1; padding:0 25px; text-align:left;"><b>${p.name}</b></div><div style="text-align:right;">🏆 ${p.grammys} | 👕 ${p.merchHits} | 💊 ${p.remedyHits}</div></div>`; });
-        const b = document.getElementById('event-btn-primary'); b.innerText = "RESTART"; b.onclick = () => location.reload();
+        const b = document.getElementById('event-btn-primary'); b.innerText = "RESTART TOUR"; b.onclick = () => location.reload();
         modal.style.display = 'flex';
     }
 
@@ -360,20 +346,13 @@
         const m = document.getElementById('overlay-event');
         document.getElementById('event-title').innerText = t; document.getElementById('event-desc').innerText = d;
         document.getElementById('coin').style.display = 'none'; document.getElementById('timer-ui').style.display = 'none';
-        const pBtn = document.getElementById('event-btn-primary');
-        pBtn.innerText = b; pBtn.onclick = () => { m.style.display='none'; if(cb) cb(); };
+        const pBtn = document.getElementById('event-btn-primary'); pBtn.innerText = b; pBtn.onclick = () => { m.style.display='none'; if(cb) cb(); };
         const sBtn = document.getElementById('event-btn-secondary');
-        if(b2) { sBtn.style.display = 'inline-block'; sBtn.innerText = b2; sBtn.onclick = () => { m.style.display='none'; if(cb2) cb2(); }; }
-        else sBtn.style.display = 'none';
+        if(b2) { sBtn.style.display = 'inline-block'; sBtn.innerText = b2; sBtn.onclick = () => { m.style.display='none'; if(cb2) cb2(); }; } else sBtn.style.display = 'none';
         m.style.display='flex';
     }
 
-    function endTurn() { 
-        const p = players[turnIdx];
-        if(p.ghostCounter > 0) p.ghostCounter--; // decrement ghost count
-        turnIdx = (turnIdx + 1) % players.length; 
-        isMoving = false; document.getElementById('roll-btn').disabled = false; updateUI(); 
-    }
+    function endTurn() { turnIdx = (turnIdx + 1) % players.length; isMoving = false; document.getElementById('roll-btn').disabled = false; updateUI(); }
 </script>
 </body>
 </html>
