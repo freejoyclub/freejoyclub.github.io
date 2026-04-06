@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Fearjoy - v6.1 Stable Tracklist</title>
+    <title>Fearjoy - v6.2 Performance Patch</title>
     <style>
         :root {
             --wood-dark: #2a180b; --wood-mid: #3d2616; --wood-light: #4e3625;
@@ -18,6 +18,12 @@
             100% { background-color: #2a180b; }
         }
 
+        @keyframes sparkle {
+            0% { box-shadow: 0 0 0px var(--gold); transform: scale(1); }
+            50% { box-shadow: 0 0 40px var(--gold); transform: scale(1.1); }
+            100% { box-shadow: 0 0 0px var(--gold); transform: scale(1); }
+        }
+
         body {
             animation: woodFade 15s ease-in-out infinite;
             background-image: repeating-linear-gradient(90deg, transparent, transparent 80px, rgba(0,0,0,0.05) 80px, rgba(0,0,0,0.05) 82px),
@@ -25,46 +31,45 @@
             color: white; font-family: 'Courier New', monospace; display: flex; flex-direction: column; align-items: center; margin: 0; min-height: 100vh; overflow-x: hidden;
         }
 
-        /* TRACKLIST VINYL STYLING - Isolated from Body */
         .tracklist-space {
             background: var(--vinyl) !important;
             border: 3px double #444 !important;
             box-shadow: inset 0 0 10px #000, 0 0 15px rgba(0,0,0,0.5);
-            transform: scale(1.15);
-            z-index: 5;
-            color: white !important;
+            transform: scale(1.15); z-index: 5; color: white !important; font-size: 0.6rem !important;
         }
 
-        #ui-layer { display: flex; align-items: center; gap: 30px; background: var(--ui-bg); padding: 20px 40px; border-radius: 12px; margin: 15px 0; border: 1px solid rgba(255,255,255,0.1); width: 900px; justify-content: space-between; z-index: 10; }
-        
+        #ui-layer { display: flex; align-items: center; gap: 30px; background: var(--ui-bg); padding: 20px 40px; border-radius: 12px; margin: 15px 0; border: 1px solid rgba(255,255,255,0.1); width: 950px; justify-content: space-between; z-index: 10; }
+        #dice-box { width: 80px; height: 80px; background: white; color: black; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 3.5rem; font-weight: bold; }
+        #dice-box.bonus-active { animation: sparkle 0.6s infinite; background: var(--gold); }
+
         #board-container { 
-            display: grid; 
-            grid-template-columns: repeat(10, 1fr); 
-            grid-template-rows: repeat(6, 1fr); 
-            gap: 15px; padding: 30px; 
-            background: rgba(0,0,0,0.2); border-radius: 20px; 
+            display: grid; grid-template-columns: repeat(10, 1fr); grid-template-rows: repeat(6, 1fr); 
+            gap: 15px; padding: 40px; background: rgba(0,0,0,0.1); border-radius: 20px; 
             position: relative; width: 1100px; height: 650px; 
         }
 
-        .space { width: 80px; height: 80px; border-radius: 50%; border: 1px solid var(--tape-white); display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 0.7rem; background: rgba(255,255,255,0.05); text-align: center; }
+        .space { width: 85px; height: 85px; border-radius: 50%; border: 1px solid var(--tape-white); display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 0.7rem; background: rgba(255,255,255,0.05); text-align: center; overflow: hidden; }
         .blank { opacity: 0.2; transform: scale(0.8); border-style: dashed; }
         .special { cursor: pointer; border-width: 2px; }
         .joy { border-color: var(--joy-glow); color: var(--joy-glow); }
         .fear { border-color: var(--fear-glow); color: var(--fear-glow); }
-        .hybrid { border-color: #fff; border-style: dotted; }
 
         .player { width: 70px; height: 70px; position: absolute; z-index: 100; transition: all 0.6s cubic-bezier(0.18, 0.89, 0.32, 1.28); background-size: contain; background-repeat: no-repeat; background-position: center bottom; pointer-events: none; }
         .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.92); z-index: 2000; display: none; align-items: center; justify-content: center; }
         .popup { background: #111; padding: 40px; border-radius: 20px; border: 2px solid #444; width: 500px; text-align: center; }
         button { padding: 12px 25px; font-family: inherit; font-weight: bold; cursor: pointer; background: #fff; border: none; border-radius: 4px; text-transform: uppercase; margin: 10px; }
 
-        #rule-sidebar { position: fixed; right: -300px; top: 100px; width: 240px; background: var(--ui-bg); padding: 20px; border-radius: 15px; border: 2px solid var(--joy-glow); transition: 0.5s; z-index: 100; }
-        #rule-sidebar.active { right: 20px; }
-        
-        #dice-box { width: 80px; height: 80px; background: white; color: black; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 3.5rem; font-weight: bold; }
+        #merch-tracker { position: fixed; left: 20px; top: 100px; width: 220px; background: var(--ui-bg); border-radius: 12px; padding: 15px; border: 1px solid rgba(255,255,255,0.1); z-index: 5; }
+        .tracker-item { display: flex; flex-direction: column; gap: 5px; margin-bottom: 12px; border-bottom: 1px solid #333; padding-bottom: 8px; }
+        .tracker-head { width: 35px; height: 35px; background-size: contain; background-repeat: no-repeat; border-radius: 50%; }
     </style>
 </head>
 <body>
+
+    <div id="merch-tracker">
+        <h4 style="margin:0 0 10px 0; font-size: 0.6rem; letter-spacing: 2px; opacity: 0.6;">PROJECT DATA</h4>
+        <div id="tracker-list"></div>
+    </div>
 
     <div id="ui-layer">
         <div id="dice-box">?</div>
@@ -76,21 +81,19 @@
 
     <div id="overlay-event" class="overlay">
         <div class="popup" id="event-box">
-            <h1 id="event-title" style="font-size: 2.5rem; margin: 0;"></h1>
+            <h1 id="event-title"></h1>
             <p id="event-desc" style="font-size: 1.2rem; margin: 20px 0; line-height: 1.4;"></p>
-            <div id="timer-ui" style="font-size: 3rem; color: var(--joy-glow); margin-bottom: 20px; display: none;"></div>
-            <button id="event-btn" style="background: var(--joy-glow); color: black;"></button>
+            <div id="timer-ui" style="font-size: 3.5rem; color: var(--joy-glow); margin-bottom: 20px; display: none;"></div>
+            <button id="event-btn"></button>
             <button id="skip-btn" style="display: none; background: #444; color: #fff;"></button>
         </div>
     </div>
 
-    <div id="rule-sidebar" onclick="this.classList.remove('active')">
-        <h3 id="side-title" style="color: var(--joy-glow); margin-top:0;"></h3>
-        <p id="side-desc"></p>
-    </div>
+    <div id="overlay-merch" class="overlay"><div class="popup"><h2>👕 INVEST?</h2><button onclick="handleChoice('merch', true)">INVEST</button><button onclick="handleChoice('merch', false)">PASS</button></div></div>
+    <div id="overlay-remedy" class="overlay"><div class="popup"><h2>💊 SELL OUT?</h2><button onclick="handleChoice('remedy', true)">SELL OUT</button><button onclick="handleChoice('remedy', false)">STAY TRUE</button></div></div>
 
     <div id="overlay-count" class="overlay" style="display:flex"><div class="popup"><h2>PLAYERS?</h2><button onclick="startSetup(1)">1</button><button onclick="startSetup(2)">2</button><button onclick="startSetup(3)">3</button></div></div>
-    <div id="overlay-names" class="overlay"><div class="popup"><h2 id="setup-label">PLAYER 1</h2><input type="text" id="name-input" placeholder="NAME" style="padding:10px; margin-bottom:20px;"><button onclick="confirmPlayer()">NEXT</button></div></div>
+    <div id="overlay-names" class="overlay"><div class="popup"><h2 id="setup-label">PLAYER 1</h2><input type="text" id="name-input" placeholder="NAME" style="padding:10px; width:80%; margin-bottom:20px;"><div style="display:flex; justify-content:center; gap:10px; margin-bottom:20px;"><div id="btn-jesse" style="width:60px; height:60px; background-image:url('jesse.png'); background-size:contain; cursor:pointer; opacity:0.4; border: 2px solid transparent;" onclick="selectHead('jesse', '#007bff')"></div><div id="btn-marco" style="width:60px; height:60px; background-image:url('marco.png'); background-size:contain; cursor:pointer; opacity:0.4; border: 2px solid transparent;" onclick="selectHead('marco', '#ffcc00')"></div><div id="btn-grant" style="width:60px; height:60px; background-image:url('grant.png'); background-size:contain; cursor:pointer; opacity:0.4; border: 2px solid transparent;" onclick="selectHead('grant', '#ff00ff')"></div></div><button onclick="confirmPlayer()">NEXT</button></div></div>
 
 <script>
     const boardLayout = [
@@ -105,24 +108,34 @@
     const rules = {
         4: { id:'joy', title:"DAYSPRING", emoji:"☀️", desc:"Spring ahead 3 spaces!", shift: 3, btn: "SPRING AHEAD" },
         6: { id:'hybrid', title:"FEARJOY", emoji:"☯️", desc:"Roll again. 1-3: Back 1, 4-6: Forward 1." },
-        8: { id:'track', title:"FIGMENT", emoji:"🛸", desc:"Step outside for 60s (+2 next roll) or stay inside (-1).", timer: 60, skipShift: -1, btn: "I WENT OUTSIDE" },
-        10: { id:'remedy', title:"THE REMEDY", emoji:"💊", desc:"Sell out for +6, but 6s become -2." },
-        12: { id:'van', title:"BREAKDOWN", emoji:"🛠", desc:"Skip 1 turn.", count: 1, btn: "FIXING IT" },
+        8: { id:'track', title:"FIGMENT", emoji:"🛸", desc:"Step outside for 60s for +2 on your next roll, or stay inside and rewind 1.", timer: 60, skipShift: -1, btn: "I WENT OUTSIDE", bonus: 2 },
+        10: { id:'choice', type:'remedy' },
+        12: { id:'van', title:"BREAKDOWN", emoji:"🛠", desc:"Van mechanical issues. Skip 1 turn.", count: 1, btn: "FIXING IT" },
         13: { id:'joy', title:"JOY", emoji:"✨", desc:"Forward 1.", shift: 1, btn: "KEEP GOING" },
         15: { id:'track', title:"DMITRI", emoji:"👨‍🚀", desc:"Take 5 deep breaths (10s) to enter 5D or skip (-2).", timer: 10, skipShift: -2, btn: "I AM CENTERED" },
         17: { id:'hybrid', title:"FEARJOY", emoji:"☯️", desc:"Roll again. 1-3: Back 1, 4-6: Forward 1." },
-        18: { id:'track', title:"NIGHTDRIVE", emoji:"🌙", desc:"Keep eyes closed until next turn. Fail = -2." }
+        20: { id:'choice', type:'merch' },
+        21: { id:'fear', title:"FEAR", emoji:"💀", desc:"Back 1.", shift: -1, btn: "UGH" }
     };
 
-    let players = [], turnIndex = 0, isMoving = false, totalPlayers = 0, setupIdx = 0;
+    let players = [], turnIndex = 0, isMoving = false, setupIdx = 0, totalPlayers = 0, tempHead = null;
 
     function startSetup(n) { totalPlayers = n; document.getElementById('overlay-count').style.display='none'; document.getElementById('overlay-names').style.display='flex'; }
+    
+    function selectHead(id, c) { 
+        tempHead = { id, color: c, img: id + '.png' }; 
+        document.querySelectorAll('[id^="btn-"]').forEach(b => { b.style.opacity = '0.4'; b.style.borderColor = 'transparent'; });
+        document.getElementById('btn-' + id).style.opacity = '1'; 
+        document.getElementById('btn-' + id).style.borderColor = 'white';
+    }
+
     function confirmPlayer() {
-        let n = document.getElementById('name-input').value || `P${setupIdx+1}`;
-        players.push({ name: n.toUpperCase(), pos: 0, head: 'jesse', color: '#00ff88', skipCount: 0 });
+        let n = document.getElementById('name-input').value.toUpperCase() || `P${setupIdx+1}`;
+        if(!tempHead) { alert("Select an artist!"); return; }
+        players.push({ name: n, pos: 0, head: tempHead, color: tempHead.color, skipCount: 0, isInvestor: false, merchSales: 0, isSellout: false, remedyHITS: 0, nextRollBonus: 0 });
         setupIdx++;
         if(setupIdx >= totalPlayers) { document.getElementById('overlay-names').style.display='none'; initGame(); }
-        else { document.getElementById('name-input').value = ''; }
+        else { document.getElementById('name-input').value = ''; tempHead = null; document.querySelectorAll('[id^="btn-"]').forEach(b => b.style.opacity = '0.4'); }
     }
 
     function initGame() {
@@ -132,12 +145,11 @@
             s.id = 's' + i; s.className = 'space';
             if(name === "blank") s.classList.add('blank');
             else {
-                s.classList.add('special');
-                s.innerHTML = name;
+                s.classList.add('special'); s.innerHTML = name;
                 if(rules[i] && rules[i].id === 'track') s.classList.add('tracklist-space');
                 if(name.includes("JOY")) s.classList.add('joy');
                 if(name.includes("FEAR")) s.classList.add('fear');
-                s.onclick = () => { document.getElementById('side-title').innerText = name; document.getElementById('rule-sidebar').classList.add('active'); };
+                s.onclick = () => { /* Sidebar preview logic could go here */ };
             }
             let row = Math.floor(i / 10);
             let col = (row % 2 === 0) ? (i % 10) : (9 - (i % 10));
@@ -146,7 +158,7 @@
         });
         players.forEach((p, i) => {
             const el = document.createElement('div'); el.id = 'p' + i; el.className = 'player';
-            el.style.backgroundImage = "url('jesse.png')"; board.appendChild(el);
+            el.style.backgroundImage = `url('${p.head.img}')`; board.appendChild(el);
             updatePos(i);
         });
         document.getElementById('roll-btn').disabled = false; updateUI();
@@ -154,25 +166,51 @@
 
     function updatePos(idx) {
         const p = players[idx], t = document.getElementById('s' + p.pos), el = document.getElementById('p' + idx);
-        el.style.left = t.offsetLeft + 5 + "px"; el.style.top = t.offsetTop + 5 + "px";
+        el.style.left = t.offsetLeft + 8 + "px"; el.style.top = t.offsetTop + 8 + "px";
     }
 
     function updateUI() {
-        const p = players[turnIndex];
+        const p = players[turnIndex]; if(!p) return;
         document.getElementById('status-text').innerText = p.name;
         document.getElementById('status-text').style.color = p.color;
+        const list = document.getElementById('tracker-list'); list.innerHTML = '';
+        players.forEach(pl => {
+            if(!pl.isInvestor && !pl.isSellout) return;
+            let icons = "👕".repeat(pl.merchSales) + "💊".repeat(pl.remedyHITS);
+            list.innerHTML += `<div class="tracker-item"><div style="display:flex;align-items:center;gap:8px;"><div class="tracker-head" style="background-image:url('${pl.head.img}')"></div><div style="font-size:0.7rem;">${pl.name}</div></div><div class="icon-stack">${icons}</div></div>`;
+        });
     }
 
     async function doRoll() {
         if(isMoving) return;
+        const p = players[turnIndex];
+        if(p.skipCount > 0) { p.skipCount--; endTurn(); return; }
+        
         isMoving = true; document.getElementById('roll-btn').disabled = true;
+        const diceBox = document.getElementById('dice-box');
+        diceBox.className = '';
+        
         let roll = Math.floor(Math.random()*6)+1;
-        document.getElementById('dice-box').innerText = roll;
+        diceBox.innerText = roll;
         await new Promise(r => setTimeout(r, 600));
 
-        for(let i=0; i<roll; i++) {
-            if(players[turnIndex].pos < boardLayout.length-1) {
-                players[turnIndex].pos++; updatePos(turnIndex);
+        // Apply Figment Bonus
+        if(p.nextRollBonus > 0) {
+            diceBox.classList.add('bonus-active');
+            await new Promise(r => setTimeout(r, 600));
+            roll += p.nextRollBonus; p.nextRollBonus = 0;
+            diceBox.innerText = roll;
+            await new Promise(r => setTimeout(r, 800));
+        }
+
+        // Apply Merch/Remedy Modifiers
+        if(p.isInvestor && (roll === 1 || roll === 2)) { roll *= 2; diceBox.innerText = roll; p.merchSales++; }
+        else if(p.isSellout && roll === 6) { roll = -2; diceBox.innerText = roll; p.remedyHITS++; }
+
+        const dir = roll > 0 ? 1 : -1;
+        for(let i=0; i<Math.abs(roll); i++) {
+            if(p.pos + dir >= 0 && p.pos + dir < boardLayout.length) {
+                p.pos += dir; updatePos(turnIndex);
                 await new Promise(r => setTimeout(r, 250));
             }
         }
@@ -183,20 +221,24 @@
         const p = players[turnIndex], r = rules[p.pos];
         if(!r) { endTurn(); return; }
 
+        if(r.id === 'choice') {
+            document.getElementById(`overlay-${r.type}`).style.display = 'flex';
+            return;
+        }
+
         const overlay = document.getElementById('overlay-event');
+        const timerUI = document.getElementById('timer-ui');
+        const skip = document.getElementById('skip-btn');
+        const btn = document.getElementById('event-btn');
+
         document.getElementById('event-title').innerText = r.title;
         document.getElementById('event-desc').innerText = r.desc;
-        const btn = document.getElementById('event-btn');
         btn.innerText = r.btn || "OK";
         overlay.style.display = 'flex';
 
         if(r.timer) {
-            btn.disabled = true;
-            let time = r.timer;
-            const timerUI = document.getElementById('timer-ui');
-            timerUI.style.display = 'block';
-            timerUI.innerText = time;
-            const skip = document.getElementById('skip-btn');
+            btn.disabled = true; let time = r.timer;
+            timerUI.style.display = 'block'; timerUI.innerText = time;
             skip.style.display = 'inline-block'; skip.innerText = "SKIP";
 
             const intv = setInterval(() => {
@@ -204,10 +246,22 @@
                 if(time <= 0) { clearInterval(intv); btn.disabled = false; timerUI.innerText = "DONE"; }
             }, 1000);
 
-            btn.onclick = () => { overlay.style.display='none'; skip.style.display='none'; timerUI.style.display='none'; endTurn(); };
-            skip.onclick = () => { clearInterval(intv); overlay.style.display='none'; skip.style.display='none'; timerUI.style.display='none'; moveStep(r.skipShift); };
+            btn.onclick = () => { 
+                clearInterval(intv); overlay.style.display='none'; skip.style.display='none'; timerUI.style.display='none'; 
+                if(r.bonus) p.nextRollBonus = r.bonus;
+                endTurn(); 
+            };
+            skip.onclick = () => { 
+                clearInterval(intv); overlay.style.display='none'; skip.style.display='none'; timerUI.style.display='none'; 
+                moveStep(r.skipShift); 
+            };
         } else {
-            btn.onclick = () => { overlay.style.display='none'; if(r.shift) moveStep(r.shift); else endTurn(); };
+            btn.onclick = () => { 
+                overlay.style.display='none'; 
+                if(r.shift) moveStep(r.shift); 
+                else if(r.count) { p.skipCount = r.count; endTurn(); }
+                else endTurn(); 
+            };
         }
     }
 
@@ -215,14 +269,21 @@
         const p = players[turnIndex];
         const dir = n > 0 ? 1 : -1;
         for(let i=0; i<Math.abs(n); i++) {
-            p.pos += dir; if(p.pos < 0) p.pos = 0; updatePos(turnIndex);
-            await new Promise(r => setTimeout(r, 250));
+            p.pos += dir; if(p.pos < 0) p.pos = 0; if(p.pos >= 57) p.pos = 57;
+            updatePos(turnIndex); await new Promise(r => setTimeout(r, 250));
         }
         checkSpace();
     }
 
-    function endTurn() { turnIndex = (turnIndex + 1) % players.length; isMoving = false; document.getElementById('roll-btn').disabled = false; updateUI(); }
+    async function handleChoice(type, choice) {
+        document.getElementById(`overlay-${type}`).style.display = 'none';
+        const p = players[turnIndex];
+        if(type === 'merch' && choice) { p.isInvestor = true; moveStep(-4); return; }
+        if(type === 'remedy' && choice) { p.isSellout = true; moveStep(6); return; }
+        endTurn();
+    }
 
+    function endTurn() { turnIndex = (turnIndex + 1) % players.length; isMoving = false; document.getElementById('roll-btn').disabled = false; updateUI(); }
 </script>
 </body>
 </html>
