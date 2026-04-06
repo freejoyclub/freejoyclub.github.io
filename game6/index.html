@@ -2,12 +2,13 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Fearjoy - v8.5 Targeted Update</title>
+    <title>Fearjoy - v8.5.3 Winding Path</title>
     <style>
         :root {
             --wood-dark: #2a180b; --wood-mid: #3d2616; --wood-light: #4e3625;
             --tape-white: #fdfdfd; --joy-glow: #00ff88; --fear-glow: #ff4444;
             --gold: #ffd700; --ui-bg: rgba(0,0,0,0.98); --vinyl: #111111;
+            --path-tan: #d2b48c; /* Defined tan color for the path */
         }
 
         @keyframes woodFade { 0%, 100% { background-color: #2a180b; } 50% { background-color: #4e3625; } }
@@ -24,8 +25,18 @@
 
         #board-container { display: grid; grid-template-columns: repeat(10, 1fr); grid-template-rows: repeat(6, 1fr); gap: 18px; padding: 50px; width: 1100px; height: 700px; position: relative; z-index: 5; }
         
+        /* SVG Path Styling */
+        #winding-path {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            z-index: -1; /* Place behind spaces */
+            pointer-events: none; /* Let clicks pass through */
+        }
+        
         .space { width: 85px; height: 85px; border-radius: 50%; border: 1px solid var(--tape-white); display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 0.7rem; background: rgba(255,255,255,0.05); text-align: center; position: relative; transition: 0.3s; cursor: help; }
         .blank { opacity: 0.2; transform: scale(0.8); border-style: dashed; cursor: default; }
+        .blank-num { font-size: 0.6rem; opacity: 0.3; }
         .tracklist-space { background: var(--vinyl) !important; border: 3px double #666 !important; box-shadow: inset 0 0 15px #000; transform: scale(1.15); z-index: 5; font-size: 0.6rem !important; }
         .win-track { border: 4px solid var(--gold) !important; box-shadow: 0 0 30px var(--gold); }
         
@@ -81,7 +92,9 @@
         </div>
     </div>
 
-    <div id="board-container"></div>
+    <div id="board-container">
+        <svg id="winding-path" viewbox="0 0 1100 700"></svg>
+    </div>
 
     <div id="overlay-event" class="overlay">
         <div class="popup">
@@ -158,11 +171,35 @@
         else { document.getElementById('name-input').value=''; selectedAvatar=null; }
     }
 
+    // Function to calculate curve points between two coordinates with waviness
+    function getBezierCurve(x1, y1, x2, y2) {
+        const midX = (x1 + x2) / 2;
+        const midY = (y1 + y2) / 2;
+        const dist = Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));
+        
+        // Random offset for waviness
+        const offset = dist * 0.15; // 15% of distance
+        const angle = Math.atan2(y2 - y1, x2 - x1);
+        const perpAngle = angle + Math.PI / 2;
+        
+        const cpX = midX + offset * Math.cos(perpAngle);
+        const cpY = midY + offset * Math.sin(perpAngle);
+        
+        return `Q ${cpX} ${cpY} ${x2} ${y2}`;
+    }
+
     function initBoard() {
         const board = document.getElementById('board-container');
+        const containerRect = board.getBoundingClientRect();
+        
+        const spaceCoords = []; // Arrays to store calculated center coordinates
+
         boardLayout.forEach((name, i) => {
             const s = document.createElement('div'); s.id = 's'+i; s.className = 'space';
-            if(name === "blank") s.classList.add('blank');
+            if(name === "blank") {
+                s.classList.add('blank');
+                s.innerHTML = `<span class="blank-num">${i}</span>`;
+            }
             else {
                 s.innerHTML = name;
                 if(rules[i] && rules[i].isTrack) s.classList.add('tracklist-space');
@@ -172,10 +209,37 @@
                 if(i === 59) s.classList.add('win-track');
             }
             s.onclick = () => handleSpaceClick(i);
+            
+            // Grid Position Calculation
             let row = Math.floor(i / 10), col = (row % 2 === 0) ? (i % 10) : (9 - (i % 10));
             s.style.gridRow = 6 - row; s.style.gridColumn = col + 1;
             board.appendChild(s);
+
+            // Calculate center coordinates relative to container for pathing
+            const spaceRect = s.getBoundingClientRect();
+            // gridGap is 18px, padding is 50px. 
+            const calcX = spaceRect.left + spaceRect.width / 2 - containerRect.left;
+            const calcY = spaceRect.top + spaceRect.height / 2 - containerRect.top;
+            spaceCoords.push({ x: calcX, y: calcY });
         });
+
+        // DRAW SVG PATH
+        const svgPath = document.getElementById('winding-path');
+        let pathD = `M ${spaceCoords[0].x} ${spaceCoords[0].y} `; // Start point
+
+        for (let i = 0; i < spaceCoords.length - 1; i++) {
+            const startC = spaceCoords[i];
+            const endC = spaceCoords[i+1];
+            pathD += getBezierCurve(startC.x, startC.y, endC.x, endC.y);
+        }
+
+        const pathElement = document.createElementNS("http://www.w3.org/2000/svg", "path");
+        pathElement.setAttribute("d", pathD);
+        pathElement.setAttribute("stroke", getComputedStyle(document.documentElement).getPropertyValue('--path-tan'));
+        pathElement.setAttribute("stroke-width", "5px"); // Medium thickness
+        pathElement.setAttribute("fill", "none");
+        svgPath.appendChild(pathElement);
+
         players.forEach((p, i) => {
             const el = document.createElement('div'); el.id = 'p'+i; el.className = 'player';
             el.style.backgroundImage = `url('${p.avatar.img}')`;
@@ -244,24 +308,22 @@
         roll = Math.floor(Math.random()*6)+1;
         dice.innerText = roll;
 
-        // INVESTOR LOGIC: 1 or 2
         if(p.isInvestor && (roll === 1 || roll === 2)) {
-            await new Promise(r => setTimeout(r, 500)); // Initial pause on roll
+            await new Promise(r => setTimeout(r, 500));
             dice.classList.add('dice-gold'); spawnEmoji('👕');
             showSidebar("INVESTMENT PAYOFF", "Your investment paid off! The roll is doubled.");
             roll *= 2; 
             dice.innerText = roll;
-            await new Promise(r => setTimeout(r, 500)); // Pause on doubled result
+            await new Promise(r => setTimeout(r, 500));
         }
         
-        // SELLOUT LOGIC: 6
         if(p.isSellout && roll === 6) {
-            await new Promise(r => setTimeout(r, 500)); // Initial pause on 6
+            await new Promise(r => setTimeout(r, 500));
             dice.classList.add('dice-red'); spawnEmoji('💊');
             showSidebar("LABEL TAX", "The label takes their cut. The 6 becomes a -2 rewind.");
             roll = -2; 
             dice.innerText = roll;
-            await new Promise(r => setTimeout(r, 500)); // Pause on -2 result
+            await new Promise(r => setTimeout(r, 500));
         }
 
         await new Promise(r => setTimeout(r, 250));
@@ -301,7 +363,6 @@
             return; 
         }
 
-        // DUPLICATE DEAL BLOCK
         if(r.choice) {
             if(r.choice === 'remedy' && p.isSellout) {
                 showSidebar("STATUS", "You already signed this contract.");
