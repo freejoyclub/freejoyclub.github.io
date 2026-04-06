@@ -4,21 +4,23 @@
     <meta charset="UTF-8">
     <title>Fearjoy - v8.7</title>
     <style>
-        :root {
-            --wood-dark: #d2b48c; --wood-mid: #e3cbb0; --wood-light: #f4e8d8;
-            --tape-white: #fdfdfd; --joy-glow: #00ff88; --fear-glow: #ff4444;
-            --gold: #ffd700; --ui-bg: rgba(0,0,0,0.98); --vinyl: #111111;
-        }
+      :root {
+    /* "Halfway" Tones: Deeper Tans and Muted Earth Browns */
+    --wood-dark: #8b7355;   /* Reverted from light tan to a rich Nutmeg */
+    --wood-mid: #b39b7d;    /* A sandy, medium-depth brown */
+    --wood-light: #d2b48c;  /* The previous "dark" is now the "light" */
+    --tape-white: #fdfdfd; 
+    --joy-glow: #00ff88; 
+    --fear-glow: #ff4444;
+    --gold: #ffd700; 
+    --ui-bg: rgba(0,0,0,0.98); 
+    --vinyl: #111111;
+}
 
-        @keyframes woodFade { 0%, 100% { background-color: var(--wood-dark); } 50% { background-color: var(--wood-light); } }
-        @keyframes floatUp { 0% { transform: translateY(0); opacity: 1; } 100% { transform: translateY(-100px); opacity: 0; } }
-        @keyframes redSparkle { 0% { box-shadow: 0 0 10px var(--fear-glow); } 100% { box-shadow: 0 0 50px var(--fear-glow); background: #300; color: white; } }
-        @keyframes goldSparkle { 0% { box-shadow: 0 0 10px var(--gold); } 100% { box-shadow: 0 0 50px var(--gold); background: #330; color: white; } }
-        @keyframes flipping { 0% { transform: rotateY(0); } 100% { transform: rotateY(1800deg); } }
-        
-        @keyframes introGlow { from { text-shadow: 0 0 10px var(--gold), 0 0 20px var(--gold); } to { text-shadow: 0 0 20px var(--gold), 0 0 40px #fffad1; } }
-        @keyframes turnPulse { 0% { filter: drop-shadow(0 0 2px var(--p-color)); transform: scale(1); } 50% { filter: drop-shadow(0 0 15px var(--p-color)); transform: scale(1.1); } 100% { filter: drop-shadow(0 0 2px var(--p-color)); transform: scale(1); } }
-
+@keyframes woodFade { 
+    0%, 100% { background-color: var(--wood-dark); } 
+    50% { background-color: var(--wood-mid); } /* Swapped light for mid for better contrast */
+}
         body {
             animation: woodFade 20s ease-in-out infinite;
             background-image: repeating-linear-gradient(90deg, transparent, transparent 80px, rgba(0,0,0,0.05) 80px, rgba(0,0,0,0.05) 82px);
