@@ -1,88 +1,226 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Vinyl Board Game Demo</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fearjoy - Play This</title>
     <style>
-        #board { display: flex; gap: 10px; margin-bottom: 20px; }
-        .space { width: 60px; height: 60px; border: 2px solid #333; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; }
-        .joy { background-color: #e6fffa; border-color: #38b2ac; }
-        .fear { background-color: #fff5f5; border-color: #f56565; }
-        .player { width: 15px; height: 15px; border-radius: 50%; margin: 2px; }
-        #p1 { background: blue; }
-        #p2 { background: red; }
+        :root {
+            --wood-dark: #2c1b0e;
+            --tape-gray: #d1d1d1;
+            --joy-color: #00ff88;
+            --fear-color: #ff4444;
+        }
+
+        body {
+            background-color: var(--wood-dark);
+            /* Temporary wood texture feel */
+            background-image: repeating-linear-gradient(45deg, #2c1b0e 0px, #2c1b0e 2px, #362212 2px, #362212 4px);
+            color: white;
+            font-family: 'Courier New', monospace;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            margin: 0;
+        }
+
+        h1 { font-size: 2.5rem; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 3px; }
+
+        #game-info {
+            background: rgba(0,0,0,0.6);
+            padding: 15px 30px;
+            border-radius: 50px;
+            margin-bottom: 20px;
+            border: 1px solid #555;
+            text-align: center;
+        }
+
+        /* The Board */
+        #board-container {
+            display: grid;
+            grid-template-columns: repeat(10, 70px); /* 10 columns */
+            grid-template-rows: repeat(3, 100px);    /* 3 rows = 30 spaces */
+            gap: 15px;
+            padding: 40px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 20px;
+            position: relative;
+        }
+
+        .space {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            border: 2px solid var(--tape-gray);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 0.8rem;
+            position: relative;
+            background: rgba(0,0,0,0.3);
+        }
+
+        /* Special Spaces */
+        .joy { border-color: var(--joy-color); box-shadow: 0 0 10px var(--joy-color); color: var(--joy-color); }
+        .fear { border-color: var(--fear-color); box-shadow: 0 0 10px var(--fear-color); color: var(--fear-color); }
+        .start-end { background: white; color: black; }
+
+        /* Player Markers */
+        .player {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            position: absolute;
+            z-index: 10;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); /* Bouncy movement */
+            box-shadow: 0 4px 8px rgba(0,0,0,0.5);
+        }
+
+        #p1 { background: #3498db; border: 2px solid white; top: 10px; left: 10px;}
+        #p2 { background: #f1c40f; border: 2px solid white; top: 10px; left: 20px;}
+
+        button {
+            margin-top: 20px;
+            padding: 15px 40px;
+            font-family: inherit;
+            font-weight: bold;
+            background: #fff;
+            border: none;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        button:hover { background: var(--joy-color); transform: scale(1.05); }
+        button:disabled { background: #555; cursor: not-allowed; }
     </style>
 </head>
 <body>
 
-    <h2>Board Game Demo</h2>
-    <div id="board">
+    <h1>Fearjoy - Play This</h1>
+
+    <div id="game-info">
+        Current Turn: <span id="turn-indicator" style="color:#3498db">Player 1</span>
+        <div id="status-msg" style="margin-top: 10px; font-size: 0.9rem;">Roll the tape to begin...</div>
+    </div>
+
+    <div id="board-container">
+        <div id="p1" class="player"></div>
+        <div id="p2" class="player"></div>
         </div>
 
-    <button onclick="playTurn()">Roll Die (Player <span id="turn">1</span>)</button>
-    <p id="status">Roll to start!</p>
+    <button id="roll-btn" onclick="takeTurn()">Roll Die</button>
 
-    <script>
-        const boardLayout = ["Start", "", "Joy", "", "Fear", "", "Joy", "", "Fear", "Finish"];
-        let positions = [0, 0]; // Player 1 and Player 2 at space 0
-        let currentPlayer = 0;
+<script>
+    const boardContainer = document.getElementById('board-container');
+    const statusMsg = document.getElementById('status-msg');
+    const turnIndicator = document.getElementById('turn-indicator');
+    const rollBtn = document.getElementById('roll-btn');
 
-        function initBoard() {
-            const boardDiv = document.getElementById('board');
-            boardDiv.innerHTML = '';
-            boardLayout.forEach((type, i) => {
-                const div = document.createElement('div');
-                div.className = `space ${type.toLowerCase()}`;
-                div.innerHTML = `<span>${i}</span><small>${type}</small><div id="space-${i}"></div>`;
-                boardDiv.appendChild(div);
-            });
-            updatePieces();
-        }
+    const totalSpaces = 30;
+    let playerPos = [0, 0]; 
+    let currentPlayer = 0;
+    let isMoving = false;
 
-        function updatePieces() {
-            // Clear all spaces
-            for(let i=0; i<10; i++) document.getElementById(`space-${i}`).innerHTML = '';
-            // Place players
-            positions.forEach((pos, i) => {
-                const p = document.createElement('div');
-                p.className = 'player';
-                p.id = `p${i+1}`;
-                document.getElementById(`space-${pos}`).appendChild(p);
-            });
-        }
+    // Define special spaces manually for now
+    const joySpaces = [4, 12, 22];
+    const fearSpaces = [8, 18, 26];
 
-        function playTurn() {
-            const roll = Math.floor(Math.random() * 6) + 1;
-            let pos = positions[currentPlayer] + roll;
-
-            // Boundary check
-            if (pos >= 9) pos = 9;
-
-            // Apply "If-Then" Rules
-            let message = `Player ${currentPlayer + 1} rolled a ${roll}.`;
-            if (boardLayout[pos] === "Joy") {
-                pos += 1;
-                message += " Hit JOY! Move forward 1.";
-            } else if (boardLayout[pos] === "Fear") {
-                pos -= 1;
-                message += " Hit FEAR! Move back 1.";
-            }
-
-            positions[currentPlayer] = Math.max(0, pos);
-            document.getElementById('status').innerText = message;
+    // 1. Generate Winding Board Logic
+    function createBoard() {
+        for (let i = 0; i < totalSpaces; i++) {
+            const space = document.createElement('div');
+            space.id = `space-${i}`;
+            space.className = 'space';
             
-            updatePieces();
+            if (i === 0) { space.innerText = "START"; space.classList.add('start-end'); }
+            else if (i === 29) { space.innerText = "END"; space.classList.add('start-end'); }
+            else if (joySpaces.includes(i)) { space.innerText = "JOY"; space.classList.add('joy'); }
+            else if (fearSpaces.includes(i)) { space.innerText = "FEAR"; space.classList.add('fear'); }
+            else { space.innerText = i; }
 
-            if (positions[currentPlayer] === 9) {
-                alert(`Player ${currentPlayer + 1} wins!`);
-                positions = [0, 0];
-                initBoard();
+            // Snake Layout Logic: Reverse every other row visually
+            let row = Math.floor(i / 10);
+            let col = i % 10;
+            if (row % 2 === 1) { // Odd rows (1) go backwards
+                space.style.gridColumn = (10 - col);
+            } else {
+                space.style.gridColumn = (col + 1);
             }
+            space.style.gridRow = (3 - row); // Start from bottom row
 
-            currentPlayer = currentPlayer === 0 ? 1 : 0;
-            document.getElementById('turn').innerText = currentPlayer + 1;
+            boardContainer.appendChild(space);
+        }
+        updateVisuals(0);
+        updateVisuals(1);
+    }
+
+    // 2. Update piece position visuals
+    function updateVisuals(pIdx) {
+        const pElem = document.getElementById(`p${pIdx + 1}`);
+        const targetSpace = document.getElementById(`space-${playerPos[pIdx]}`);
+        
+        // Get space center
+        const offsetLeft = targetSpace.offsetLeft + (targetSpace.offsetWidth / 2) - (pElem.offsetWidth / 2);
+        const offsetTop = targetSpace.offsetTop + (targetSpace.offsetHeight / 2) - (pElem.offsetHeight / 2);
+        
+        // Offset second player slightly so they don't overlap perfectly
+        const overlap = pIdx === 1 ? 8 : -8;
+
+        pElem.style.left = `${offsetLeft + overlap}px`;
+        pElem.style.top = `${offsetTop + overlap}px`;
+    }
+
+    // 3. Turn Logic with Sequential Hopping
+    async function takeTurn() {
+        if (isMoving) return;
+        isMoving = true;
+        rollBtn.disabled = true;
+
+        const roll = Math.floor(Math.random() * 6) + 1;
+        statusMsg.innerText = `Player ${currentPlayer + 1} rolled a ${roll}!`;
+
+        // Move piece space by space
+        for (let i = 0; i < roll; i++) {
+            if (playerPos[currentPlayer] < totalSpaces - 1) {
+                playerPos[currentPlayer]++;
+                updateVisuals(currentPlayer);
+                await new Promise(r => setTimeout(r, 300)); // Pause between hops
+            }
         }
 
-        initBoard();
-    </script>
+        // Check for Joy/Fear
+        const finalPos = playerPos[currentPlayer];
+        if (joySpaces.includes(finalPos)) {
+            statusMsg.innerText = "JOY! Moving forward 1...";
+            await new Promise(r => setTimeout(r, 600));
+            playerPos[currentPlayer] = Math.min(totalSpaces - 1, playerPos[currentPlayer] + 1);
+        } else if (fearSpaces.includes(finalPos)) {
+            statusMsg.innerText = "FEAR. Moving back 1...";
+            await new Promise(r => setTimeout(r, 600));
+            playerPos[currentPlayer] = Math.max(0, playerPos[currentPlayer] - 1);
+        }
+        
+        updateVisuals(currentPlayer);
+
+        // Check Win
+        if (playerPos[currentPlayer] === 29) {
+            statusMsg.innerHTML = `<b style="color:var(--joy-color)">PLAYER ${currentPlayer + 1} WINS!</b>`;
+            return; // Stop game
+        }
+
+        // Switch Player
+        currentPlayer = currentPlayer === 0 ? 1 : 0;
+        turnIndicator.innerText = `Player ${currentPlayer + 1}`;
+        turnIndicator.style.color = currentPlayer === 0 ? "#3498db" : "#f1c40f";
+        
+        isMoving = false;
+        rollBtn.disabled = false;
+    }
+
+    createBoard();
+</script>
+
 </body>
 </html>
