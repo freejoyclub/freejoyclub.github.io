@@ -2,98 +2,123 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Fearjoy - v6.2 Performance Patch</title>
+    <title>Fearjoy - v6.3.1 Ultimate Restoration</title>
     <style>
         :root {
             --wood-dark: #2a180b; --wood-mid: #3d2616; --wood-light: #4e3625;
             --tape-white: #fdfdfd; --joy-glow: #00ff88; --fear-glow: #ff4444;
-            --gold: #ffd700; --ui-bg: rgba(0,0,0,0.9); --remedy-blue: #00d4ff;
+            --gold: #ffd700; --ui-bg: rgba(0,0,0,0.95); --remedy-blue: #00d4ff;
             --vinyl: #111111;
         }
 
-        @keyframes woodFade {
-            0% { background-color: #2a180b; }
-            33% { background-color: #3d2616; }
-            66% { background-color: #4e3625; }
-            100% { background-color: #2a180b; }
-        }
-
-        @keyframes sparkle {
-            0% { box-shadow: 0 0 0px var(--gold); transform: scale(1); }
-            50% { box-shadow: 0 0 40px var(--gold); transform: scale(1.1); }
-            100% { box-shadow: 0 0 0px var(--gold); transform: scale(1); }
-        }
+        @keyframes woodFade { 0%, 100% { background-color: #2a180b; } 50% { background-color: #4e3625; } }
+        @keyframes sparkle { 0% { box-shadow: 0 0 0px var(--gold); transform: scale(1); } 50% { box-shadow: 0 0 50px var(--gold); transform: scale(1.1); } 100% { box-shadow: 0 0 0px var(--gold); transform: scale(1); } }
+        @keyframes badDeal { 0% { box-shadow: 0 0 0px var(--fear-glow); } 50% { box-shadow: 0 0 50px var(--fear-glow); border-color: var(--fear-glow); } 100% { box-shadow: 0 0 0px var(--fear-glow); } }
 
         body {
-            animation: woodFade 15s ease-in-out infinite;
+            animation: woodFade 20s ease-in-out infinite;
             background-image: repeating-linear-gradient(90deg, transparent, transparent 80px, rgba(0,0,0,0.05) 80px, rgba(0,0,0,0.05) 82px),
-                              linear-gradient(to bottom, rgba(0,0,0,0.2), transparent);
+                              linear-gradient(to bottom, rgba(0,0,0,0.3), transparent);
             color: white; font-family: 'Courier New', monospace; display: flex; flex-direction: column; align-items: center; margin: 0; min-height: 100vh; overflow-x: hidden;
         }
 
-        .tracklist-space {
-            background: var(--vinyl) !important;
-            border: 3px double #444 !important;
-            box-shadow: inset 0 0 10px #000, 0 0 15px rgba(0,0,0,0.5);
-            transform: scale(1.15); z-index: 5; color: white !important; font-size: 0.6rem !important;
+        /* SPACE TYPES */
+        .space { width: 85px; height: 85px; border-radius: 50%; border: 1px solid var(--tape-white); display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 0.7rem; background: rgba(255,255,255,0.05); text-align: center; cursor: pointer; transition: 0.3s; }
+        .space:hover { background: rgba(255,255,255,0.2); }
+        .blank { opacity: 0.2; transform: scale(0.8); border-style: dashed; cursor: default; }
+        
+        .tracklist-space { 
+            background: var(--vinyl) !important; border: 3px double #444 !important; 
+            box-shadow: inset 0 0 12px #000, 0 0 10px rgba(0,0,0,0.5); 
+            transform: scale(1.15); z-index: 5; color: white !important; font-size: 0.6rem !important; 
         }
+        
+        .joy { border-color: var(--joy-glow); color: var(--joy-glow); box-shadow: 0 0 10px rgba(0,255,136,0.2); }
+        .fear { border-color: var(--fear-glow); color: var(--fear-glow); box-shadow: 0 0 10px rgba(255,68,68,0.2); }
+        .hybrid { border-style: dotted; border-width: 3px; border-color: white; }
 
-        #ui-layer { display: flex; align-items: center; gap: 30px; background: var(--ui-bg); padding: 20px 40px; border-radius: 12px; margin: 15px 0; border: 1px solid rgba(255,255,255,0.1); width: 950px; justify-content: space-between; z-index: 10; }
-        #dice-box { width: 80px; height: 80px; background: white; color: black; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 3.5rem; font-weight: bold; }
-        #dice-box.bonus-active { animation: sparkle 0.6s infinite; background: var(--gold); }
+        /* UI LAYERS */
+        #ui-layer { display: flex; align-items: center; gap: 30px; background: var(--ui-bg); padding: 25px 40px; border-radius: 12px; margin: 15px 0; border: 1px solid rgba(255,255,255,0.1); width: 950px; justify-content: space-between; z-index: 10; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        #dice-box { width: 85px; height: 85px; background: white; color: black; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 3.5rem; font-weight: bold; transition: 0.3s; }
+        .sparkle-dice { animation: sparkle 0.6s infinite; background: var(--gold) !important; }
+        .bad-dice { animation: badDeal 0.6s infinite; background: var(--fear-glow) !important; color: white !important; }
 
-        #board-container { 
-            display: grid; grid-template-columns: repeat(10, 1fr); grid-template-rows: repeat(6, 1fr); 
-            gap: 15px; padding: 40px; background: rgba(0,0,0,0.1); border-radius: 20px; 
-            position: relative; width: 1100px; height: 650px; 
-        }
+        #board-container { display: grid; grid-template-columns: repeat(10, 1fr); grid-template-rows: repeat(6, 1fr); gap: 18px; padding: 50px; background: rgba(0,0,0,0.1); border-radius: 30px; position: relative; width: 1100px; height: 700px; }
+        
+        .player { width: 75px; height: 75px; position: absolute; z-index: 100; transition: all 0.7s cubic-bezier(0.18, 0.89, 0.32, 1.28); background-size: contain; background-repeat: no-repeat; background-position: center bottom; pointer-events: none; filter: drop-shadow(0 5px 5px rgba(0,0,0,0.5)); }
 
-        .space { width: 85px; height: 85px; border-radius: 50%; border: 1px solid var(--tape-white); display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 0.7rem; background: rgba(255,255,255,0.05); text-align: center; overflow: hidden; }
-        .blank { opacity: 0.2; transform: scale(0.8); border-style: dashed; }
-        .special { cursor: pointer; border-width: 2px; }
-        .joy { border-color: var(--joy-glow); color: var(--joy-glow); }
-        .fear { border-color: var(--fear-glow); color: var(--fear-glow); }
+        #merch-tracker { position: fixed; left: 20px; top: 100px; width: 220px; background: var(--ui-bg); border-radius: 12px; padding: 15px; border: 1px solid #333; z-index: 5; }
+        .tracker-item { display: flex; flex-direction: column; gap: 5px; margin-bottom: 12px; border-bottom: 1px solid #333; padding-bottom: 10px; }
+        .tracker-head { width: 40px; height: 40px; background-size: contain; background-repeat: no-repeat; border-radius: 50%; border: 1px solid #555; }
 
-        .player { width: 70px; height: 70px; position: absolute; z-index: 100; transition: all 0.6s cubic-bezier(0.18, 0.89, 0.32, 1.28); background-size: contain; background-repeat: no-repeat; background-position: center bottom; pointer-events: none; }
-        .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.92); z-index: 2000; display: none; align-items: center; justify-content: center; }
-        .popup { background: #111; padding: 40px; border-radius: 20px; border: 2px solid #444; width: 500px; text-align: center; }
-        button { padding: 12px 25px; font-family: inherit; font-weight: bold; cursor: pointer; background: #fff; border: none; border-radius: 4px; text-transform: uppercase; margin: 10px; }
+        /* OVERLAYS */
+        .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.96); z-index: 2000; display: none; align-items: center; justify-content: center; }
+        .popup { background: #111; padding: 50px; border-radius: 25px; border: 2px solid #444; width: 550px; text-align: center; box-shadow: 0 0 100px rgba(0,0,0,1); }
+        #mini-dice { width: 100px; height: 100px; background: white; color: black; margin: 20px auto; border-radius: 12px; display: none; align-items: center; justify-content: center; font-size: 4rem; font-weight: bold; }
+        
+        #rule-sidebar { position: fixed; right: -320px; top: 120px; width: 280px; background: var(--ui-bg); padding: 30px; border-radius: 20px; border: 2px solid var(--joy-glow); transition: 0.6s cubic-bezier(0.23, 1, 0.32, 1); z-index: 100; }
+        #rule-sidebar.active { right: 25px; }
 
-        #merch-tracker { position: fixed; left: 20px; top: 100px; width: 220px; background: var(--ui-bg); border-radius: 12px; padding: 15px; border: 1px solid rgba(255,255,255,0.1); z-index: 5; }
-        .tracker-item { display: flex; flex-direction: column; gap: 5px; margin-bottom: 12px; border-bottom: 1px solid #333; padding-bottom: 8px; }
-        .tracker-head { width: 35px; height: 35px; background-size: contain; background-repeat: no-repeat; border-radius: 50%; }
+        button { padding: 15px 30px; font-family: inherit; font-weight: bold; cursor: pointer; background: #fff; border: none; border-radius: 6px; text-transform: uppercase; margin: 10px; font-size: 0.9rem; transition: 0.2s; }
+        button:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(255,255,255,0.2); }
+        button:disabled { opacity: 0.3; cursor: not-allowed; }
     </style>
 </head>
 <body>
 
     <div id="merch-tracker">
-        <h4 style="margin:0 0 10px 0; font-size: 0.6rem; letter-spacing: 2px; opacity: 0.6;">PROJECT DATA</h4>
+        <h4 style="margin:0 0 10px 0; font-size: 0.6rem; letter-spacing: 2px; opacity: 0.6; color: var(--joy-glow);">ARTIST ROSTER</h4>
         <div id="tracker-list"></div>
     </div>
 
     <div id="ui-layer">
         <div id="dice-box">?</div>
-        <div id="status-text" style="font-size:3rem; font-weight:900;">...</div>
-        <button id="roll-btn" onclick="doRoll()" disabled>ROLL</button>
+        <div id="status-text" style="font-size:3rem; font-weight:900;">WELCOME</div>
+        <button id="roll-btn" onclick="doRoll()" disabled style="background: var(--joy-glow); color: black; width: 150px;">ROLL</button>
     </div>
 
     <div id="board-container"></div>
 
     <div id="overlay-event" class="overlay">
-        <div class="popup" id="event-box">
-            <h1 id="event-title"></h1>
-            <p id="event-desc" style="font-size: 1.2rem; margin: 20px 0; line-height: 1.4;"></p>
-            <div id="timer-ui" style="font-size: 3.5rem; color: var(--joy-glow); margin-bottom: 20px; display: none;"></div>
-            <button id="event-btn"></button>
-            <button id="skip-btn" style="display: none; background: #444; color: #fff;"></button>
+        <div class="popup" id="popup-box">
+            <h1 id="event-title" style="font-size: 2.5rem; margin-bottom: 10px;"></h1>
+            <p id="event-desc" style="font-size: 1.3rem; line-height: 1.5; color: #ccc;"></p>
+            <div id="mini-dice">?</div>
+            <div id="timer-ui" style="font-size: 4rem; color: var(--joy-glow); margin: 20px 0; display: none; font-weight: bold;"></div>
+            <div id="action-area">
+                <button id="event-btn-primary"></button>
+                <button id="event-btn-secondary" style="display:none; background: #444; color: white;"></button>
+            </div>
         </div>
     </div>
 
-    <div id="overlay-merch" class="overlay"><div class="popup"><h2>👕 INVEST?</h2><button onclick="handleChoice('merch', true)">INVEST</button><button onclick="handleChoice('merch', false)">PASS</button></div></div>
-    <div id="overlay-remedy" class="overlay"><div class="popup"><h2>💊 SELL OUT?</h2><button onclick="handleChoice('remedy', true)">SELL OUT</button><button onclick="handleChoice('remedy', false)">STAY TRUE</button></div></div>
+    <div id="rule-sidebar" onclick="this.classList.remove('active')">
+        <h3 id="side-title" style="color: var(--joy-glow); font-size: 1.8rem; margin-top: 0;"></h3>
+        <p id="side-desc" style="line-height: 1.6; font-size: 1rem;"></p>
+        <p style="font-size: 0.7rem; opacity: 0.5; margin-top: 20px;">CLICK TO DISMISS</p>
+    </div>
 
-    <div id="overlay-count" class="overlay" style="display:flex"><div class="popup"><h2>PLAYERS?</h2><button onclick="startSetup(1)">1</button><button onclick="startSetup(2)">2</button><button onclick="startSetup(3)">3</button></div></div>
-    <div id="overlay-names" class="overlay"><div class="popup"><h2 id="setup-label">PLAYER 1</h2><input type="text" id="name-input" placeholder="NAME" style="padding:10px; width:80%; margin-bottom:20px;"><div style="display:flex; justify-content:center; gap:10px; margin-bottom:20px;"><div id="btn-jesse" style="width:60px; height:60px; background-image:url('jesse.png'); background-size:contain; cursor:pointer; opacity:0.4; border: 2px solid transparent;" onclick="selectHead('jesse', '#007bff')"></div><div id="btn-marco" style="width:60px; height:60px; background-image:url('marco.png'); background-size:contain; cursor:pointer; opacity:0.4; border: 2px solid transparent;" onclick="selectHead('marco', '#ffcc00')"></div><div id="btn-grant" style="width:60px; height:60px; background-image:url('grant.png'); background-size:contain; cursor:pointer; opacity:0.4; border: 2px solid transparent;" onclick="selectHead('grant', '#ff00ff')"></div></div><button onclick="confirmPlayer()">NEXT</button></div></div>
+    <div id="overlay-setup" class="overlay" style="display:flex">
+        <div class="popup" id="setup-content">
+            <div id="setup-step-1">
+                <h2>HOW MANY ARTISTS ON TOUR?</h2>
+                <button onclick="setPlayerCount(1)">1 ARTIST</button>
+                <button onclick="setPlayerCount(2)">2 ARTISTS</button>
+                <button onclick="setPlayerCount(3)">3 ARTISTS</button>
+            </div>
+            <div id="setup-step-2" style="display:none">
+                <h2 id="setup-prompt">NAME YOUR ARTIST</h2>
+                <input type="text" id="name-input" maxlength="12" style="padding:15px; width:80%; font-size: 1.5rem; background: #222; color: white; border: 1px solid #444; margin-bottom: 20px; text-align: center;">
+                <p>SELECT YOUR AVATAR</p>
+                <div style="display:flex; justify-content:center; gap:20px; margin-bottom:30px;">
+                    <img id="sel-jesse" src="jesse.png" style="width:80px; height:80px; cursor:pointer; opacity:0.3; border: 2px solid transparent;" onclick="pickAvatar('jesse', '#007bff')">
+                    <img id="sel-marco" src="marco.png" style="width:80px; height:80px; cursor:pointer; opacity:0.3; border: 2px solid transparent;" onclick="pickAvatar('marco', '#ffcc00')">
+                    <img id="sel-grant" src="grant.png" style="width:80px; height:80px; cursor:pointer; opacity:0.3; border: 2px solid transparent;" onclick="pickAvatar('grant', '#ff00ff')">
+                </div>
+                <button id="confirm-artist-btn" onclick="confirmArtist()">ADD TO TOUR</button>
+            </div>
+        </div>
+    </div>
 
 <script>
     const boardLayout = [
@@ -106,111 +131,121 @@
     ];
 
     const rules = {
-        4: { id:'joy', title:"DAYSPRING", emoji:"☀️", desc:"Spring ahead 3 spaces!", shift: 3, btn: "SPRING AHEAD" },
-        6: { id:'hybrid', title:"FEARJOY", emoji:"☯️", desc:"Roll again. 1-3: Back 1, 4-6: Forward 1." },
-        8: { id:'track', title:"FIGMENT", emoji:"🛸", desc:"Step outside for 60s for +2 on your next roll, or stay inside and rewind 1.", timer: 60, skipShift: -1, btn: "I WENT OUTSIDE", bonus: 2 },
-        10: { id:'choice', type:'remedy' },
-        12: { id:'van', title:"BREAKDOWN", emoji:"🛠", desc:"Van mechanical issues. Skip 1 turn.", count: 1, btn: "FIXING IT" },
-        13: { id:'joy', title:"JOY", emoji:"✨", desc:"Forward 1.", shift: 1, btn: "KEEP GOING" },
-        15: { id:'track', title:"DMITRI", emoji:"👨‍🚀", desc:"Take 5 deep breaths (10s) to enter 5D or skip (-2).", timer: 10, skipShift: -2, btn: "I AM CENTERED" },
-        17: { id:'hybrid', title:"FEARJOY", emoji:"☯️", desc:"Roll again. 1-3: Back 1, 4-6: Forward 1." },
-        20: { id:'choice', type:'merch' },
-        21: { id:'fear', title:"FEAR", emoji:"💀", desc:"Back 1.", shift: -1, btn: "UGH" }
+        4: { title: "DAYSPRING", emoji: "☀️", desc: "A burst of creative energy. Fast forward 3 spaces.", shift: 3 },
+        6: { title: "FEARJOY", emoji: "☯️", desc: "The duality of the craft. Roll the Fearjoy die: 1-3 = Rewind 1, 4-6 = Forward 1.", isFearjoy: true },
+        8: { title: "FIGMENT", emoji: "🛸", desc: "Step outdoors for 60 seconds of real-world inspiration. Success: +2 on next roll. Stay inside: Rewind 1.", timer: 60, skipShift: -1, bonus: 2, isTrack: true },
+        10: { title: "THE REMEDY", emoji: "💊", desc: "A major label offers a shortcut. SELL OUT to move 6 spaces now, but every 6 you roll becomes a -2 penalty later. STAY TRUE to do nothing.", choice: 'remedy', isTrack: true },
+        12: { title: "VAN BREAKS DOWN", emoji: "🛠", desc: "Mechanical failure. Skip your next turn while you wait for a tow.", skipTurns: 1 },
+        13: { title: "JOY", emoji: "✨", desc: "Momentum! Forward 1.", shift: 1 },
+        15: { title: "DMITRI", emoji: "👨‍🚀", desc: "Ground yourself. Take 5 deep breaths (10s timer) to gain focus, or rush through and rewind 2.", timer: 10, skipShift: -2, isTrack: true },
+        17: { title: "FEARJOY", emoji: "☯️", desc: "The duality of the craft. Roll the Fearjoy die.", isFearjoy: true },
+        18: { title: "NIGHTDRIVE", emoji: "🌙", desc: "Highway hypnosis. Keep your eyes closed until your next turn. Opening them early costs 2 spaces.", statusEffect: 'hypnotized', isTrack: true },
+        20: { title: "INVEST IN MERCH", emoji: "👕", desc: "Spend money to make money. Rewind 4 spaces now to permanently double any 1 or 2 you roll for the rest of the game.", choice: 'merch', isTrack: true },
+        21: { title: "FEAR", emoji: "💀", desc: "A bad review. Rewind 1.", shift: -1 },
+        31: { title: "FEAR", emoji: "💀", desc: "Self-doubt. Rewind 1.", shift: -1 },
+        32: { title: "JOY", emoji: "✨", desc: "Euphoria. Forward 1.", shift: 1 },
+        37: { title: "FEARJOY", emoji: "☯️", desc: "Roll the Fearjoy die.", isFearjoy: true },
+        45: { title: "GATEKEEPER", emoji: "🚧", desc: "INDUSTRY CHECK: You must land exactly on this space or stop here. Movement ends.", isGate: true },
+        50: { title: "FEARJOY", emoji: "☯️", desc: "Roll the Fearjoy die.", isFearjoy: true },
+        51: { title: "VAN BREAKS DOWN", emoji: "🛠", desc: "The radiator blew. Skip your next turn.", skipTurns: 1 }
     };
 
-    let players = [], turnIndex = 0, isMoving = false, setupIdx = 0, totalPlayers = 0, tempHead = null;
+    let players = [], turnIdx = 0, isMoving = false, totalP = 0, currentSetupP = 0, selectedAvatar = null;
 
-    function startSetup(n) { totalPlayers = n; document.getElementById('overlay-count').style.display='none'; document.getElementById('overlay-names').style.display='flex'; }
-    
-    function selectHead(id, c) { 
-        tempHead = { id, color: c, img: id + '.png' }; 
-        document.querySelectorAll('[id^="btn-"]').forEach(b => { b.style.opacity = '0.4'; b.style.borderColor = 'transparent'; });
-        document.getElementById('btn-' + id).style.opacity = '1'; 
-        document.getElementById('btn-' + id).style.borderColor = 'white';
+    // SETUP LOGIC
+    function setPlayerCount(n) { totalP = n; document.getElementById('setup-step-1').style.display='none'; document.getElementById('setup-step-2').style.display='block'; }
+    function pickAvatar(id, color) { selectedAvatar = { id, color, img: id+'.png' }; document.querySelectorAll('#setup-step-2 img').forEach(i=>i.style.opacity='0.3'); document.getElementById('sel-'+id).style.opacity='1'; }
+    function confirmArtist() {
+        const name = document.getElementById('name-input').value.toUpperCase() || `ARTIST ${currentSetupP+1}`;
+        if(!selectedAvatar) return;
+        players.push({ name, pos: 0, avatar: selectedAvatar, skipCount: 0, isInvestor: false, isSellout: false, merchHits: 0, remedyHits: 0, nextBonus: 0, activeStatus: null });
+        currentSetupP++;
+        if(currentSetupP >= totalP) { document.getElementById('overlay-setup').style.display='none'; initBoard(); }
+        else { document.getElementById('name-input').value=''; selectedAvatar=null; document.querySelectorAll('#setup-step-2 img').forEach(i=>i.style.opacity='0.3'); document.getElementById('setup-prompt').innerText=`NAME ARTIST ${currentSetupP+1}`; }
     }
 
-    function confirmPlayer() {
-        let n = document.getElementById('name-input').value.toUpperCase() || `P${setupIdx+1}`;
-        if(!tempHead) { alert("Select an artist!"); return; }
-        players.push({ name: n, pos: 0, head: tempHead, color: tempHead.color, skipCount: 0, isInvestor: false, merchSales: 0, isSellout: false, remedyHITS: 0, nextRollBonus: 0 });
-        setupIdx++;
-        if(setupIdx >= totalPlayers) { document.getElementById('overlay-names').style.display='none'; initGame(); }
-        else { document.getElementById('name-input').value = ''; tempHead = null; document.querySelectorAll('[id^="btn-"]').forEach(b => b.style.opacity = '0.4'); }
-    }
-
-    function initGame() {
+    // BOARD LOGIC
+    function initBoard() {
         const board = document.getElementById('board-container');
         boardLayout.forEach((name, i) => {
             const s = document.createElement('div');
-            s.id = 's' + i; s.className = 'space';
+            s.id = 's'+i; s.className = 'space';
             if(name === "blank") s.classList.add('blank');
             else {
-                s.classList.add('special'); s.innerHTML = name;
-                if(rules[i] && rules[i].id === 'track') s.classList.add('tracklist-space');
+                s.innerHTML = name; s.classList.add('special');
+                const r = rules[i];
+                if(r && r.isTrack) s.classList.add('tracklist-space');
                 if(name.includes("JOY")) s.classList.add('joy');
                 if(name.includes("FEAR")) s.classList.add('fear');
-                s.onclick = () => { /* Sidebar preview logic could go here */ };
+                if(name === "FEARJOY") s.classList.add('hybrid');
+                s.onclick = () => { document.getElementById('side-title').innerText = name; document.getElementById('side-desc').innerText = r ? r.desc : "A standard stop on the tour."; document.getElementById('rule-sidebar').classList.add('active'); };
             }
-            let row = Math.floor(i / 10);
-            let col = (row % 2 === 0) ? (i % 10) : (9 - (i % 10));
+            let row = Math.floor(i / 10), col = (row % 2 === 0) ? (i % 10) : (9 - (i % 10));
             s.style.gridRow = 6 - row; s.style.gridColumn = col + 1;
             board.appendChild(s);
         });
         players.forEach((p, i) => {
-            const el = document.createElement('div'); el.id = 'p' + i; el.className = 'player';
-            el.style.backgroundImage = `url('${p.head.img}')`; board.appendChild(el);
-            updatePos(i);
+            const el = document.createElement('div'); el.id = 'p'+i; el.className = 'player';
+            el.style.backgroundImage = `url('${p.avatar.img}')`; board.appendChild(el);
+            updateVisualPos(i);
         });
         document.getElementById('roll-btn').disabled = false; updateUI();
     }
 
-    function updatePos(idx) {
-        const p = players[idx], t = document.getElementById('s' + p.pos), el = document.getElementById('p' + idx);
-        el.style.left = t.offsetLeft + 8 + "px"; el.style.top = t.offsetTop + 8 + "px";
+    function updateVisualPos(idx) {
+        const p = players[idx], target = document.getElementById('s'+p.pos), el = document.getElementById('p'+idx);
+        el.style.left = target.offsetLeft + 5 + "px"; el.style.top = target.offsetTop + 5 + "px";
     }
 
     function updateUI() {
-        const p = players[turnIndex]; if(!p) return;
+        const p = players[turnIdx];
         document.getElementById('status-text').innerText = p.name;
-        document.getElementById('status-text').style.color = p.color;
+        document.getElementById('status-text').style.color = p.avatar.color;
         const list = document.getElementById('tracker-list'); list.innerHTML = '';
         players.forEach(pl => {
-            if(!pl.isInvestor && !pl.isSellout) return;
-            let icons = "👕".repeat(pl.merchSales) + "💊".repeat(pl.remedyHITS);
-            list.innerHTML += `<div class="tracker-item"><div style="display:flex;align-items:center;gap:8px;"><div class="tracker-head" style="background-image:url('${pl.head.img}')"></div><div style="font-size:0.7rem;">${pl.name}</div></div><div class="icon-stack">${icons}</div></div>`;
+            let icons = "👕".repeat(pl.merchHits) + "💊".repeat(pl.remedyHits);
+            list.innerHTML += `<div class="tracker-item"><div style="display:flex;align-items:center;gap:10px;"><div class="tracker-head" style="background-image:url('${pl.avatar.img}')"></div><div style="font-size:0.8rem; font-weight:bold;">${pl.name}</div></div><div style="font-size:1.2rem; padding-left:50px;">${icons}</div></div>`;
         });
     }
 
+    // GAMEPLAY CORE
     async function doRoll() {
         if(isMoving) return;
-        const p = players[turnIndex];
-        if(p.skipCount > 0) { p.skipCount--; endTurn(); return; }
-        
-        isMoving = true; document.getElementById('roll-btn').disabled = true;
-        const diceBox = document.getElementById('dice-box');
-        diceBox.className = '';
-        
-        let roll = Math.floor(Math.random()*6)+1;
-        diceBox.innerText = roll;
-        await new Promise(r => setTimeout(r, 600));
+        const p = players[turnIdx];
+        const dice = document.getElementById('dice-box');
+        dice.className = '';
 
-        // Apply Figment Bonus
-        if(p.nextRollBonus > 0) {
-            diceBox.classList.add('bonus-active');
-            await new Promise(r => setTimeout(r, 600));
-            roll += p.nextRollBonus; p.nextRollBonus = 0;
-            diceBox.innerText = roll;
-            await new Promise(r => setTimeout(r, 800));
+        if(p.skipCount > 0) {
+            p.skipCount--;
+            showModal("VAN REPAIRS", "Turn skipped while the mechanics work on the van.", "DISMISS", () => endTurn());
+            return;
         }
 
-        // Apply Merch/Remedy Modifiers
-        if(p.isInvestor && (roll === 1 || roll === 2)) { roll *= 2; diceBox.innerText = roll; p.merchSales++; }
-        else if(p.isSellout && roll === 6) { roll = -2; diceBox.innerText = roll; p.remedyHITS++; }
+        isMoving = true; document.getElementById('roll-btn').disabled = true;
+        let roll = Math.floor(Math.random()*6)+1;
+        dice.innerText = roll;
+        await new Promise(r => setTimeout(r, 600));
+
+        if(p.nextBonus > 0) {
+            roll += p.nextBonus; p.nextBonus = 0; dice.innerText = roll; dice.classList.add('sparkle-dice');
+            await new Promise(r => setTimeout(r, 1000));
+        }
+
+        if(p.isInvestor && (roll === 1 || roll === 2)) {
+            roll *= 2; p.merchHits++; dice.innerText = roll; dice.classList.add('sparkle-dice');
+            showModal("MERCH SOLD", "The investment pays off. Double movement!", "HELL YES", () => {});
+            await new Promise(r => setTimeout(r, 1000));
+        } else if(p.isSellout && roll === 6) {
+            roll = -2; p.remedyHits++; dice.innerText = "!"; dice.classList.add('bad-dice');
+            showModal("BAD DEAL", "Label interference. Rewind 2 spaces.", "DARN", () => {});
+            await new Promise(r => setTimeout(r, 1000));
+        }
 
         const dir = roll > 0 ? 1 : -1;
         for(let i=0; i<Math.abs(roll); i++) {
             if(p.pos + dir >= 0 && p.pos + dir < boardLayout.length) {
-                p.pos += dir; updatePos(turnIndex);
+                p.pos += dir; updateVisualPos(turnIdx);
+                if(rules[p.pos] && rules[p.pos].isGate) { i = 999; }
                 await new Promise(r => setTimeout(r, 250));
             }
         }
@@ -218,72 +253,61 @@
     }
 
     async function checkSpace() {
-        const p = players[turnIndex], r = rules[p.pos];
+        const p = players[turnIdx], r = rules[p.pos], modal = document.getElementById('overlay-event');
         if(!r) { endTurn(); return; }
 
-        if(r.id === 'choice') {
-            document.getElementById(`overlay-${r.type}`).style.display = 'flex';
-            return;
-        }
+        const title = document.getElementById('event-title'), desc = document.getElementById('event-desc'), pBtn = document.getElementById('event-btn-primary'), sBtn = document.getElementById('event-btn-secondary'), timerUI = document.getElementById('timer-ui'), miniD = document.getElementById('mini-dice');
+        
+        title.innerText = r.title + " " + r.emoji; desc.innerText = r.desc;
+        pBtn.innerText = "CONTINUE"; pBtn.style.display = 'inline-block'; pBtn.disabled = false;
+        sBtn.style.display = 'none'; timerUI.style.display = 'none'; miniD.style.display = 'none';
+        modal.style.display = 'flex';
 
-        const overlay = document.getElementById('overlay-event');
-        const timerUI = document.getElementById('timer-ui');
-        const skip = document.getElementById('skip-btn');
-        const btn = document.getElementById('event-btn');
-
-        document.getElementById('event-title').innerText = r.title;
-        document.getElementById('event-desc').innerText = r.desc;
-        btn.innerText = r.btn || "OK";
-        overlay.style.display = 'flex';
-
-        if(r.timer) {
-            btn.disabled = true; let time = r.timer;
-            timerUI.style.display = 'block'; timerUI.innerText = time;
-            skip.style.display = 'inline-block'; skip.innerText = "SKIP";
-
-            const intv = setInterval(() => {
-                time--; timerUI.innerText = time;
-                if(time <= 0) { clearInterval(intv); btn.disabled = false; timerUI.innerText = "DONE"; }
-            }, 1000);
-
-            btn.onclick = () => { 
-                clearInterval(intv); overlay.style.display='none'; skip.style.display='none'; timerUI.style.display='none'; 
-                if(r.bonus) p.nextRollBonus = r.bonus;
-                endTurn(); 
+        if(r.isFearjoy) {
+            pBtn.innerText = "ROLL FEARJOY DIE";
+            pBtn.onclick = async () => {
+                miniD.style.display = 'flex'; let f = Math.floor(Math.random()*6)+1;
+                miniD.innerText = f; await new Promise(res => setTimeout(res, 800));
+                modal.style.display = 'none'; movePlayer(f <= 3 ? -1 : 1);
             };
-            skip.onclick = () => { 
-                clearInterval(intv); overlay.style.display='none'; skip.style.display='none'; timerUI.style.display='none'; 
-                moveStep(r.skipShift); 
-            };
+        } else if(r.choice) {
+            pBtn.innerText = r.choice === 'remedy' ? "SELL OUT (+6)" : "INVEST (-4)";
+            sBtn.innerText = r.choice === 'remedy' ? "STAY TRUE" : "PASS";
+            sBtn.style.display = 'inline-block';
+            pBtn.onclick = () => { modal.style.display='none'; if(r.choice==='remedy'){p.isSellout=true; movePlayer(6);} else {p.isInvestor=true; movePlayer(-4);} };
+            sBtn.onclick = () => { modal.style.display='none'; endTurn(); };
+        } else if(r.timer) {
+            pBtn.disabled = true; let t = r.timer; timerUI.style.display = 'block'; timerUI.innerText = t;
+            sBtn.style.display = 'inline-block'; sBtn.innerText = "SKIP";
+            const clock = setInterval(() => { t--; timerUI.innerText = t; if(t<=0){ clearInterval(clock); pBtn.disabled=false; timerUI.innerText="DONE"; } }, 1000);
+            pBtn.onclick = () => { clearInterval(clock); modal.style.display='none'; if(r.bonus) p.nextBonus = r.bonus; endTurn(); };
+            sBtn.onclick = () => { clearInterval(clock); modal.style.display='none'; movePlayer(r.skipShift); };
         } else {
-            btn.onclick = () => { 
-                overlay.style.display='none'; 
-                if(r.shift) moveStep(r.shift); 
-                else if(r.count) { p.skipCount = r.count; endTurn(); }
-                else endTurn(); 
-            };
+            pBtn.onclick = () => { modal.style.display='none'; if(r.shift) movePlayer(r.shift); else if(r.skipTurns){ p.skipCount=r.skipTurns; endTurn(); } else endTurn(); };
         }
     }
 
-    async function moveStep(n) {
-        const p = players[turnIndex];
-        const dir = n > 0 ? 1 : -1;
+    async function movePlayer(n) {
+        const p = players[turnIdx], dir = n > 0 ? 1 : -1;
         for(let i=0; i<Math.abs(n); i++) {
             p.pos += dir; if(p.pos < 0) p.pos = 0; if(p.pos >= 57) p.pos = 57;
-            updatePos(turnIndex); await new Promise(r => setTimeout(r, 250));
+            updateVisualPos(turnIdx); await new Promise(r => setTimeout(r, 250));
         }
         checkSpace();
     }
 
-    async function handleChoice(type, choice) {
-        document.getElementById(`overlay-${type}`).style.display = 'none';
-        const p = players[turnIndex];
-        if(type === 'merch' && choice) { p.isInvestor = true; moveStep(-4); return; }
-        if(type === 'remedy' && choice) { p.isSellout = true; moveStep(6); return; }
-        endTurn();
+    function showModal(t, d, b, cb) {
+        const m = document.getElementById('overlay-event');
+        document.getElementById('event-title').innerText = t;
+        document.getElementById('event-desc').innerText = d;
+        const btn = document.getElementById('event-btn-primary');
+        btn.innerText = b; btn.style.display = 'inline-block';
+        document.getElementById('event-btn-secondary').style.display='none';
+        m.style.display='flex';
+        btn.onclick = () => { m.style.display='none'; if(cb) cb(); };
     }
 
-    function endTurn() { turnIndex = (turnIndex + 1) % players.length; isMoving = false; document.getElementById('roll-btn').disabled = false; updateUI(); }
+    function endTurn() { turnIdx = (turnIdx + 1) % players.length; isMoving = false; document.getElementById('roll-btn').disabled = false; updateUI(); }
 </script>
 </body>
 </html>
