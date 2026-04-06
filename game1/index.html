@@ -30,7 +30,6 @@
         #turn-text-container { flex-grow: 1; padding: 0 30px; text-align: left; }
         #turn-text { font-size: 2.8rem; font-weight: 900; color: white; text-transform: uppercase; line-height: 1; }
 
-        /* Rule Sidebar (Fixed to Right) */
         #rule-sidebar { 
             position: fixed; right: 40px; top: 50%; transform: translateY(-50%) translateX(400px);
             width: 240px; background: var(--ui-bg); padding: 25px; border-radius: 15px; border: 2px solid var(--joy-glow); transition: 0.5s; text-align: left; z-index: 100;
@@ -38,8 +37,12 @@
         #rule-sidebar.active { transform: translateY(-50%) translateX(0); }
 
         /* Popups */
-        .overlay { position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.9); z-index: 2000; display: none; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
-        .popup-window { background: #111; padding: 40px; border-radius: 20px; border: 3px solid #555; width: 450px; }
+        .overlay { position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.95); z-index: 2000; display: none; flex-direction: column; align-items: center; justify-content: center; }
+        .popup-window { background: #111; padding: 40px; border-radius: 20px; border: 1px solid #444; width: 450px; text-align: center; }
+
+        /* Setup Specifics */
+        .avatar-btn { width: 70px; height: 70px; background-size: contain; background-repeat: no-repeat; cursor: pointer; border-bottom: 4px solid transparent; opacity: 0.5; transition: 0.2s; }
+        .avatar-btn.selected { opacity: 1; border-color: var(--joy-glow); transform: scale(1.1); }
 
         #board-container { 
             display: grid; grid-template-columns: repeat(6, 1fr); grid-template-rows: repeat(5, 1fr); 
@@ -48,14 +51,16 @@
 
         .space { 
             width: 100%; height: 100%; border-radius: 50%; border: 3px solid var(--tape-white); 
-            display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 1.2rem; background: rgba(255,255,255,0.05); cursor: pointer;
+            display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 1.1rem; background: rgba(255,255,255,0.05); cursor: pointer;
         }
         .special { border-color: #ffd700; color: #ffd700; font-size: 3.5rem !important; }
+        .joy { border-color: var(--joy-glow); color: var(--joy-glow); }
+        .fear { border-color: var(--fear-glow); color: var(--fear-glow); }
 
         .player { width: 85px; height: 85px; position: absolute; z-index: 100; transition: all 0.7s cubic-bezier(0.4, 0, 0.2, 1); background-size: contain; background-repeat: no-repeat; background-position: center bottom; pointer-events: none; }
 
-        button { padding: 15px 30px; font-family: inherit; font-weight: bold; cursor: pointer; background: #fff; border: none; border-radius: 5px; text-transform: uppercase; font-size: 1rem; margin: 10px; }
-        .btn-gold { background: #ffd700; color: black; }
+        button { padding: 12px 24px; font-family: inherit; font-weight: bold; cursor: pointer; background: #fff; border: none; border-radius: 4px; text-transform: uppercase; margin: 10px; }
+        input { padding: 12px; background: #222; border: 1px solid #555; color: white; font-family: inherit; font-size: 1.2rem; width: 80%; margin-bottom: 20px; text-align: center; }
     </style>
 </head>
 <body>
@@ -63,16 +68,30 @@
     <div id="setup-count" class="overlay" style="display:flex;">
         <div class="popup-window">
             <h2>HOW MANY PLAYERS?</h2>
-            <button onclick="initSetup(1)">1</button>
-            <button onclick="initSetup(2)">2</button>
-            <button onclick="initSetup(3)">3</button>
+            <button onclick="setPlayerCount(1)">1</button>
+            <button onclick="setPlayerCount(2)">2</button>
+            <button onclick="setPlayerCount(3)">3</button>
+            <button onclick="setPlayerCount(4)">4</button>
+        </div>
+    </div>
+
+    <div id="setup-names" class="overlay">
+        <div class="popup-window">
+            <h2 id="setup-title">PLAYER 1</h2>
+            <input type="text" id="p-name-input" placeholder="ENTER NAME">
+            <div id="avatar-list" style="display: flex; justify-content: center; gap: 20px; margin-bottom: 20px;">
+                <div class="avatar-btn" id="av-jesse" style="background-image:url('jesse.png')" onclick="pickAv('jesse', '#007bff')"></div>
+                <div class="avatar-btn" id="av-marco" style="background-image:url('marco.png')" onclick="pickAv('marco', '#ffcc00')"></div>
+                <div class="avatar-btn" id="av-grant" style="background-image:url('grant.png')" onclick="pickAv('grant', '#ff00ff')"></div>
+            </div>
+            <button id="setup-next-btn" onclick="saveCurrentPlayer()">NEXT</button>
         </div>
     </div>
 
     <div id="skip-overlay" class="overlay">
         <div class="popup-window" style="border-color: var(--fear-glow);">
-            <h2 id="skip-title">VAN IN THE SHOP</h2>
-            <p id="skip-msg" style="font-size: 1.2rem;"></p>
+            <h2>VAN IN THE SHOP</h2>
+            <p id="skip-msg"></p>
             <button onclick="closeSkip()" style="background: var(--fear-glow); color: white;">BUMMER (SKIP TURN)</button>
         </div>
     </div>
@@ -80,8 +99,8 @@
     <div id="choice-overlay" class="overlay">
         <div class="popup-window" style="border-color: #ffd700;">
             <h2 id="choice-title">INVEST?</h2>
-            <p id="choice-desc" style="line-height: 1.6;"></p>
-            <button class="btn-gold" onclick="handleChoice(true)">INVEST & REWIND</button>
+            <p id="choice-desc" style="line-height:1.5; margin-bottom:20px;"></p>
+            <button style="background: #ffd700; color: black;" onclick="handleChoice(true)">INVEST & REWIND</button>
             <button onclick="handleChoice(false)">PASS</button>
         </div>
     </div>
@@ -102,37 +121,70 @@
     <div id="rule-sidebar" onclick="this.classList.remove('active')">
         <h3 id="rule-title"></h3>
         <p id="rule-desc"></p>
-        <p style="font-size: 0.7rem; margin-top: 15px; opacity: 0.5;">(Click to close)</p>
     </div>
 
 <script>
-    const avatarData = [
-        { id: 'jesse', img: 'jesse.png', color: '#007bff' },
-        { id: 'marco', img: 'marco.png', color: '#ffcc00' },
-        { id: 'grant', img: 'grant.png', color: '#ff00ff' }
-    ];
-
     const rules = {
-        2: { title: "👕 Invest in Merch", emoji: "👕", desc: "Pay the cost: Rewind 4 spaces. The Payoff: Double every 1 or 2 you roll for the rest of the game.", type: "choice" },
-        8: { title: "🛠 Van Breaks Down", emoji: "🛠", desc: "Mechanical failure. Skip your next turn.", type: "skip" },
-        15: { title: "🌞 Dayspring", emoji: "🌞", desc: "The sun rises. Fast forward 3 spaces!", type: "forward", val: 3 },
-        21: { title: "🛠 Van Breaks Down", emoji: "🛠", desc: "More van trouble. Skip your next turn.", type: "skip" }
+        1: { title: "👕 Invest in Merch", emoji: "👕", desc: "Rewind 4 spaces now. Double every 1 or 2 you roll forever.", type: "choice" },
+        2: { title: "🛠 Van Breaks Down", emoji: "🛠", desc: "Mechanical failure. Skip your next turn.", type: "skip" },
+        3: { title: "👕 Invest in Merch", emoji: "👕", desc: "Rewind 4 spaces now. Double every 1 or 2 you roll forever.", type: "choice" },
+        4: { title: "🛠 Van Breaks Down", emoji: "🛠", desc: "Mechanical failure. Skip your next turn.", type: "skip" },
+        5: { title: "👕 Invest in Merch", emoji: "👕", desc: "Rewind 4 spaces now. Double every 1 or 2 you roll forever.", type: "choice" },
+        6: { title: "🛠 Van Breaks Down", emoji: "🛠", desc: "Mechanical failure. Skip your next turn.", type: "skip" },
+        12: { title: "🌞 Dayspring", emoji: "🌞", desc: "Fast forward 3 spaces!", type: "forward", val: 3 },
+        15: { title: "JOY", type: "joy" },
+        20: { title: "FEAR", type: "fear" },
+        24: { title: "JOY", type: "joy" },
+        28: { title: "FEAR", type: "fear" }
     };
 
     let players = [];
-    let turnIndex = 0;
+    let totalPlayers = 0;
+    let setupIdx = 0;
+    let currentPick = null;
+    let turnIdx = 0;
     let moving = false;
 
-    function initSetup(num) {
-        for(let i=0; i<num; i++) {
-            players.push({ name: avatarData[i].id.toUpperCase(), avatar: avatarData[i], pos: 0, skip: false, isInvestor: false });
-        }
+    // --- SETUP FLOW ---
+    function setPlayerCount(num) {
+        totalPlayers = num;
         document.getElementById('setup-count').style.display = 'none';
-        document.getElementById('roll-btn').disabled = false;
-        initBoard();
-        updateUI();
+        document.getElementById('setup-names').style.display = 'flex';
     }
 
+    function pickAv(id, color) {
+        currentPick = { id: id, color: color, img: id + '.png' };
+        document.querySelectorAll('.avatar-btn').forEach(el => el.classList.remove('selected'));
+        document.getElementById('av-'+id).classList.add('selected');
+    }
+
+    function saveCurrentPlayer() {
+        const nameInput = document.getElementById('p-name-input');
+        if(!currentPick) return alert("Select a head!");
+        
+        players.push({
+            name: nameInput.value.toUpperCase() || `PLAYER ${setupIdx+1}`,
+            avatar: currentPick,
+            pos: 0,
+            skip: false,
+            isInvestor: false
+        });
+
+        setupIdx++;
+        if(setupIdx < totalPlayers) {
+            nameInput.value = '';
+            currentPick = null;
+            document.querySelectorAll('.avatar-btn').forEach(el => el.classList.remove('selected'));
+            document.getElementById('setup-title').innerText = `PLAYER ${setupIdx+1}`;
+        } else {
+            document.getElementById('setup-names').style.display = 'none';
+            document.getElementById('roll-btn').disabled = false;
+            initBoard();
+            updateUI();
+        }
+    }
+
+    // --- GAME LOGIC ---
     function initBoard() {
         const board = document.getElementById('board-container');
         for(let i=0; i<30; i++) {
@@ -140,9 +192,15 @@
             s.id = `s${i}`;
             s.className = 'space';
             if(rules[i]) {
-                s.innerText = rules[i].emoji;
-                s.classList.add('special');
-                s.onclick = (e) => { e.stopPropagation(); showSidebar(i); };
+                if(rules[i].emoji) {
+                    s.innerText = rules[i].emoji;
+                    s.classList.add('special');
+                } else if(rules[i].type === 'joy') {
+                    s.innerText = '+1'; s.classList.add('joy');
+                } else if(rules[i].type === 'fear') {
+                    s.innerText = '-1'; s.classList.add('fear');
+                }
+                s.onclick = (e) => { e.stopPropagation(); if(rules[i].desc) showSidebar(i); };
             } else {
                 s.innerText = (i===0) ? "START" : (i===29) ? "END" : i;
             }
@@ -172,14 +230,14 @@
         const p = players[idx];
         const target = document.getElementById(`s${p.pos}`);
         const pElem = document.getElementById(`piece${idx}`);
-        const offset = (idx * 10) - (players.length * 5); 
+        const offset = (idx * 12) - (players.length * 6); 
         pElem.style.left = `${target.offsetLeft + (target.offsetWidth/2) - 42 + offset}px`;
         pElem.style.top = `${target.offsetTop + (target.offsetHeight/2) - 65}px`;
     }
 
     function updateUI() {
-        const p = players[turnIndex];
-        document.getElementById('status-text').innerText = p.isInvestor ? "INVESTOR (1-2x2)" : "YOUR TURN";
+        const p = players[turnIdx];
+        document.getElementById('status-text').innerText = p.isInvestor ? "MERCH INVESTOR: ROLLS DOUBLED" : "YOUR TURN";
         document.getElementById('turn-text').innerText = p.name;
         document.getElementById('turn-text').style.textShadow = `0 0 20px ${p.avatar.color}`;
     }
@@ -190,91 +248,14 @@
         document.getElementById('roll-btn').disabled = true;
         document.getElementById('rule-sidebar').classList.remove('active');
 
-        // Check Skip
-        if(players[turnIndex].skip) {
-            document.getElementById('skip-msg').innerText = `${players[turnIndex].name}, skip this turn while the mechanic works.`;
+        if(players[turnIdx].skip) {
+            document.getElementById('skip-msg').innerText = `${players[turnIdx].name}, you're stuck at the shop.`;
             document.getElementById('skip-overlay').style.display = 'flex';
-            return; 
+            return;
         }
 
         let roll = Math.floor(Math.random() * 6) + 1;
-        let original = roll;
-        if(players[turnIndex].isInvestor && roll <= 2) roll *= 2;
+        if(players[turnIdx].isInvestor && roll <= 2) roll *= 2;
 
         for(let i=0; i<10; i++) {
             document.getElementById('dice-box').innerText = Math.floor(Math.random()*6)+1;
-            await new Promise(r => setTimeout(r, 60));
-        }
-        document.getElementById('dice-box').innerText = roll;
-        
-        // Wait a little less now
-        await new Promise(r => setTimeout(r, 400));
-
-        for(let step=0; step<roll; step++) {
-            if(players[turnIndex].pos < 29) {
-                players[turnIndex].pos++;
-                placePiece(turnIndex);
-                await new Promise(r => setTimeout(r, 400));
-            }
-        }
-
-        const finalPos = players[turnIndex].pos;
-        if(rules[finalPos]) {
-            const rule = rules[finalPos];
-            if(rule.type === "choice") {
-                document.getElementById('choice-overlay').style.display = 'flex';
-                document.getElementById('choice-desc').innerText = rule.desc;
-            } else {
-                showSidebar(finalPos);
-                await new Promise(r => setTimeout(r, 1500));
-                if(rule.type === 'forward') {
-                    for(let i=0; i<rule.val; i++) {
-                        players[turnIndex].pos = Math.min(29, players[turnIndex].pos + 1);
-                        placePiece(turnIndex);
-                        await new Promise(r => setTimeout(r, 300));
-                    }
-                } else if(rule.type === 'skip') {
-                    players[turnIndex].skip = true;
-                }
-                endTurn();
-            }
-        } else {
-            endTurn();
-        }
-    }
-
-    function closeSkip() {
-        document.getElementById('skip-overlay').style.display = 'none';
-        players[turnIndex].skip = false;
-        endTurn();
-    }
-
-    async function handleChoice(didInvest) {
-        document.getElementById('choice-overlay').style.display = 'none';
-        if(didInvest) {
-            players[turnIndex].isInvestor = true;
-            for(let i=0; i<4; i++) {
-                if(players[turnIndex].pos > 0) {
-                    players[turnIndex].pos--;
-                    placePiece(turnIndex);
-                    await new Promise(r => setTimeout(r, 300));
-                }
-            }
-        }
-        endTurn();
-    }
-
-    function endTurn() {
-        if(players[turnIndex].pos >= 29) {
-            alert(players[turnIndex].name + " WON!");
-            location.reload();
-            return;
-        }
-        turnIndex = (turnIndex + 1) % players.length;
-        updateUI();
-        moving = false;
-        document.getElementById('roll-btn').disabled = false;
-    }
-</script>
-</body>
-</html>
