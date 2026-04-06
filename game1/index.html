@@ -7,59 +7,81 @@
         :root {
             --wood-dark: #2a180b; --wood-mid: #3d2616; --wood-light: #4e3625;
             --tape-white: #fdfdfd; --joy-glow: #00ff88; --fear-glow: #ff4444;
-            --ui-bg: rgba(0,0,0,0.9);
+            --gold: #ffd700; --ui-bg: rgba(0,0,0,0.9);
+        }
+
+        @keyframes woodFade {
+            0% { background-color: #2a180b; }
+            33% { background-color: #3d2616; }
+            66% { background-color: #4e3625; }
+            100% { background-color: #2a180b; }
+        }
+
+        @keyframes sparkle {
+            0% { box-shadow: 0 0 0px var(--gold); transform: scale(1); }
+            50% { box-shadow: 0 0 30px var(--gold); transform: scale(1.2); }
+            100% { box-shadow: 0 0 0px var(--gold); transform: scale(1); }
         }
 
         body {
-            background-color: var(--wood-mid);
-            background-image: 
-                repeating-linear-gradient(90deg, transparent, transparent 80px, rgba(0,0,0,0.05) 80px, rgba(0,0,0,0.05) 82px),
-                linear-gradient(to right, var(--wood-dark), var(--wood-mid) 20%, var(--wood-light) 40%, var(--wood-mid) 60%, var(--wood-dark) 80%, var(--wood-mid) 100%);
+            animation: woodFade 15s ease-in-out infinite;
+            background-image: repeating-linear-gradient(90deg, transparent, transparent 80px, rgba(0,0,0,0.05) 80px, rgba(0,0,0,0.05) 82px),
+                              linear-gradient(to bottom, rgba(0,0,0,0.2), transparent);
             color: white; font-family: 'Courier New', monospace; display: flex; flex-direction: column; align-items: center; margin: 0; min-height: 100vh; overflow: hidden;
         }
 
+        /* Sidebars */
+        #merch-tracker {
+            position: fixed; left: 20px; top: 120px; width: 180px; background: var(--ui-bg); border-radius: 12px; padding: 15px; border: 1px solid rgba(255,255,255,0.1); z-index: 5;
+        }
+        .tracker-item { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; border-bottom: 1px solid #333; padding-bottom: 5px; }
+        .tracker-head { width: 40px; height: 40px; background-size: contain; background-repeat: no-repeat; }
+        .tracker-stats { font-size: 0.8rem; }
+
+        #rule-sidebar { 
+            position: fixed; right: 20px; top: 50%; transform: translateY(-50%) translateX(400px);
+            width: 240px; background: var(--ui-bg); padding: 25px; border-radius: 15px; border: 2px solid var(--joy-glow); transition: 0.5s; z-index: 100;
+        }
+        #rule-sidebar.active { transform: translateY(-50%) translateX(0); }
+
         #ui-layer { 
-            display: flex; align-items: center; gap: 20px; background: var(--ui-bg); padding: 20px 30px; 
-            border-radius: 12px; margin: 20px 0; border: 1px solid rgba(255,255,255,0.1); width: 700px; justify-content: space-between; z-index: 10;
+            display: flex; align-items: center; gap: 30px; background: var(--ui-bg); padding: 20px 40px; 
+            border-radius: 12px; margin: 20px 0; border: 1px solid rgba(255,255,255,0.1); width: 850px; justify-content: space-between; z-index: 10;
         }
         
-        #dice-box { width: 60px; height: 60px; background: white; color: black; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 2.5rem; font-weight: bold; box-shadow: 0 5px 0 #bbb; }
-        #turn-text { font-size: 2.8rem; font-weight: 900; text-transform: uppercase; line-height: 1; }
+        #dice-box { width: 70px; height: 70px; background: white; color: black; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 3rem; font-weight: bold; box-shadow: 0 6px 0 #bbb; }
+        #dice-box.payoff { animation: sparkle 0.6s ease-in-out 2; color: var(--wood-dark); background: var(--gold); border-color: #b8860b; }
+        
+        #status-text { font-size: 3.5rem; font-weight: 900; text-transform: uppercase; line-height: 1; letter-spacing: -1px; }
+        #turn-text { font-size: 1.8rem; opacity: 0.9; text-transform: uppercase; font-weight: bold; }
 
         #board-container { 
             display: grid; grid-template-columns: repeat(6, 1fr); grid-template-rows: repeat(5, 1fr); 
-            gap: 25px; padding: 40px; background: rgba(0,0,0,0.1); border-radius: 20px; position: relative; width: 750px; height: 550px;
+            gap: 20px; padding: 30px; background: rgba(0,0,0,0.1); border-radius: 20px; position: relative; width: 750px; height: 500px;
         }
 
         .space { 
             width: 100%; height: 100%; border-radius: 50%; border: 3px solid var(--tape-white); 
-            display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 1.1rem; background: rgba(255,255,255,0.05);
+            display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 1rem; background: rgba(255,255,255,0.05);
         }
-        .special { border-color: #ffd700; color: #ffd700; font-size: 3.5rem !important; cursor: pointer; }
+        .special { border-color: var(--gold); color: var(--gold); font-size: 3rem !important; cursor: pointer; }
 
-        .player { width: 90px; height: 90px; position: absolute; z-index: 100; transition: all 0.6s cubic-bezier(0.18, 0.89, 0.32, 1.28); background-size: contain; background-repeat: no-repeat; background-position: center bottom; pointer-events: none; }
+        .player { width: 85px; height: 85px; position: absolute; z-index: 100; transition: all 0.6s cubic-bezier(0.18, 0.89, 0.32, 1.28); background-size: contain; background-repeat: no-repeat; background-position: center bottom; pointer-events: none; }
 
-        /* Overlays */
         .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.92); z-index: 2000; display: none; align-items: center; justify-content: center; }
-        .popup { background: #111; padding: 40px; border-radius: 20px; border: 2px solid #444; width: 450px; text-align: center; box-shadow: 0 0 30px rgba(0,0,0,0.5); }
-        
-        .avatar-select { display: flex; justify-content: center; gap: 15px; margin: 20px 0; }
-        .av-btn { width: 70px; height: 70px; background-size: contain; background-repeat: no-repeat; cursor: pointer; border-bottom: 4px solid transparent; opacity: 0.4; }
-        .av-btn.selected { opacity: 1; border-color: var(--joy-glow); transform: scale(1.1); }
+        .popup { background: #111; padding: 40px; border-radius: 20px; border: 2px solid #444; width: 450px; text-align: center; }
 
-        button { padding: 12px 24px; font-family: inherit; font-weight: bold; cursor: pointer; background: #fff; border: none; border-radius: 4px; text-transform: uppercase; margin: 5px; }
-        .btn-invest { background: var(--joy-glow); color: black; }
-        .btn-skip { background: var(--fear-glow); color: white; }
+        button { padding: 15px 30px; font-family: inherit; font-weight: bold; cursor: pointer; background: #fff; border: none; border-radius: 4px; text-transform: uppercase; font-size: 1rem; }
+        .btn-roll { min-width: 130px; font-size: 1.6rem; }
         input { padding: 12px; background: #222; border: 1px solid #555; color: white; width: 80%; margin-bottom: 20px; text-align: center; font-size: 1.2rem; font-family: inherit; }
-
-        #rule-sidebar { 
-            position: fixed; right: 40px; top: 50%; transform: translateY(-50%) translateX(400px);
-            width: 240px; background: var(--ui-bg); padding: 25px; border-radius: 15px; border: 2px solid var(--joy-glow); transition: 0.5s; text-align: left; z-index: 100;
-        }
-        #rule-sidebar.active { transform: translateY(-50%) translateX(0); }
     </style>
 </head>
 <body>
+
+    <div id="merch-tracker">
+        <h4 style="margin:0 0 10px 0; font-size: 0.7rem; letter-spacing: 2px; opacity: 0.6;">MERCH SALES</h4>
+        <div id="tracker-list"></div>
+    </div>
 
     <div id="overlay-count" class="overlay" style="display:flex">
         <div class="popup">
@@ -74,20 +96,20 @@
         <div class="popup">
             <h2 id="setup-label">PLAYER 1</h2>
             <input type="text" id="name-input" placeholder="ENTER NAME">
-            <div class="avatar-select">
-                <div class="av-btn" id="btn-jesse" style="background-image:url('jesse.png')" onclick="selectHead('jesse', '#007bff')"></div>
-                <div class="av-btn" id="btn-marco" style="background-image:url('marco.png')" onclick="selectHead('marco', '#ffcc00')"></div>
-                <div class="av-btn" id="btn-grant" style="background-image:url('grant.png')" onclick="selectHead('grant', '#ff00ff')"></div>
+            <div style="display:flex; justify-content:center; gap:15px; margin:20px 0;">
+                <div class="av-btn" id="btn-jesse" style="width:70px; height:70px; background-image:url('jesse.png'); background-size:contain; background-repeat:no-repeat; cursor:pointer; opacity:0.4;" onclick="selectHead('jesse', '#007bff')"></div>
+                <div class="av-btn" id="btn-marco" style="width:70px; height:70px; background-image:url('marco.png'); background-size:contain; background-repeat:no-repeat; cursor:pointer; opacity:0.4;" onclick="selectHead('marco', '#ffcc00')"></div>
+                <div class="av-btn" id="btn-grant" style="width:70px; height:70px; background-image:url('grant.png'); background-size:contain; background-repeat:no-repeat; cursor:pointer; opacity:0.4;" onclick="selectHead('grant', '#ff00ff')"></div>
             </div>
             <button onclick="confirmPlayer()">NEXT</button>
         </div>
     </div>
 
     <div id="overlay-merch" class="overlay">
-        <div class="popup" style="border-color: #ffd700;">
+        <div class="popup" style="border-color: var(--gold);">
             <h2>👕 INVEST IN MERCH?</h2>
-            <p>Rewind 4 spaces now to double all 1s and 2s for the rest of the game.</p>
-            <button class="btn-invest" onclick="handleMerch(true)">INVEST & REWIND</button>
+            <p>Rewind 4 spaces now. Doubling rolls 1 & 2 for the rest of the game.</p>
+            <button style="background:var(--joy-glow); color:black;" onclick="handleMerch(true)">INVEST</button>
             <button onclick="handleMerch(false)">PASS</button>
         </div>
     </div>
@@ -95,8 +117,8 @@
     <div id="overlay-skip" class="overlay">
         <div class="popup" style="border-color: var(--fear-glow);">
             <h2 id="skip-player-name">PLAYER</h2>
-            <p>Your van is in the shop. You must skip this turn.</p>
-            <button class="btn-skip" onclick="acknowledgeSkip()">BUMMER (SKIP)</button>
+            <p>Your van is in the shop. Skip this turn.</p>
+            <button style="background:var(--fear-glow); color:white;" onclick="acknowledgeSkip()">BUMMER (SKIP)</button>
         </div>
     </div>
 
@@ -105,10 +127,10 @@
     <div id="ui-layer">
         <div id="dice-box">?</div>
         <div id="turn-info">
-            <div id="status-text" style="font-size: 0.8rem; opacity: 0.5;">...</div>
+            <div id="status-text">YOUR TURN</div>
             <div id="turn-text">---</div>
         </div>
-        <button id="roll-btn" onclick="doRoll()" disabled>ROLL</button>
+        <button id="roll-btn" class="btn-roll" onclick="doRoll()" disabled>ROLL</button>
     </div>
 
     <div id="board-container"></div>
@@ -120,43 +142,46 @@
 
 <script>
     let players = [];
-    let totalNeeded = 0;
-    let setupIndex = 0;
+    let setupIdx = 0;
+    let totalPlayers = 0;
     let tempHead = null;
     let turnIndex = 0;
     let isMoving = false;
 
+    // SPACE MAP: 1-6 Merch, 14 & 22 Van
     const rules = {
-        1: { id: 'merch', title: "👕 Invest in Merch", emoji: "👕", desc: "CHOOSE: You may REWIND FOUR SPACES now. THE PAYOFF: For the rest of the game, double any 1 or 2 you roll." },
-        2: { id: 'van', title: "🛠 Van Breaks Down", emoji: "🛠", desc: "Mechanical failure. Skip your next turn." },
-        3: { id: 'merch', title: "👕 Invest in Merch", emoji: "👕", desc: "CHOOSE: You may REWIND FOUR SPACES now. THE PAYOFF: For the rest of the game, double any 1 or 2 you roll." },
-        4: { id: 'van', title: "🛠 Van Breaks Down", emoji: "🛠", desc: "Mechanical failure. Skip your next turn." },
-        5: { id: 'merch', title: "👕 Invest in Merch", emoji: "👕", desc: "CHOOSE: You may REWIND FOUR SPACES now. THE PAYOFF: For the rest of the game, double any 1 or 2 you roll." },
-        6: { id: 'van', title: "🛠 Van Breaks Down", emoji: "🛠", desc: "Mechanical failure. Skip your next turn." }
+        1: { id:'merch', title:"👕 Invest in Merch", emoji:"👕", desc:"Rewind 4. Double rolls 1 & 2." },
+        2: { id:'merch', title:"👕 Invest in Merch", emoji:"👕", desc:"Rewind 4. Double rolls 1 & 2." },
+        3: { id:'merch', title:"👕 Invest in Merch", emoji:"👕", desc:"Rewind 4. Double rolls 1 & 2." },
+        4: { id:'merch', title:"👕 Invest in Merch", emoji:"👕", desc:"Rewind 4. Double rolls 1 & 2." },
+        5: { id:'merch', title:"👕 Invest in Merch", emoji:"👕", desc:"Rewind 4. Double rolls 1 & 2." },
+        6: { id:'merch', title:"👕 Invest in Merch", emoji:"👕", desc:"Rewind 4. Double rolls 1 & 2." },
+        14: { id:'van', title:"🛠 Van Breakdown", emoji:"🛠", desc:"Skip next turn." },
+        22: { id:'van', title:"🛠 Van Breakdown", emoji: "🛠", desc:"Skip next turn." }
     };
 
     function startSetup(num) {
-        totalNeeded = num;
+        totalPlayers = num;
         document.getElementById('overlay-count').style.display = 'none';
         document.getElementById('overlay-names').style.display = 'flex';
     }
 
     function selectHead(id, color) {
         tempHead = { id, color, img: id + '.png' };
-        document.querySelectorAll('.av-btn').forEach(b => b.classList.remove('selected'));
-        document.getElementById('btn-' + id).classList.add('selected');
+        document.querySelectorAll('.av-btn').forEach(b => b.style.opacity = '0.4');
+        document.getElementById('btn-' + id).style.opacity = '1';
     }
 
     function confirmPlayer() {
-        const nameVal = document.getElementById('name-input').value.trim() || ("PLAYER " + (setupIndex + 1));
-        if(!tempHead) return alert("Pick a head first!");
-        players.push({ name: nameVal.toUpperCase(), head: tempHead, pos: 0, skip: false, isInvestor: false });
-        setupIndex++;
-        if(setupIndex < totalNeeded) {
+        const name = document.getElementById('name-input').value.trim() || `PLAYER ${setupIdx+1}`;
+        if(!tempHead) return alert("Select a head!");
+        players.push({ name: name.toUpperCase(), head: tempHead, pos: 0, skip: false, isInvestor: false, merchSales: 0 });
+        setupIdx++;
+        if(setupIdx < totalPlayers) {
             document.getElementById('name-input').value = '';
             tempHead = null;
-            document.querySelectorAll('.av-btn').forEach(b => b.classList.remove('selected'));
-            document.getElementById('setup-label').innerText = "PLAYER " + (setupIndex + 1);
+            document.querySelectorAll('.av-btn').forEach(b => b.style.opacity = '0.4');
+            document.getElementById('setup-label').innerText = `PLAYER ${setupIdx+1}`;
         } else {
             document.getElementById('overlay-names').style.display = 'none';
             initGame();
@@ -167,11 +192,9 @@
         const board = document.getElementById('board-container');
         for(let i=0; i<30; i++) {
             const s = document.createElement('div');
-            s.className = 'space';
-            s.id = 's' + i;
+            s.className = 'space'; s.id = 's' + i;
             if(rules[i]) {
-                s.innerText = rules[i].emoji;
-                s.classList.add('special');
+                s.innerText = rules[i].emoji; s.classList.add('special');
                 s.onclick = (e) => { e.stopPropagation(); triggerRuleSidebar(i); };
             } else {
                 s.innerText = (i===0) ? "START" : (i===29) ? "END" : i;
@@ -192,34 +215,52 @@
         updateUI();
     }
 
-    function triggerRuleSidebar(idx) {
-        document.getElementById('sidebar-title').innerText = rules[idx].title;
-        document.getElementById('sidebar-desc').innerText = rules[idx].desc;
-        document.getElementById('rule-sidebar').classList.add('active');
-    }
-
     function updatePiecePos(idx) {
         const p = players[idx];
         const target = document.getElementById('s' + p.pos);
         const pElem = document.getElementById('piece' + idx);
         const spread = (idx * 12) - (players.length * 6);
-        pElem.style.left = `${target.offsetLeft + (target.offsetWidth/2) - 45 + spread}px`;
+        pElem.style.left = `${target.offsetLeft + (target.offsetWidth/2) - 42 + spread}px`;
         pElem.style.top = `${target.offsetTop + (target.offsetHeight/2) - 70}px`;
     }
 
     function updateUI() {
         const p = players[turnIndex];
-        const txt = document.getElementById('turn-text');
-        txt.innerText = p.name;
-        txt.style.textShadow = `0 0 20px ${p.head.color}`;
-        document.getElementById('status-text').innerText = p.isInvestor ? "MERCH INVESTOR ACTIVE" : "YOUR TURN";
+        const status = document.getElementById('status-text');
+        const turn = document.getElementById('turn-text');
+        turn.innerText = p.name;
+        turn.style.color = p.head.color;
+        
+        if(p.isInvestor) {
+            status.innerText = "INVESTOR TURN";
+            status.style.color = var(--gold);
+        } else {
+            status.innerText = "YOUR TURN";
+            status.style.color = "white";
+        }
+        renderTracker();
+    }
+
+    function renderTracker() {
+        const list = document.getElementById('tracker-list');
+        list.innerHTML = '';
+        players.filter(p => p.isInvestor).forEach(p => {
+            list.innerHTML += `
+                <div class="tracker-item">
+                    <div class="tracker-head" style="background-image:url('${p.head.img}')"></div>
+                    <div class="tracker-stats">
+                        <div style="font-weight:bold">${p.name}</div>
+                        <div style="color:var(--gold)">SHIRTS: ${p.merchSales}</div>
+                    </div>
+                </div>
+            `;
+        });
     }
 
     async function doRoll() {
         if(isMoving) return;
         const p = players[turnIndex];
 
-        // CHECK SKIP STATUS AT START OF TURN
         if(p.skip) {
             document.getElementById('skip-player-name').innerText = p.name;
             document.getElementById('overlay-skip').style.display = 'flex';
@@ -228,17 +269,31 @@
 
         isMoving = true;
         document.getElementById('roll-btn').disabled = true;
-        document.getElementById('rule-sidebar').classList.remove('active');
+        const diceBox = document.getElementById('dice-box');
+        diceBox.classList.remove('payoff');
 
         let roll = Math.floor(Math.random() * 6) + 1;
-        if(p.isInvestor && roll <= 2) roll *= 2;
 
-        for(let i=0; i<10; i++) {
-            document.getElementById('dice-box').innerText = Math.floor(Math.random()*6)+1;
+        // Shuffle Animation
+        for(let i=0; i<12; i++) {
+            diceBox.innerText = Math.floor(Math.random()*6)+1;
             await new Promise(r => setTimeout(r, 60));
         }
-        document.getElementById('dice-box').innerText = roll;
+
+        // Show original roll
+        diceBox.innerText = roll;
         await new Promise(r => setTimeout(r, 400));
+
+        // PAYOFF LOGIC
+        if(p.isInvestor && (roll === 1 || roll === 2)) {
+            diceBox.classList.add('payoff');
+            await new Promise(r => setTimeout(r, 300));
+            roll *= 2;
+            diceBox.innerText = roll;
+            p.merchSales++;
+            renderTracker();
+            await new Promise(r => setTimeout(r, 800));
+        }
 
         for(let s=0; s<roll; s++) {
             if(p.pos < 29) {
@@ -247,18 +302,15 @@
                 await new Promise(r => setTimeout(r, 400));
             }
         }
-
         checkFinalSpace();
     }
 
     function checkFinalSpace() {
         const p = players[turnIndex];
         const rule = rules[p.pos];
-
         if(rule) {
-            if(rule.id === 'merch') {
-                document.getElementById('overlay-merch').style.display = 'flex';
-            } else if(rule.id === 'van') {
+            if(rule.id === 'merch') document.getElementById('overlay-merch').style.display = 'flex';
+            else if(rule.id === 'van') {
                 p.skip = true;
                 triggerRuleSidebar(p.pos);
                 setTimeout(endTurn, 1500);
@@ -276,6 +328,7 @@
         const p = players[turnIndex];
         if(didInvest) {
             p.isInvestor = true;
+            renderTracker();
             for(let i=0; i<4; i++) {
                 if(p.pos > 0) {
                     p.pos--;
@@ -291,6 +344,12 @@
         document.getElementById('overlay-skip').style.display = 'none';
         players[turnIndex].skip = false;
         endTurn();
+    }
+
+    function triggerRuleSidebar(idx) {
+        document.getElementById('sidebar-title').innerText = rules[idx].title;
+        document.getElementById('sidebar-desc').innerText = rules[idx].desc;
+        document.getElementById('rule-sidebar').classList.add('active');
     }
 
     function endTurn() {
