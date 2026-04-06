@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Fearjoy - Play This</title>
+    <title>Fearjoy - v5.2</title>
     <style>
         :root {
             --wood-dark: #2a180b; --wood-mid: #3d2616; --wood-light: #4e3625;
@@ -55,6 +55,20 @@
 
         #board-container { display: grid; grid-template-columns: repeat(6, 1fr); grid-template-rows: repeat(5, 1fr); gap: 18px; padding: 25px; background: rgba(0,0,0,0.1); border-radius: 20px; position: relative; width: 750px; height: 500px; }
         .space { width: 100%; height: 100%; border-radius: 50%; border: 3px solid var(--tape-white); display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 0.9rem; background: rgba(255,255,255,0.05); text-align: center; }
+        
+        /* The Merch Pill */
+        .pill-space {
+            grid-column: 4 / span 3 !important; /* Spans spaces 7, 8, 9 */
+            grid-row: 4 !important;
+            border-radius: 50px !important;
+            border: 4px solid var(--gold) !important;
+            background: rgba(255, 215, 0, 0.1) !important;
+            color: var(--gold) !important;
+            font-size: 3rem !important;
+            cursor: pointer;
+            z-index: 2;
+        }
+
         .special { border-color: var(--gold); color: var(--gold); font-size: 2.8rem !important; cursor: pointer; }
         .fear { border-color: var(--fear-glow); color: var(--fear-glow); font-size: 1.1rem !important; font-weight: 900; }
         .joy { border-color: var(--joy-glow); color: var(--joy-glow); font-size: 1.1rem !important; font-weight: 900; }
@@ -153,9 +167,12 @@
     let turnIndex = 0;
     let isMoving = false;
 
+    // Logic: 7, 8, and 9 all trigger the Merch Investment
     const rules = {
         4: { id:'joy', title:"☀️ Dayspring", emoji:"☀️", desc:"Morning sun! Spring ahead 3 spaces.", shift: 3 },
+        7: { id:'merch', title:"👕 Invest in Merch", emoji:"👕", desc:"Rewind 4. Double rolls 1 & 2." },
         8: { id:'merch', title:"👕 Invest in Merch", emoji:"👕", desc:"Rewind 4. Double rolls 1 & 2." },
+        9: { id:'merch', title:"👕 Invest in Merch", emoji:"👕", desc:"Rewind 4. Double rolls 1 & 2." },
         11: { id:'joy', title:"JOY", emoji:"JOY", desc:"Momentum! Move forward 1 space.", shift: 1 },
         14: { id:'van', title:"🛠 Van Breakdown", emoji:"🛠", desc:"Mechanical failure. Skip 1 turn.", count: 1 },
         18: { id:'fear', title:"FEAR", emoji:"FEAR", desc:"Doubt creeps in. Move back 1 space.", shift: -1 },
@@ -194,20 +211,35 @@
     function initGame() {
         const board = document.getElementById('board-container');
         for(let i=0; i<30; i++) {
+            // Logic to skip individual creation of 8 and 9 because they are covered by the 7 pill
+            if(i === 8 || i === 9) continue;
+
             const s = document.createElement('div');
-            s.className = 'space'; s.id = 's' + i;
-            if(rules[i]) {
-                s.innerText = rules[i].emoji;
-                s.classList.add('special');
-                if(rules[i].id === 'fear') s.classList.add('fear');
-                if(rules[i].id === 'joy' && rules[i].emoji === 'JOY') s.classList.add('joy');
-                s.onclick = (e) => { e.stopPropagation(); triggerRuleSidebar(i); };
+            s.id = 's' + i;
+            
+            if(i === 7) {
+                s.className = 'space pill-space';
+                s.innerText = "👕 MERCH 👕";
+                s.onclick = (e) => { e.stopPropagation(); triggerRuleSidebar(7); };
+                // Assign hidden IDs for positioning reference for 8 and 9
+                const s8 = document.createElement('div'); s8.id = 's8'; s8.style.display = 'none'; board.appendChild(s8);
+                const s9 = document.createElement('div'); s9.id = 's9'; s9.style.display = 'none'; board.appendChild(s9);
             } else {
-                s.innerText = (i===0) ? "START" : (i===29) ? "END" : i;
+                s.className = 'space';
+                if(rules[i]) {
+                    s.innerText = rules[i].emoji;
+                    s.classList.add('special');
+                    if(rules[i].id === 'fear') s.classList.add('fear');
+                    if(rules[i].id === 'joy' && rules[i].emoji === 'JOY') s.classList.add('joy');
+                    s.onclick = (e) => { e.stopPropagation(); triggerRuleSidebar(i); };
+                } else {
+                    s.innerText = (i===0) ? "START" : (i===29) ? "END" : i;
+                }
+                
+                let row = Math.floor(i/6);
+                s.style.gridRow = (5 - row);
+                s.style.gridColumn = (row % 2 === 1) ? (6 - (i%6)) : (i%6) + 1;
             }
-            let row = Math.floor(i/6);
-            s.style.gridRow = (5 - row);
-            s.style.gridColumn = (row % 2 === 1) ? (6 - (i%6)) : (i%6) + 1;
             board.appendChild(s);
         }
         players.forEach((p, i) => {
@@ -223,11 +255,24 @@
 
     function updatePiecePos(idx) {
         const p = players[idx];
-        const target = document.getElementById('s' + p.pos);
+        let target = document.getElementById('s' + p.pos);
+        
+        // Handle visual positioning inside the pill
+        if(p.pos === 8 || p.pos === 9 || p.pos === 7) {
+            target = document.getElementById('s7');
+        }
+
         const pElem = document.getElementById('piece' + idx);
         if(!target || !pElem) return;
+
+        let leftOffset = target.offsetLeft + (target.offsetWidth/2) - 42;
+        
+        // If in pill, spread players across the width of the pill
+        if(p.pos === 7) leftOffset -= 60;
+        if(p.pos === 9) leftOffset += 60;
+
         const spread = (idx * 12) - (players.length * 6);
-        pElem.style.left = `${target.offsetLeft + (target.offsetWidth/2) - 42 + spread}px`;
+        pElem.style.left = `${leftOffset + spread}px`;
         pElem.style.top = `${target.offsetTop + (target.offsetHeight/2) - 70}px`;
     }
 
