@@ -23,6 +23,13 @@
             100% { box-shadow: 0 0 0px var(--gold); transform: scale(1); }
         }
 
+        @keyframes floatUp {
+            0% { opacity: 0; transform: translateY(0); }
+            20% { opacity: 1; }
+            80% { opacity: 1; }
+            100% { opacity: 0; transform: translateY(-40px); }
+        }
+
         body {
             animation: woodFade 15s ease-in-out infinite;
             background-image: repeating-linear-gradient(90deg, transparent, transparent 80px, rgba(0,0,0,0.05) 80px, rgba(0,0,0,0.05) 82px),
@@ -30,23 +37,28 @@
             color: white; font-family: 'Courier New', monospace; display: flex; flex-direction: column; align-items: center; margin: 0; min-height: 100vh; overflow: hidden;
         }
 
+        /* Merch Tracker with Emoji Stacks */
         #merch-tracker {
-            position: fixed; left: 20px; top: 120px; width: 180px; background: var(--ui-bg); border-radius: 12px; padding: 15px; border: 1px solid rgba(255,255,255,0.1); z-index: 5;
+            position: fixed; left: 20px; top: 120px; width: 220px; background: var(--ui-bg); border-radius: 12px; padding: 15px; border: 1px solid rgba(255,255,255,0.1); z-index: 5;
         }
-        .tracker-item { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; border-bottom: 1px solid #333; padding-bottom: 5px; }
+        .tracker-item { display: flex; flex-direction: column; gap: 5px; margin-bottom: 15px; border-bottom: 1px solid #333; padding-bottom: 10px; }
+        .tracker-top { display: flex; align-items: center; gap: 10px; }
         .tracker-head { width: 40px; height: 40px; background-size: contain; background-repeat: no-repeat; border-radius: 50%; }
-        .tracker-stats { font-size: 0.8rem; }
+        .shirt-stack { font-size: 1.2rem; line-height: 1; display: flex; flex-wrap: wrap; gap: 2px; }
+
+        /* Floating Animation Elements */
+        .merch-pop { position: absolute; font-weight: bold; color: var(--gold); pointer-events: none; animation: floatUp 1s forwards; z-index: 500; font-size: 1.5rem; text-shadow: 0 0 10px black; }
 
         #ui-layer { 
-            display: flex; align-items: center; gap: 30px; background: var(--ui-bg); padding: 20px 40px; 
+            display: flex; align-items: center; gap: 30px; background: var(--ui-bg); padding: 25px 40px; 
             border-radius: 12px; margin: 20px 0; border: 1px solid rgba(255,255,255,0.1); width: 850px; justify-content: space-between; z-index: 10;
         }
         
-        #dice-box { width: 70px; height: 70px; background: white; color: black; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 3rem; font-weight: bold; box-shadow: 0 6px 0 #bbb; transition: 0.3s; }
+        #dice-box { position: relative; width: 75px; height: 75px; background: white; color: black; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 3.2rem; font-weight: bold; box-shadow: 0 6px 0 #bbb; }
         #dice-box.payoff { animation: sparkle 0.6s ease-in-out 2; color: #000; background: var(--gold); }
         
-        #status-text { font-size: 3.5rem; font-weight: 900; text-transform: uppercase; line-height: 1; letter-spacing: -1px; }
-        #turn-text { font-size: 1.8rem; opacity: 0.9; text-transform: uppercase; font-weight: bold; }
+        #turn-info { flex-grow: 1; text-align: left; padding-left: 20px; }
+        #status-text { font-size: 3.8rem; font-weight: 900; text-transform: uppercase; line-height: 0.9; letter-spacing: -2px; transition: 0.3s; }
 
         #board-container { 
             display: grid; grid-template-columns: repeat(6, 1fr); grid-template-rows: repeat(5, 1fr); 
@@ -62,7 +74,7 @@
         .popup { background: #111; padding: 40px; border-radius: 20px; border: 2px solid #444; width: 450px; text-align: center; }
 
         button { padding: 15px 30px; font-family: inherit; font-weight: bold; cursor: pointer; background: #fff; border: none; border-radius: 4px; text-transform: uppercase; font-size: 1rem; }
-        .btn-roll { min-width: 130px; font-size: 1.6rem; }
+        .btn-roll { min-width: 140px; font-size: 1.8rem; }
         input { padding: 12px; background: #222; border: 1px solid #555; color: white; width: 80%; margin-bottom: 20px; text-align: center; font-size: 1.2rem; font-family: inherit; }
 
         #rule-sidebar { position: fixed; right: 20px; top: 50%; transform: translateY(-50%) translateX(400px); width: 240px; background: var(--ui-bg); padding: 25px; border-radius: 15px; border: 2px solid var(--joy-glow); transition: 0.5s; z-index: 100; }
@@ -72,7 +84,7 @@
 <body>
 
     <div id="merch-tracker">
-        <h4 style="margin:0 0 10px 0; font-size: 0.7rem; letter-spacing: 2px; opacity: 0.6;">MERCH SALES</h4>
+        <h4 style="margin:0 0 10px 0; font-size: 0.7rem; letter-spacing: 2px; opacity: 0.6;">SALES TRACKER</h4>
         <div id="tracker-list"></div>
     </div>
 
@@ -115,13 +127,12 @@
         </div>
     </div>
 
-    <h1>Fearjoy - Play This</h1>
+    <h1 style="letter-spacing: 0.5em; opacity: 0.4;">FEARJOY</h1>
 
     <div id="ui-layer">
         <div id="dice-box">?</div>
         <div id="turn-info">
-            <div id="status-text">YOUR TURN</div>
-            <div id="turn-text">---</div>
+            <div id="status-text">...</div>
         </div>
         <button id="roll-btn" class="btn-roll" onclick="doRoll()" disabled>ROLL</button>
     </div>
@@ -165,7 +176,7 @@
     }
 
     function confirmPlayer() {
-        const name = document.getElementById('name-input').value.trim() || `PLAYER ${setupIdx+1}`;
+        let name = document.getElementById('name-input').value.trim() || `PLAYER ${setupIdx+1}`;
         if(!tempHead) return alert("Select a head!");
         players.push({ name: name.toUpperCase(), head: tempHead, pos: 0, skip: false, isInvestor: false, merchSales: 0 });
         setupIdx++;
@@ -220,17 +231,11 @@
     function updateUI() {
         const p = players[turnIndex];
         const status = document.getElementById('status-text');
-        const turn = document.getElementById('turn-text');
-        turn.innerText = p.name;
-        turn.style.color = p.head.color;
         
-        if(p.isInvestor) {
-            status.innerText = "INVESTOR TURN";
-            status.style.color = "#ffd700";
-        } else {
-            status.innerText = "YOUR TURN";
-            status.style.color = "white";
-        }
+        status.innerText = `${p.name}'S TURN`;
+        status.style.color = p.head.color;
+        status.style.textShadow = `0 0 25px ${p.head.color}`;
+        
         renderTracker();
     }
 
@@ -238,13 +243,15 @@
         const list = document.getElementById('tracker-list');
         list.innerHTML = '';
         players.filter(p => p.isInvestor).forEach(p => {
+            let shirts = "";
+            for(let i=0; i<p.merchSales; i++) shirts += "👕 ";
             list.innerHTML += `
                 <div class="tracker-item">
-                    <div class="tracker-head" style="background-image:url('${p.head.img}')"></div>
-                    <div class="tracker-stats">
-                        <div style="font-weight:bold">${p.name}</div>
-                        <div style="color:#ffd700">SHIRTS: ${p.merchSales}</div>
+                    <div class="tracker-top">
+                        <div class="tracker-head" style="background-image:url('${p.head.img}')"></div>
+                        <div style="font-weight:bold; font-size: 0.8rem;">${p.name}</div>
                     </div>
+                    <div class="shirt-stack">${shirts || "..."}</div>
                 </div>`;
         });
     }
@@ -274,6 +281,12 @@
         await new Promise(r => setTimeout(r, 400));
 
         if(p.isInvestor && (roll === 1 || roll === 2)) {
+            // Animation Popup
+            const pop = document.createElement('div');
+            pop.className = 'merch-pop';
+            pop.innerText = "👕 MERCH SOLD!";
+            diceBox.appendChild(pop);
+            
             diceBox.classList.add('payoff');
             await new Promise(r => setTimeout(r, 400));
             roll *= 2;
@@ -281,6 +294,7 @@
             p.merchSales++;
             renderTracker();
             await new Promise(r => setTimeout(r, 800));
+            pop.remove();
         }
 
         for(let s=0; s<roll; s++) {
