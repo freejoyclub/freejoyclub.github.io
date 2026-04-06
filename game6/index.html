@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Fearjoy - v6.5 Tour Wrap-Up Edition</title>
+    <title>Fearjoy - v6.6 Figment Restoration</title>
     <style>
         :root {
             --wood-dark: #2a180b; --wood-mid: #3d2616; --wood-light: #4e3625;
@@ -13,6 +13,7 @@
 
         @keyframes woodFade { 0%, 100% { background-color: #2a180b; } 50% { background-color: #4e3625; } }
         @keyframes sparkle { 0% { box-shadow: 0 0 0px var(--gold); transform: scale(1); } 50% { box-shadow: 0 0 50px var(--gold); transform: scale(1.1); } 100% { box-shadow: 0 0 0px var(--gold); transform: scale(1); } }
+        @keyframes bonusPulse { 0% { box-shadow: 0 0 0px var(--joy-glow); } 50% { box-shadow: 0 0 40px var(--joy-glow); background: var(--joy-glow); color: black; } 100% { box-shadow: 0 0 0px var(--joy-glow); } }
         @keyframes badDeal { 0% { box-shadow: 0 0 0px var(--fear-glow); } 50% { box-shadow: 0 0 50px var(--fear-glow); border-color: var(--fear-glow); } 100% { box-shadow: 0 0 0px var(--fear-glow); } }
         @keyframes floatUp { 0% { transform: translateY(0); opacity: 1; } 100% { transform: translateY(-100px); opacity: 0; } }
         @keyframes flipCoin { 0% { transform: rotateY(0); } 100% { transform: rotateY(1800deg); } }
@@ -39,21 +40,19 @@
         #board-container { display: grid; grid-template-columns: repeat(10, 1fr); grid-template-rows: repeat(6, 1fr); gap: 18px; padding: 50px; position: relative; width: 1100px; height: 700px; }
         .player { width: 75px; height: 75px; position: absolute; z-index: 100; transition: all 0.7s cubic-bezier(0.18, 0.89, 0.32, 1.28); background-size: contain; background-repeat: no-repeat; background-position: center bottom; }
 
-        #merch-tracker { position: fixed; left: 20px; top: 100px; width: 220px; background: var(--ui-bg); border-radius: 12px; padding: 15px; border: 1px solid #333; z-index: 5; }
         .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.96); z-index: 2000; display: none; align-items: center; justify-content: center; }
         .popup { background: #111; padding: 50px; border-radius: 25px; border: 2px solid #444; width: 550px; text-align: center; }
         
         #rule-sidebar { position: fixed; right: -320px; top: 120px; width: 280px; background: var(--ui-bg); padding: 30px; border-radius: 20px; border: 2px solid var(--joy-glow); transition: 0.6s cubic-bezier(0.23, 1, 0.32, 1); z-index: 100; }
         #rule-sidebar.active { right: 25px; }
 
-        #coin { width: 120px; height: 120px; background: #ffd700; border: 8px solid #b8860b; border-radius: 50%; margin: 20px auto; display: none; align-items: center; justify-content: center; font-size: 3rem; font-weight: bold; color: #b8860b; }
-        .flipping { animation: flipCoin 1.2s ease-out forwards; }
+        .bonus-active { animation: bonusPulse 0.8s ease-in-out forwards; }
         button { padding: 15px 30px; font-family: inherit; font-weight: bold; cursor: pointer; background: #fff; border: none; border-radius: 6px; text-transform: uppercase; margin: 10px; }
     </style>
 </head>
 <body>
 
-    <div id="merch-tracker">
+    <div id="merch-tracker" style="position: fixed; left: 20px; top: 100px; width: 220px; background: var(--ui-bg); border-radius: 12px; padding: 15px; border: 1px solid #333; z-index: 5;">
         <h4 style="margin:0 0 10px 0; font-size: 0.6rem; letter-spacing: 2px; opacity: 0.6; color: var(--joy-glow);">ARTIST ROSTER</h4>
         <div id="tracker-list"></div>
     </div>
@@ -70,7 +69,7 @@
         <div class="popup">
             <h1 id="event-title"></h1>
             <p id="event-desc" style="font-size: 1.2rem; color: #ccc;"></p>
-            <div id="coin">?</div>
+            <div id="coin" style="width:120px; height:120px; background:#ffd700; border:8px solid #b8860b; border-radius:50%; margin:20px auto; display:none; align-items:center; justify-content:center; font-size:3rem; font-weight:bold; color:#b8860b;">?</div>
             <div id="timer-ui" style="font-size: 4rem; color: var(--joy-glow); margin: 20px 0; display: none;"></div>
             <button id="event-btn-primary"></button>
             <button id="event-btn-secondary" style="display:none; background: #444; color: white;"></button>
@@ -92,21 +91,21 @@
     ];
 
     const rules = {
-        4: { title: "DAYSPRING", emoji: "☀️", desc: "Inspiration strikes! Forward 3.", shift: 3 },
-        6: { title: "FEARJOY", emoji: "☯️", desc: "Flip a coin: Heads = +1, Tails = -1.", isFearjoy: true },
-        8: { title: "FIGMENT", emoji: "🛸", desc: "Step out for 60s (+2 next roll) or stay inside (-1).", timer: 60, skipShift: -1, bonus: 2, isTrack: true },
-        10: { title: "THE REMEDY", emoji: "💊", desc: "SELL OUT: Move 6 spaces now, but 6s become -2 later. STAY TRUE: Do nothing.", choice: 'remedy', isTrack: true },
-        12: { title: "VAN BREAKS DOWN", emoji: "🛠", desc: "Skip your next turn.", skipTurns: 1 },
-        13: { title: "JOY", emoji: "✨", desc: "Momentum! Forward 1.", shift: 1 },
-        15: { title: "DMITRI", emoji: "👨‍🚀", desc: "Breathe for 10s to enter 5D, or rush and rewind 2.", timer: 10, skipShift: -2, isTrack: true },
+        4: { title: "DAYSPRING", emoji: "☀️", desc: "Forward 3.", shift: 3 },
+        6: { title: "FEARJOY", emoji: "☯️", isFearjoy: true },
+        8: { title: "FIGMENT", emoji: "🛸", desc: "60s OUTSIDE for +2 next roll. SKIP for -1.", timer: 60, skipShift: -1, bonus: 2, isTrack: true },
+        10: { title: "THE REMEDY", emoji: "💊", choice: 'remedy', isTrack: true },
+        12: { title: "VAN BREAKS DOWN", skipTurns: 1 },
+        13: { title: "JOY", emoji: "✨", shift: 1 },
+        15: { title: "DMITRI", emoji: "👨‍🚀", desc: "10s BREATH for +2 next roll. SKIP for -2.", timer: 10, skipShift: -2, bonus: 2, isTrack: true },
         17: { title: "FEARJOY", isFearjoy: true },
-        18: { title: "NIGHTDRIVE", emoji: "🌙", desc: "Eyes closed or rewind 2.", isTrack: true },
-        20: { title: "INVEST IN MERCH", emoji: "👕", desc: "Rewind 4 spaces now to double any 1 or 2 you roll later.", choice: 'merch', isTrack: true },
-        21: { title: "FEAR", emoji: "💀", desc: "Doubt. Rewind 1.", shift: -1 },
-        31: { title: "FEAR", emoji: "💀", desc: "Critique. Rewind 1.", shift: -1 },
-        32: { title: "JOY", emoji: "✨", desc: "Applause. Forward 1.", shift: 1 },
+        18: { title: "NIGHTDRIVE", emoji: "🌙", desc: "Highway hypnosis.", isTrack: true },
+        20: { title: "INVEST IN MERCH", emoji: "👕", choice: 'merch', isTrack: true },
+        21: { title: "FEAR", shift: -1 },
+        31: { title: "FEAR", shift: -1 },
+        32: { title: "JOY", shift: 1 },
         37: { title: "FEARJOY", isFearjoy: true },
-        45: { title: "GATEKEEPER", emoji: "🚧", desc: "Land exactly here or stop early.", isGate: true },
+        45: { title: "GATEKEEPER", isGate: true },
         50: { title: "FEARJOY", isFearjoy: true },
         51: { title: "VAN BREAKS DOWN", skipTurns: 1 }
     };
@@ -137,7 +136,7 @@
                 if(i === 21 || i === 31) s.classList.add('fear-space');
                 if(i === 13 || i === 32) s.classList.add('joy-space');
                 if(name === "FEARJOY") s.classList.add('hybrid');
-                s.onclick = () => { showSidebar(name, r ? r.desc : "Standard stop."); };
+                s.onclick = () => { showSidebar(name, r ? r.desc || "A special tour event." : "Standard stop."); };
             }
             let row = Math.floor(i / 10), col = (row % 2 === 0) ? (i % 10) : (9 - (i % 10));
             s.style.gridRow = 6 - row; s.style.gridColumn = col + 1;
@@ -163,7 +162,7 @@
         const list = document.getElementById('tracker-list'); list.innerHTML = '';
         players.forEach(pl => {
             let icons = "👕".repeat(pl.merchHits) + "💊".repeat(pl.remedyHits);
-            list.innerHTML += `<div class="tracker-item"><div style="display:flex;align-items:center;gap:10px;"><div class="tracker-head" style="background-image:url('${pl.avatar.img}')"></div><div style="font-size:0.7rem;">${pl.name}</div></div><div style="font-size:1.1rem; padding-left:50px;">${icons}</div></div>`;
+            list.innerHTML += `<div style="display:flex;flex-direction:column;gap:5px;margin-bottom:10px;border-bottom:1px solid #333;padding-bottom:10px;"><div style="display:flex;align-items:center;gap:10px;"><div style="width:30px;height:30px;border-radius:50%;background-image:url('${pl.avatar.img}');background-size:contain;"></div><div style="font-size:0.7rem;">${pl.name}</div></div><div style="font-size:1.1rem;padding-left:40px;">${icons}</div></div>`;
         });
     }
 
@@ -182,7 +181,7 @@
 
         if(p.skipCount > 0) {
             p.skipCount--;
-            showCentralPopup("VAN REPAIRS", "Turn skipped while the mechanics work on the van.", "DISMISS", () => endTurn());
+            showCentralPopup("VAN REPAIRS", "Turn skipped while repairs complete.", "DISMISS", () => endTurn());
             return;
         }
 
@@ -191,17 +190,31 @@
         dice.innerText = roll;
         await new Promise(r => setTimeout(r, 600));
 
+        // 1. INVESTOR PAYOFF
         if(p.isInvestor && (roll === 1 || roll === 2)) {
             icon.innerText = '👕'; icon.style.display = 'block'; icon.style.animation = 'floatUp 1s forwards';
-            showSidebar("MERCH SOLD", "Payoff! Double movement.");
+            showSidebar("MERCH SOLD", "Investment doubled your roll!");
             await new Promise(r => setTimeout(r, 800));
             roll *= 2; p.merchHits++; dice.innerText = roll; dice.classList.add('sparkle-dice');
             await new Promise(r => setTimeout(r, 800));
-        } else if(p.isSellout && roll === 6) {
+        } 
+        // 2. SELLOUT PENALTY
+        else if(p.isSellout && roll === 6) {
             icon.innerText = '💊'; icon.style.display = 'block'; icon.style.animation = 'floatUp 1s forwards';
-            showSidebar("BAD DEAL", "Label penalty! Rewind 2.");
+            showSidebar("BAD DEAL", "Label interference! Rewind 2.");
             await new Promise(r => setTimeout(r, 800));
             roll = -2; p.remedyHits++; dice.innerText = "!"; dice.classList.add('bad-dice');
+            await new Promise(r => setTimeout(r, 800));
+        }
+
+        // 3. FIGMENT/DMITRI BONUS RESTORATION
+        if(p.nextBonus > 0) {
+            showSidebar("INSPIRATION", `Applying +${p.nextBonus} bonus from previous task.`);
+            dice.classList.add('bonus-active');
+            await new Promise(r => setTimeout(r, 800));
+            roll += p.nextBonus; 
+            p.nextBonus = 0; 
+            dice.innerText = roll;
             await new Promise(r => setTimeout(r, 800));
         }
 
@@ -221,9 +234,8 @@
         const p = players[turnIdx], r = rules[p.pos], modal = document.getElementById('overlay-event');
         if(!r) { endTurn(); return; }
 
-        // Logic check for redundant deals
-        if(r.choice === 'merch' && p.isInvestor) { showSidebar("ALREADY INVESTED", "You already have the merch payoff active."); endTurn(); return; }
-        if(r.choice === 'remedy' && p.isSellout) { showSidebar("CONTRACT ACTIVE", "You already signed the bad deal."); endTurn(); return; }
+        if(r.choice === 'merch' && p.isInvestor) { showSidebar("ALREADY INVESTED", "Merch payoff is active."); endTurn(); return; }
+        if(r.choice === 'remedy' && p.isSellout) { showSidebar("CONTRACT ACTIVE", "Label deal is active."); endTurn(); return; }
 
         const title = document.getElementById('event-title'), desc = document.getElementById('event-desc'), pBtn = document.getElementById('event-btn-primary'), sBtn = document.getElementById('event-btn-secondary'), timerUI = document.getElementById('timer-ui'), coin = document.getElementById('coin');
         
@@ -234,9 +246,9 @@
         modal.style.display = 'flex';
 
         if(r.isFearjoy) {
-            pBtn.innerText = "FLIP FOR FATE";
+            pBtn.innerText = "FLIP COIN";
             pBtn.onclick = () => {
-                pBtn.style.display = 'none'; coin.style.display = 'flex'; coin.classList.add('flipping');
+                pBtn.style.display = 'none'; coin.style.display = 'flex'; coin.classList.add('flipping'); coin.innerText="?";
                 setTimeout(() => {
                     coin.classList.remove('flipping');
                     const win = Math.random() > 0.5;
@@ -262,7 +274,7 @@
     }
 
     async function movePlayer(n) {
-        const p = players[turnIdx], dir = n > 0 ? 1 : -1;
+        const p = players[turnIdx]; const dir = n > 0 ? 1 : -1;
         for(let i=0; i<Math.abs(n); i++) {
             p.pos += dir; if(p.pos < 0) p.pos = 0;
             updateVisualPos(turnIdx); await new Promise(r => setTimeout(r, 250));
@@ -273,14 +285,10 @@
 
     function showWinScreen() {
         const p = players[turnIdx];
-        const modal = document.getElementById('overlay-event');
-        document.getElementById('event-title').innerText = p.name + " WINS THE TOUR!";
-        let stats = `TOUR SUMMARY:<br>👕 MERCH SOLD: ${p.merchHits}<br>💊 PILLS SWALLOWED: ${p.remedyHits}`;
-        document.getElementById('event-desc').innerHTML = stats;
-        const btn = document.getElementById('event-btn-primary');
-        btn.innerText = "RESTART TOUR"; btn.style.display = 'block';
-        modal.style.display = 'flex';
-        btn.onclick = () => location.reload();
+        document.getElementById('event-title').innerText = p.name + " WINS!";
+        document.getElementById('event-desc').innerHTML = `TOUR STATS:<br>👕 MERCH: ${p.merchHits}<br>💊 PILLS: ${p.remedyHits}`;
+        const b = document.getElementById('event-btn-primary'); b.innerText = "NEW TOUR"; b.onclick = () => location.reload();
+        document.getElementById('overlay-event').style.display = 'flex';
     }
 
     function showCentralPopup(t, d, b, cb) {
@@ -288,10 +296,8 @@
         document.getElementById('event-title').innerText = t;
         document.getElementById('event-desc').innerText = d;
         const btn = document.getElementById('event-btn-primary');
-        btn.innerText = b; btn.style.display = 'inline-block';
-        document.getElementById('event-btn-secondary').style.display='none';
+        btn.innerText = b; btn.onclick = () => { m.style.display='none'; if(cb) cb(); };
         m.style.display='flex';
-        btn.onclick = () => { m.style.display='none'; if(cb) cb(); };
     }
 
     function endTurn() { turnIdx = (turnIdx + 1) % players.length; isMoving = false; document.getElementById('roll-btn').disabled = false; updateUI(); }
