@@ -23,7 +23,6 @@
             100% { box-shadow: 0 0 0px var(--gold); transform: scale(1); }
         }
 
-        /* Slower, more apparent popup */
         @keyframes merchPopScale {
             0% { opacity: 0; transform: translateY(0) scale(0.5); }
             15% { opacity: 1; transform: translateY(-20px) scale(1.4); }
@@ -38,59 +37,60 @@
             color: white; font-family: 'Courier New', monospace; display: flex; flex-direction: column; align-items: center; margin: 0; min-height: 100vh; overflow: hidden;
         }
 
+        /* Sidebars & Nav */
         #merch-tracker {
-            position: fixed; left: 20px; top: 120px; width: 220px; background: var(--ui-bg); border-radius: 12px; padding: 15px; border: 1px solid rgba(255,255,255,0.1); z-index: 5;
+            position: fixed; left: 20px; top: 120px; width: 200px; background: var(--ui-bg); border-radius: 12px; padding: 15px; border: 1px solid rgba(255,255,255,0.1); z-index: 5;
         }
         .tracker-item { display: flex; flex-direction: column; gap: 5px; margin-bottom: 15px; border-bottom: 1px solid #333; padding-bottom: 10px; }
-        .tracker-top { display: flex; align-items: center; gap: 10px; }
         .tracker-head { width: 40px; height: 40px; background-size: contain; background-repeat: no-repeat; border-radius: 50%; }
-        .shirt-stack { font-size: 1.2rem; line-height: 1; display: flex; flex-wrap: wrap; gap: 2px; min-height: 1.2rem; }
+        .shirt-stack { font-size: 1.2rem; line-height: 1; display: flex; flex-wrap: wrap; gap: 2px; }
 
-        /* Dramatic Popup Style */
-        .merch-pop { 
-            position: absolute; left: -50%; width: 200%; font-weight: 900; color: #fff; 
-            pointer-events: none; animation: merchPopScale 1.8s cubic-bezier(0.17, 0.67, 0.83, 0.67) forwards; 
-            z-index: 500; font-size: 1.8rem; text-shadow: 0 0 15px var(--gold), 0 0 5px black; 
-            text-align: center;
-        }
+        #bottom-nav { position: fixed; bottom: 20px; left: 20px; display: flex; gap: 10px; z-index: 1000; }
+        .nav-btn { background: rgba(255,255,255,0.1); color: white; border: 1px solid rgba(255,255,255,0.3); padding: 8px 15px; border-radius: 4px; text-decoration: none; font-size: 0.7rem; font-weight: bold; transition: 0.3s; }
+        .nav-btn:hover { background: white; color: black; }
 
-        #ui-layer { 
-            display: flex; align-items: center; gap: 30px; background: var(--ui-bg); padding: 25px 40px; 
-            border-radius: 12px; margin: 20px 0; border: 1px solid rgba(255,255,255,0.1); width: 850px; justify-content: space-between; z-index: 10;
-        }
-        
+        /* UI Elements */
+        #ui-layer { display: flex; align-items: center; gap: 30px; background: var(--ui-bg); padding: 25px 40px; border-radius: 12px; margin: 20px 0; border: 1px solid rgba(255,255,255,0.1); width: 850px; justify-content: space-between; z-index: 10; }
         #dice-box { position: relative; width: 80px; height: 80px; background: white; color: black; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 3.5rem; font-weight: bold; box-shadow: 0 6px 0 #bbb; }
         #dice-box.payoff { animation: sparkle 0.8s ease-in-out infinite; color: #000; background: var(--gold); border: 2px solid white; }
-        
-        #turn-info { flex-grow: 1; text-align: left; padding-left: 20px; }
         #status-text { font-size: 3.8rem; font-weight: 900; text-transform: uppercase; line-height: 0.9; letter-spacing: -2px; transition: 0.5s; }
 
-        #board-container { 
-            display: grid; grid-template-columns: repeat(6, 1fr); grid-template-rows: repeat(5, 1fr); 
-            gap: 20px; padding: 30px; background: rgba(0,0,0,0.1); border-radius: 20px; position: relative; width: 750px; height: 500px;
-        }
-
-        .space { width: 100%; height: 100%; border-radius: 50%; border: 3px solid var(--tape-white); display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 1rem; background: rgba(255,255,255,0.05); }
+        #board-container { display: grid; grid-template-columns: repeat(6, 1fr); grid-template-rows: repeat(5, 1fr); gap: 18px; padding: 25px; background: rgba(0,0,0,0.1); border-radius: 20px; position: relative; width: 750px; height: 500px; }
+        .space { width: 100%; height: 100%; border-radius: 50%; border: 3px solid var(--tape-white); display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 0.9rem; background: rgba(255,255,255,0.05); }
         .special { border-color: var(--gold); color: var(--gold); font-size: 3rem !important; cursor: pointer; }
+        .fear { border-color: var(--fear-glow); color: var(--fear-glow); font-size: 1.5rem !important; }
+        .joy { border-color: var(--joy-glow); color: var(--joy-glow); font-size: 1.5rem !important; }
 
         .player { width: 85px; height: 85px; position: absolute; z-index: 100; transition: all 0.6s cubic-bezier(0.18, 0.89, 0.32, 1.28); background-size: contain; background-repeat: no-repeat; background-position: center bottom; pointer-events: none; }
+        .merch-pop { position: absolute; left: -50%; width: 200%; font-weight: 900; color: #fff; pointer-events: none; animation: merchPopScale 1.8s forwards; z-index: 500; font-size: 1.8rem; text-shadow: 0 0 15px var(--gold), 0 0 5px black; text-align: center; }
 
         .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.92); z-index: 2000; display: none; align-items: center; justify-content: center; }
         .popup { background: #111; padding: 40px; border-radius: 20px; border: 2px solid #444; width: 450px; text-align: center; }
-
         button { padding: 15px 30px; font-family: inherit; font-weight: bold; cursor: pointer; background: #fff; border: none; border-radius: 4px; text-transform: uppercase; font-size: 1rem; }
-        .btn-roll { min-width: 140px; font-size: 1.8rem; }
-        input { padding: 12px; background: #222; border: 1px solid #555; color: white; width: 80%; margin-bottom: 20px; text-align: center; font-size: 1.2rem; font-family: inherit; }
-
+        
         #rule-sidebar { position: fixed; right: 20px; top: 50%; transform: translateY(-50%) translateX(400px); width: 240px; background: var(--ui-bg); padding: 25px; border-radius: 15px; border: 2px solid var(--joy-glow); transition: 0.5s; z-index: 100; }
         #rule-sidebar.active { transform: translateY(-50%) translateX(0); }
     </style>
 </head>
 <body>
 
+    <div id="bottom-nav">
+        <a href="https://freejoy.club" class="nav-btn">HOME</a>
+        <a href="https://freejoy.club" class="nav-btn">BUY ALBUM / GAME</a>
+    </div>
+
     <div id="merch-tracker">
         <h4 style="margin:0 0 10px 0; font-size: 0.7rem; letter-spacing: 2px; opacity: 0.6;">SALES TRACKER</h4>
         <div id="tracker-list"></div>
+    </div>
+
+    <div id="overlay-win" class="overlay">
+        <div class="popup" style="border-color: var(--joy-glow); border-width: 5px;">
+            <h1 id="winner-name" style="font-size: 3rem; margin: 0; color: var(--joy-glow);">NAME</h1>
+            <p style="font-size: 1.5rem; letter-spacing: 2px;">THE TOUR IS A SUCCESS!</p>
+            <p>You navigated the Fear and found the Joy.</p>
+            <button onclick="location.reload()" style="background: var(--joy-glow); color: black; margin-top: 20px;">PLAY AGAIN</button>
+        </div>
     </div>
 
     <div id="overlay-count" class="overlay" style="display:flex">
@@ -105,7 +105,7 @@
     <div id="overlay-names" class="overlay">
         <div class="popup">
             <h2 id="setup-label">PLAYER 1</h2>
-            <input type="text" id="name-input" placeholder="ENTER NAME">
+            <input type="text" id="name-input" style="padding: 12px; background: #222; border: 1px solid #555; color: white; width: 80%; margin-bottom: 20px; text-align: center; font-size: 1.2rem; font-family: inherit;" placeholder="ENTER NAME">
             <div style="display:flex; justify-content:center; gap:15px; margin:20px 0;">
                 <div class="av-btn" id="btn-jesse" style="width:70px; height:70px; background-image:url('jesse.png'); background-size:contain; background-repeat:no-repeat; cursor:pointer; opacity:0.4;" onclick="selectHead('jesse', '#007bff')"></div>
                 <div class="av-btn" id="btn-marco" style="width:70px; height:70px; background-image:url('marco.png'); background-size:contain; background-repeat:no-repeat; cursor:pointer; opacity:0.4;" onclick="selectHead('marco', '#ffcc00')"></div>
@@ -127,19 +127,17 @@
     <div id="overlay-skip" class="overlay">
         <div class="popup" style="border-color: var(--fear-glow);">
             <h2 id="skip-player-name">PLAYER</h2>
-            <p>Your van is in the shop. Skip this turn.</p>
-            <button style="background:var(--fear-glow); color:white;" onclick="acknowledgeSkip()">BUMMER (SKIP)</button>
+            <p id="skip-reason">Your van is in the shop. Skip this turn.</p>
+            <button style="background:var(--fear-glow); color:white;" onclick="acknowledgeSkip()">BUMMER</button>
         </div>
     </div>
 
-    <h1 style="letter-spacing: 0.5em; opacity: 0.4;">FEARJOY</h1>
+    <h1 style="letter-spacing: 0.5em; opacity: 0.3; margin: 10px 0;">FEARJOY</h1>
 
     <div id="ui-layer">
         <div id="dice-box">?</div>
-        <div id="turn-info">
-            <div id="status-text">...</div>
-        </div>
-        <button id="roll-btn" class="btn-roll" onclick="doRoll()" disabled>ROLL</button>
+        <div id="turn-info"><div id="status-text">...</div></div>
+        <button id="roll-btn" style="min-width: 140px; font-size: 1.8rem;" onclick="doRoll()" disabled>ROLL</button>
     </div>
 
     <div id="board-container"></div>
@@ -158,14 +156,13 @@
     let isMoving = false;
 
     const rules = {
-        1: { id:'merch', title:"👕 Invest in Merch", emoji:"👕", desc:"Rewind 4. Double rolls 1 & 2." },
-        2: { id:'merch', title:"👕 Invest in Merch", emoji:"👕", desc:"Rewind 4. Double rolls 1 & 2." },
-        3: { id:'merch', title:"👕 Invest in Merch", emoji:"👕", desc:"Rewind 4. Double rolls 1 & 2." },
-        4: { id:'merch', title:"👕 Invest in Merch", emoji:"👕", desc:"Rewind 4. Double rolls 1 & 2." },
-        5: { id:'merch', title:"👕 Invest in Merch", emoji:"👕", desc:"Rewind 4. Double rolls 1 & 2." },
-        6: { id:'merch', title:"👕 Invest in Merch", emoji:"👕", desc:"Rewind 4. Double rolls 1 & 2." },
-        14: { id:'van', title:"🛠 Van Breakdown", emoji:"🛠", desc:"Skip next turn." },
-        22: { id:'van', title:"🛠 Van Breakdown", emoji: "🛠", desc:"Skip next turn." }
+        4: { id:'skip', title:"🌊 Dayspring Trap", emoji:"🌊", desc:"The water is deep here. Skip 3 turns.", count: 3 },
+        8: { id:'merch', title:"👕 Invest in Merch", emoji:"👕", desc:"Rewind 4. Double rolls 1 & 2." },
+        11: { id:'joy', title:"✨ Found Joy", emoji:"✨", desc:"Momentum! Move forward 1 space.", shift: 1 },
+        14: { id:'van', title:"🛠 Van Breakdown", emoji:"🛠", desc:"Mechanical failure. Skip 1 turn.", count: 1 },
+        18: { id:'fear', title:"💀 Paralyzed by Fear", emoji:"💀", desc:"Doubt creeps in. Move back 1 space.", shift: -1 },
+        22: { id:'van', title:"🛠 Van Breakdown", emoji: "🛠", desc:"Skip 1 turn.", count: 1 },
+        26: { id:'joy', title:"✨ Pure Joy", emoji:"✨", desc:"Almost there! Move forward 1 space.", shift: 1 }
     };
 
     function startSetup(num) {
@@ -181,10 +178,9 @@
     }
 
     function confirmPlayer() {
-        let nameInput = document.getElementById('name-input').value.trim();
-        let name = nameInput || `PLAYER ${setupIdx+1}`;
+        let name = document.getElementById('name-input').value.trim() || `PLAYER ${setupIdx+1}`;
         if(!tempHead) return alert("Select a head!");
-        players.push({ name: name.toUpperCase(), head: tempHead, pos: 0, skip: false, isInvestor: false, merchSales: 0 });
+        players.push({ name: name.toUpperCase(), head: tempHead, pos: 0, skipCount: 0, isInvestor: false, merchSales: 0 });
         setupIdx++;
         if(setupIdx < totalPlayers) {
             document.getElementById('name-input').value = '';
@@ -203,7 +199,10 @@
             const s = document.createElement('div');
             s.className = 'space'; s.id = 's' + i;
             if(rules[i]) {
-                s.innerText = rules[i].emoji; s.classList.add('special');
+                s.innerText = rules[i].emoji;
+                s.classList.add('special');
+                if(rules[i].id === 'fear') s.classList.add('fear');
+                if(rules[i].id === 'joy') s.classList.add('joy');
                 s.onclick = (e) => { e.stopPropagation(); triggerRuleSidebar(i); };
             } else {
                 s.innerText = (i===0) ? "START" : (i===29) ? "END" : i;
@@ -249,14 +248,7 @@
         players.filter(p => p.isInvestor).forEach(p => {
             let shirts = "";
             for(let i=0; i<p.merchSales; i++) shirts += "👕 ";
-            list.innerHTML += `
-                <div class="tracker-item">
-                    <div class="tracker-top">
-                        <div class="tracker-head" style="background-image:url('${p.head.img}')"></div>
-                        <div style="font-weight:bold; font-size: 0.8rem;">${p.name}</div>
-                    </div>
-                    <div class="shirt-stack">${shirts || "🛒"}</div>
-                </div>`;
+            list.innerHTML += `<div class="tracker-item"><div style="display:flex;align-items:center;gap:10px;"><div class="tracker-head" style="background-image:url('${p.head.img}')"></div><div style="font-weight:bold; font-size: 0.8rem;">${p.name}</div></div><div class="shirt-stack">${shirts || "🛒"}</div></div>`;
         });
     }
 
@@ -264,8 +256,9 @@
         if(isMoving) return;
         const p = players[turnIndex];
 
-        if(p.skip) {
+        if(p.skipCount > 0) {
             document.getElementById('skip-player-name').innerText = p.name;
+            document.getElementById('skip-reason').innerText = (p.skipCount > 1) ? `Still stuck... ${p.skipCount} turns left.` : "One more turn until you're back on the road!";
             document.getElementById('overlay-skip').style.display = 'flex';
             return;
         }
@@ -285,48 +278,45 @@
         await new Promise(r => setTimeout(r, 400));
 
         if(p.isInvestor && (roll === 1 || roll === 2)) {
-            // slower, more apparent popup logic
             const pop = document.createElement('div');
-            pop.className = 'merch-pop';
-            pop.innerText = "👕 MERCH SOLD!";
+            pop.className = 'merch-pop'; pop.innerText = "👕 MERCH SOLD!";
             diceBox.appendChild(pop);
-            
             diceBox.classList.add('payoff');
             await new Promise(r => setTimeout(r, 600)); 
-            
-            roll *= 2;
-            diceBox.innerText = roll;
-            p.merchSales++;
-            renderTracker();
-            
-            await new Promise(r => setTimeout(r, 1200)); // Stay gold longer
+            roll *= 2; diceBox.innerText = roll;
+            p.merchSales++; renderTracker();
+            await new Promise(r => setTimeout(r, 1200));
             pop.remove();
-            diceBox.classList.remove('payoff');
         }
 
         for(let s=0; s<roll; s++) {
             if(p.pos < 29) {
-                p.pos++;
-                updatePiecePos(turnIndex);
+                p.pos++; updatePiecePos(turnIndex);
                 await new Promise(r => setTimeout(r, 400));
             }
         }
         checkFinalSpace();
     }
 
-    function checkFinalSpace() {
+    async function checkFinalSpace() {
         const p = players[turnIndex];
         const rule = rules[p.pos];
         if(rule) {
             if(rule.id === 'merch') document.getElementById('overlay-merch').style.display = 'flex';
-            else if(rule.id === 'van') {
-                p.skip = true;
+            else if(rule.id === 'van' || rule.id === 'skip') {
+                p.skipCount = rule.count;
                 triggerRuleSidebar(p.pos);
                 setTimeout(endTurn, 1500);
+            } else if(rule.id === 'joy' || rule.id === 'fear') {
+                triggerRuleSidebar(p.pos);
+                await new Promise(r => setTimeout(r, 1200));
+                p.pos += rule.shift;
+                updatePiecePos(turnIndex);
+                setTimeout(endTurn, 800);
             }
         } else if(p.pos >= 29) {
-            alert(p.name + " WINS!");
-            location.reload();
+            document.getElementById('winner-name').innerText = p.name;
+            document.getElementById('overlay-win').style.display = 'flex';
         } else {
             endTurn();
         }
@@ -337,13 +327,8 @@
         const p = players[turnIndex];
         if(didInvest) {
             p.isInvestor = true;
-            renderTracker();
             for(let i=0; i<4; i++) {
-                if(p.pos > 0) {
-                    p.pos--;
-                    updatePiecePos(turnIndex);
-                    await new Promise(r => setTimeout(r, 300));
-                }
+                if(p.pos > 0) { p.pos--; updatePiecePos(turnIndex); await new Promise(r => setTimeout(r, 300)); }
             }
         }
         endTurn();
@@ -351,7 +336,7 @@
 
     function acknowledgeSkip() {
         document.getElementById('overlay-skip').style.display = 'none';
-        players[turnIndex].skip = false;
+        players[turnIndex].skipCount--;
         endTurn();
     }
 
@@ -365,6 +350,7 @@
         turnIndex = (turnIndex + 1) % players.length;
         updateUI();
         isMoving = false;
+        document.getElementById('dice-box').classList.remove('payoff');
         document.getElementById('roll-btn').disabled = false;
     }
 </script>
