@@ -30,27 +30,20 @@
             color: white; font-family: 'Courier New', monospace; display: flex; flex-direction: column; align-items: center; margin: 0; min-height: 100vh; overflow: hidden;
         }
 
-        /* Sidebars */
         #merch-tracker {
             position: fixed; left: 20px; top: 120px; width: 180px; background: var(--ui-bg); border-radius: 12px; padding: 15px; border: 1px solid rgba(255,255,255,0.1); z-index: 5;
         }
         .tracker-item { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; border-bottom: 1px solid #333; padding-bottom: 5px; }
-        .tracker-head { width: 40px; height: 40px; background-size: contain; background-repeat: no-repeat; }
+        .tracker-head { width: 40px; height: 40px; background-size: contain; background-repeat: no-repeat; border-radius: 50%; }
         .tracker-stats { font-size: 0.8rem; }
-
-        #rule-sidebar { 
-            position: fixed; right: 20px; top: 50%; transform: translateY(-50%) translateX(400px);
-            width: 240px; background: var(--ui-bg); padding: 25px; border-radius: 15px; border: 2px solid var(--joy-glow); transition: 0.5s; z-index: 100;
-        }
-        #rule-sidebar.active { transform: translateY(-50%) translateX(0); }
 
         #ui-layer { 
             display: flex; align-items: center; gap: 30px; background: var(--ui-bg); padding: 20px 40px; 
             border-radius: 12px; margin: 20px 0; border: 1px solid rgba(255,255,255,0.1); width: 850px; justify-content: space-between; z-index: 10;
         }
         
-        #dice-box { width: 70px; height: 70px; background: white; color: black; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 3rem; font-weight: bold; box-shadow: 0 6px 0 #bbb; }
-        #dice-box.payoff { animation: sparkle 0.6s ease-in-out 2; color: var(--wood-dark); background: var(--gold); border-color: #b8860b; }
+        #dice-box { width: 70px; height: 70px; background: white; color: black; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 3rem; font-weight: bold; box-shadow: 0 6px 0 #bbb; transition: 0.3s; }
+        #dice-box.payoff { animation: sparkle 0.6s ease-in-out 2; color: #000; background: var(--gold); }
         
         #status-text { font-size: 3.5rem; font-weight: 900; text-transform: uppercase; line-height: 1; letter-spacing: -1px; }
         #turn-text { font-size: 1.8rem; opacity: 0.9; text-transform: uppercase; font-weight: bold; }
@@ -60,10 +53,7 @@
             gap: 20px; padding: 30px; background: rgba(0,0,0,0.1); border-radius: 20px; position: relative; width: 750px; height: 500px;
         }
 
-        .space { 
-            width: 100%; height: 100%; border-radius: 50%; border: 3px solid var(--tape-white); 
-            display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 1rem; background: rgba(255,255,255,0.05);
-        }
+        .space { width: 100%; height: 100%; border-radius: 50%; border: 3px solid var(--tape-white); display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 1rem; background: rgba(255,255,255,0.05); }
         .special { border-color: var(--gold); color: var(--gold); font-size: 3rem !important; cursor: pointer; }
 
         .player { width: 85px; height: 85px; position: absolute; z-index: 100; transition: all 0.6s cubic-bezier(0.18, 0.89, 0.32, 1.28); background-size: contain; background-repeat: no-repeat; background-position: center bottom; pointer-events: none; }
@@ -74,6 +64,9 @@
         button { padding: 15px 30px; font-family: inherit; font-weight: bold; cursor: pointer; background: #fff; border: none; border-radius: 4px; text-transform: uppercase; font-size: 1rem; }
         .btn-roll { min-width: 130px; font-size: 1.6rem; }
         input { padding: 12px; background: #222; border: 1px solid #555; color: white; width: 80%; margin-bottom: 20px; text-align: center; font-size: 1.2rem; font-family: inherit; }
+
+        #rule-sidebar { position: fixed; right: 20px; top: 50%; transform: translateY(-50%) translateX(400px); width: 240px; background: var(--ui-bg); padding: 25px; border-radius: 15px; border: 2px solid var(--joy-glow); transition: 0.5s; z-index: 100; }
+        #rule-sidebar.active { transform: translateY(-50%) translateX(0); }
     </style>
 </head>
 <body>
@@ -148,7 +141,6 @@
     let turnIndex = 0;
     let isMoving = false;
 
-    // SPACE MAP: 1-6 Merch, 14 & 22 Van
     const rules = {
         1: { id:'merch', title:"👕 Invest in Merch", emoji:"👕", desc:"Rewind 4. Double rolls 1 & 2." },
         2: { id:'merch', title:"👕 Invest in Merch", emoji:"👕", desc:"Rewind 4. Double rolls 1 & 2." },
@@ -219,6 +211,7 @@
         const p = players[idx];
         const target = document.getElementById('s' + p.pos);
         const pElem = document.getElementById('piece' + idx);
+        if(!target || !pElem) return;
         const spread = (idx * 12) - (players.length * 6);
         pElem.style.left = `${target.offsetLeft + (target.offsetWidth/2) - 42 + spread}px`;
         pElem.style.top = `${target.offsetTop + (target.offsetHeight/2) - 70}px`;
@@ -233,7 +226,7 @@
         
         if(p.isInvestor) {
             status.innerText = "INVESTOR TURN";
-            status.style.color = var(--gold);
+            status.style.color = "#ffd700";
         } else {
             status.innerText = "YOUR TURN";
             status.style.color = "white";
@@ -250,10 +243,9 @@
                     <div class="tracker-head" style="background-image:url('${p.head.img}')"></div>
                     <div class="tracker-stats">
                         <div style="font-weight:bold">${p.name}</div>
-                        <div style="color:var(--gold)">SHIRTS: ${p.merchSales}</div>
+                        <div style="color:#ffd700">SHIRTS: ${p.merchSales}</div>
                     </div>
-                </div>
-            `;
+                </div>`;
         });
     }
 
@@ -273,21 +265,17 @@
         diceBox.classList.remove('payoff');
 
         let roll = Math.floor(Math.random() * 6) + 1;
-
-        // Shuffle Animation
         for(let i=0; i<12; i++) {
             diceBox.innerText = Math.floor(Math.random()*6)+1;
             await new Promise(r => setTimeout(r, 60));
         }
 
-        // Show original roll
         diceBox.innerText = roll;
         await new Promise(r => setTimeout(r, 400));
 
-        // PAYOFF LOGIC
         if(p.isInvestor && (roll === 1 || roll === 2)) {
             diceBox.classList.add('payoff');
-            await new Promise(r => setTimeout(r, 300));
+            await new Promise(r => setTimeout(r, 400));
             roll *= 2;
             diceBox.innerText = roll;
             p.merchSales++;
