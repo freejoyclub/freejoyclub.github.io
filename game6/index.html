@@ -2,25 +2,26 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Fearjoy - v8.7</title>
+    <title>Fearjoy - v8.8</title>
     <style>
-      :root {
-    /* "Halfway" Tones: Deeper Tans and Muted Earth Browns */
-    --wood-dark: #8b7355;   /* Reverted from light tan to a rich Nutmeg */
-    --wood-mid: #b39b7d;    /* A sandy, medium-depth brown */
-    --wood-light: #d2b48c;  /* The previous "dark" is now the "light" */
-    --tape-white: #fdfdfd; 
-    --joy-glow: #00ff88; 
-    --fear-glow: #ff4444;
-    --gold: #ffd700; 
-    --ui-bg: rgba(0,0,0,0.98); 
-    --vinyl: #111111;
-}
+        :root {
+            --wood-dark: #8b7355; 
+            --wood-mid: #b39b7d; 
+            --wood-light: #d2b48c;
+            --tape-white: #fdfdfd; --joy-glow: #00ff88; --fear-glow: #ff4444;
+            --gold: #ffd700; --ui-bg: rgba(0,0,0,0.98); --vinyl: #111111;
+        }
 
-@keyframes woodFade { 
-    0%, 100% { background-color: var(--wood-dark); } 
-    50% { background-color: var(--wood-mid); } /* Swapped light for mid for better contrast */
-}
+        @keyframes woodFade { 0%, 100% { background-color: var(--wood-dark); } 50% { background-color: var(--wood-mid); } }
+        @keyframes floatUp { 0% { transform: translateY(0) scale(1); opacity: 1; } 100% { transform: translateY(-150px) scale(1.5); opacity: 0; } }
+        @keyframes redSparkle { 0% { box-shadow: 0 0 10px var(--fear-glow); } 100% { box-shadow: 0 0 50px var(--fear-glow); background: #300; color: white; } }
+        @keyframes goldSparkle { 0% { box-shadow: 0 0 10px var(--gold); } 100% { box-shadow: 0 0 50px var(--gold); background: #330; color: white; } }
+        @keyframes flipping { 0% { transform: rotateY(0); } 100% { transform: rotateY(1800deg); } }
+        
+        @keyframes introGlow { from { text-shadow: 0 0 10px var(--gold), 0 0 20px var(--gold); } to { text-shadow: 0 0 20px var(--gold), 0 0 40px #fffad1; } }
+        @keyframes turnPulse { 0% { filter: drop-shadow(0 0 5px var(--p-color)); transform: scale(1); } 50% { filter: drop-shadow(0 0 20px var(--p-color)); transform: scale(1.15); } 100% { filter: drop-shadow(0 0 5px var(--p-color)); transform: scale(1); } }
+        @keyframes borderPulse { 0% { box-shadow: 0 0 5px var(--p-color) inset, 0 0 5px var(--p-color); } 50% { box-shadow: 0 0 15px var(--p-color) inset, 0 0 15px var(--p-color); } 100% { box-shadow: 0 0 5px var(--p-color) inset, 0 0 5px var(--p-color); } }
+
         body {
             animation: woodFade 20s ease-in-out infinite;
             background-image: repeating-linear-gradient(90deg, transparent, transparent 80px, rgba(0,0,0,0.05) 80px, rgba(0,0,0,0.05) 82px);
@@ -34,13 +35,13 @@
         .sp-emoji { font-size: 1.4rem; margin-bottom: 2px; }
         .sp-text { padding: 0 2px; }
         
-        .dir-arrow { position: absolute; font-size: 1.2rem; color: rgba(210, 180, 140, 0.4); font-weight: 900; pointer-events: none; z-index: 1; }
-        .arrow-right { right: -15px; top: 50%; transform: translateY(-50%); }
-        .arrow-left { left: -15px; top: 50%; transform: translateY(-50%) rotate(180deg); }
-        .arrow-up { top: -18px; left: 50%; transform: translateX(-50%) rotate(-90deg); }
+        .dir-arrow { position: absolute; font-size: 1.5rem; color: rgba(210, 180, 140, 0.6); font-weight: 900; pointer-events: none; z-index: 1; }
+        .arrow-right { right: -18px; top: 50%; transform: translateY(-50%); }
+        .arrow-left { left: -18px; top: 50%; transform: translateY(-50%) rotate(180deg); }
+        .arrow-up { top: -22px; left: 50%; transform: translateX(-50%) rotate(-90deg); }
 
-        .blank { opacity: 0.2; transform: scale(0.8); border-style: dashed; cursor: default; }
-        .blank-num { font-size: 0.6rem; opacity: 0.3; }
+        .blank { background: rgba(255,255,255,0.02) !important; border: 1px dashed rgba(255,255,255,0.3) !important; color: rgba(255,255,255,0.5); transform: scale(0.8); cursor: default; }
+        .blank-num { font-size: 0.8rem; opacity: 1; }
         .tracklist-space { background: var(--vinyl) !important; border: 3px double #666 !important; box-shadow: inset 0 0 15px #000; transform: scale(1.15); z-index: 5; font-size: 0.7rem !important; }
         .win-track { border: 4px solid var(--gold) !important; box-shadow: 0 0 30px var(--gold); }
         
@@ -52,22 +53,23 @@
         #status-text { width: 350px; font-size: 2.2rem; font-weight: 900; text-transform: uppercase; line-height: 1; }
         #dice-box { width: 90px; height: 90px; background: white; color: black; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 4rem; font-weight: bold; transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); position: relative; }
 
-        .floating-emoji { position: absolute; font-size: 3rem; animation: floatUp 1s forwards; pointer-events: none; z-index: 6000; }
+        .floating-emoji { position: absolute; font-size: 4rem; animation: floatUp 1.2s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; pointer-events: none; z-index: 6000; }
         .dice-cinematic { position: fixed !important; top: 50% !important; left: 50% !important; transform: translate(-50%, -50%) scale(3.2) !important; z-index: 5000; opacity: 0.95; }
         .dice-red { animation: redSparkle 0.5s infinite alternate; }
         .dice-gold { animation: goldSparkle 0.5s infinite alternate; }
         .flipping { animation: flipping 1.2s cubic-bezier(0.45, 0.05, 0.55, 0.95); }
 
-        #merch-tracker { position: fixed; left: 20px; top: 135px; width: 260px; background: var(--ui-bg); border-radius: 12px; padding: 20px; border: 1px solid #333; z-index: 1; }
-        .player-entry { margin-bottom: 15px; border-bottom: 1px solid #444; padding-bottom: 10px; font-size: 0.8rem; transition: 0.3s; }
+        #merch-tracker { position: fixed; left: 20px; top: 135px; width: 280px; background: var(--ui-bg); border-radius: 12px; padding: 20px; border: 1px solid #333; z-index: 1; }
+        .player-entry { margin-bottom: 15px; border-bottom: 1px solid #444; padding-bottom: 10px; font-size: 0.8rem; transition: 0.3s; border-radius: 8px; padding: 10px; }
         .avatar-roster { width: 45px; height: 45px; border-radius: 50%; background: #111; border: 2px solid #555; }
         
         .player { width: 75px; height: 75px; position: absolute; z-index: 100; transition: all 0.7s cubic-bezier(0.18, 0.89, 0.32, 1.28); background-size: contain; background-repeat: no-repeat; background-position: center bottom; pointer-events: none; }
         .active-turn { animation: turnPulse 1.5s infinite ease-in-out; }
+        .roster-active { animation: borderPulse 2s infinite; border: 1px solid var(--p-color); }
         .swap-target { filter: drop-shadow(0 0 20px var(--joy-glow)); animation: pulse 1s infinite; z-index: 1000 !important; pointer-events: auto !important; cursor: pointer; }
 
         .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.96); z-index: 2000; display: none; align-items: center; justify-content: center; }
-        .popup { background: #111; padding: 45px; border-radius: 30px; border: 2px solid #444; width: 680px; text-align: center; }
+        .popup { background: #111; padding: 45px; border-radius: 30px; border: 2px solid #444; width: 680px; text-align: center; transition: 0.4s; }
         
         #rule-sidebar { position: fixed; right: -350px; top: 135px; width: 280px; background: var(--ui-bg); padding: 30px; border-radius: 20px; border: 2px solid var(--joy-glow); transition: 0.6s; z-index: 100; box-shadow: -10px 0 40px rgba(0,0,0,0.6); cursor: pointer; }
         #rule-sidebar.active { right: 25px; }
@@ -99,17 +101,20 @@
         <svg id="arrow-layer" viewbox="0 0 1100 700">
             <defs>
                 <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="0" refY="3.5" orient="auto">
-                    <polygon points="0 0, 10 3.5, 0 7" fill="#d2b48c" />
+                    <polygon points="0 0, 10 3.5, 0 7" fill="rgba(210, 180, 140, 0.6)" />
+                </marker>
+                <marker id="arrowhead-subtle" markerWidth="10" markerHeight="7" refX="0" refY="3.5" orient="auto">
+                    <polygon points="0 0, 10 3.5, 0 7" fill="rgba(210, 180, 140, 0.3)" />
                 </marker>
             </defs>
         </svg>
     </div>
 
     <div id="overlay-event" class="overlay">
-        <div class="popup">
+        <div class="popup" id="main-popup">
             <h1 id="event-title"></h1>
             <div id="event-desc" style="font-size: 1.2rem; color: #ccc; margin-bottom:25px; line-height: 1.6;"></div>
-            <div id="coin" style="width:140px; height:140px; background:var(--gold); border:8px solid #b8860b; border-radius:50%; margin:25px auto; display:none; align-items:center; justify-content:center; font-size:2.5rem; font-weight:bold; color:#5c4305;">?</div>
+            <div id="coin" style="width:140px; height:140px; background:var(--gold); border:8px solid #b8860b; border-radius:50%; margin:25px auto; display:none; align-items:center; justify-content:center; font-size:2.5rem; font-weight:bold; color:#5c4305; transform-style: preserve-3d;">?</div>
             <div id="timer-ui" style="font-size: 5rem; font-weight: 900; color: var(--joy-glow); margin: 20px 0; display: none;"></div>
             <div id="action-bar">
                 <button id="event-btn-primary" style="padding:15px 35px; font-size: 1.1rem; font-weight:bold; cursor:pointer; border-radius:8px; border:none;"></button>
@@ -149,11 +154,11 @@
         20: { title: "INVEST IN MERCH", emoji: "👕", choice: 'merch', desc: "Rewind 4 now, but every 1 or 2 you roll later will be doubled." },
         21: { title: "FEAR", emoji: "😱", shift: -1, isAuto: true, desc: "The road is long. Back 1." },
         23: { title: "5TH DIMENSION", emoji: "✨", shift: 1, isAuto: true, desc: "Higher frequency. Forward 1." },
-        25: { title: "IT HAPPENS", emoji: "⚡", isItHappens: true, isTrack: true, desc: "suddenly, instantly, take an extra turn" },
+        25: { title: "IT HAPPENS", emoji: "🔔", isItHappens: true, isTrack: true, desc: "suddenly, instantly, take an extra turn" },
         27: { title: "GHOST 2", emoji: "👻", isGhost: true, isTrack: true, desc: "Silent for two turns. Noise = Rewind 1." },
         28: { title: "MAYA", emoji: "👁️", isMaya: true, desc: "Hold 10 seconds of eye contact with another player." },
-        30: { title: "WIN A GRAMMY", emoji: "🏆", isGrammy: true, desc: "Switch places with the leader!" },
-        33: { title: "OPENING ACT", emoji: "🎤", isOpeningAct: true, desc: "Leader goes back 2. Others slide behind leader." },
+        30: { title: "WIN A GRAMMY", emoji: "🏆", isGrammy: true, desc: "Switch places with the leader! (If you are the leader, move ahead 2 instead.)" },
+        33: { title: "OPENING ACT", emoji: "🎤", isOpeningAct: true, desc: "You are the opening act! Slide 2 spaces behind the leader. If you are in the lead, go back one space." },
         34: { title: "FEAR", emoji: "😱", shift: -1, isAuto: true, desc: "Industry gatekeepers. Back 1." },
         35: { title: "JOY", emoji: "😄", shift: 1, isAuto: true, desc: "Crowd is cheering. Forward 1." },
         37: { title: "TELLUS", emoji: "📣", isTellus: true, isTrack: true, desc: "Swap positions with any artist." },
@@ -170,14 +175,36 @@
 
     let players = [], turnIdx = 0, isMoving = false, totalP = 0, currentSetupP = 0, selectedAvatar = null, isSwapping = false, isMayaPartner = false, sidebarTimer = null;
 
+    function getSpaceColor(pos) {
+        if (pos === -1 || pos >= boardLayout.length) return '#ffffff';
+        const name = boardLayout[pos];
+        if (name === 'FEAR') return 'var(--fear-glow)';
+        if (name === 'JOY') return 'var(--joy-glow)';
+        return '#ffffff';
+    }
+
     function drawArrow(x1, y1, x2, y2) {
         const svg = document.getElementById('arrow-layer');
         const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
         line.setAttribute("x1", x1); line.setAttribute("y1", y1);
         line.setAttribute("x2", x2); line.setAttribute("y2", y2);
-        line.setAttribute("stroke", "#d2b48c"); line.setAttribute("stroke-width", "3");
+        line.setAttribute("stroke", "rgba(210, 180, 140, 0.6)"); line.setAttribute("stroke-width", "3");
         line.setAttribute("stroke-dasharray", "5,5"); line.setAttribute("marker-end", "url(#arrowhead)");
         svg.appendChild(line);
+    }
+
+    function drawCurvedArrow(x1, y1, x2, y2, bendOffset) {
+        const svg = document.getElementById('arrow-layer');
+        const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+        let cx = (x1 + x2)/2 + bendOffset.x;
+        let cy = (y1 + y2)/2 + bendOffset.y;
+        path.setAttribute("d", `M ${x1} ${y1} Q ${cx} ${cy} ${x2} ${y2}`);
+        path.setAttribute("stroke", "rgba(210, 180, 140, 0.3)");
+        path.setAttribute("fill", "none");
+        path.setAttribute("stroke-width", "2");
+        path.setAttribute("stroke-dasharray", "4,4");
+        path.setAttribute("marker-end", "url(#arrowhead-subtle)");
+        svg.appendChild(path);
     }
 
     function setPlayerCount(n) { totalP = n; document.getElementById('setup-step-2').style.display='block'; }
@@ -186,7 +213,7 @@
     function confirmArtist() {
         const name = document.getElementById('name-input').value.toUpperCase() || `ARTIST ${currentSetupP+1}`;
         if(!selectedAvatar) return;
-        players.push({ name, pos: 0, avatar: selectedAvatar, skipCount: 0, isInvestor: false, isSellout: false, grammys: 0, shirtsSold: 0, pillsTaken: 0, nightDriveActive: false, ghostCounter: 0, totalRollValue: 0, smileActive: false });
+        players.push({ name, pos: 0, avatar: selectedAvatar, skipCount: 0, isInvestor: false, isSellout: false, grammys: 0, shirtsSold: 0, pillsTaken: 0, nightDriveActive: false, ghostCounter: 0, totalRollValue: 0, smileActive: false, accolades: [] });
         currentSetupP++;
         if(currentSetupP >= totalP) { document.getElementById('overlay-setup').style.display='none'; initBoard(); }
         else { document.getElementById('name-input').value=''; selectedAvatar=null; }
@@ -210,7 +237,6 @@
                 if(i === 59) s.classList.add('win-track');
             }
             
-            // Add directional arrows
             if(i < 59 && name !== "START") {
                 let arrowDir = '';
                 if(i % 10 === 9) arrowDir = 'arrow-up';
@@ -230,8 +256,10 @@
             const rRect = s.getBoundingClientRect();
             spaceCoords.push({ x: rRect.left + rRect.width/2 - containerRect.left, y: rRect.top + rRect.height/2 - containerRect.top });
         });
-        drawArrow(spaceCoords[15].x, spaceCoords[15].y, spaceCoords[23].x, spaceCoords[23].y);
-        drawArrow(spaceCoords[44].x, spaceCoords[44].y, spaceCoords[40].x, spaceCoords[40].y);
+        
+        drawCurvedArrow(spaceCoords[15].x, spaceCoords[15].y, spaceCoords[23].x, spaceCoords[23].y, {x: 30, y: -40});
+        drawCurvedArrow(spaceCoords[44].x, spaceCoords[44].y, spaceCoords[40].x, spaceCoords[40].y, {x: 0, y: 50});
+        
         players.forEach((p, i) => {
             const el = document.createElement('div'); el.id = 'p'+i; el.className = 'player';
             el.style.backgroundImage = `url('${p.avatar.img}')`;
@@ -243,7 +271,7 @@
 
     function handleSpaceClick(i) {
         const r = rules[i] || { title: boardLayout[i], desc: "The road continues." };
-        showSidebar(r.title, (r.emoji ? r.emoji + " " : "") + r.desc);
+        showSidebar(r.title, (r.emoji ? r.emoji + " " : "") + r.desc, getSpaceColor(i));
     }
 
     function updateUI() {
@@ -253,8 +281,8 @@
         players.forEach((pl, i) => {
             let tags = (pl.isInvestor ? '<span class="tag tag-investor">INVESTOR</span>' : '') + (pl.isSellout ? '<span class="tag tag-sellout">SELLOUT</span>' : '');
             let isCurrent = (i === turnIdx);
-            list.innerHTML += `<div id="roster-p${i}" class="player-entry ${isCurrent ? 'active-turn' : ''}" style="${isCurrent ? '--p-color:'+pl.avatar.color : ''}">
-                <div style="display:flex;align-items:center;gap:10px;"><img src="${pl.avatar.img}" class="avatar-roster"><div><b>${pl.name}</b>${tags}<br>🏆 ${pl.grammys} | 👕 ${pl.shirtsSold} | 💊 ${pl.pillsTaken}</div></div></div>`;
+            list.innerHTML += `<div id="roster-p${i}" class="player-entry ${isCurrent ? 'roster-active' : ''}" style="${isCurrent ? '--p-color:'+pl.avatar.color : ''}">
+                <div style="display:flex;align-items:center;gap:10px;"><img src="${pl.avatar.img}" class="avatar-roster"><div><b>${pl.name}</b>${tags}<br><span style="font-size:1.1rem; letter-spacing:1px;">${pl.accolades.join('')}</span></div></div></div>`;
             
             const boardPiece = document.getElementById('p'+i);
             boardPiece.style.zIndex = (isCurrent ? 150 : 100);
@@ -297,14 +325,28 @@
         let roll;
         for(let j=0; j<12; j++) { dice.innerText = Math.floor(Math.random()*6)+1; await new Promise(r => setTimeout(r, 45)); }
         roll = Math.floor(Math.random()*6)+1; dice.innerText = roll;
-        if(p.isInvestor && (roll === 1 || roll === 2)) { await new Promise(r => setTimeout(r, 500)); dice.classList.add('dice-gold'); spawnEmoji('👕'); showSidebar("INVESTMENT PAYOFF", "Merch is moving! Roll doubled."); roll *= 2; p.shirtsSold++; dice.innerText = roll; await new Promise(r => setTimeout(r, 2000)); updateUI(); }
-        if(p.isSellout && roll === 6) { await new Promise(r => setTimeout(r, 500)); dice.classList.add('dice-red'); spawnEmoji('💊'); showSidebar("CONTRACT DEBT", "Forward 6 becomes Back 2."); roll = -2; p.pillsTaken++; dice.innerText = roll; await new Promise(r => setTimeout(r, 2000)); updateUI(); }
+        
+        if(p.isInvestor && (roll === 1 || roll === 2)) { 
+            await new Promise(r => setTimeout(r, 500)); 
+            dice.classList.add('dice-gold'); spawnEmoji('👕'); 
+            showSidebar("INVESTMENT PAYOFF", "Merch is moving! Roll doubled.", "#ffffff"); 
+            p.shirtsSold++; p.accolades.push('👕'); roll *= 2; dice.innerText = roll; 
+            await new Promise(r => setTimeout(r, 2000)); updateUI(); 
+        }
+        if(p.isSellout && roll === 6) { 
+            await new Promise(r => setTimeout(r, 500)); 
+            dice.classList.add('dice-red'); spawnEmoji('💊'); 
+            showSidebar("CONTRACT DEBT", "Forward 6 becomes Back 2.", "var(--fear-glow)"); 
+            p.pillsTaken++; p.accolades.push('💊'); roll = -2; dice.innerText = roll; 
+            await new Promise(r => setTimeout(r, 2000)); updateUI(); 
+        }
+        
         p.totalRollValue += Math.abs(roll);
         await new Promise(r => setTimeout(r, 250)); dice.classList.remove('dice-cinematic', 'dice-red', 'dice-gold');
         await new Promise(r => setTimeout(r, 250)); movePlayer(roll);
     }
 
-    function spawnEmoji(char) { const e = document.createElement('div'); e.className = 'floating-emoji'; e.innerText = char; e.style.left = "50%"; e.style.top = "50%"; document.body.appendChild(e); setTimeout(() => e.remove(), 1000); }
+    function spawnEmoji(char) { const e = document.createElement('div'); e.className = 'floating-emoji'; e.innerText = char; e.style.left = "50%"; e.style.top = "50%"; document.body.appendChild(e); setTimeout(() => e.remove(), 1200); }
 
     async function movePlayer(n) {
         const p = players[turnIdx]; const dir = n > 0 ? 1 : -1;
@@ -324,9 +366,15 @@
     function checkSpace() {
         const p = players[turnIdx], r = rules[p.pos];
         if(!r) { endTurn(); return; }
-        if(r.choice === 'remedy' && p.isSellout) { showSidebar("CONTRACT ACTIVE", "Soul already sold."); endTurn(); return; }
-        if(r.choice === 'merch' && p.isInvestor) { showSidebar("ALREADY INVESTED", "Inventory full."); endTurn(); return; }
-        if(r.isAuto) { showSidebar(r.title, (r.emoji || "") + " " + (r.desc || "Moving...")); setTimeout(() => { movePlayer(r.shift); }, 1200); return; }
+        
+        const spaceCol = getSpaceColor(p.pos);
+        const popupEl = document.getElementById('main-popup');
+        popupEl.style.borderColor = spaceCol; popupEl.style.boxShadow = `0 0 30px ${spaceCol}`;
+
+        if(r.choice === 'remedy' && p.isSellout) { showSidebar("CONTRACT ACTIVE", "Soul already sold.", spaceCol); endTurn(); return; }
+        if(r.choice === 'merch' && p.isInvestor) { showSidebar("ALREADY INVESTED", "Inventory full.", spaceCol); endTurn(); return; }
+        if(r.isAuto) { showSidebar(r.title, (r.emoji || "") + " " + (r.desc || "Moving..."), spaceCol); setTimeout(() => { movePlayer(r.shift); }, 1200); return; }
+        
         const modal = document.getElementById('overlay-event'), title = document.getElementById('event-title'), desc = document.getElementById('event-desc'), pBtn = document.getElementById('event-btn-primary'), sBtn = document.getElementById('event-btn-secondary'), timerUI = document.getElementById('timer-ui'), coin = document.getElementById('coin');
         coin.style.display = 'none'; pBtn.style.display = 'inline-block'; pBtn.disabled = false;
         title.innerText = (r.emoji || "") + " " + r.title; desc.innerText = r.desc || "";
@@ -348,7 +396,7 @@
             pBtn.onclick = async () => { modal.style.display='none'; await new Promise(res => setTimeout(res, 800)); if(r.choice==='remedy'){p.isSellout=true; movePlayer(6);} else {p.isInvestor=true; movePlayer(-4); } };
             sBtn.onclick = () => { modal.style.display='none'; endTurn(); };
         } else if(r.isGrammy) {
-            let lead = players.reduce((prev, curr) => (prev.pos > curr.pos) ? prev : curr); p.grammys++; updateUI();
+            let lead = players.reduce((prev, curr) => (prev.pos > curr.pos) ? prev : curr); p.grammys++; p.accolades.push('🏆'); updateUI();
             if(lead === p) { pBtn.onclick = async () => { modal.style.display='none'; await new Promise(res => setTimeout(res, 800)); movePlayer(2); }; }
             else { pBtn.onclick = () => { let lp = lead.pos; lead.pos = p.pos; p.pos = lp; modal.style.display='none'; updatePositions(); endTurn(); }; }
         } else if(r.isTellus) {
@@ -368,11 +416,11 @@
             let isLead = (p.pos === maxPos);
             pBtn.innerText = "READING..."; pBtn.disabled = true;
             if(isLead) {
-                showSidebar("OPENING ACT", "You are the leader! Go back 2 spaces.");
-                setTimeout(() => { pBtn.innerText = "ACCEPT FATE (-2)"; pBtn.disabled = false; pBtn.onclick = async () => { modal.style.display='none'; await new Promise(res=>setTimeout(res,800)); movePlayer(-2); }; }, 2500);
+                showSidebar("OPENING ACT", "You are the leader! Go back 1 space.", spaceCol);
+                setTimeout(() => { pBtn.innerText = "ACCEPT FATE (-1)"; pBtn.disabled = false; pBtn.onclick = async () => { modal.style.display='none'; await new Promise(res=>setTimeout(res,800)); movePlayer(-1); }; }, 2500);
             } else {
-                showSidebar("OPENING ACT", "Slide to the space behind the leader.");
-                setTimeout(() => { pBtn.innerText = "MOVE UP"; pBtn.disabled = false; pBtn.onclick = async () => { modal.style.display='none'; let targetPos = maxPos - 1; if(targetPos < 0) targetPos = 0; let diff = targetPos - p.pos; await new Promise(res=>setTimeout(res,800)); if(diff !== 0) movePlayer(diff); else endTurn(); }; }, 2500);
+                showSidebar("OPENING ACT", "Slide 2 spaces behind the leader.", spaceCol);
+                setTimeout(() => { pBtn.innerText = "MOVE UP"; pBtn.disabled = false; pBtn.onclick = async () => { modal.style.display='none'; let targetPos = maxPos - 2; if(targetPos < 0) targetPos = 0; let diff = targetPos - p.pos; await new Promise(res=>setTimeout(res,800)); if(diff !== 0) movePlayer(diff); else endTurn(); }; }, 2500);
             }
         } else if(r.isGate) {
             pBtn.innerText = "PAY YOUR DUES"; pBtn.onclick = () => { modal.style.display='none'; endTurn(); };
@@ -439,19 +487,41 @@
 
     function showStatusPopup(t, d, b1, c1, b2, c2) {
         const modal = document.getElementById('overlay-event');
+        const popupEl = document.getElementById('main-popup');
+        popupEl.style.borderColor = '#444'; popupEl.style.boxShadow = 'none';
         document.getElementById('event-title').innerText = t; document.getElementById('event-desc').innerText = d;
         const pBtn = document.getElementById('event-btn-primary'); pBtn.innerText = b1; pBtn.onclick = async () => { modal.style.display='none'; await new Promise(r => setTimeout(r, 200)); c1(); };
         const sBtn = document.getElementById('event-btn-secondary'); sBtn.style.display='inline-block'; sBtn.innerText = b2; sBtn.onclick = async () => { modal.style.display='none'; await new Promise(r => setTimeout(r, 200)); c2(); };
         modal.style.display='flex';
     }
 
-    function showSidebar(t, d) { if(sidebarTimer) clearTimeout(sidebarTimer); document.getElementById('side-title').innerText = t; document.getElementById('side-desc').innerText = d; document.getElementById('rule-sidebar').classList.add('active'); sidebarTimer = setTimeout(() => document.getElementById('rule-sidebar').classList.remove('active'), 8000); }
+    function showSidebar(t, d, color = '#ffffff') { 
+        if(sidebarTimer) clearTimeout(sidebarTimer); 
+        const sb = document.getElementById('rule-sidebar');
+        sb.style.borderColor = color; sb.style.boxShadow = `-10px 0 40px ${color}`;
+        document.getElementById('side-title').innerText = t; 
+        document.getElementById('side-desc').innerText = d; 
+        sb.classList.add('active'); 
+        sidebarTimer = setTimeout(() => sb.classList.remove('active'), 8000); 
+    }
 
     function showWinScreen() { 
         const p = players[turnIdx];
         let statsHtml = `<div style="text-align:left; margin-top:20px; font-family:monospace;">`;
-        players.forEach(pl => { statsHtml += `<div style="margin-bottom:15px; border-bottom: 1px solid #444;"><b style="color:${pl.avatar.color}">${pl.name}</b><br>GRAMMYS: ${pl.grammys} | SHIRTS: ${pl.shirtsSold} | PILLS: ${pl.pillsTaken}<br>TOTAL MILES ROLLED: ${pl.totalRollValue}</div>`; });
+        players.forEach(pl => { 
+            statsHtml += `<div style="margin-bottom:15px; border-bottom: 1px solid #444; display:flex; align-items:center; gap:15px; padding-bottom:15px;">
+                <img src="${pl.avatar.img}" style="width:60px; height:60px; border-radius:50%; background:#111; border:2px solid #555;">
+                <div style="flex-grow:1;">
+                    <b style="color:${pl.avatar.color}; font-size:1.2rem;">${pl.name}</b><br>
+                    <span style="font-size:1.3rem; letter-spacing:2px; display:inline-block; margin:5px 0;">${pl.accolades.join('') || "No Accolades"}</span><br>
+                    GRAMMYS: ${pl.grammys} | SHIRTS: ${pl.shirtsSold} | PILLS: ${pl.pillsTaken}<br>
+                    TOTAL MILES ROLLED: ${pl.totalRollValue}
+                </div>
+            </div>`; 
+        });
         statsHtml += `</div>`;
+        const popupEl = document.getElementById('main-popup');
+        popupEl.style.borderColor = 'var(--gold)'; popupEl.style.boxShadow = '0 0 50px var(--gold)';
         document.getElementById('event-title').innerText = "🌊 SWIMMIN'";
         document.getElementById('event-desc').innerHTML = `${p.name} REACHED LEGEND STATUS.<br>${statsHtml}`;
         document.getElementById('event-btn-primary').innerText = "RESTART TOUR"; document.getElementById('event-btn-primary').onclick = () => location.reload();
