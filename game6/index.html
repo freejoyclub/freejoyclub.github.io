@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Fearjoy - v8.5.7 Logic Repair</title>
+    <title>Fearjoy - v8.5.8 Stable</title>
     <style>
         :root {
             --wood-dark: #2a180b; --wood-mid: #3d2616; --wood-light: #4e3625;
@@ -252,8 +252,27 @@
         let roll;
         for(let j=0; j<12; j++) { dice.innerText = Math.floor(Math.random()*6)+1; await new Promise(r => setTimeout(r, 45)); }
         roll = Math.floor(Math.random()*6)+1; dice.innerText = roll;
-        if(p.isInvestor && (roll === 1 || roll === 2)) { await new Promise(r => setTimeout(r, 500)); dice.classList.add('dice-gold'); spawnEmoji('👕'); roll *= 2; dice.innerText = roll; await new Promise(r => setTimeout(r, 500)); }
-        if(p.isSellout && roll === 6) { await new Promise(r => setTimeout(r, 500)); dice.classList.add('dice-red'); spawnEmoji('💊'); roll = -2; dice.innerText = roll; await new Promise(r => setTimeout(r, 500)); }
+        
+        if(p.isInvestor && (roll === 1 || roll === 2)) { 
+            await new Promise(r => setTimeout(r, 500)); 
+            dice.classList.add('dice-gold'); 
+            spawnEmoji('👕'); 
+            showSidebar("INVESTMENT PAYOFF", "Merch is moving! Roll doubled.");
+            roll *= 2; 
+            dice.innerText = roll; 
+            await new Promise(r => setTimeout(r, 2000)); 
+        }
+        
+        if(p.isSellout && roll === 6) { 
+            await new Promise(r => setTimeout(r, 500)); 
+            dice.classList.add('dice-red'); 
+            spawnEmoji('💊'); 
+            showSidebar("CONTRACT DEBT", "The label takes their cut. Forward 6 becomes Back 2.");
+            roll = -2; 
+            dice.innerText = roll; 
+            await new Promise(r => setTimeout(r, 2000)); 
+        }
+        
         await new Promise(r => setTimeout(r, 250)); dice.classList.remove('dice-cinematic', 'dice-red', 'dice-gold');
         await new Promise(r => setTimeout(r, 250)); movePlayer(roll);
     }
@@ -280,6 +299,16 @@
     function checkSpace() {
         const p = players[turnIdx], r = rules[p.pos];
         if(!r) { endTurn(); return; }
+        
+        if(r.choice === 'remedy' && p.isSellout) {
+            showSidebar("CONTRACT ACTIVE", "You already signed your soul away. No more deals.");
+            endTurn(); return;
+        }
+        if(r.choice === 'merch' && p.isInvestor) {
+            showSidebar("ALREADY INVESTED", "You have enough merch in the van. Keep driving.");
+            endTurn(); return;
+        }
+
         if(r.isAuto) {
             showSidebar(r.title, (r.emoji || "") + " " + (r.desc || "Moving..."));
             setTimeout(() => { movePlayer(r.shift); }, 1200); return; 
