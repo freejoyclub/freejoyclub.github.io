@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Fearjoy - v8.5.6 Functional Fixes</title>
+    <title>Fearjoy - v8.5.7 Logic Repair</title>
     <style>
         :root {
             --wood-dark: #2a180b; --wood-mid: #3d2616; --wood-light: #4e3625;
@@ -24,13 +24,7 @@
 
         #board-container { display: grid; grid-template-columns: repeat(10, 1fr); grid-template-rows: repeat(6, 1fr); gap: 18px; padding: 50px; width: 1100px; height: 700px; position: relative; z-index: 5; }
         
-        #arrow-layer {
-            position: absolute;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            z-index: -1;
-            pointer-events: none;
-        }
+        #arrow-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; pointer-events: none; }
 
         .space { width: 85px; height: 85px; border-radius: 50%; border: 1px solid var(--tape-white); display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 0.7rem; background: rgba(255,255,255,0.05); text-align: center; position: relative; transition: 0.3s; cursor: help; }
         .blank { opacity: 0.2; transform: scale(0.8); border-style: dashed; cursor: default; }
@@ -44,11 +38,7 @@
 
         #ui-layer { display: flex; align-items: center; background: var(--ui-bg); padding: 25px 45px; border-radius: 12px; margin: 15px 0; border: 1px solid rgba(255,255,255,0.1); width: 1000px; justify-content: space-between; z-index: 10; }
         #status-text { width: 350px; font-size: 2.2rem; font-weight: 900; text-transform: uppercase; line-height: 1; }
-        #dice-box { 
-            width: 90px; height: 90px; background: white; color: black; border-radius: 12px; 
-            display: flex; align-items: center; justify-content: center; font-size: 4rem; font-weight: bold; 
-            transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); position: relative;
-        }
+        #dice-box { width: 90px; height: 90px; background: white; color: black; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 4rem; font-weight: bold; transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); position: relative; }
 
         .floating-emoji { position: absolute; font-size: 3rem; animation: floatUp 1s forwards; pointer-events: none; z-index: 6000; }
         .dice-cinematic { position: fixed !important; top: 50% !important; left: 50% !important; transform: translate(-50%, -50%) scale(3.2) !important; z-index: 5000; opacity: 0.95; }
@@ -129,11 +119,11 @@
 
     const rules = {
         0: { title: "START", emoji: "🏠", desc: "The quiet before the storm." },
-        4: { title: "DAYSPRING", emoji: "☀️", shift: 3, isTrack: true, desc: "Creative clarity strikes! Forward 3." },
+        4: { title: "DAYSPRING", emoji: "☀️", shift: 3, isAuto: true, isTrack: true, desc: "Creative clarity strikes! Forward 3." },
         6: { title: "FEARJOY", emoji: "☯️", isFearjoy: true, desc: "Flip the coin: JOY = +1, FEAR = -1." },
         8: { title: "FIGMENT", emoji: "🛸", isFigment: true, isTrack: true, desc: "Step outside (1:00) for +2, or rush back for -1." },
         9: { title: "JOY", emoji: "✨", shift: 1, isAuto: true, desc: "Momentum! Forward 1." },
-        10: { title: "THE REMEDY", emoji: "💊", choice: 'remedy', isTrack: true, desc: "Sign the contract: +6 now, but every 6 you roll later becomes -2. (They own you now, but the views are great.)" },
+        10: { title: "THE REMEDY", emoji: "💊", choice: 'remedy', isTrack: true, desc: "A major label exec offers a deal: move ahead 6 now, but every 6 you roll later becomes -2. (They own you now, but the views are great.)" },
         11: { title: "FEAR", emoji: "💀", shift: -1, isAuto: true, desc: "Doubt slows you. Back 1." },
         12: { title: "VAN BREAKS DOWN", emoji: "🛠", skipTurns: 1, desc: "Skip 1 turn while waiting for repairs." },
         13: { title: "JOY", emoji: "✨", shift: 1, isAuto: true, desc: "Everything aligns. Forward 1." },
@@ -157,7 +147,7 @@
         48: { title: "GATEKEEPER", emoji: "🚪", isGate: true, desc: "Roll exactly to pass." },
         52: { title: "FEARJOY", emoji: "☯️", isFearjoy: true, desc: "Flip for destiny." },
         53: { title: "VAN BREAKS DOWN", emoji: "🛠", skipTurns: 1, desc: "Skip 1 turn while waiting for repairs." },
-        55: { title: "LOST RECORDING", emoji: "📼", isLostRecording: true, desc: "Tape erased! Roll and rewind that amount." },
+        55: { title: "LOST RECORDING", emoji: " cassette", isLostRecording: true, desc: "Tape erased! Roll and rewind that amount." },
         59: { title: "SWIMMIN'", emoji: "🌊", desc: "The tour is over. Legend status achieved." }
     };
 
@@ -178,14 +168,11 @@
     function drawArrow(x1, y1, x2, y2) {
         const layer = document.getElementById('arrow-layer');
         const arrow = document.createElementNS("http://www.w3.org/2000/svg", "path");
-        const dx = x2 - x1, dy = y2 - y1;
-        const len = Math.sqrt(dx*dx + dy*dy);
+        const dx = x2 - x1, dy = y2 - y1, len = Math.sqrt(dx*dx + dy*dy);
         const ox = (dx/len) * 45, oy = (dy/len) * 45;
         arrow.setAttribute("d", `M ${x1+ox} ${y1+oy} L ${x2-ox} ${y2-oy}`);
-        arrow.setAttribute("stroke", "#d2b48c");
-        arrow.setAttribute("stroke-width", "3");
-        arrow.setAttribute("stroke-dasharray", "5,5");
-        arrow.setAttribute("marker-end", "url(#arrowhead)");
+        arrow.setAttribute("stroke", "#d2b48c"); arrow.setAttribute("stroke-width", "3");
+        arrow.setAttribute("stroke-dasharray", "5,5"); arrow.setAttribute("marker-end", "url(#arrowhead)");
         layer.appendChild(arrow);
     }
 
@@ -210,7 +197,6 @@
             spaceCoords.push({ x: r.left + r.width/2 - containerRect.left, y: r.top + r.height/2 - containerRect.top });
         });
 
-        // Visual Arrows (Dmitri to 5D and Void back)
         drawArrow(spaceCoords[15].x, spaceCoords[15].y, spaceCoords[23].x, spaceCoords[23].y);
         drawArrow(spaceCoords[44].x, spaceCoords[44].y, spaceCoords[40].x, spaceCoords[40].y);
 
@@ -233,12 +219,7 @@
         list.innerHTML = '';
         players.forEach((pl, i) => {
             let tags = (pl.isInvestor ? '<span class="tag tag-investor">INVESTOR</span>' : '') + (pl.isSellout ? '<span class="tag tag-sellout">SELLOUT</span>' : '');
-            list.innerHTML += `<div class="player-entry">
-                <div style="display:flex;align-items:center;gap:10px;">
-                    <img src="${pl.avatar.img}" class="avatar-roster">
-                    <div><b>${pl.name}</b>${tags}<br>🏆 ${pl.grammys} | 👕 ${pl.shirtsSold} | 💊 ${pl.pillsTaken}</div>
-                </div>
-            </div>`;
+            list.innerHTML += `<div class="player-entry"><div style="display:flex;align-items:center;gap:10px;"><img src="${pl.avatar.img}" class="avatar-roster"><div><b>${pl.name}</b>${tags}<br>🏆 ${pl.grammys} | 👕 ${pl.shirtsSold} | 💊 ${pl.pillsTaken}</div></div></div>`;
             document.getElementById('p'+i).style.zIndex = (i === turnIdx ? 150 : 100);
         });
         updatePositions();
@@ -266,10 +247,8 @@
     }
 
     async function performActualRoll() {
-        const p = players[turnIdx];
-        isMoving = true; document.getElementById('roll-btn').disabled = true;
-        const dice = document.getElementById('dice-box');
-        dice.classList.add('dice-cinematic');
+        const p = players[turnIdx]; isMoving = true; document.getElementById('roll-btn').disabled = true;
+        const dice = document.getElementById('dice-box'); dice.classList.add('dice-cinematic');
         let roll;
         for(let j=0; j<12; j++) { dice.innerText = Math.floor(Math.random()*6)+1; await new Promise(r => setTimeout(r, 45)); }
         roll = Math.floor(Math.random()*6)+1; dice.innerText = roll;
@@ -301,7 +280,10 @@
     function checkSpace() {
         const p = players[turnIdx], r = rules[p.pos];
         if(!r) { endTurn(); return; }
-        if(r.isAuto) { showSidebar(r.title, (r.emoji || "") + " " + (r.desc || "Moving...")); setTimeout(() => { movePlayer(r.shift); }, 1200); return; }
+        if(r.isAuto) {
+            showSidebar(r.title, (r.emoji || "") + " " + (r.desc || "Moving..."));
+            setTimeout(() => { movePlayer(r.shift); }, 1200); return; 
+        }
         const modal = document.getElementById('overlay-event'), title = document.getElementById('event-title'), desc = document.getElementById('event-desc'), pBtn = document.getElementById('event-btn-primary'), sBtn = document.getElementById('event-btn-secondary'), timerUI = document.getElementById('timer-ui'), coin = document.getElementById('coin');
         coin.style.display = 'none'; pBtn.style.display = 'inline-block'; pBtn.disabled = false;
         title.innerText = (r.emoji || "") + " " + r.title; desc.innerText = r.desc || "";
@@ -368,8 +350,8 @@
     }
 
     function showWinScreen() { 
-        const p = players[turnIdx];
-        document.getElementById('event-title').innerText = "🌊 SWIMMIN'"; document.getElementById('event-desc').innerText = `${p.name} REACHED LEGEND STATUS.`;
+        const p = players[turnIdx]; document.getElementById('event-title').innerText = "🌊 SWIMMIN'";
+        document.getElementById('event-desc').innerText = `${p.name} REACHED LEGEND STATUS.`;
         document.getElementById('event-btn-primary').innerText = "RESTART TOUR"; document.getElementById('event-btn-primary').onclick = () => location.reload();
         document.getElementById('overlay-event').style.display='flex'; 
     }
