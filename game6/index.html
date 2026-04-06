@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Fearjoy - v8.5.9.2</title>
+    <title>Fearjoy - v8.6</title>
     <style>
         :root {
             --wood-dark: #2a180b; --wood-mid: #3d2616; --wood-light: #4e3625;
@@ -16,7 +16,6 @@
         @keyframes goldSparkle { 0% { box-shadow: 0 0 10px var(--gold); } 100% { box-shadow: 0 0 50px var(--gold); background: #330; color: white; } }
         @keyframes flipping { 0% { transform: rotateY(0); } 100% { transform: rotateY(1800deg); } }
         
-        /* NEW ANIMATIONS */
         @keyframes introGlow { from { text-shadow: 0 0 10px var(--gold), 0 0 20px var(--gold); } to { text-shadow: 0 0 20px var(--gold), 0 0 40px #fffad1; } }
         @keyframes turnPulse { 0% { filter: drop-shadow(0 0 2px var(--p-color)); transform: scale(1); } 50% { filter: drop-shadow(0 0 15px var(--p-color)); transform: scale(1.1); } 100% { filter: drop-shadow(0 0 2px var(--p-color)); transform: scale(1); } }
 
@@ -262,8 +261,8 @@
         let roll;
         for(let j=0; j<12; j++) { dice.innerText = Math.floor(Math.random()*6)+1; await new Promise(r => setTimeout(r, 45)); }
         roll = Math.floor(Math.random()*6)+1; dice.innerText = roll;
-        if(p.isInvestor && (roll === 1 || roll === 2)) { await new Promise(r => setTimeout(r, 500)); dice.classList.add('dice-gold'); spawnEmoji('👕'); showSidebar("INVESTMENT PAYOFF", "Merch is moving! Roll doubled."); roll *= 2; dice.innerText = roll; await new Promise(r => setTimeout(r, 2000)); }
-        if(p.isSellout && roll === 6) { await new Promise(r => setTimeout(r, 500)); dice.classList.add('dice-red'); spawnEmoji('💊'); showSidebar("CONTRACT DEBT", "Forward 6 becomes Back 2."); roll = -2; dice.innerText = roll; await new Promise(r => setTimeout(r, 2000)); }
+        if(p.isInvestor && (roll === 1 || roll === 2)) { await new Promise(r => setTimeout(r, 500)); dice.classList.add('dice-gold'); spawnEmoji('👕'); showSidebar("INVESTMENT PAYOFF", "Merch is moving! Roll doubled."); roll *= 2; p.shirtsSold++; dice.innerText = roll; await new Promise(r => setTimeout(r, 2000)); updateUI(); }
+        if(p.isSellout && roll === 6) { await new Promise(r => setTimeout(r, 500)); dice.classList.add('dice-red'); spawnEmoji('💊'); showSidebar("CONTRACT DEBT", "Forward 6 becomes Back 2."); roll = -2; p.pillsTaken++; dice.innerText = roll; await new Promise(r => setTimeout(r, 2000)); updateUI(); }
         p.totalRollValue += Math.abs(roll);
         await new Promise(r => setTimeout(r, 250)); dice.classList.remove('dice-cinematic', 'dice-red', 'dice-gold');
         await new Promise(r => setTimeout(r, 250)); movePlayer(roll);
@@ -310,18 +309,19 @@
             pBtn.onclick = async () => { modal.style.display='none'; await new Promise(res => setTimeout(res, 800)); if(r.choice==='remedy'){p.isSellout=true; movePlayer(6);} else {p.isInvestor=true; movePlayer(-4); } };
             sBtn.onclick = () => { modal.style.display='none'; endTurn(); };
         } else if(r.isGrammy) {
-            let lead = players.reduce((prev, curr) => (prev.pos > curr.pos) ? prev : curr); p.grammys++;
+            let lead = players.reduce((prev, curr) => (prev.pos > curr.pos) ? prev : curr); p.grammys++; updateUI();
             if(lead === p) { pBtn.onclick = async () => { modal.style.display='none'; await new Promise(res => setTimeout(res, 800)); movePlayer(2); }; }
             else { pBtn.onclick = () => { let lp = lead.pos; lead.pos = p.pos; p.pos = lp; modal.style.display='none'; updatePositions(); endTurn(); }; }
         } else if(r.isTellus) {
-            isSwapping = true; pBtn.style.display='none'; desc.innerText = "CLICK ANOTHER ARTIST TO SWAP PLACES.";
+            isSwapping = true; pBtn.innerText = "READY"; pBtn.onclick = () => { modal.style.display='none'; };
+            desc.innerText = "CLICK ANOTHER ARTIST TO SWAP PLACES.";
             players.forEach((_, i) => { if(i !== turnIdx) document.getElementById('p'+i).classList.add('swap-target'); });
         } else if(r.isItHappens) { pBtn.onclick = async () => { modal.style.display='none'; await new Promise(res => setTimeout(res, 800)); isMoving = false; performActualRoll(); };
         } else if(r.isLostRecording) { pBtn.innerText = "ROLL TO REWIND"; pBtn.onclick = async () => { modal.style.display='none'; await new Promise(res => setTimeout(res, 800)); let rl = Math.floor(Math.random()*6)+1; movePlayer(-rl); };
         } else { pBtn.onclick = () => { modal.style.display='none'; endTurn(); }; }
     }
 
-    function handlePlayerClick(idx) { if(!isSwapping) return; let p = players[turnIdx], t = players[idx], lp = t.pos; t.pos = p.pos; p.pos = lp; isSwapping = false; document.querySelectorAll('.player').forEach(el => el.classList.remove('swap-target')); document.getElementById('overlay-event').style.display='none'; updatePositions(); endTurn(); }
+    function handlePlayerClick(idx) { if(!isSwapping) return; let p = players[turnIdx], t = players[idx], lp = t.pos; t.pos = p.pos; p.pos = lp; isSwapping = false; document.querySelectorAll('.player').forEach(el => el.classList.remove('swap-target')); updatePositions(); endTurn(); }
 
     function showStatusPopup(t, d, b1, c1, b2, c2) {
         const modal = document.getElementById('overlay-event');
