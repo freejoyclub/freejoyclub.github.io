@@ -19,15 +19,16 @@
 
         @keyframes sparkle {
             0% { box-shadow: 0 0 0px var(--gold); transform: scale(1); }
-            50% { box-shadow: 0 0 30px var(--gold); transform: scale(1.2); }
+            50% { box-shadow: 0 0 40px var(--gold); transform: scale(1.15); }
             100% { box-shadow: 0 0 0px var(--gold); transform: scale(1); }
         }
 
-        @keyframes floatUp {
-            0% { opacity: 0; transform: translateY(0); }
-            20% { opacity: 1; }
-            80% { opacity: 1; }
-            100% { opacity: 0; transform: translateY(-40px); }
+        /* Slower, more apparent popup */
+        @keyframes merchPopScale {
+            0% { opacity: 0; transform: translateY(0) scale(0.5); }
+            15% { opacity: 1; transform: translateY(-20px) scale(1.4); }
+            80% { opacity: 1; transform: translateY(-35px) scale(1.2); }
+            100% { opacity: 0; transform: translateY(-50px) scale(1); }
         }
 
         body {
@@ -37,28 +38,32 @@
             color: white; font-family: 'Courier New', monospace; display: flex; flex-direction: column; align-items: center; margin: 0; min-height: 100vh; overflow: hidden;
         }
 
-        /* Merch Tracker with Emoji Stacks */
         #merch-tracker {
             position: fixed; left: 20px; top: 120px; width: 220px; background: var(--ui-bg); border-radius: 12px; padding: 15px; border: 1px solid rgba(255,255,255,0.1); z-index: 5;
         }
         .tracker-item { display: flex; flex-direction: column; gap: 5px; margin-bottom: 15px; border-bottom: 1px solid #333; padding-bottom: 10px; }
         .tracker-top { display: flex; align-items: center; gap: 10px; }
         .tracker-head { width: 40px; height: 40px; background-size: contain; background-repeat: no-repeat; border-radius: 50%; }
-        .shirt-stack { font-size: 1.2rem; line-height: 1; display: flex; flex-wrap: wrap; gap: 2px; }
+        .shirt-stack { font-size: 1.2rem; line-height: 1; display: flex; flex-wrap: wrap; gap: 2px; min-height: 1.2rem; }
 
-        /* Floating Animation Elements */
-        .merch-pop { position: absolute; font-weight: bold; color: var(--gold); pointer-events: none; animation: floatUp 1s forwards; z-index: 500; font-size: 1.5rem; text-shadow: 0 0 10px black; }
+        /* Dramatic Popup Style */
+        .merch-pop { 
+            position: absolute; left: -50%; width: 200%; font-weight: 900; color: #fff; 
+            pointer-events: none; animation: merchPopScale 1.8s cubic-bezier(0.17, 0.67, 0.83, 0.67) forwards; 
+            z-index: 500; font-size: 1.8rem; text-shadow: 0 0 15px var(--gold), 0 0 5px black; 
+            text-align: center;
+        }
 
         #ui-layer { 
             display: flex; align-items: center; gap: 30px; background: var(--ui-bg); padding: 25px 40px; 
             border-radius: 12px; margin: 20px 0; border: 1px solid rgba(255,255,255,0.1); width: 850px; justify-content: space-between; z-index: 10;
         }
         
-        #dice-box { position: relative; width: 75px; height: 75px; background: white; color: black; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 3.2rem; font-weight: bold; box-shadow: 0 6px 0 #bbb; }
-        #dice-box.payoff { animation: sparkle 0.6s ease-in-out 2; color: #000; background: var(--gold); }
+        #dice-box { position: relative; width: 80px; height: 80px; background: white; color: black; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 3.5rem; font-weight: bold; box-shadow: 0 6px 0 #bbb; }
+        #dice-box.payoff { animation: sparkle 0.8s ease-in-out infinite; color: #000; background: var(--gold); border: 2px solid white; }
         
         #turn-info { flex-grow: 1; text-align: left; padding-left: 20px; }
-        #status-text { font-size: 3.8rem; font-weight: 900; text-transform: uppercase; line-height: 0.9; letter-spacing: -2px; transition: 0.3s; }
+        #status-text { font-size: 3.8rem; font-weight: 900; text-transform: uppercase; line-height: 0.9; letter-spacing: -2px; transition: 0.5s; }
 
         #board-container { 
             display: grid; grid-template-columns: repeat(6, 1fr); grid-template-rows: repeat(5, 1fr); 
@@ -176,7 +181,8 @@
     }
 
     function confirmPlayer() {
-        let name = document.getElementById('name-input').value.trim() || `PLAYER ${setupIdx+1}`;
+        let nameInput = document.getElementById('name-input').value.trim();
+        let name = nameInput || `PLAYER ${setupIdx+1}`;
         if(!tempHead) return alert("Select a head!");
         players.push({ name: name.toUpperCase(), head: tempHead, pos: 0, skip: false, isInvestor: false, merchSales: 0 });
         setupIdx++;
@@ -231,11 +237,9 @@
     function updateUI() {
         const p = players[turnIndex];
         const status = document.getElementById('status-text');
-        
         status.innerText = `${p.name}'S TURN`;
         status.style.color = p.head.color;
-        status.style.textShadow = `0 0 25px ${p.head.color}`;
-        
+        status.style.textShadow = `0 0 30px ${p.head.color}`;
         renderTracker();
     }
 
@@ -251,7 +255,7 @@
                         <div class="tracker-head" style="background-image:url('${p.head.img}')"></div>
                         <div style="font-weight:bold; font-size: 0.8rem;">${p.name}</div>
                     </div>
-                    <div class="shirt-stack">${shirts || "..."}</div>
+                    <div class="shirt-stack">${shirts || "🛒"}</div>
                 </div>`;
         });
     }
@@ -281,20 +285,23 @@
         await new Promise(r => setTimeout(r, 400));
 
         if(p.isInvestor && (roll === 1 || roll === 2)) {
-            // Animation Popup
+            // slower, more apparent popup logic
             const pop = document.createElement('div');
             pop.className = 'merch-pop';
             pop.innerText = "👕 MERCH SOLD!";
             diceBox.appendChild(pop);
             
             diceBox.classList.add('payoff');
-            await new Promise(r => setTimeout(r, 400));
+            await new Promise(r => setTimeout(r, 600)); 
+            
             roll *= 2;
             diceBox.innerText = roll;
             p.merchSales++;
             renderTracker();
-            await new Promise(r => setTimeout(r, 800));
+            
+            await new Promise(r => setTimeout(r, 1200)); // Stay gold longer
             pop.remove();
+            diceBox.classList.remove('payoff');
         }
 
         for(let s=0; s<roll; s++) {
