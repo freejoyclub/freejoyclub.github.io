@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Fearjoy - v9.3.9.1</title>
+    <title>Fearjoy - v9.3.9.2</title>
     <style>
         :root {
             --wood-dark: #8b7355; 
@@ -65,20 +65,17 @@
             background: white; color: black; border-radius: 12px; 
             display: flex; align-items: center; justify-content: center; 
             font-size: 3.5rem; font-weight: bold; 
+            /* The transition is key to the travel effect */
             transition: all 0.7s cubic-bezier(0.34, 1.56, 0.64, 1); 
             position: absolute; 
             z-index: 1000;
         }
 
-        /* TRAVEL STATE */
+        /* FIXED TRAVEL STATE: Uses pure transform, not conflicting fixed properties */
         .dice-cinematic { 
-            position: fixed;
-            top: 50vh;
-            left: 50vw;
-            margin-top: -93px; /* Offset for 2.5x scale */
-            margin-left: -93px;
-            transform: scale(2.5) !important; 
+            z-index: 5000 !important;
             box-shadow: 0 0 80px rgba(255,255,255,0.6);
+            /* Transform is calculated and applied in JS */
         }
         
         .floating-emoji { position: absolute; font-size: 4rem; animation: floatUp 1.2s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; pointer-events: none; z-index: 6000; }
@@ -224,18 +221,13 @@
 
     function getSpaceColor(pos) { if (pos === -1 || pos >= boardLayout.length) return '#ffffff'; const name = boardLayout[pos]; if (name === 'FEAR') return 'var(--fear-glow)'; if (name === 'JOY') return 'var(--joy-glow)'; return '#ffffff'; }
 
-    function drawCurvedArrow(x1, y1, x2, y2, bendOffset, rotation = 0) {
+    function drawCurvedArrow(x1, y1, x2, y2, bendOffset) {
         const svg = document.getElementById('arrow-layer');
-        const g = document.createElementNS("http://www.w3.org/2000/svg", "g");
-        if(rotation) g.setAttribute("transform", `rotate(${rotation}, ${x1}, ${y1})`);
-        
         const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
         let cx = (x1 + x2)/2 + bendOffset.x; let cy = (y1 + y2)/2 + bendOffset.y;
         path.setAttribute("d", `M ${x1} ${y1} Q ${cx} ${cy} ${x2} ${y2}`);
         path.setAttribute("stroke", "rgba(210, 180, 140, 0.3)"); path.setAttribute("fill", "none"); path.setAttribute("stroke-width", "2"); path.setAttribute("stroke-dasharray", "4,4"); path.setAttribute("marker-end", "url(#arrowhead-subtle)");
-        
-        g.appendChild(path);
-        svg.appendChild(g);
+        svg.appendChild(path);
     }
 
     function setPlayerCount(n) { totalP = n; document.getElementById('setup-step-2').style.display='block'; }
@@ -245,7 +237,7 @@
         const nameInput = document.getElementById('name-input'); const name = nameInput.value.toUpperCase().trim() || `ARTIST ${currentSetupP+1}`;
         const errorMsg = document.getElementById('name-error'); if(players.some(p => p.name === name)) { errorMsg.style.display = 'block'; return; }
         errorMsg.style.display = 'none'; if(!selectedAvatar) return;
-        players.push({ name, pos: 0, avatar: selectedAvatar, skipCount: 0, isInvestor: false, isSellout: false, grammys: 0, shirtsSold: 0, pillsTaken: 0, ghostCounter: 0, totalRollValue: 0, smileActive: false, nightDriveActive: false, accolades: [] });
+        players.push({ name, pos: 0, avatar: selectedAvatar, skipCount: 0, isInvestor: false, isSellout = false, grammys: 0, shirtsSold: 0, pillsTaken: 0, ghostCounter: 0, totalRollValue: 0, smileActive: false, nightDriveActive = false, accolades: [] });
         currentSetupP++; if(currentSetupP >= totalP) { document.getElementById('overlay-setup').style.display='none'; initBoard(); }
         else { nameInput.value=''; selectedAvatar=null; }
     }
@@ -270,8 +262,8 @@
             s.style.gridRow = 6 - row; s.style.gridColumn = col + 1; board.appendChild(s);
             const rRect = s.getBoundingClientRect(); spaceCoords.push({ x: rRect.left + rRect.width/2 - containerRect.left, y: rRect.top + rRect.height/2 - containerRect.top });
         });
-        // Dmitri Arrow: Curved upward and rotated
-        drawCurvedArrow(spaceCoords[15].x + 12, spaceCoords[15].y - 25, spaceCoords[23].x - 18, spaceCoords[23].y + 10, {x: -20, y: -60}, 20);
+        // Dmitri Arrow: Reduced curve size/length
+        drawCurvedArrow(spaceCoords[15].x + 10, spaceCoords[15].y - 20, spaceCoords[23].x - 10, spaceCoords[23].y + 5, {x: 20, y: -20});
         drawCurvedArrow(spaceCoords[44].x, spaceCoords[44].y, spaceCoords[40].x, spaceCoords[40].y, {x: 0, y: 50});
         players.forEach((p, i) => {
             const el = document.createElement('div'); el.id = 'p'+i; el.className = 'player';
@@ -323,51 +315,86 @@
 
     async function performActualRoll() {
         const p = players[turnIdx]; isMoving = true; document.getElementById('roll-btn').disabled = true;
-        const dice = document.getElementById('dice-box'); 
+        const diceBox = document.getElementById('dice-box');
         
-        dice.innerText = "?";
-        dice.classList.add('dice-cinematic'); // Travel to center
+        // --- FIXED DICE TRAVEL (FLIP ANIMATION) ---
         
-        await new Promise(r => setTimeout(r, 750)); // Wait for travel to finish
+        // 1. First: Get initial state (in the corner)
+        const cornerRect = diceBox.getBoundingClientRect();
+        
+        diceBox.innerText = "?";
+        
+        // Create an explicit placeholder to hold layout flow (prevents board jump)
+        const slot = document.getElementById('dice-slot-right');
+        slot.style.width = cornerRect.width + 'px';
+        slot.style.height = cornerRect.height + 'px';
+
+        // Add cinematic style (applies scale/shadow)
+        diceBox.classList.add('dice-cinematic');
+        
+        // 2. Last: Get state in the center (due to the class change)
+        const centerRect = diceBox.getBoundingClientRect();
+        
+        // 3. Invert: Calculate deltas
+        // Must calculate from viewport centers
+        const cornerCenterX = cornerRect.left + cornerRect.width/2;
+        const cornerCenterY = cornerRect.top + cornerRect.height/2;
+        const centerCenterX = centerRect.left + centerRect.width/2;
+        const centerCenterY = centerRect.top + centerRect.height/2;
+        
+        const deltaX = centerCenterX - cornerCenterX;
+        const deltaY = centerCenterY - cornerCenterY;
+        
+        // 4. Play: Transition from inverted state to base state
+        diceBox.style.transform = `translate3d(${-deltaX}px, ${-deltaY}px, 0)`;
+        
+        // Force reflow
+        diceBox.offsetWidth;
+        
+        // Start roll cycle slower (and wait for travel)
+        await new Promise(r => setTimeout(r, 750));
         
         let roll;
         for(let j=0; j<15; j++) { 
-            dice.innerText = Math.floor(Math.random()*6)+1; 
-            await new Promise(r => setTimeout(r, 80)); // Slightly slower cycle
+            diceBox.innerText = Math.floor(Math.random()*6)+1; 
+            await new Promise(r => setTimeout(r, 80)); // Slower cycle
         }
-        
         roll = Math.floor(Math.random()*6)+1; 
-        dice.innerText = roll;
+        diceBox.innerText = roll;
 
-        if(p.isInvestor && (roll === 1 || roll === 2)) { 
-            await new Promise(r => setTimeout(r, 600)); 
-            dice.classList.add('dice-gold'); 
-            spawnEmoji('👕'); 
-            showSidebar("INVESTMENT PAYOFF", "Merch is moving! Roll doubled.", "#ffffff"); 
-            p.shirtsSold++; p.accolades.push('👕'); 
-            roll *= 2; dice.innerText = roll; 
-            await new Promise(r => setTimeout(r, 1200)); 
-            updateUI(); 
-        }
-        
-        if(p.isSellout && roll === 6) { 
-            await new Promise(r => setTimeout(r, 600)); 
-            dice.classList.add('dice-red'); 
-            spawnEmoji('💊'); 
-            showSidebar("CONTRACT DEBT", "Forward 6 becomes Back 2.", "var(--fear-glow)"); 
-            p.pillsTaken++; p.accolades.push('💊'); 
-            roll = -2; dice.innerText = roll; 
-            await new Promise(r => setTimeout(r, 1200)); 
-            updateUI(); 
-        }
+        // Investment/Debt effects apply relative to center die state
+        if(p.isInvestor && (roll === 1 || roll === 2)) { await new Promise(r => setTimeout(r, 600)); diceBox.classList.add('dice-gold'); spawnEmoji('👕'); showSidebar("INVESTMENT PAYOFF", "Merch is moving! Roll doubled.", "#ffffff"); p.shirtsSold++; p.accolades.push('👕'); roll *= 2; diceBox.innerText = roll; await new Promise(r => setTimeout(r, 1200)); updateUI(); }
+        if(p.isSellout && roll === 6) { await new Promise(r => setTimeout(r, 600)); diceBox.classList.add('dice-red'); spawnEmoji('💊'); showSidebar("CONTRACT DEBT", "Forward 6 becomes Back 2.", "var(--fear-glow)"); p.pillsTaken++; p.accolades.push('💊'); roll = -2; diceBox.innerText = roll; await new Promise(r => setTimeout(r, 1200)); updateUI(); }
 
         p.totalRollValue += Math.abs(roll);
         await new Promise(r => setTimeout(r, 600)); 
         
-        dice.classList.remove('dice-cinematic', 'dice-red', 'dice-gold'); // Travel back
-        await new Promise(r => setTimeout(r, 800)); // Wait for return trip
+        // Return trip (FLIP back)
+        // Re-read current position for safety (if window resized)
+        const travelRect = diceBox.getBoundingClientRect();
+        const travelCenterX = travelRect.left + travelRect.width/2;
+        const travelCenterY = travelRect.top + travelRect.height/2;
+        const homeDeltaX = travelCenterX - cornerCenterX;
+        const homeDeltaY = travelCenterY - cornerCenterY;
         
-        movePlayer(roll);
+        diceBox.style.transform = `translate3d(${-homeDeltaX}px, ${-homeDeltaY}px, 0) scale(1.0)`; // shrink back
+        
+        // Listen for end of transition
+        diceBox.addEventListener('transitionend', function travelBack(e) {
+            if(e.propertyName === 'transform' && !diceBox.classList.contains('dice-cinematic')) {
+                // Return trip is officially over
+                diceBox.classList.remove('dice-cinematic', 'dice-red', 'dice-gold');
+                // Clean up travel-specific transforms so it rests naturally in the slot
+                diceBox.style.transform = ''; 
+                // Restore layout flow slot if needed (prevents top bar shrinkage)
+                //slot.style.width = ''; slot.style.height = ''; 
+                diceBox.removeEventListener('transitionend', travelBack);
+                movePlayer(roll);
+            }
+        });
+        
+        // Start the removal process (FLIP travel back)
+        diceBox.classList.remove('dice-cinematic');
     }
 
     function spawnEmoji(char) { const e = document.createElement('div'); e.className = 'floating-emoji'; e.innerText = char; e.style.left = "50%"; e.style.top = "50%"; document.body.appendChild(e); setTimeout(() => e.remove(), 1200); }
