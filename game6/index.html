@@ -1,6 +1,6 @@
 <!DOCTYPE html><html lang="en"><head>
     <meta charset="UTF-8">
-    <title>Fearjoy - v11.6.2</title>
+    <title>Fearjoy - v11.6.3</title>
     <style>
         :root {
             --wood-dark: #8b7355; 
@@ -182,7 +182,7 @@
         17: { title: "FEARJOY", emoji: "☯️", isFearjoy: true, desc: "Flip for destiny.", sound: "coinclip.wav" },
         18: { title: "NIGHTDRIVE", emoji: "🌙", isNightDrive: true, isTrack: true, desc: "Keep eyes closed until next turn!" },
         19: { title: "JOY", emoji: "😄", shift: 1, isAuto: true, desc: "Rhythm is perfect. Forward 1." },
-        20: { title: "INVEST IN MERCH", emoji: "👕", choice: 'merch', desc: "Invest by rewinding -4 now, but every 1 or 2 you roll later will be doubled." },
+        20: { title: "INVEST IN MERCH", emoji: "👕", choice: 'merch', desc: "Invest by rewinding -4 now, but every 1 or 2 you roll later will be doubled.", sound: "coinclip.wav" },
         21: { title: "FEAR", emoji: "😱", shift: -1, isAuto: true, desc: "Self-doubt slows you. Rewind 1.", sound: "spookyclip1.wav" },
         23: { title: "5TH DIMENSION", emoji: "✨", shift: 1, isAuto: true, desc: "Higher frequency. Forward 1.", sound: "coinclip.wav" },
         25: { title: "IT HAPPENS", emoji: "🔔", isItHappens: true, isTrack: true, desc: "suddenly, instantly, take an extra turn" },
@@ -352,7 +352,7 @@
             sBtn.onclick = async () => { modal.style.display='none'; await new Promise(res => setTimeout(res, 800)); movePlayer(-2); };
         } else if(r.choice) {
             pBtn.innerText = r.choice === 'remedy' ? "SIGN CONTRACT (+6)" : "INVEST IN MERCH (-4)"; sBtn.style.display='inline-block'; sBtn.innerText = "PASS";
-            pBtn.onclick = async () => { modal.style.display='none'; await new Promise(res => setTimeout(res, 800)); if(r.choice==='remedy'){p.isSellout=true; movePlayer(6);} else {p.isInvestor=true; movePlayer(-4); } };
+            pBtn.onclick = async () => { modal.style.display='none'; await new Promise(res => setTimeout(res, 800)); if(r.choice==='remedy'){p.isSellout=true; movePlayer(6);} else {playSfx("coinclip.wav"); p.isInvestor=true; movePlayer(-4); } };
             sBtn.onclick = () => { modal.style.display='none'; endTurn(); };
         } else if(r.isGrammy) {
             let maxPos = Math.max(...players.map(pl => pl.pos)); let leaders = players.filter(pl => pl.pos === maxPos && pl !== p);
