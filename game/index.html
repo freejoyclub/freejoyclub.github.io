@@ -35,7 +35,7 @@
         .space { width: 85px; height: 85px; border-radius: 50%; border: 1px solid var(--tape-white); display: flex; flex-direction: column; align-items: center; justify-content: center; font-weight: bold; font-size: 0.75rem; line-height: 1.1; background: rgba(255,255,255,0.05); text-align: center; position: relative; transition: 0.3s; cursor: help; }
         .sp-emoji { font-size: 1.4rem; margin-bottom: 2px; }
         .sp-text { padding: 0 2px; }
-        .dir-arrow { position: absolute; font-size: 1.5rem; color: rgba(210, 180, 140, 0.6); font-weight: 900; pointer-events: none; z-index: 1; }
+        .dir-arrow { position: absolute; font-size: 1.65rem; color: rgba(210, 180, 140, 0.8); font-weight: 900; pointer-events: none; z-index: 1; }
         .arrow-right { right: -18px; top: 50%; transform: translateY(-50%); }
         .arrow-left { left: -18px; top: 50%; transform: translateY(-50%) rotate(180deg); }
         .arrow-up { top: -22px; left: 50%; transform: translateX(-50%) rotate(-90deg); }
@@ -142,7 +142,7 @@
         <svg id="arrow-layer" viewbox="0 0 1100 700">
             <defs>
                 <marker id="arrowhead-subtle" markerWidth="10" markerHeight="7" refX="0" refY="3.5" orient="auto">
-                    <polygon points="0 0, 10 3.5, 0 7" fill="rgba(210, 180, 140, 0.3)" />
+                    <polygon points="0 0, 10 3.5, 0 7" fill="rgba(210, 180, 140, 0.4)" />
                 </marker>
             </defs>
         </svg>
@@ -177,7 +177,7 @@
         0: { title: "START", emoji: "▶️", desc: "The quiet before the storm." },
         4: { title: "DAYSPRING", emoji: "☀️", shift: 3, isAuto: true, isTrack: true, desc: "Creative clarity strikes! Forward 3.", sound: "dayclip.wav" },
         6: { title: "FEARJOY", emoji: "☯️", isFearjoy: true, desc: "Flip the coin: JOY = +1, FEAR = -1." },
-        8: { title: "FIGMENT", emoji: "🛸", isFigment: true, isTrack: true, desc: "Step outside (1:00) for +2, or rush back for -1.", sound: "figclip.wav" },
+        8: { title: "FIGMENT", emoji: "🛸", isFigment: true, isTrack: true, desc: "Step outside (1:00) for +2, or stay indoors for -1.", sound: "figclip.wav" },
         9: { title: "JOY", emoji: "😄", shift: 1, isAuto: true, desc: "Momentum! Forward 1." },
         10: { title: "THE REMEDY", emoji: "💊", choice: 'remedy', isTrack: true, desc: "A major label exec offers a deal: move ahead 6 now, but every 6 you roll later becomes -2.", sound: "remedyclip.wav" },
         11: { title: "FEAR", emoji: "😱", shift: -1, isAuto: true, desc: "Doubt slows you. Back 1." },
@@ -224,7 +224,7 @@
         const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
         let cx = (x1 + x2)/2 + bendOffset.x; let cy = (y1 + y2)/2 + bendOffset.y;
         path.setAttribute("d", `M ${x1} ${y1} Q ${cx} ${cy} ${x2} ${y2}`);
-        path.setAttribute("stroke", "rgba(210, 180, 140, 0.3)"); path.setAttribute("fill", "none"); path.setAttribute("stroke-width", "2"); path.setAttribute("stroke-dasharray", "4,4"); path.setAttribute("marker-end", "url(#arrowhead-subtle)");
+        path.setAttribute("stroke", "rgba(210, 180, 140, 0.4)"); path.setAttribute("fill", "none"); path.setAttribute("stroke-width", "2"); path.setAttribute("stroke-dasharray", "4,4"); path.setAttribute("marker-end", "url(#arrowhead-subtle)");
         svg.appendChild(path);
     }
 
@@ -348,11 +348,11 @@
         
         if(r.skipTurns) { p.skipCount = r.skipTurns; pBtn.onclick = () => { modal.style.display='none'; endTurn(); }; }
         else if(r.isFigment) {
-            pBtn.innerText = "STEP OUTSIDE (1:00)"; sBtn.innerText = "RUSH BACK (-1)"; sBtn.style.display = 'inline-block';
+            pBtn.innerText = "STEP OUTSIDE (1:00)"; sBtn.innerText = "STAY INDOORS (-1)"; sBtn.style.display = 'inline-block';
             pBtn.onclick = () => { pBtn.disabled = true; sBtn.style.display = 'none'; timerUI.style.display = 'block'; let t = 60; timerUI.innerText = t; const clock = setInterval(() => { t--; timerUI.innerText = t; if(t <= 0) { clearInterval(clock); pBtn.disabled = false; pBtn.innerText = "I'M BACK (+2)"; pBtn.onclick = async () => { modal.style.display='none'; await new Promise(res => setTimeout(res, 800)); movePlayer(2); }; } }, 1000); };
             sBtn.onclick = async () => { modal.style.display='none'; await new Promise(res => setTimeout(res, 800)); movePlayer(-1); };
         } else if(r.isFearjoy) {
-            pBtn.innerText = "FLIP COIN"; pBtn.onclick = () => { pBtn.style.display='none'; coin.innerText = "?"; coin.style.display='flex'; coin.classList.add('flipping'); setTimeout(() => { const win = Math.random() > 0.5; coin.innerText = win ? "JOY" : "FEAR"; coin.classList.remove('flipping'); setTimeout(async () => { modal.style.display='none'; await new Promise(res => setTimeout(res, 800)); movePlayer(win ? 1 : -1); }, 1200); }, 1200); };
+            pBtn.innerText = "FLIP COIN"; pBtn.onclick = () => { pBtn.style.display='none'; coin.innerText = "?"; coin.style.display='flex'; coin.classList.add('flipping'); setTimeout(() => { const win = Math.random() > 0.5; coin.innerText = win ? "JOY" : "FEAR"; coin.classList.remove('flipping'); setTimeout(async () => { modal.style.display='none'; coin.style.display='none'; await new Promise(res => setTimeout(res, 800)); movePlayer(win ? 1 : -1); }, 1200); }, 1200); };
         } else if(r.isDmitri) {
             pBtn.innerText = "BREATHE"; sBtn.innerText = "SKIP (-2)"; sBtn.style.display = 'inline-block';
             pBtn.onclick = () => { pBtn.disabled = true; sBtn.style.display='none'; timerUI.style.display='block'; let t = 15; timerUI.innerText = t; const clock = setInterval(() => { t--; timerUI.innerText = t; if(t <= 0) { clearInterval(clock); pBtn.disabled = false; pBtn.innerText = "BREATHING COMPLETED"; pBtn.onclick = async () => { modal.style.display='none'; await new Promise(res => setTimeout(res, 800)); p.pos = 23; updatePositions(); endTurn(); }; } }, 1000); };
@@ -400,7 +400,7 @@
                 pBtn.style.display='none'; coin.style.display='flex'; coin.innerText = "?"; coin.classList.add('flipping'); let rl;
                 for(let j=0; j<12; j++) { coin.innerText = Math.floor(Math.random()*6)+1; await new Promise(r => setTimeout(r, 45)); }
                 rl = Math.floor(Math.random()*6)+1; coin.innerText = rl; coin.classList.remove('flipping');
-                await new Promise(r => setTimeout(r, 1500)); modal.style.display='none'; await new Promise(res => setTimeout(res, 800)); movePlayer(-rl); 
+                await new Promise(r => setTimeout(r, 1500)); modal.style.display='none'; coin.style.display='none'; await new Promise(res => setTimeout(res, 800)); movePlayer(-rl); 
             };
         } else { pBtn.onclick = () => { modal.style.display='none'; endTurn(); }; }
     }
