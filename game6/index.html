@@ -1,6 +1,6 @@
 <!DOCTYPE html><html lang="en"><head>
     <meta charset="UTF-8">
-    <title>Fearjoy - v11.6.4</title>
+    <title>Fearjoy - v11.6.5</title>
     <style>
         :root {
             --wood-dark: #8b7355; 
@@ -139,8 +139,6 @@
     </div>
 
     <div id="board-container">
-        <svg id="arrow-layer" viewbox="0 0 1100 700">
-        </svg>
     </div>
 
     <div id="overlay-event" class="overlay">
@@ -158,8 +156,101 @@
 
     <div id="rule-sidebar" onclick="this.classList.remove('active')"><h3 id="side-title"></h3><p id="side-desc" style="line-height: 1.6;"></p></div>
 
-    <div id="overlay-setup" class="overlay" style="display:flex"><div class="popup"><h1 class="intro-header">Fearjoy - Play This</h1><h2>HOW MANY ARTISTS?</h2><button onclick="setPlayerCount(1)" style="padding:20px 40px; margin:10px;">1</button><button onclick="setPlayerCount(2)" style="padding:20px 40px; margin:10px;">2</button><button onclick="setPlayerCount(3)" style="padding:20px 40px; margin:10px;">3</button><div id="setup-step-2" style="display:none; margin-top:30px;"><input type="text" id="name-input" placeholder="ARTIST NAME" style="padding:15px; width:80%; text-align: center; border-radius: 8px; border: 1px solid #000; background: #000; color: white;"><div id="name-error" style="color:var(--fear-glow); font-weight:bold; margin-top:10px; font-size:0.8rem; display:none;">NAME ALREADY TAKEN ON THIS TOUR</div><div style="display:flex; justify-content:center; gap:20px; margin:25px;"><img id="sel-jesse" src="jesse.png" style="width:80px; opacity:0.3; cursor:pointer;" onclick="pickAvatar('jesse', '#007bff')"><img id="sel-marco" src="marco.png" style="width:80px; opacity:0.3; cursor:pointer;" onclick="pickAvatar('marco', '#ffcc00')"><img id="sel-grant" src="grant.png" style="width:80px; opacity:0.3; cursor:pointer;" onclick="pickAvatar('grant', '#ff00ff')"></div><button onclick="confirmArtist()" style="padding:15px 30px; background: white; color: black; font-weight: bold; border-radius: 8px; cursor: pointer;">ADD TO TOUR</button></div></div></div><script>
-    const boardLayout = [
+<div id="overlay-setup" class="overlay" style="display:flex">
+        <div class="popup" style="max-width: 500px; width: 90%;">
+            <h1 class="intro-header">Fearjoy - Play This</h1>
+            
+            <div id="setup-step-1">
+                <h2 style="font-size: 1.2rem; letter-spacing: 2px;">HOW MANY ARTISTS?</h2>
+                <div style="display:flex; justify-content:center; gap:15px; margin-top: 20px;">
+                    <button class="setup-btn-large" onclick="setPlayerCount(1)">1</button>
+                    <button class="setup-btn-large" onclick="setPlayerCount(2)">2</button>
+                    <button class="setup-btn-large" onclick="setPlayerCount(3)">3</button>
+                </div>
+            </div>
+
+            <div id="setup-step-2" style="display:none; margin-top:20px;">
+                <h2 id="setup-prompt" style="font-size: 1rem; color: #888;">ARTIST 1: DETAILS</h2>
+                <input type="text" id="name-input" placeholder="ARTIST NAME" 
+                       style="padding:20px; width:90%; text-align: center; border-radius: 8px; border: 3px solid #333; background: #000; color: white; font-size: 1.5rem; transition: all 0.3s ease; outline: none;">
+                
+                <div id="name-error" style="color:var(--fear-glow); font-weight:bold; margin-top:10px; font-size:0.9rem; display:none;">NAME & PIC REQUIRED</div>
+
+                <div style="display:flex; justify-content:center; gap:25px; margin:30px 0;">
+                    <img id="sel-jesse" src="jesse.png" class="setup-avatar" onclick="pickAvatar('jesse', '#007bff')">
+                    <img id="sel-marco" src="marco.png" class="setup-avatar" onclick="pickAvatar('marco', '#ffcc00')">
+                    <img id="sel-grant" src="grant.png" class="setup-avatar" onclick="pickAvatar('grant', '#ff00ff')">
+                </div>
+
+                <button id="add-to-tour-btn" onclick="confirmArtist()" class="confirm-btn">ADD TO TOUR</button>
+                
+                <div id="tour-roster" style="margin-top:30px; border-top:1px solid #444; padding-top:15px; display:none;">
+                    <div style="font-size:0.7rem; letter-spacing:2px; color:#888; margin-bottom:10px;">CURRENT ROSTER</div>
+                    <div id="roster-list" style="display:flex; justify-content:center; gap:15px; flex-wrap:wrap;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        .setup-btn-large {
+            padding: 20px 45px;
+            font-size: 2.5rem;
+            font-weight: bold;
+            background: transparent;
+            color: white;
+            border: 2px solid white;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .setup-btn-large:hover {
+            background: white;
+            color: black;
+            transform: scale(1.1);
+        }
+        .setup-avatar {
+            width: 90px; 
+            height: 90px;
+            opacity: 0.3; 
+            cursor: pointer;
+            transition: all 0.3s ease;
+            filter: grayscale(100%);
+            border: 3px solid transparent;
+            border-radius: 10px;
+        }
+        .setup-avatar:hover { opacity: 0.7; }
+        .setup-avatar.selected {
+            opacity: 1;
+            filter: grayscale(0%);
+            transform: scale(1.1);
+        }
+        .confirm-btn {
+            padding: 20px 40px;
+            width: 90%;
+            background: white;
+            color: black;
+            font-size: 1.3rem;
+            font-weight: bold;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .confirm-btn:hover {
+            background: #00ff00;
+            transform: translateY(-2px);
+        }
+        .roster-item { text-align: center; font-size: 0.7rem; color: white; }
+        .roster-img {
+            width: 45px; height: 45px;
+            border-radius: 50%; display: block;
+            margin: 0 auto 5px;
+        }
+    </style>
+
+    <script>    
+        const boardLayout = [
         "START", "blank", "blank", "blank", "DAYSPRING", "blank", "FEARJOY", "blank", "FIGMENT", "JOY", 
         "THE REMEDY", "FEAR", "VAN BREAKS DOWN", "JOY", "blank", "DMITRI", "blank", "FEARJOY", "NIGHTDRIVE", "JOY", 
         "INVEST IN MERCH", "FEAR", "blank", "5TH DIMENSION", "blank", "IT HAPPENS", "blank", "GHOST 2", "MAYA", "blank", 
@@ -214,25 +305,54 @@
 
     function getSpaceColor(pos) { if (pos === -1 || pos >= boardLayout.length) return '#ffffff'; const name = boardLayout[pos]; if (name === 'FEAR') return 'var(--fear-glow)'; if (name === 'JOY') return 'var(--joy-glow)'; return '#ffffff'; }
 
-    function drawCurvedArrow(x1, y1, x2, y2, bendOffset) {
-        const svg = document.getElementById('arrow-layer');
-        const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
-        let cx = (x1 + x2)/2 + bendOffset.x; let cy = (y1 + y2)/2 + bendOffset.y;
-        path.setAttribute("d", `M ${x1} ${y1} Q ${cx} ${cy} ${x2} ${y2}`);
-        path.setAttribute("stroke", "rgba(210, 180, 140, 0.4)"); path.setAttribute("fill", "none"); path.setAttribute("stroke-width", "2"); path.setAttribute("stroke-dasharray", "4,4"); path.setAttribute("marker-end", "url(#arrowhead-subtle)");
-        svg.appendChild(path);
+
+function setPlayerCount(num) {
+        totalP = num;
+        document.getElementById('setup-step-1').style.display = 'none';
+        document.getElementById('setup-step-2').style.display = 'block';
+        updateSetupPrompt();
     }
 
-    function setPlayerCount(n) { totalP = n; document.getElementById('setup-step-2').style.display='block'; }
-    function pickAvatar(id, color) { selectedAvatar = { id, color, img: id+'.png' }; document.querySelectorAll('img').forEach(i=>i.style.opacity='0.3'); document.getElementById('sel-'+id).style.opacity='1'; }
-    
+    function updateSetupPrompt() {
+        document.getElementById('setup-prompt').innerText = `ARTIST ${currentSetupP + 1}: DETAILS`;
+    }
+
+    function pickAvatar(id, color) {
+        selectedAvatar = { id, color, img: id + '.png' };
+        document.querySelectorAll('.setup-avatar').forEach(img => {
+            img.classList.remove('selected');
+            img.style.borderColor = 'transparent';
+        });
+        const selectedImg = document.getElementById('sel-' + id);
+        selectedImg.classList.add('selected');
+        selectedImg.style.border = `3px solid ${color}`;
+        const nameInput = document.getElementById('name-input');
+        nameInput.style.borderColor = color;
+        nameInput.style.boxShadow = `0 0 15px ${color}`;
+    }
+
     function confirmArtist() {
-        const nameInput = document.getElementById('name-input'); const name = nameInput.value.toUpperCase().trim() || `ARTIST ${currentSetupP+1}`;
-        const errorMsg = document.getElementById('name-error'); if(players.some(p => p.name === name)) { errorMsg.style.display = 'block'; return; }
-        errorMsg.style.display = 'none'; if(!selectedAvatar) return;
-        players.push({ name, pos: 0, avatar: selectedAvatar, skipCount: 0, isInvestor: false, isSellout: false, grammys: 0, shirtsSold: 0, pillsTaken: 0, ghostCounter: 0, totalRollValue: 0, smileActive: false, nightDriveActive: false, accolades: [] });
-        currentSetupP++; if(currentSetupP >= totalP) { document.getElementById('overlay-setup').style.display='none'; initBoard(); }
-        else { nameInput.value=''; selectedAvatar=null; }
+        const nameInput = document.getElementById('name-input');
+        const name = nameInput.value.toUpperCase().trim();
+        const errorMsg = document.getElementById('name-error');
+        if (!name || !selectedAvatar) { errorMsg.innerText = "NAME & PIC REQUIRED"; errorMsg.style.display = 'block'; return; }
+        if (players.some(p => p.name === name)) { errorMsg.innerText = "NAME ALREADY TAKEN ON THIS TOUR"; errorMsg.style.display = 'block'; return; }
+        errorMsg.style.display = 'none';
+        players.push({ name, pos: 0, avatar: selectedAvatar, skipCount: 0, isInvestor: false, isSellout: false, grammys: 0, accolades: [] });
+        const roster = document.getElementById('tour-roster');
+        const rosterList = document.getElementById('roster-list');
+        roster.style.display = 'block';
+        rosterList.innerHTML += `<div class="roster-item"><img src="${selectedAvatar.img}" class="roster-img" style="border: 2px solid ${selectedAvatar.color}"><span>${name}</span></div>`;
+        currentSetupP++;
+        if (currentSetupP >= totalP) {
+            document.getElementById('overlay-setup').style.display = 'none';
+            initBoard();
+        } else {
+            nameInput.value = ''; nameInput.style.borderColor = '#333'; nameInput.style.boxShadow = 'none';
+            selectedAvatar = null;
+            document.querySelectorAll('.setup-avatar').forEach(img => img.classList.remove('selected'));
+            updateSetupPrompt();
+        }
     }
 
     function initBoard() {
