@@ -633,69 +633,71 @@ function startMayaTimer(partnerIdx) {
 function showWinScreen() { 
         const p = players[turnIdx]; 
         
-        // Play the win sound
         const winSfx = new Audio('swimclip.wav');
         winSfx.play().catch(e => console.log("Audio play blocked"));
 
-        let statsHtml = `<h2 style="color:${p.avatar.color}; animation: winPulse 2s infinite ease-in-out; font-size: 2.8rem; margin: 10px 0; --p-color: ${p.avatar.color}; text-shadow: 0 0 20px ${p.avatar.color};">${p.name} WINS!</h2>`;
-        statsHtml += `<div class="recap-container" style="text-align:left; margin-top:20px; font-family:monospace; max-height: 400px; overflow-y: auto; padding-right: 10px; background: rgba(0,0,0,0.4); border-radius: 12px; padding: 15px;">`;
+        let statsHtml = `<h2 style="color:${p.avatar.color}; animation: winPulse 2s infinite ease-in-out; font-size: 2.2rem; margin: 5px 0; --p-color: ${p.avatar.color}; text-shadow: 0 0 20px ${p.avatar.color};">${p.name} WINS!</h2>`;
+        statsHtml += `<div class="recap-container" style="text-align:left; margin-top:15px; font-family:monospace; background: rgba(0,0,0,0.4); border-radius: 12px; padding: 12px; border: 1px solid #333;">`;
         
         players.forEach(pl => { 
-            // Convert numbers to emoji stacks
             const merchEmojis = "👕".repeat(pl.shirtsSold || 0);
             const pillEmojis = "💊".repeat(pl.pillsTaken || 0);
             const trophyEmojis = "🏆".repeat(pl.grammys || 0);
 
             statsHtml += `
-                <div style="margin-bottom:20px; border-bottom: 1px solid #333; display:flex; align-items:flex-start; gap:15px; padding-bottom:15px;">
-                    <img src="${pl.avatar.img}" style="width:70px; height:70px; border-radius:50%; background:#000; border:3px solid ${pl.avatar.color}; box-shadow: 0 0 10px ${pl.avatar.color};">
+                <div style="margin-bottom:12px; border-bottom: 1px solid #222; display:flex; align-items:center; gap:12px; padding-bottom:10px;">
+                    <img src="${pl.avatar.img}" style="width:50px; height:50px; border-radius:50%; background:#000; border:2px solid ${pl.avatar.color}; box-shadow: 0 0 10px ${pl.avatar.color};">
                     <div style="flex-grow:1;">
-                        <b style="color:${pl.avatar.color}; font-size:1.4rem; letter-spacing:1px;">${pl.name}</b>
-                        <div style="font-size:1.5rem; margin:5px 0;">${pl.accolades.join('') || "—"}</div>
-                        <div style="font-size:0.8rem; color:#aaa; line-height:1.6;">
-                            <span style="color:#fff">MERCH SOLD:</span> ${merchEmojis || 'None'}<br>
-                            <span style="color:#fff">BAD DEAL PAYOUTS:</span> ${pillEmojis || 'None'}<br>
-                            <span style="color:#fff">GRAMMYS WON:</span> ${trophyEmojis || 'None'}
+                        <b style="color:${pl.avatar.color}; font-size:1.1rem; letter-spacing:1px;">${pl.name}</b>
+                        <div style="font-size:1.2rem; margin:2px 0;">
+                            ${pl.accolades.join('')} ${merchEmojis}${pillEmojis}${trophyEmojis}
                         </div>
                     </div>
                 </div>`; 
         });
         statsHtml += `</div>`;
 
-        // Style the popup container
         const popupEl = document.getElementById('main-popup'); 
         popupEl.style.borderColor = p.avatar.color; 
         popupEl.style.boxShadow = `0 0 80px ${p.avatar.color}`;
+        popupEl.style.width = "600px"; // Slightly narrower to keep it tight
         
         document.getElementById('event-title').innerText = "The tour is over. Go Swimmin!"; 
         document.getElementById('event-desc').innerHTML = statsHtml;
 
-        // Button stack styling and external links
         const btnContainer = document.getElementById('event-desc');
         const linkStack = `
-            <div style="display:flex; flex-direction:column; gap:12px; align-items:center; margin-top:25px;">
+            <div style="display:flex; flex-direction:column; gap:10px; align-items:center; margin-top:20px;">
                 <a href="https://freejoy.club" target="_blank" class="win-link-btn" style="--btn-color: #ff00ff; color:#ff00ff;">STORE</a>
-                <a href="https://freejoy.club" target="_blank" class="win-link-btn" style="--btn-color: #00ff00; color:#00ff00;">STREAM THE ALBUM</a>
-                <a href="https://freejoy.club" target="_blank" class="win-link-btn" style="--btn-color: #ffffff; color:#ffffff;">FEARJOY HOMEPAGE</a>
+                <a href="https://freejoy.club" target="_blank" class="win-link-btn" style="--btn-color: #00ff00; color:#00ff00;">STREAM ALBUM</a>
+                <a href="https://freejoy.club" target="_blank" class="win-link-btn" style="--btn-color: #ffffff; color:#ffffff;">HOME</a>
+                
+                <div style="display:flex; gap:10px; width:80%; margin-top:5px;">
+                    <button id="hard-reset-win" class="win-link-btn" style="--btn-color: var(--fear-glow); color:var(--fear-glow); flex:1; cursor:pointer; background:transparent;">NEW TOUR</button>
+                    <button id="soft-reset-win" class="win-link-btn" style="--btn-color: #ffa500; color:#ffa500; flex:1; cursor:pointer; background:transparent;">RESTART</button>
+                </div>
             </div>
             <style>
                 .win-link-btn {
                     text-decoration: none;
-                    font-weight: bold;
-                    font-size: 1.1rem;
-                    padding: 12px 30px;
-                    border: 2px solid var(--btn-color);
-                    border-radius: 30px;
+                    font-family: 'Courier New', monospace;
+                    font-weight: 900;
+                    font-size: 0.9rem;
+                    padding: 10px 20px;
+                    border: 1px solid var(--btn-color);
+                    border-radius: 12px;
                     width: 80%;
                     text-align: center;
-                    transition: all 0.3s ease;
-                    animation: floatBtn 3s infinite ease-in-out;
+                    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+                    animation: floatBtn 3.5s infinite ease-in-out;
+                    letter-spacing: 1.5px;
+                    text-transform: uppercase;
                 }
                 .win-link-btn:hover {
                     background: var(--btn-color);
                     color: black !important;
-                    box-shadow: 0 0 30px var(--btn-color);
-                    transform: scale(1.05);
+                    box-shadow: 0 0 20px var(--btn-color);
+                    transform: scale(1.05) translateY(-2px);
                 }
                 @keyframes floatBtn {
                     0%, 100% { transform: translateY(0px); }
@@ -705,18 +707,16 @@ function showWinScreen() {
         `;
         btnContainer.innerHTML += linkStack;
 
-        // Main Game Buttons
-        const pBtn = document.getElementById('event-btn-primary');
-        const sBtn = document.getElementById('event-btn-secondary');
+        // Hide the default footer buttons since we built custom ones in the stack
+        document.getElementById('event-btn-primary').style.display = 'none';
+        document.getElementById('event-btn-secondary').style.display = 'none';
 
-        pBtn.innerText = "NEW TOUR (SELECT ARTISTS)"; 
-        pBtn.onclick = () => location.reload();
-        pBtn.style.fontSize = "1.2rem";
-        pBtn.style.padding = "20px";
-
-        sBtn.style.display = 'inline-block'; 
-        sBtn.innerText = "SAME ARTISTS (SOFT RESTART)";
-        sBtn.onclick = () => { document.getElementById('overlay-event').style.display='none'; confirmSoftRestart(); };
+        // Wire up the new custom styled restart buttons
+        document.getElementById('hard-reset-win').onclick = () => location.reload();
+        document.getElementById('soft-reset-win').onclick = () => { 
+            document.getElementById('overlay-event').style.display='none'; 
+            confirmSoftRestart(); 
+        };
         
         document.getElementById('overlay-event').style.display='flex'; 
     }
