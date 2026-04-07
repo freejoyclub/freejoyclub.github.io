@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Fearjoy - v9.3.6</title>
+    <title>Fearjoy - v9.3.7</title>
     <style>
         :root {
             --wood-dark: #8b7355; 
@@ -65,32 +65,46 @@
         .tag-sellout { background: var(--fear-glow); color: white; }
         .intro-header { font-size: 3.5rem; color: var(--gold); animation: introGlow 2s ease-in-out infinite alternate; margin-bottom: 20px; font-weight: 900; letter-spacing: 4px; }
         
-        #audio-toggle { position: absolute; top: 10px; right: 10px; background: #222; border: 1px solid #444; color: white; padding: 5px 10px; border-radius: 20px; cursor: pointer; font-size: 0.7rem; display: flex; align-items: center; gap: 5px; z-index: 1001;}
         #restart-btn { width: 100%; margin-top: 10px; background: #333; color: #888; border: 1px solid #444; padding: 8px; border-radius: 6px; cursor: pointer; font-size: 0.7rem; font-weight: bold; transition: 0.2s; }
         #restart-btn:hover { background: var(--fear-glow); color: white; border-color: white; }
 
         /* NAV CLUSTER */
-        #nav-cluster { position: fixed; bottom: 25px; left: 25px; display: flex; gap: 15px; z-index: 1000; }
-        .nav-btn { 
-            padding: 12px 22px; border-radius: 12px; background: #111; color: white; font-weight: 900; font-size: 0.95rem; 
-            border: 1px solid #444; cursor: pointer; transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            animation: navFloat 3s infinite ease-in-out; letter-spacing: 1px; text-transform: uppercase;
+        #nav-cluster { 
+            position: fixed; bottom: 25px; left: 25px; 
+            display: flex; flex-direction: column; align-items: flex-start;
+            gap: 12px; z-index: 1000; 
         }
-        .nav-btn:hover { transform: scale(1.1) translateY(-5px); z-index: 1001; }
+        .nav-btn { 
+            padding: 14px 24px; border-radius: 12px; background: #111; color: white; font-weight: 900; font-size: 1rem; 
+            border: 1px solid #444; cursor: pointer; transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            animation: navFloat 3.5s infinite ease-in-out; letter-spacing: 1.5px; text-transform: uppercase;
+            width: 220px; text-align: left;
+        }
+        .nav-btn:hover { transform: scale(1.05) translateX(10px); z-index: 1001; }
         .btn-home:hover { box-shadow: 0 0 20px var(--tape-white); border-color: var(--tape-white); }
         .btn-store:hover { box-shadow: 0 0 20px var(--pink-glow); border-color: var(--pink-glow); color: var(--pink-glow); }
         .btn-album:hover { box-shadow: 0 0 20px var(--joy-glow); border-color: var(--joy-glow); color: var(--joy-glow); }
         .btn-home { animation-delay: 0s; }
         .btn-store { animation-delay: 0.2s; }
         .btn-album { animation-delay: 0.4s; }
+
+        #audio-toggle { 
+            background: #222; border: 1px solid #444; color: white; padding: 10px 20px; border-radius: 10px; 
+            cursor: pointer; font-size: 0.8rem; font-weight: bold; display: flex; align-items: center; 
+            gap: 10px; width: 220px; box-sizing: border-box; transition: 0.3s;
+        }
+        #audio-toggle:hover { border-color: var(--gold); box-shadow: 0 0 10px var(--gold); }
     </style>
 </head>
 <body>
 
     <div id="nav-cluster">
-        <button class="nav-btn btn-home" onclick="window.location.reload()">Home</button>
-        <button class="nav-btn btn-store" onclick="window.open('https://fearjoy.shop', '_blank')">Store</button>
-        <button class="nav-btn btn-album" onclick="window.open('https://spotify.com', '_blank')">Play the Album</button>
+        <button id="audio-toggle" onclick="toggleAudio()">
+            <span id="audio-icon">🔊</span> AUDIO: <span id="audio-status">ON</span>
+        </button>
+        <button class="nav-btn btn-home" onclick="window.open('https://freejoy.club', '_blank')">Home</button>
+        <button class="nav-btn btn-store" onclick="window.open('https://freejoy.club', '_blank')">Store</button>
+        <button class="nav-btn btn-album" onclick="window.open('https://freejoy.club', '_blank')">Play the Album</button>
     </div>
 
     <div id="merch-tracker">
@@ -100,9 +114,6 @@
     </div>
 
     <div id="ui-layer">
-        <button id="audio-toggle" onclick="toggleAudio()">
-            <span id="audio-icon">🔊</span> AUDIO: <span id="audio-status">ON</span>
-        </button>
         <div id="status-text">---</div>
         <div id="roll-btn-center">
             <button id="roll-btn" onclick="doRoll()" disabled style="background: var(--joy-glow); color: black; width: 220px; font-size: 1.6rem; font-weight:bold; padding:15px; border:none; border-radius:8px; cursor:pointer;">ROLL</button>
@@ -229,7 +240,7 @@
             }
             if(i < 59 && name !== "START") {
                 let arrowDir = ''; if(i % 10 === 9) arrowDir = 'arrow-up'; else if(Math.floor(i / 10) % 2 === 0) arrowDir = 'arrow-right'; else arrowDir = 'arrow-left';
-                const arr = document.createElement('div'); arr.className = `dir-arrow ${arrowDir}`; arr.innerHTML = "&#10140;"; s.appendChild(arr);
+                const arr = document.createElement('div'); arr.className = `dir-arrow ${arrowDir}`; arr.innerHTML = "➜"; s.appendChild(arr);
             }
             s.onclick = () => handleSpaceClick(i);
             let row = Math.floor(i / 10), col = (row % 2 === 0) ? (i % 10) : (9 - (i % 10));
