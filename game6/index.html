@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Fearjoy - v8.9.1</title>
+    <title>Fearjoy - v8.9.2</title>
     <style>
         :root {
             --wood-dark: #8b7355; 
@@ -10,6 +10,7 @@
             --wood-light: #d2b48c;
             --tape-white: #fdfdfd; --joy-glow: #00ff88; --fear-glow: #ff4444;
             --gold: #ffd700; --ui-bg: rgba(0,0,0,0.98); --vinyl: #111111;
+            --blue-glow: #00ccff;
         }
 
         @keyframes woodFade { 0%, 100% { background-color: var(--wood-dark); } 50% { background-color: var(--wood-mid); } }
@@ -40,12 +41,11 @@
         .arrow-left { left: -18px; top: 50%; transform: translateY(-50%) rotate(180deg); }
         .arrow-up { top: -22px; left: 50%; transform: translateX(-50%) rotate(-90deg); }
 
-        /* Blank Space Fix: Restored outlines, removed white fill */
-        .blank { opacity: 0.2; transform: scale(0.8); border-style: dashed !important; background: none !important; cursor: default; }
-        .blank-num { font-size: 0.6rem; opacity: 0.3; font-weight: normal; }
+        .blank { opacity: 0.45; transform: scale(0.8); border-style: dashed !important; background: none !important; cursor: default; }
+        .blank-num { font-size: 0.95rem; opacity: 0.5; font-weight: normal; }
 
         .tracklist-space { background: var(--vinyl) !important; border: 3px double #666 !important; box-shadow: inset 0 0 15px #000; transform: scale(1.15); z-index: 5; font-size: 0.7rem !important; color: white !important; }
-        .win-track { border: 4px solid var(--gold) !important; box-shadow: 0 0 30px var(--gold); }
+        .win-track { background: var(--vinyl) !important; border: 4px solid var(--blue-glow) !important; box-shadow: 0 0 30px var(--blue-glow); }
         
         .joy-space { border-color: var(--joy-glow) !important; color: var(--joy-glow) !important; }
         .fear-space { border-color: var(--fear-glow) !important; color: var(--fear-glow) !important; }
@@ -53,10 +53,11 @@
 
         #ui-layer { display: flex; align-items: center; background: var(--ui-bg); padding: 25px 45px; border-radius: 12px; margin: 15px 0; border: 1px solid rgba(255,255,255,0.1); width: 1000px; justify-content: space-between; z-index: 10; }
         #status-text { width: 350px; font-size: 2.2rem; font-weight: 900; text-transform: uppercase; line-height: 1; }
+        #dice-slot-right { width: 90px; height: 90px; flex-shrink: 0; }
         #dice-box { width: 90px; height: 90px; background: white; color: black; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 4rem; font-weight: bold; transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); position: relative; }
 
         .floating-emoji { position: absolute; font-size: 4rem; animation: floatUp 1.2s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; pointer-events: none; z-index: 6000; }
-        .dice-cinematic { position: fixed !important; top: 50% !important; left: 50% !important; transform: translate(-50%, -50%) scale(3.2) !important; z-index: 5000; opacity: 0.95; }
+        .dice-cinematic { position: fixed !important; top: 50% !important; left: 50% !important; transform: translate(-50%, -50%) scale(2.5) !important; z-index: 5000; opacity: 0.95; }
         .dice-red { animation: redSparkle 0.5s infinite alternate; }
         .dice-gold { animation: goldSparkle 0.5s infinite alternate; }
         .flipping { animation: flipping 1.2s cubic-bezier(0.45, 0.05, 0.55, 0.95); transform-style: preserve-3d; }
@@ -71,8 +72,8 @@
         .swap-target { filter: drop-shadow(0 0 20px var(--joy-glow)); animation: pulse 1s infinite; z-index: 1000 !important; pointer-events: auto !important; cursor: pointer; }
         .roster-swap { border: 2px solid var(--joy-glow) !important; cursor: pointer !important; }
 
-        .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.96); z-index: 2000; display: none; align-items: center; justify-content: center; }
-        .popup { background: #111; padding: 45px; border-radius: 30px; border: 2px solid #444; width: 680px; text-align: center; transition: 0.4s; }
+        .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 2000; display: none; align-items: center; justify-content: center; }
+        .popup { background: rgba(10, 10, 10, 0.9); backdrop-filter: blur(8px); padding: 45px; border-radius: 30px; border: 2px solid #444; width: 680px; text-align: center; transition: 0.4s; }
         
         #rule-sidebar { position: fixed; right: -350px; top: 135px; width: 280px; background: var(--ui-bg); padding: 30px; border-radius: 20px; border: 2px solid var(--joy-glow); transition: 0.6s; z-index: 100; box-shadow: -10px 0 40px rgba(0,0,0,0.6); cursor: pointer; }
         #rule-sidebar.active { right: 25px; }
@@ -168,7 +169,7 @@
         39: { title: "FEARJOY", emoji: "☯️", isFearjoy: true, desc: "Flip for destiny." },
         41: { title: "ENCORE", emoji: "🎸", shift: 2, isAuto: true, desc: "The crowd demands more! Move forward 2." },
         44: { title: "VOID", emoji: "🌀", shift: -4, isAuto: true, isTrack: true, desc: "Creative block. Rewind 4." },
-        47: { title: "THE ENDLESS SMILE", emoji: "💀😄", isSmile: true, desc: "Remain smiling until your next turn. Break it = skip turn." },
+        47: { title: "THE ENDLESS SMILE", emoji: "💀", isSmile: true, desc: "Remain smiling until your next turn. Break it = skip turn." },
         48: { title: "GATEKEEPER", emoji: "🚪", isGate: true, desc: "industry gatekeeper - mandatory stop here unless you are in last place" },
         52: { title: "FEARJOY", emoji: "☯️", isFearjoy: true, desc: "Flip for destiny." },
         53: { title: "VAN BREAKS DOWN", emoji: "🛠", skipTurns: 1, desc: "Bummer! Waiting for repairs. Turn consumed." },
@@ -242,8 +243,8 @@
             const rRect = s.getBoundingClientRect();
             spaceCoords.push({ x: rRect.left + rRect.width/2 - containerRect.left, y: rRect.top + rRect.height/2 - containerRect.top });
         });
-        // Fix 1: Dmitri (15) points to 5D (23) instead of Void
-        drawCurvedArrow(spaceCoords[15].x, spaceCoords[15].y, spaceCoords[23].x, spaceCoords[23].y, {x: 20, y: -20});
+        // Adjusted Dmitri Shortcut Arrow: Shorter and shifted Up/Left
+        drawCurvedArrow(spaceCoords[15].x - 8, spaceCoords[15].y - 12, spaceCoords[23].x - 22, spaceCoords[23].y + 12, {x: 10, y: -10});
         drawCurvedArrow(spaceCoords[44].x, spaceCoords[44].y, spaceCoords[40].x, spaceCoords[40].y, {x: 0, y: 50});
         players.forEach((p, i) => {
             const el = document.createElement('div'); el.id = 'p'+i; el.className = 'player';
@@ -383,7 +384,7 @@
         } else if(r.isOpeningAct) {
             let maxPos = Math.max(...players.map(pl => pl.pos));
             let isLead = (p.pos === maxPos);
-            pBtn.innerText = " "; pBtn.disabled = true; // Removed "READING..." text
+            pBtn.innerText = " "; pBtn.disabled = true;
             if(isLead) {
                 showSidebar("OPENING ACT", "You are the leader! Go back 1 space.", spaceCol);
                 setTimeout(() => { pBtn.innerText = "ACCEPT FATE (-1)"; pBtn.disabled = false; pBtn.onclick = async () => { modal.style.display='none'; await new Promise(res=>setTimeout(res,800)); movePlayer(-1); }; }, 2500);
@@ -454,7 +455,7 @@
         const p = players[turnIdx]; let statsHtml = `<div style="text-align:left; margin-top:20px; font-family:monospace;">`;
         players.forEach(pl => { statsHtml += `<div style="margin-bottom:15px; border-bottom: 1px solid #444; display:flex; align-items:center; gap:15px; padding-bottom:15px;"><img src="${pl.avatar.img}" style="width:60px; height:60px; border-radius:50%; background:#111; border:2px solid #555;"><div style="flex-grow:1;"><b style="color:${pl.avatar.color}; font-size:1.2rem;">${pl.name}</b><br><span style="font-size:1.3rem; letter-spacing:2px; display:inline-block; margin:5px 0;">${pl.accolades.join('') || "No Accolades"}</span><br>GRAMMYS: ${pl.grammys} | SHIRTS: ${pl.shirtsSold} | PILLS: ${pl.pillsTaken}</div></div>`; });
         statsHtml += `</div>`;
-        const popupEl = document.getElementById('main-popup'); popupEl.style.borderColor = 'var(--gold)'; popupEl.style.boxShadow = '0 0 50px var(--gold)';
+        const popupEl = document.getElementById('main-popup'); popupEl.style.borderColor = 'var(--blue-glow)'; popupEl.style.boxShadow = '0 0 50px var(--blue-glow)';
         document.getElementById('event-title').innerText = "🌊 SWIMMIN'"; document.getElementById('event-desc').innerHTML = `${p.name} REACHED LEGEND STATUS.<br>${statsHtml}`;
         document.getElementById('event-btn-primary').innerText = "RESTART TOUR"; document.getElementById('event-btn-primary').onclick = () => location.reload();
         document.getElementById('event-btn-secondary').style.display = 'none'; document.getElementById('overlay-event').style.display='flex'; 
