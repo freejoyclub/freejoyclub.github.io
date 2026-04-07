@@ -169,7 +169,7 @@
         "THE REMEDY", "FEAR", "VAN BREAKS DOWN", "JOY", "blank", "DMITRI", "blank", "FEARJOY", "NIGHTDRIVE", "JOY", 
         "INVEST IN MERCH", "FEAR", "blank", "5TH DIMENSION", "blank", "IT HAPPENS", "blank", "GHOST 2", "MAYA", "blank", 
         "WIN A GRAMMY", "blank", "FEAR", "OPENING ACT", "blank", "JOY", "blank", "TELLUS", "blank", "FEARJOY", 
-        "blank", "ENCORE", "blank", "blank", "VOID", "blank", "blank", "THE ENDLESS SMILE", "GATEKEEPER", "blank", 
+        "blank", "blank", "ENCORE", "blank", "VOID", "blank", "blank", "THE ENDLESS SMILE", "GATEKEEPER", "blank", 
         "blank", "blank", "FEARJOY", "VAN BREAKS DOWN", "blank", "LOST RECORDING", "blank", "FEARJOY", "blank", "SWIMMIN"
     ];
 
@@ -183,11 +183,11 @@
         11: { title: "FEAR", emoji: "😱", shift: -1, isAuto: true, desc: "Doubt slows you. Back 1." },
         12: { title: "VAN BREAKS DOWN", emoji: "🛠", skipTurns: 1, desc: "Bummer! Waiting for repairs. Turn consumed." },
         13: { title: "JOY", emoji: "😄", shift: 1, isAuto: true, desc: "Everything aligns. Forward 1." },
-        15: { title: "DMITRI", emoji: "👨‍🚀", timer: 15, isDmitri: true, isTrack: true, desc: "Breathe (15s) for the 5D shortcut. Skip = Rewind 2.", sound: "dmitriclip.wav" },
+        15: { title: "DMITRI", emoji: "👨‍🚀", timer: 15, isDmitri: true, isTrack: true, desc: "Breathe (15s) for the 5D shortcut. Skip = Rewind 2.", sound: "dayclip.wav" },
         17: { title: "FEARJOY", emoji: "☯️", isFearjoy: true, desc: "Flip for destiny." },
         18: { title: "NIGHTDRIVE", emoji: "🌙", isNightDrive: true, isTrack: true, desc: "Keep eyes closed until next turn!" },
         19: { title: "JOY", emoji: "😄", shift: 1, isAuto: true, desc: "Rhythm is perfect. Forward 1." },
-        20: { title: "INVEST IN MERCH", emoji: "👕", choice: 'remedy', desc: "Rewind 4 now, but every 1 or 2 you roll later will be doubled." },
+        20: { title: "INVEST IN MERCH", emoji: "👕", choice: 'merch', desc: "Rewind 4 now, but every 1 or 2 you roll later will be doubled." },
         21: { title: "FEAR", emoji: "😱", shift: -1, isAuto: true, desc: "The road is long. Back 1." },
         23: { title: "5TH DIMENSION", emoji: "✨", shift: 1, isAuto: true, desc: "Higher frequency. Forward 1." },
         25: { title: "IT HAPPENS", emoji: "🔔", isItHappens: true, isTrack: true, desc: "suddenly, instantly, take an extra turn" },
@@ -199,7 +199,7 @@
         35: { title: "JOY", emoji: "😄", shift: 1, isAuto: true, desc: "Crowd is cheering. Forward 1." },
         37: { title: "TELLUS", emoji: "📣", isTellus: true, isTrack: true, desc: "Swap positions with any artist." },
         39: { title: "FEARJOY", emoji: "☯️", isFearjoy: true, desc: "Flip for destiny." },
-        41: { title: "ENCORE", emoji: "🎸", shift: 3, isAuto: true, desc: "The crowd demands more! Move forward 3." },
+        42: { title: "ENCORE", emoji: "🎸", shift: 3, isAuto: true, desc: "The crowd demands more! Move forward 3." },
         44: { title: "VOID", emoji: "🌀", shift: -3, isAuto: true, isTrack: true, desc: "Creative block. Rewind 3." },
         47: { title: "THE ENDLESS SMILE", emoji: "💀", isSmile: true, desc: "Remain smiling until your next turn." },
         48: { title: "GATEKEEPER", emoji: "🚪", isGate: true, desc: "Industry Gatekeeper - Mandatory stop here unless you are in last place." },
@@ -261,7 +261,7 @@
             const rRect = s.getBoundingClientRect(); spaceCoords.push({ x: rRect.left + rRect.width/2 - containerRect.left, y: rRect.top + rRect.height/2 - containerRect.top });
         });
         drawCurvedArrow(spaceCoords[15].x + 12, spaceCoords[15].y - 25, spaceCoords[23].x - 18, spaceCoords[23].y + 10, {x: 35, y: -20});
-        drawCurvedArrow(spaceCoords[44].x, spaceCoords[44].y, spaceCoords[41].x, spaceCoords[41].y, {x: 0, y: 50});
+        drawCurvedArrow(spaceCoords[44].x, spaceCoords[44].y, spaceCoords[42].x, spaceCoords[42].y, {x: 0, y: 50});
         players.forEach((p, i) => {
             const el = document.createElement('div'); el.id = 'p'+i; el.className = 'player';
             el.style.backgroundImage = `url('${p.avatar.img}')`; el.onclick = () => handlePlayerClick(i);
@@ -453,7 +453,4 @@
         document.getElementById('overlay-event').style.display='flex'; 
     }
     
-    function endTurn() { turnIdx = (turnIdx + 1) % players.length; isMoving = false; document.getElementById('roll-btn').disabled = false; updateUI(); }
-    </script>
-    </body>
-</html>
+    function endTurn() { turnIdx = (turnIdx + 1) % players.length; isMoving = false; document.getElementById('roll-btn').disabled = false; updateUI(); }</script></body></html>
