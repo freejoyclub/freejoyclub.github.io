@@ -1,6 +1,6 @@
 <!DOCTYPE html><html lang="en"><head>
     <meta charset="UTF-8">
-    <title>Fearjoy - v11.6</title>
+    <title>Fearjoy - v11.6.1</title>
     <style>
         :root {
             --wood-dark: #8b7355; 
@@ -24,13 +24,7 @@
         @keyframes navFloat { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
 
         body { animation: woodFade 20s ease-in-out infinite; background-image: repeating-linear-gradient(90deg, transparent, transparent 80px, rgba(0,0,0,0.05) 80px, rgba(0,0,0,0.05) 82px); color: white; font-family: 'Courier New', monospace; display: flex; flex-direction: column; align-items: center; margin: 0; min-height: 100vh; overflow: hidden; }
-        
-        #board-container { 
-            display: grid; grid-template-columns: repeat(10, 1fr); grid-template-rows: repeat(6, 1fr); 
-            gap: 18px; padding: 50px; width: 1100px; height: 700px; 
-            position: relative; z-index: 5; 
-        }
-
+        #board-container { display: grid; grid-template-columns: repeat(10, 1fr); grid-template-rows: repeat(6, 1fr); gap: 18px; padding: 50px; width: 1100px; height: 700px; position: relative; z-index: 5; }
         #arrow-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; pointer-events: none; }
         .space { width: 85px; height: 85px; border-radius: 50%; border: 1px solid var(--tape-white); display: flex; flex-direction: column; align-items: center; justify-content: center; font-weight: bold; font-size: 0.75rem; line-height: 1.1; background: rgba(255,255,255,0.05); text-align: center; position: relative; transition: 0.3s; cursor: help; }
         .sp-emoji { font-size: 1.4rem; margin-bottom: 2px; }
@@ -46,37 +40,11 @@
         .joy-space { border-color: var(--joy-glow) !important; color: var(--joy-glow) !important; }
         .fear-space { border-color: var(--fear-glow) !important; color: var(--fear-glow) !important; }
         .hybrid { border-style: dotted; border-width: 3px; border-color: white; }
-        
-        #ui-layer { 
-            display: flex; align-items: center; background: var(--ui-bg); 
-            padding: 0 45px; height: 120px; min-height: 120px; 
-            border-radius: 12px; margin: 15px 0; border: 1px solid rgba(255,255,255,0.1); 
-            width: 1000px; justify-content: space-between; z-index: 10; position: relative; 
-        }
-
+        #ui-layer { display: flex; align-items: center; background: var(--ui-bg); padding: 0 45px; height: 120px; min-height: 120px; border-radius: 12px; margin: 15px 0; border: 1px solid rgba(255,255,255,0.1); width: 1000px; justify-content: space-between; z-index: 10; position: relative; }
         #status-text { width: 350px; font-size: 2.2rem; font-weight: 900; text-transform: uppercase; line-height: 1; }
-        
         #dice-slot-right { width: 90px; height: 90px; display: flex; align-items: center; justify-content: center; }
-        
-        #dice-box { 
-            width: 75px; height: 75px; 
-            background: white; color: black; border-radius: 12px; 
-            display: flex; align-items: center; justify-content: center; 
-            font-size: 3.5rem; font-weight: bold; 
-            transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
-            position: relative; 
-        }
-
-        .dice-cinematic { 
-            position: fixed !important; 
-            top: 50% !important; 
-            left: 50% !important; 
-            transform: translate3d(-50%, -50%, 0) scale(1.8) !important; 
-            z-index: 5000; 
-            opacity: 0.95; 
-            box-shadow: 0 0 50px rgba(255,255,255,0.4);
-        }
-        
+        #dice-box { width: 75px; height: 75px; background: white; color: black; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 3.5rem; font-weight: bold; transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); position: relative; }
+        .dice-cinematic { position: fixed !important; top: 50% !important; left: 50% !important; transform: translate3d(-50%, -50%, 0) scale(1.8) !important; z-index: 5000; opacity: 0.95; box-shadow: 0 0 50px rgba(255,255,255,0.4); }
         .floating-emoji { position: absolute; font-size: 4rem; animation: floatUp 1.2s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; pointer-events: none; z-index: 6000; }
         .dice-red { animation: redSparkle 0.5s infinite alternate; }
         .dice-gold { animation: goldSparkle 0.5s infinite alternate; }
@@ -95,32 +63,13 @@
         .tag-investor { background: var(--gold); color: black; }
         .tag-sellout { background: var(--fear-glow); color: white; }
         .intro-header { font-size: 3.5rem; color: var(--gold); animation: introGlow 2s ease-in-out infinite alternate; margin-bottom: 20px; font-weight: 900; letter-spacing: 4px; }
-        
-        #restart-btn { width: 100%; margin-top: 10px; background: #333; color: #888; border: 1px solid #444; padding: 8px; border-radius: 6px; cursor: pointer; font-size: 0.7rem; font-weight: bold; transition: 0.2s; }
-        #restart-btn:hover { background: var(--fear-glow); color: white; border-color: white; }
-
         #nav-cluster { position: fixed; bottom: 25px; left: 25px; display: flex; flex-direction: column; align-items: flex-start; gap: 12px; z-index: 1000; }
         .nav-btn { padding: 14px 24px; border-radius: 12px; background: #111; color: white; font-weight: 900; font-size: 1rem; border: 1px solid #444; cursor: pointer; transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); animation: navFloat 3.5s infinite ease-in-out; letter-spacing: 1.5px; text-transform: uppercase; width: 220px; text-align: left; }
-        .nav-btn:hover { transform: scale(1.05) translateX(10px); z-index: 1001; }
-        .btn-home:hover { box-shadow: 0 0 20px var(--tape-white); border-color: var(--tape-white); }
-        .btn-store:hover { box-shadow: 0 0 20px var(--pink-glow); border-color: var(--pink-glow); color: var(--pink-glow); }
-        .btn-album:hover { box-shadow: 0 0 20px var(--joy-glow); border-color: var(--joy-glow); color: var(--joy-glow); }
-        .btn-home { animation-delay: 0s; }
-        .btn-store { animation-delay: 0.2s; }
-        .btn-album { animation-delay: 0.4s; }
-
-        #audio-toggle { background: #222; border: 1px solid #444; color: white; padding: 10px 20px; border-radius: 10px; cursor: pointer; font-size: 0.8rem; font-weight: bold; display: flex; align-items: center; gap: 10px; width: 220px; box-sizing: border-box; transition: 0.3s; }
-        #audio-toggle:hover { border-color: var(--gold); box-shadow: 0 0 10px var(--gold); }
-
-        /* Selection styles for Maya/Tellus */
         .swap-target { cursor: pointer !important; pointer-events: auto !important; filter: drop-shadow(0 0 15px var(--joy-glow)) !important; }
         .roster-swap { cursor: pointer !important; border: 2px solid var(--joy-glow) !important; box-shadow: 0 0 15px var(--joy-glow) !important; }
     </style></head><body>
 
     <div id="nav-cluster">
-        <button id="audio-toggle" onclick="toggleAudio()">
-            <span id="audio-icon">🔊</span> AUDIO: <span id="audio-status">ON</span>
-        </button>
         <button class="nav-btn btn-home" onclick="window.open('https://freejoy.club', '_blank')">Home</button>
         <button class="nav-btn btn-store" onclick="window.open('https://freejoy.club', '_blank')">Store</button>
         <button class="nav-btn btn-album" onclick="window.open('https://freejoy.club', '_blank')">Play the Album</button>
@@ -129,7 +78,7 @@
     <div id="merch-tracker">
         <h4 style="margin:0 0 10px 0; font-size: 0.65rem; letter-spacing: 2px; opacity: 0.6; color: var(--joy-glow);">TOUR STATS</h4>
         <div id="tracker-list"></div>
-        <button id="restart-btn" onclick="confirmSoftRestart()">RESTART TOUR</button>
+        <button id="restart-btn" onclick="confirmSoftRestart()" style="width: 100%; margin-top: 10px; background: #333; color: #888; border: 1px solid #444; padding: 8px; border-radius: 6px; cursor: pointer; font-size: 0.7rem; font-weight: bold;">RESTART TOUR</button>
     </div>
 
     <div id="ui-layer">
@@ -142,10 +91,7 @@
         </div>
     </div>
 
-    <div id="board-container">
-        <svg id="arrow-layer" viewbox="0 0 1100 700">
-        </svg>
-    </div>
+    <div id="board-container"></div>
 
     <div id="overlay-event" class="overlay">
         <div class="popup" id="main-popup">
@@ -162,37 +108,157 @@
 
     <div id="rule-sidebar" onclick="this.classList.remove('active')"><h3 id="side-title"></h3><p id="side-desc" style="line-height: 1.6;"></p></div>
 
-    <div id="overlay-setup" class="overlay" style="display:flex"><div class="popup"><h1 class="intro-header">Fearjoy - Play This</h1><h2>HOW MANY ARTISTS?</h2><button onclick="setPlayerCount(1)" style="padding:20px 40px; margin:10px;">1</button><button onclick="setPlayerCount(2)" style="padding:20px 40px; margin:10px;">2</button><button onclick="setPlayerCount(3)" style="padding:20px 40px; margin:10px;">3</button><div id="setup-step-2" style="display:none; margin-top:30px;"><input type="text" id="name-input" placeholder="ARTIST NAME" style="padding:15px; width:80%; text-align: center; border-radius: 8px; border: 1px solid #000; background: #000; color: white;"><div id="name-error" style="color:var(--fear-glow); font-weight:bold; margin-top:10px; font-size:0.8rem; display:none;">NAME ALREADY TAKEN ON THIS TOUR</div><div style="display:flex; justify-content:center; gap:20px; margin:25px;"><img id="sel-jesse" src="jesse.png" style="width:80px; opacity:0.3; cursor:pointer;" onclick="pickAvatar('jesse', '#007bff')"><img id="sel-marco" src="marco.png" style="width:80px; opacity:0.3; cursor:pointer;" onclick="pickAvatar('marco', '#ffcc00')"><img id="sel-grant" src="grant.png" style="width:80px; opacity:0.3; cursor:pointer;" onclick="pickAvatar('grant', '#ff00ff')"></div><button onclick="confirmArtist()" style="padding:15px 30px; background: white; color: black; font-weight: bold; border-radius: 8px; cursor: pointer;">ADD TO TOUR</button></div></div></div><script>
-    const boardLayout = [
-        "START", "blank", "blank", "blank", "DAYSPRING", "blank", "FEARJOY", "blank", "FIGMENT", "JOY", 
-        "THE REMEDY", "FEAR", "VAN BREAKS DOWN", "JOY", "blank", "DMITRI", "blank", "FEARJOY", "NIGHTDRIVE", "JOY", 
-        "INVEST IN MERCH", "FEAR", "blank", "5TH DIMENSION", "blank", "IT HAPPENS", "blank", "GHOST 2", "MAYA", "blank", 
-        "WIN A GRAMMY", "blank", "FEAR", "OPENING ACT", "blank", "JOY", "blank", "TELLUS", "blank", "FEARJOY", 
-        "blank", "blank", "ENCORE", "blank", "VOID", "blank", "blank", "THE ENDLESS SMILE", "GATEKEEPER", "blank", 
-        "blank", "blank", "FEARJOY", "VAN BREAKS DOWN", "blank", "LOST RECORDING", "blank", "FEARJOY", "blank", "SWIMMIN"
-    ];
+    <div id="overlay-setup" class="overlay" style="display:flex"><div class="popup"><h1 class="intro-header">Fearjoy</h1><h2>HOW MANY ARTISTS?</h2><button onclick="setPlayerCount(1)" style="padding:20px 40px; margin:10px;">1</button><button onclick="setPlayerCount(2)" style="padding:20px 40px; margin:10px;">2</button><button onclick="setPlayerCount(3)" style="padding:20px 40px; margin:10px;">3</button><div id="setup-step-2" style="display:none; margin-top:30px;"><input type="text" id="name-input" placeholder="ARTIST NAME" style="padding:15px; width:80%; text-align: center; border-radius: 8px; border: 1px solid #000; background: #000; color: white;"><div id="name-error" style="color:var(--fear-glow); font-weight:bold; margin-top:10px; font-size:0.8rem; display:none;">NAME ALREADY TAKEN</div><div style="display:flex; justify-content:center; gap:20px; margin:25px;"><img id="sel-jesse" src="jesse.png" style="width:80px; opacity:0.3; cursor:pointer;" onclick="pickAvatar('jesse', '#007bff')"><img id="sel-marco" src="marco.png" style="width:80px; opacity:0.3; cursor:pointer;" onclick="pickAvatar('marco', '#ffcc00')"><img id="sel-grant" src="grant.png" style="width:80px; opacity:0.3; cursor:pointer;" onclick="pickAvatar('grant', '#ff00ff')"></div><button onclick="confirmArtist()" style="padding:15px 30px; background: white; color: black; font-weight: bold; border-radius: 8px; cursor: pointer;">ADD TO TOUR</button></div></div></div>
 
+    <script>
+    const boardLayout = ["START", "blank", "blank", "blank", "DAYSPRING", "blank", "FEARJOY", "blank", "FIGMENT", "JOY", "THE REMEDY", "FEAR", "VAN BREAKS DOWN", "JOY", "blank", "DMITRI", "blank", "FEARJOY", "NIGHTDRIVE", "JOY", "INVEST IN MERCH", "FEAR", "blank", "5TH DIMENSION", "blank", "IT HAPPENS", "blank", "GHOST 2", "MAYA", "blank", "WIN A GRAMMY", "blank", "FEAR", "OPENING ACT", "blank", "JOY", "blank", "TELLUS", "blank", "FEARJOY", "blank", "blank", "ENCORE", "blank", "VOID", "blank", "blank", "THE ENDLESS SMILE", "GATEKEEPER", "blank", "blank", "blank", "FEARJOY", "VAN BREAKS DOWN", "blank", "LOST RECORDING", "blank", "FEARJOY", "blank", "SWIMMIN'"];
     const rules = {
-        0: { title: "START", emoji: "▶️", desc: "The quiet before the storm." },
-        4: { title: "DAYSPRING", emoji: "☀️", shift: 3, isAuto: true, isTrack: true, desc: "Creative clarity strikes! Forward 3.", sound: "dayclip.wav" },
+        4: { title: "DAYSPRING", emoji: "☀️", shift: 3, isAuto: true, isTrack: true, desc: "Creative clarity! Forward 3." },
         6: { title: "FEARJOY", emoji: "☯️", isFearjoy: true, desc: "Flip the coin: JOY = +1, FEAR = -1." },
-        8: { title: "FIGMENT", emoji: "🛸", isFigment: true, isTrack: true, desc: "Step outside (1:00) for +2, or stay indoors for -1.", sound: "figclip.wav" },
+        8: { title: "FIGMENT", emoji: "🛸", isFigment: true, isTrack: true, desc: "Step outside (1:00) for +2, or stay indoors for -1." },
         9: { title: "JOY", emoji: "😄", shift: 1, isAuto: true, desc: "Momentum! Forward 1." },
-        10: { title: "THE REMEDY", emoji: "💊", choice: 'remedy', isTrack: true, desc: "A major label exec offers a deal: move ahead 6 now, but every 6 you roll later becomes -2.", sound: "remedyclip.wav" },
-        11: { title: "FEAR", emoji: "😱", shift: -1, isAuto: true, desc: "Doubt slows you. Back 1." },
-        12: { title: "VAN BREAKS DOWN", emoji: "🛠", skipTurns: 1, desc: "Bummer! Waiting for repairs. Turn consumed." },
-        13: { title: "JOY", emoji: "😄", shift: 1, isAuto: true, desc: "Everything aligns. Forward 1." },
-        15: { title: "DMITRI", emoji: "👨‍🚀", timer: 15, isDmitri: true, isTrack: true, desc: "Breathe (15s) for the 5D shortcut. Skip = Rewind 2.", sound: "dayclip.wav" },
-        17: { title: "FEARJOY", emoji: "☯️", isFearjoy: true, desc: "Flip for destiny." },
+        10: { title: "THE REMEDY", emoji: "💊", choice: 'remedy', isTrack: true, desc: "Sign deal: move 6 now, but every 6 you roll later becomes -2." },
+        12: { title: "VAN BREAKS DOWN", emoji: "🛠", skipTurns: 1, desc: "Bummer! Waiting for repairs." },
+        15: { title: "DMITRI", emoji: "👨‍🚀", timer: 15, isDmitri: true, isTrack: true, desc: "Breathe (15s) for the 5D shortcut." },
         18: { title: "NIGHTDRIVE", emoji: "🌙", isNightDrive: true, isTrack: true, desc: "Keep eyes closed until next turn!" },
-        19: { title: "JOY", emoji: "😄", shift: 1, isAuto: true, desc: "Rhythm is perfect. Forward 1." },
         20: { title: "INVEST IN MERCH", emoji: "👕", choice: 'merch', desc: "Rewind 4 now, but every 1 or 2 you roll later will be doubled." },
-        21: { title: "FEAR", emoji: "😱", shift: -1, isAuto: true, desc: "Doubt slows you. Back 1." },
-        23: { title: "5TH DIMENSION", emoji: "✨", shift: 1, isAuto: true, desc: "Higher frequency. Forward 1." },
         25: { title: "IT HAPPENS", emoji: "🔔", isItHappens: true, isTrack: true, desc: "suddenly, instantly, take an extra turn" },
         27: { title: "GHOST 2", emoji: "👻", isGhost: true, isTrack: true, desc: "Silent for one turn. Noise = Rewind 1." },
         28: { title: "MAYA", emoji: "👁️", isMaya: true, desc: "Hold 10 seconds of eye contact with another player." },
         30: { title: "WIN A GRAMMY", emoji: "🏆", isGrammy: true, desc: "Switch places with the leader!" },
-        32: { title: "FEAR", emoji: "😱", shift: -1, isAuto: true, desc: "Industry gatekeepers. Back 1." },
         33: { title: "OPENING ACT", emoji: "🎤", isOpeningAct: true, desc: "Slide 2 spaces behind the leader." },
-        35: { title: "JOY", emoji: "
+        37: { title: "TELLUS", emoji: "📣", isTellus: true, isTrack: true, desc: "Swap positions with any artist." },
+        44: { title: "VOID", emoji: "🌀", shift: -3, isAuto: true, isTrack: true, desc: "Creative block. Rewind 3." },
+        47: { title: "THE ENDLESS SMILE", emoji: "💀", isSmile: true, desc: "Remain smiling until your next turn." },
+        48: { title: "GATEKEEPER", emoji: "🚪", isGate: true, desc: "Mandatory stop unless you are in last place." },
+        55: { title: "LOST RECORDING", emoji: "📼", isLostRecording: true, desc: "Tape erased! Roll and rewind that amount." },
+        59: { title: "SWIMMIN'", emoji: "🌊", desc: "The tour is over. Legend status achieved." }
+    };
+
+    let players = [], turnIdx = 0, isMoving = false, totalP = 0, currentSetupP = 0, selectedAvatar = null, isSwapping = false, isMayaPartner = false;
+
+    function setPlayerCount(n) { totalP = n; document.getElementById('setup-step-2').style.display='block'; }
+    function pickAvatar(id, color) { selectedAvatar = { id, color, img: id+'.png' }; document.querySelectorAll('img').forEach(i=>i.style.opacity='0.3'); document.getElementById('sel-'+id).style.opacity='1'; }
+    
+    function confirmArtist() {
+        const nameInput = document.getElementById('name-input'); const name = nameInput.value.toUpperCase().trim() || `ARTIST ${currentSetupP+1}`;
+        if(players.some(p => p.name === name)) { document.getElementById('name-error').style.display = 'block'; return; }
+        if(!selectedAvatar) return;
+        players.push({ name, pos: 0, avatar: selectedAvatar, skipCount: 0, isInvestor: false, isSellout: false, grammys: 0, shirtsSold: 0, pillsTaken: 0, ghostCounter: 0, smileActive: false, nightDriveActive: false, accolades: [] });
+        currentSetupP++; if(currentSetupP >= totalP) { document.getElementById('overlay-setup').style.display='none'; initBoard(); }
+        else { nameInput.value=''; selectedAvatar=null; }
+    }
+
+    function initBoard() {
+        const board = document.getElementById('board-container');
+        boardLayout.forEach((name, i) => {
+            const s = document.createElement('div'); s.id = 's'+i; s.className = 'space';
+            if(name === "blank") { s.classList.add('blank'); s.innerHTML = `<span class="blank-num">${i}</span>`; } 
+            else {
+                const r = rules[i]; s.innerHTML = (r && r.emoji ? `<div class="sp-emoji">${r.emoji}</div>` : '') + `<div class="sp-text">${name}</div>`;
+                if(rules[i]?.isTrack) s.classList.add('tracklist-space');
+                if(name === "FEAR") s.classList.add('fear-space'); if(name === "JOY") s.classList.add('joy-space'); if(name === "FEARJOY") s.classList.add('hybrid');
+            }
+            let row = Math.floor(i / 10), col = (row % 2 === 0) ? (i % 10) : (9 - (i % 10));
+            s.style.gridRow = 6 - row; s.style.gridColumn = col + 1; board.appendChild(s);
+        });
+        players.forEach((p, i) => {
+            const el = document.createElement('div'); el.id = 'p'+i; el.className = 'player';
+            el.style.backgroundImage = `url('${p.avatar.img}')`; el.style.pointerEvents = "auto";
+            el.onclick = () => handlePlayerClick(i);
+            board.appendChild(el);
+        });
+        updateUI(); document.getElementById('roll-btn').disabled = false;
+    }
+
+    function updateUI() {
+        const p = players[turnIdx], list = document.getElementById('tracker-list');
+        document.getElementById('status-text').innerHTML = `<span style="color:${p.avatar.color}">${p.name}'S TURN</span>`;
+        list.innerHTML = '';
+        players.forEach((pl, i) => {
+            let isCurrent = (i === turnIdx);
+            list.innerHTML += `<div id="roster-p${i}" class="player-entry ${isCurrent ? 'roster-active' : ''}" style="${isCurrent ? '--p-color:'+pl.avatar.color : ''}" onclick="handlePlayerClick(${i})">
+                <div style="display:flex;align-items:center;gap:10px;"><img src="${pl.avatar.img}" class="avatar-roster"><div><b>${pl.name}</b><br>${pl.accolades.join('')}</div></div></div>`;
+            document.getElementById('p'+i).classList.toggle('active-turn', isCurrent);
+            if(isCurrent) document.getElementById('p'+i).style.setProperty('--p-color', pl.avatar.color);
+        });
+        updatePositions();
+    }
+
+    function updatePositions() {
+        players.forEach((p, i) => {
+            const target = document.getElementById('s'+p.pos), el = document.getElementById('p'+i);
+            el.style.left = (target.offsetLeft + (i * 5)) + "px"; el.style.top = (target.offsetTop + (i * 5)) + "px";
+        });
+    }
+
+    async function doRoll() {
+        if(isMoving || isSwapping || isMayaPartner) return;
+        const p = players[turnIdx]; isMoving = true; document.getElementById('roll-btn').disabled = true;
+        const dice = document.getElementById('dice-box'); dice.classList.add('dice-cinematic');
+        let roll = Math.floor(Math.random()*6)+1;
+        for(let j=0; j<10; j++) { dice.innerText = Math.floor(Math.random()*6)+1; await new Promise(r => setTimeout(r, 50)); }
+        dice.innerText = roll; await new Promise(r => setTimeout(r, 600));
+        dice.classList.remove('dice-cinematic'); movePlayer(roll);
+    }
+
+    async function movePlayer(n) {
+        const p = players[turnIdx]; const dir = n > 0 ? 1 : -1;
+        for(let i=0; i<Math.abs(n); i++) {
+            if(p.pos + dir >= 0 && p.pos + dir < boardLayout.length) {
+                p.pos += dir; updatePositions(); await new Promise(r => setTimeout(r, 300));
+                if(p.pos >= 59) { showWinScreen(); return; }
+            }
+        }
+        checkSpace();
+    }
+
+    function checkSpace() {
+        const p = players[turnIdx], r = rules[p.pos]; if(!r) { endTurn(); return; }
+        if(r.isAuto) { setTimeout(() => { movePlayer(r.shift); }, 800); return; }
+        const modal = document.getElementById('overlay-event'), title = document.getElementById('event-title'), desc = document.getElementById('event-desc'), pBtn = document.getElementById('event-btn-primary');
+        title.innerText = (r.emoji || "") + " " + r.title; desc.innerText = r.desc || ""; pBtn.innerText = "CONTINUE"; modal.style.display = 'flex';
+        
+        if(r.isTellus || r.isMaya) {
+            if(players.length > 1) {
+                if(r.isTellus) isSwapping = true; else isMayaPartner = true;
+                desc.innerText += "\n\nCLICK ANOTHER ARTIST (BOARD PIECE OR SIDEBAR) TO SELECT.";
+                players.forEach((_, i) => { if(i !== turnIdx) { document.getElementById('p'+i).classList.add('swap-target'); document.getElementById('roster-p'+i).classList.add('roster-swap'); }});
+                pBtn.onclick = () => { modal.style.display='none'; };
+            } else { pBtn.onclick = () => { modal.style.display='none'; endTurn(); }; }
+        } else { pBtn.onclick = () => { modal.style.display='none'; endTurn(); }; }
+    }
+
+    function handlePlayerClick(idx) {
+        if(isSwapping || isMayaPartner) {
+            if(idx === turnIdx) return;
+            document.querySelectorAll('.player').forEach(el => el.classList.remove('swap-target'));
+            document.querySelectorAll('.player-entry').forEach(el => el.classList.remove('roster-swap'));
+            
+            if(isSwapping) {
+                let p = players[turnIdx], t = players[idx], lp = t.pos; t.pos = p.pos; p.pos = lp;
+                isSwapping = false; updatePositions(); endTurn();
+            } else if(isMayaPartner) {
+                isMayaPartner = false; startMayaTimer(idx);
+            }
+        }
+    }
+
+    function startMayaTimer(partnerIdx) {
+        const modal = document.getElementById('overlay-event'), timerUI = document.getElementById('timer-ui'), pBtn = document.getElementById('event-btn-primary'), sBtn = document.getElementById('event-btn-secondary');
+        document.getElementById('event-desc').innerText = `Hold eye contact with ${players[partnerIdx].name}!`;
+        pBtn.innerText = "START 10s TIMER"; sBtn.style.display = 'none';
+        pBtn.onclick = () => {
+            pBtn.style.display = 'none'; timerUI.style.display = 'block'; let t = 10; timerUI.innerText = t;
+            const clock = setInterval(() => { t--; timerUI.innerText = t; if(t <= 0) { 
+                clearInterval(clock); timerUI.style.display = 'none'; pBtn.style.display = 'inline-block'; pBtn.innerText = "WE HELD IT (+2)";
+                sBtn.style.display = 'inline-block'; sBtn.innerText = "WE BROKE (-1)";
+                pBtn.onclick = () => { modal.style.display='none'; players[partnerIdx].pos += 2; movePlayer(2); };
+                sBtn.onclick = () => { modal.style.display='none'; players[partnerIdx].pos -= 1; movePlayer(-1); };
+            }}, 1000);
+        }; modal.style.display = 'flex';
+    }
+
+    function endTurn() { turnIdx = (turnIdx + 1) % players.length; isMoving = false; document.getElementById('roll-btn').disabled = false; updateUI(); }
+    function showWinScreen() { alert(players[turnIdx].name + " WINS!"); location.reload(); }
+    </script></body></html>
