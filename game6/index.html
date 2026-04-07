@@ -1,6 +1,6 @@
 <!DOCTYPE html><html lang="en"><head>
     <meta charset="UTF-8">
-    <title>Fearjoy - v11.6.7</title>
+    <title>Fearjoy - v11.6.8</title>
     <style>
         :root {
             --wood-dark: #8b7355; 
@@ -535,16 +535,14 @@ function startMayaTimer(partnerIdx) {
                 showSidebar("🏆 TIED LEADERS", "Multiple artists are tied for the lead. Select which one to swap with by clicking their picture on the roster.", "var(--gold)");
                 leaders.forEach(l => { const idx = players.indexOf(l); document.getElementById('p'+idx).classList.add('swap-target'); document.getElementById('roster-p'+idx).classList.add('roster-swap'); });
             } else { pBtn.onclick = () => { modal.style.display='none'; let lead = leaders[0]; let lp = lead.pos; lead.pos = p.pos; p.pos = lp; updatePositions(); endTurn(); }; }
-       } else if(r.isTellus || r.isMaya) {
+
+           } else if(r.isTellus || r.isMaya) {
             if(players.length > 1) {
-                // Set the specific interaction state
                 isSwapping = r.isTellus; 
                 isMayaPartner = r.isMaya;
-                
                 pBtn.innerText = "READY"; 
                 pBtn.onclick = () => { 
                     modal.style.display = 'none'; 
-                    // Activate board pieces and roster for selection
                     players.forEach((_, i) => { 
                         if(i !== turnIdx) { 
                             const piece = document.getElementById('p'+i);
@@ -557,16 +555,15 @@ function startMayaTimer(partnerIdx) {
                         } 
                     });
                 };
-                
                 desc.innerHTML = r.isMaya ? 
                     "MAYA'S EYE CONTACT CHALLENGE.<br><br>Click another Artist's head or roster name. Hold eye contact for 10s for <b>Both +2</b>. Fail for <b>Both -1</b>." : 
                     "TELLUS: THE GREAT SWAP.<br><br>Click another Artist's head or roster name to swap places on the board.";
             } else { 
-                // Solo player safety check
-                desc.innerText = "SOLO TOUR: There are no other artists on this tour to interact with.";
+                desc.innerText = "SOLO TOUR: No other artists to interact with.";
                 pBtn.innerText = "CONTINUE"; 
                 pBtn.onclick = () => { modal.style.display = 'none'; endTurn(); }; 
             }
+            
         } else if(r.isOpeningAct) {
             let maxPos = Math.max(...players.map(pl => pl.pos)); let isLead = (p.pos === maxPos); pBtn.innerText = " "; pBtn.disabled = true;
             if(isLead) {
@@ -593,34 +590,32 @@ function startMayaTimer(partnerIdx) {
     }
 
     function handlePlayerClick(idx) {
-        if (idx === turnIdx) return; // Can't pick yourself
+        if (idx === turnIdx) return; 
 
         if (isSwapping) {
             isSwapping = false;
             document.querySelectorAll('.player').forEach(el => el.classList.remove('swap-target'));
             document.querySelectorAll('.player-entry').forEach(el => el.classList.remove('roster-swap'));
+            
             const p = players[turnIdx];
             const target = players[idx];
             const oldPos = p.pos;
             p.pos = target.pos;
             target.pos = oldPos;
+            
             updatePositions();
             endTurn();
         } 
-        else if (typeof isMayaPartner !== 'undefined' && isMayaPartner) {
+        else if (isMayaPartner) {
             isMayaPartner = false;
-            // Clean up highlights
             document.querySelectorAll('.player').forEach(el => {
                 el.classList.remove('swap-target');
                 el.style.pointerEvents = 'none'; 
             });
             document.querySelectorAll('.player-entry').forEach(el => el.classList.remove('roster-swap'));
-            
-            // Open the popup back up for the timer
             startMayaTimer(idx);
         }
     }
-}
 
     function showStatusPopup(t, d, b1, c1, b2, c2) {
         const modal = document.getElementById('overlay-event'), popupEl = document.getElementById('main-popup'); popupEl.style.borderColor = '#444'; popupEl.style.boxShadow = 'none';
@@ -726,5 +721,8 @@ function showWinScreen() {
         document.getElementById('overlay-event').style.display='flex'; 
     }
     
-    function endTurn() { turnIdx = (turnIdx + 1) % players.length; isMoving = false; document.getElementById('roll-btn').disabled = false; updateUI(); }</script></body></html>
+    function endTurn() { turnIdx = (turnIdx + 1) % players.length; isMoving = false; document.getElementById('roll-btn').disabled = false; updateUI(); }
+    
+    
+    </script></body></html>
 
