@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Fearjoy - v9.3.9</title>
+    <title>Fearjoy - v9.3.9.1</title>
     <style>
         :root {
             --wood-dark: #8b7355; 
@@ -49,7 +49,6 @@
         .fear-space { border-color: var(--fear-glow) !important; color: var(--fear-glow) !important; }
         .hybrid { border-style: dotted; border-width: 3px; border-color: white; }
         
-        /* FIXED HEADER: This prevents the board from jumping */
         #ui-layer { 
             display: flex; align-items: center; background: var(--ui-bg); 
             padding: 0 45px; height: 120px; min-height: 120px; 
@@ -59,25 +58,27 @@
 
         #status-text { width: 350px; font-size: 2.2rem; font-weight: 900; text-transform: uppercase; line-height: 1; }
         
-        #dice-slot-right { width: 90px; height: 90px; display: flex; align-items: center; justify-content: center; }
+        #dice-slot-right { width: 90px; height: 90px; display: flex; align-items: center; justify-content: center; position: relative; }
         
         #dice-box { 
-            width: 75px; height: 75px; /* Smaller to fit better */
+            width: 75px; height: 75px;
             background: white; color: black; border-radius: 12px; 
             display: flex; align-items: center; justify-content: center; 
             font-size: 3.5rem; font-weight: bold; 
-            transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
-            position: relative; 
+            transition: all 0.7s cubic-bezier(0.34, 1.56, 0.64, 1); 
+            position: absolute; 
+            z-index: 1000;
         }
 
+        /* TRAVEL STATE */
         .dice-cinematic { 
-            position: fixed !important; 
-            top: 50% !important; 
-            left: 50% !important; 
-            transform: translate3d(-50%, -50%, 0) scale(1.8) !important; 
-            z-index: 5000; 
-            opacity: 0.95; 
-            box-shadow: 0 0 50px rgba(255,255,255,0.4);
+            position: fixed;
+            top: 50vh;
+            left: 50vw;
+            margin-top: -93px; /* Offset for 2.5x scale */
+            margin-left: -93px;
+            transform: scale(2.5) !important; 
+            box-shadow: 0 0 80px rgba(255,255,255,0.6);
         }
         
         .floating-emoji { position: absolute; font-size: 4rem; animation: floatUp 1.2s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; pointer-events: none; z-index: 6000; }
@@ -108,10 +109,7 @@
         .btn-home:hover { box-shadow: 0 0 20px var(--tape-white); border-color: var(--tape-white); }
         .btn-store:hover { box-shadow: 0 0 20px var(--pink-glow); border-color: var(--pink-glow); color: var(--pink-glow); }
         .btn-album:hover { box-shadow: 0 0 20px var(--joy-glow); border-color: var(--joy-glow); color: var(--joy-glow); }
-        .btn-home { animation-delay: 0s; }
-        .btn-store { animation-delay: 0.2s; }
-        .btn-album { animation-delay: 0.4s; }
-
+        
         #audio-toggle { background: #222; border: 1px solid #444; color: white; padding: 10px 20px; border-radius: 10px; cursor: pointer; font-size: 0.8rem; font-weight: bold; display: flex; align-items: center; gap: 10px; width: 220px; box-sizing: border-box; transition: 0.3s; }
         #audio-toggle:hover { border-color: var(--gold); box-shadow: 0 0 10px var(--gold); }
     </style>
@@ -226,13 +224,18 @@
 
     function getSpaceColor(pos) { if (pos === -1 || pos >= boardLayout.length) return '#ffffff'; const name = boardLayout[pos]; if (name === 'FEAR') return 'var(--fear-glow)'; if (name === 'JOY') return 'var(--joy-glow)'; return '#ffffff'; }
 
-    function drawCurvedArrow(x1, y1, x2, y2, bendOffset) {
+    function drawCurvedArrow(x1, y1, x2, y2, bendOffset, rotation = 0) {
         const svg = document.getElementById('arrow-layer');
+        const g = document.createElementNS("http://www.w3.org/2000/svg", "g");
+        if(rotation) g.setAttribute("transform", `rotate(${rotation}, ${x1}, ${y1})`);
+        
         const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
         let cx = (x1 + x2)/2 + bendOffset.x; let cy = (y1 + y2)/2 + bendOffset.y;
         path.setAttribute("d", `M ${x1} ${y1} Q ${cx} ${cy} ${x2} ${y2}`);
         path.setAttribute("stroke", "rgba(210, 180, 140, 0.3)"); path.setAttribute("fill", "none"); path.setAttribute("stroke-width", "2"); path.setAttribute("stroke-dasharray", "4,4"); path.setAttribute("marker-end", "url(#arrowhead-subtle)");
-        svg.appendChild(path);
+        
+        g.appendChild(path);
+        svg.appendChild(g);
     }
 
     function setPlayerCount(n) { totalP = n; document.getElementById('setup-step-2').style.display='block'; }
@@ -267,7 +270,8 @@
             s.style.gridRow = 6 - row; s.style.gridColumn = col + 1; board.appendChild(s);
             const rRect = s.getBoundingClientRect(); spaceCoords.push({ x: rRect.left + rRect.width/2 - containerRect.left, y: rRect.top + rRect.height/2 - containerRect.top });
         });
-        drawCurvedArrow(spaceCoords[15].x + 12, spaceCoords[15].y - 25, spaceCoords[23].x - 18, spaceCoords[23].y + 10, {x: 35, y: -20});
+        // Dmitri Arrow: Curved upward and rotated
+        drawCurvedArrow(spaceCoords[15].x + 12, spaceCoords[15].y - 25, spaceCoords[23].x - 18, spaceCoords[23].y + 10, {x: -20, y: -60}, 20);
         drawCurvedArrow(spaceCoords[44].x, spaceCoords[44].y, spaceCoords[40].x, spaceCoords[40].y, {x: 0, y: 50});
         players.forEach((p, i) => {
             const el = document.createElement('div'); el.id = 'p'+i; el.className = 'player';
@@ -319,13 +323,51 @@
 
     async function performActualRoll() {
         const p = players[turnIdx]; isMoving = true; document.getElementById('roll-btn').disabled = true;
-        const dice = document.getElementById('dice-box'); dice.innerText = "?"; dice.classList.add('dice-cinematic');
+        const dice = document.getElementById('dice-box'); 
+        
+        dice.innerText = "?";
+        dice.classList.add('dice-cinematic'); // Travel to center
+        
+        await new Promise(r => setTimeout(r, 750)); // Wait for travel to finish
+        
         let roll;
-        for(let j=0; j<12; j++) { dice.innerText = Math.floor(Math.random()*6)+1; await new Promise(r => setTimeout(r, 45)); }
-        roll = Math.floor(Math.random()*6)+1; dice.innerText = roll;
-        if(p.isInvestor && (roll === 1 || roll === 2)) { await new Promise(r => setTimeout(r, 500)); dice.classList.add('dice-gold'); spawnEmoji('👕'); showSidebar("INVESTMENT PAYOFF", "Merch is moving! Roll doubled.", "#ffffff"); p.shirtsSold++; p.accolades.push('👕'); roll *= 2; dice.innerText = roll; await new Promise(r => setTimeout(r, 2000)); updateUI(); }
-        if(p.isSellout && roll === 6) { await new Promise(r => setTimeout(r, 500)); dice.classList.add('dice-red'); spawnEmoji('💊'); showSidebar("CONTRACT DEBT", "Forward 6 becomes Back 2.", "var(--fear-glow)"); p.pillsTaken++; p.accolades.push('💊'); roll = -2; dice.innerText = roll; await new Promise(r => setTimeout(r, 2000)); updateUI(); }
-        p.totalRollValue += Math.abs(roll); await new Promise(r => setTimeout(r, 250)); dice.classList.remove('dice-cinematic', 'dice-red', 'dice-gold'); await new Promise(r => setTimeout(r, 250)); movePlayer(roll);
+        for(let j=0; j<15; j++) { 
+            dice.innerText = Math.floor(Math.random()*6)+1; 
+            await new Promise(r => setTimeout(r, 80)); // Slightly slower cycle
+        }
+        
+        roll = Math.floor(Math.random()*6)+1; 
+        dice.innerText = roll;
+
+        if(p.isInvestor && (roll === 1 || roll === 2)) { 
+            await new Promise(r => setTimeout(r, 600)); 
+            dice.classList.add('dice-gold'); 
+            spawnEmoji('👕'); 
+            showSidebar("INVESTMENT PAYOFF", "Merch is moving! Roll doubled.", "#ffffff"); 
+            p.shirtsSold++; p.accolades.push('👕'); 
+            roll *= 2; dice.innerText = roll; 
+            await new Promise(r => setTimeout(r, 1200)); 
+            updateUI(); 
+        }
+        
+        if(p.isSellout && roll === 6) { 
+            await new Promise(r => setTimeout(r, 600)); 
+            dice.classList.add('dice-red'); 
+            spawnEmoji('💊'); 
+            showSidebar("CONTRACT DEBT", "Forward 6 becomes Back 2.", "var(--fear-glow)"); 
+            p.pillsTaken++; p.accolades.push('💊'); 
+            roll = -2; dice.innerText = roll; 
+            await new Promise(r => setTimeout(r, 1200)); 
+            updateUI(); 
+        }
+
+        p.totalRollValue += Math.abs(roll);
+        await new Promise(r => setTimeout(r, 600)); 
+        
+        dice.classList.remove('dice-cinematic', 'dice-red', 'dice-gold'); // Travel back
+        await new Promise(r => setTimeout(r, 800)); // Wait for return trip
+        
+        movePlayer(roll);
     }
 
     function spawnEmoji(char) { const e = document.createElement('div'); e.className = 'floating-emoji'; e.innerText = char; e.style.left = "50%"; e.style.top = "50%"; document.body.appendChild(e); setTimeout(() => e.remove(), 1200); }
