@@ -1,6 +1,6 @@
 <!DOCTYPE html><html lang="en"><head>
     <meta charset="UTF-8">
-    <title>Fearjoy - v11.0</title>
+    <title>Fearjoy - v11.5</title>
     <style>
         :root {
             --wood-dark: #8b7355; 
@@ -39,7 +39,7 @@
         .arrow-right { right: -18px; top: 50%; transform: translateY(-50%); }
         .arrow-left { left: -18px; top: 50%; transform: translateY(-50%) rotate(180deg); }
         .arrow-up { top: -22px; left: 50%; transform: translateX(-50%) rotate(-90deg); }
-        .blank { opacity: 0.45; transform: scale(0.8); border-style: dashed !important; background: none !important; cursor: default; }
+        .blank { opacity: 0.7; transform: scale(0.8); border-style: dashed !important; background: none !important; cursor: default; }
         .blank-num { font-size: 0.95rem; opacity: 0.5; font-weight: normal; }
         .tracklist-space { background: var(--vinyl) !important; border: 3px double #666 !important; box-shadow: inset 0 0 15px #000; transform: scale(1.15); z-index: 5; font-size: 0.7rem !important; color: white !important; }
         .win-track { background: var(--vinyl) !important; border: 4px solid var(--blue-glow) !important; box-shadow: 0 0 30px var(--blue-glow); transform: scale(1.4) !important; z-index: 10 !important; }
@@ -140,11 +140,6 @@
 
     <div id="board-container">
         <svg id="arrow-layer" viewbox="0 0 1100 700">
-            <defs>
-                <marker id="arrowhead-subtle" markerWidth="10" markerHeight="7" refX="0" refY="3.5" orient="auto">
-                    <polygon points="0 0, 10 3.5, 0 7" fill="rgba(210, 180, 140, 0.4)" />
-                </marker>
-            </defs>
         </svg>
     </div>
 
@@ -188,7 +183,7 @@
         18: { title: "NIGHTDRIVE", emoji: "🌙", isNightDrive: true, isTrack: true, desc: "Keep eyes closed until next turn!" },
         19: { title: "JOY", emoji: "😄", shift: 1, isAuto: true, desc: "Rhythm is perfect. Forward 1." },
         20: { title: "INVEST IN MERCH", emoji: "👕", choice: 'merch', desc: "Rewind 4 now, but every 1 or 2 you roll later will be doubled." },
-        21: { title: "FEAR", emoji: "😱", shift: -1, isAuto: true, desc: "The road is long. Back 1." },
+        21: { title: "FEAR", emoji: "😱", shift: -1, isAuto: true, desc: "Doubt slows you. Back 1." },
         23: { title: "5TH DIMENSION", emoji: "✨", shift: 1, isAuto: true, desc: "Higher frequency. Forward 1." },
         25: { title: "IT HAPPENS", emoji: "🔔", isItHappens: true, isTrack: true, desc: "suddenly, instantly, take an extra turn" },
         27: { title: "GHOST 2", emoji: "👻", isGhost: true, isTrack: true, desc: "Silent for one turn. Noise = Rewind 1." },
@@ -260,8 +255,6 @@
             s.style.gridRow = 6 - row; s.style.gridColumn = col + 1; board.appendChild(s);
             const rRect = s.getBoundingClientRect(); spaceCoords.push({ x: rRect.left + rRect.width/2 - containerRect.left, y: rRect.top + rRect.height/2 - containerRect.top });
         });
-        drawCurvedArrow(spaceCoords[15].x + 12, spaceCoords[15].y - 25, spaceCoords[23].x - 18, spaceCoords[23].y + 10, {x: 35, y: -20});
-        drawCurvedArrow(spaceCoords[44].x, spaceCoords[44].y, spaceCoords[42].x, spaceCoords[42].y, {x: 0, y: 50});
         players.forEach((p, i) => {
             const el = document.createElement('div'); el.id = 'p'+i; el.className = 'player';
             el.style.backgroundImage = `url('${p.avatar.img}')`; el.onclick = () => handlePlayerClick(i);
