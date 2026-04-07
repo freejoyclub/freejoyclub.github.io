@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Fearjoy - v9.3.8</title>
+    <title>Fearjoy - v9.3.9</title>
     <style>
         :root {
             --wood-dark: #8b7355; 
@@ -27,12 +27,10 @@
 
         body { animation: woodFade 20s ease-in-out infinite; background-image: repeating-linear-gradient(90deg, transparent, transparent 80px, rgba(0,0,0,0.05) 80px, rgba(0,0,0,0.05) 82px); color: white; font-family: 'Courier New', monospace; display: flex; flex-direction: column; align-items: center; margin: 0; min-height: 100vh; overflow: hidden; }
         
-        /* FIXED BOARD DIMENSIONS TO PREVENT SCALING BUGS */
         #board-container { 
             display: grid; grid-template-columns: repeat(10, 1fr); grid-template-rows: repeat(6, 1fr); 
             gap: 18px; padding: 50px; width: 1100px; height: 700px; 
             position: relative; z-index: 5; 
-            contain: size layout; /* Critical fix: isolates board from external layout shifts */
         }
 
         #arrow-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; pointer-events: none; }
@@ -51,16 +49,32 @@
         .fear-space { border-color: var(--fear-glow) !important; color: var(--fear-glow) !important; }
         .hybrid { border-style: dotted; border-width: 3px; border-color: white; }
         
-        #ui-layer { display: flex; align-items: center; background: var(--ui-bg); padding: 25px 45px; border-radius: 12px; margin: 15px 0; border: 1px solid rgba(255,255,255,0.1); width: 1000px; justify-content: space-between; z-index: 10; position: relative; }
+        /* FIXED HEADER: This prevents the board from jumping */
+        #ui-layer { 
+            display: flex; align-items: center; background: var(--ui-bg); 
+            padding: 0 45px; height: 120px; min-height: 120px; 
+            border-radius: 12px; margin: 15px 0; border: 1px solid rgba(255,255,255,0.1); 
+            width: 1000px; justify-content: space-between; z-index: 10; position: relative; 
+        }
+
         #status-text { width: 350px; font-size: 2.2rem; font-weight: 900; text-transform: uppercase; line-height: 1; }
         
-        /* DICE BOX & CINEMATIC ADJUSTMENTS */
-        #dice-box { width: 90px; height: 90px; background: white; color: black; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 4rem; font-weight: bold; transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); position: relative; }
+        #dice-slot-right { width: 90px; height: 90px; display: flex; align-items: center; justify-content: center; }
+        
+        #dice-box { 
+            width: 75px; height: 75px; /* Smaller to fit better */
+            background: white; color: black; border-radius: 12px; 
+            display: flex; align-items: center; justify-content: center; 
+            font-size: 3.5rem; font-weight: bold; 
+            transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
+            position: relative; 
+        }
+
         .dice-cinematic { 
             position: fixed !important; 
             top: 50% !important; 
             left: 50% !important; 
-            transform: translate3d(-50%, -50%, 0) scale(1.8) !important; /* Slightly smaller to prevent layout pressure */
+            transform: translate3d(-50%, -50%, 0) scale(1.8) !important; 
             z-index: 5000; 
             opacity: 0.95; 
             box-shadow: 0 0 50px rgba(255,255,255,0.4);
@@ -88,18 +102,8 @@
         #restart-btn { width: 100%; margin-top: 10px; background: #333; color: #888; border: 1px solid #444; padding: 8px; border-radius: 6px; cursor: pointer; font-size: 0.7rem; font-weight: bold; transition: 0.2s; }
         #restart-btn:hover { background: var(--fear-glow); color: white; border-color: white; }
 
-        /* NAV CLUSTER */
-        #nav-cluster { 
-            position: fixed; bottom: 25px; left: 25px; 
-            display: flex; flex-direction: column; align-items: flex-start;
-            gap: 12px; z-index: 1000; 
-        }
-        .nav-btn { 
-            padding: 14px 24px; border-radius: 12px; background: #111; color: white; font-weight: 900; font-size: 1rem; 
-            border: 1px solid #444; cursor: pointer; transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            animation: navFloat 3.5s infinite ease-in-out; letter-spacing: 1.5px; text-transform: uppercase;
-            width: 220px; text-align: left;
-        }
+        #nav-cluster { position: fixed; bottom: 25px; left: 25px; display: flex; flex-direction: column; align-items: flex-start; gap: 12px; z-index: 1000; }
+        .nav-btn { padding: 14px 24px; border-radius: 12px; background: #111; color: white; font-weight: 900; font-size: 1rem; border: 1px solid #444; cursor: pointer; transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); animation: navFloat 3.5s infinite ease-in-out; letter-spacing: 1.5px; text-transform: uppercase; width: 220px; text-align: left; }
         .nav-btn:hover { transform: scale(1.05) translateX(10px); z-index: 1001; }
         .btn-home:hover { box-shadow: 0 0 20px var(--tape-white); border-color: var(--tape-white); }
         .btn-store:hover { box-shadow: 0 0 20px var(--pink-glow); border-color: var(--pink-glow); color: var(--pink-glow); }
@@ -108,11 +112,7 @@
         .btn-store { animation-delay: 0.2s; }
         .btn-album { animation-delay: 0.4s; }
 
-        #audio-toggle { 
-            background: #222; border: 1px solid #444; color: white; padding: 10px 20px; border-radius: 10px; 
-            cursor: pointer; font-size: 0.8rem; font-weight: bold; display: flex; align-items: center; 
-            gap: 10px; width: 220px; box-sizing: border-box; transition: 0.3s;
-        }
+        #audio-toggle { background: #222; border: 1px solid #444; color: white; padding: 10px 20px; border-radius: 10px; cursor: pointer; font-size: 0.8rem; font-weight: bold; display: flex; align-items: center; gap: 10px; width: 220px; box-sizing: border-box; transition: 0.3s; }
         #audio-toggle:hover { border-color: var(--gold); box-shadow: 0 0 10px var(--gold); }
     </style>
 </head>
@@ -190,7 +190,7 @@
         11: { title: "FEAR", emoji: "😱", shift: -1, isAuto: true, desc: "Doubt slows you. Back 1." },
         12: { title: "VAN BREAKS DOWN", emoji: "🛠", skipTurns: 1, desc: "Bummer! Waiting for repairs. Turn consumed." },
         13: { title: "JOY", emoji: "😄", shift: 1, isAuto: true, desc: "Everything aligns. Forward 1." },
-        15: { title: "DMITRI", emoji: "👨‍🚀", timer: 15, isDmitri: true, isTrack: true, desc: "Breathe (15s) for the 5D shortcut. Skip = Rewind 2." },
+        15: { title: "DMITRI", emoji: "👨‍🚀", timer: 15, isDmitri: true, isTrack: true, desc: "Breathe (15s) for the 5D shortcut. Skip = Rewind 2.", sound: "dmitriclip.wav" },
         17: { title: "FEARJOY", emoji: "☯️", isFearjoy: true, desc: "Flip for destiny." },
         18: { title: "NIGHTDRIVE", emoji: "🌙", isNightDrive: true, isTrack: true, desc: "Keep eyes closed until next turn!" },
         19: { title: "JOY", emoji: "😄", shift: 1, isAuto: true, desc: "Rhythm is perfect. Forward 1." },
@@ -220,7 +220,7 @@
     let players = [], turnIdx = 0, isMoving = false, totalP = 0, currentSetupP = 0, selectedAvatar = null, isSwapping = false, isMayaPartner = false, sidebarTimer = null, audioEnabled = true;
 
     function toggleAudio() { audioEnabled = !audioEnabled; document.getElementById('audio-status').innerText = audioEnabled ? 'ON' : 'OFF'; document.getElementById('audio-icon').innerText = audioEnabled ? '🔊' : '🔇'; }
-    function playSfx(file) { if(audioEnabled) { const a = new Audio(file); a.play().catch(e => console.log("Audio blocked")); } }
+    function playSfx(file) { if(audioEnabled) { const a = new Audio(file); a.play().catch(e => console.log("Audio file not found or blocked: " + file)); } }
 
     function confirmSoftRestart() { showStatusPopup("RESTART TOUR?", "Are you sure? This will reset all scores and positions, but keep your current artists.", "YES, RESTART", () => { players.forEach(p => { p.pos = 0; p.skipCount = 0; p.isInvestor = false; p.isSellout = false; p.grammys = 0; p.shirtsSold = 0; p.pillsTaken = 0; p.ghostCounter = 0; p.totalRollValue = 0; p.smileActive = false; p.nightDriveActive = false; p.accolades = []; }); turnIdx = 0; isMoving = false; isSwapping = false; updateUI(); updatePositions(); document.getElementById('roll-btn').disabled = false; }, "CANCEL", () => {}); }
 
