@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Fearjoy - v9.3.4</title>
+    <title>Fearjoy - v9.3.5</title>
     <style>
         :root {
             --wood-dark: #8b7355; 
@@ -19,81 +19,58 @@
         @keyframes goldSparkle { 0% { box-shadow: 0 0 10px var(--gold); } 100% { box-shadow: 0 0 50px var(--gold); background: #330; color: white; } }
         @keyframes flipping { 0% { transform: rotateY(0); } 100% { transform: rotateY(1800deg); } }
         @keyframes winPulse { 0% { transform: scale(1); filter: drop-shadow(0 0 5px var(--p-color)); } 50% { transform: scale(1.1); filter: drop-shadow(0 0 20px var(--p-color)); } 100% { transform: scale(1); filter: drop-shadow(0 0 5px var(--p-color)); } }
-        
         @keyframes introGlow { from { text-shadow: 0 0 10px var(--gold), 0 0 20px var(--gold); } to { text-shadow: 0 0 20px var(--gold), 0 0 40px #fffad1; } }
-        
-        @keyframes pieceHover {
-            0% { transform: translate(0, 0); }
-            33% { transform: translate(3px, -3px); }
-            66% { transform: translate(-2px, 1px); }
-            100% { transform: translate(0, 0); }
-        }
-        @keyframes turnPulse { 
-            0% { filter: drop-shadow(0 0 5px var(--p-color)); transform: translate(0,0) scale(1); } 
-            50% { filter: drop-shadow(0 0 20px var(--p-color)); transform: translate(0,-4px) scale(1.15); } 
-            100% { filter: drop-shadow(0 0 5px var(--p-color)); transform: translate(0,0) scale(1); } 
-        }
+        @keyframes pieceHover { 0% { transform: translate(0, 0); } 33% { transform: translate(3px, -3px); } 66% { transform: translate(-2px, 1px); } 100% { transform: translate(0, 0); } }
+        @keyframes turnPulse { 0% { filter: drop-shadow(0 0 5px var(--p-color)); transform: translate(0,0) scale(1); } 50% { filter: drop-shadow(0 0 20px var(--p-color)); transform: translate(0,-4px) scale(1.15); } 100% { filter: drop-shadow(0 0 5px var(--p-color)); transform: translate(0,0) scale(1); } }
         @keyframes borderPulse { 0% { box-shadow: 0 0 5px var(--p-color) inset, 0 0 5px var(--p-color); } 50% { box-shadow: 0 0 15px var(--p-color) inset, 0 0 15px var(--p-color); } 100% { box-shadow: 0 0 5px var(--p-color) inset, 0 0 5px var(--p-color); } }
 
-        body {
-            animation: woodFade 20s ease-in-out infinite;
-            background-image: repeating-linear-gradient(90deg, transparent, transparent 80px, rgba(0,0,0,0.05) 80px, rgba(0,0,0,0.05) 82px);
-            color: white; font-family: 'Courier New', monospace; display: flex; flex-direction: column; align-items: center; margin: 0; min-height: 100vh; overflow: hidden;
-        }
-
+        body { animation: woodFade 20s ease-in-out infinite; background-image: repeating-linear-gradient(90deg, transparent, transparent 80px, rgba(0,0,0,0.05) 80px, rgba(0,0,0,0.05) 82px); color: white; font-family: 'Courier New', monospace; display: flex; flex-direction: column; align-items: center; margin: 0; min-height: 100vh; overflow: hidden; }
         #board-container { display: grid; grid-template-columns: repeat(10, 1fr); grid-template-rows: repeat(6, 1fr); gap: 18px; padding: 50px; width: 1100px; height: 700px; position: relative; z-index: 5; }
         #arrow-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; pointer-events: none; }
-
         .space { width: 85px; height: 85px; border-radius: 50%; border: 1px solid var(--tape-white); display: flex; flex-direction: column; align-items: center; justify-content: center; font-weight: bold; font-size: 0.75rem; line-height: 1.1; background: rgba(255,255,255,0.05); text-align: center; position: relative; transition: 0.3s; cursor: help; }
         .sp-emoji { font-size: 1.4rem; margin-bottom: 2px; }
         .sp-text { padding: 0 2px; }
-        
         .dir-arrow { position: absolute; font-size: 1.5rem; color: rgba(210, 180, 140, 0.6); font-weight: 900; pointer-events: none; z-index: 1; }
         .arrow-right { right: -18px; top: 50%; transform: translateY(-50%); }
         .arrow-left { left: -18px; top: 50%; transform: translateY(-50%) rotate(180deg); }
         .arrow-up { top: -22px; left: 50%; transform: translateX(-50%) rotate(-90deg); }
-
         .blank { opacity: 0.45; transform: scale(0.8); border-style: dashed !important; background: none !important; cursor: default; }
         .blank-num { font-size: 0.95rem; opacity: 0.5; font-weight: normal; }
-
         .tracklist-space { background: var(--vinyl) !important; border: 3px double #666 !important; box-shadow: inset 0 0 15px #000; transform: scale(1.15); z-index: 5; font-size: 0.7rem !important; color: white !important; }
         .win-track { background: var(--vinyl) !important; border: 4px solid var(--blue-glow) !important; box-shadow: 0 0 30px var(--blue-glow); transform: scale(1.4) !important; z-index: 10 !important; }
-        
         .joy-space { border-color: var(--joy-glow) !important; color: var(--joy-glow) !important; }
         .fear-space { border-color: var(--fear-glow) !important; color: var(--fear-glow) !important; }
         .hybrid { border-style: dotted; border-width: 3px; border-color: white; }
-
-        #ui-layer { display: flex; align-items: center; background: var(--ui-bg); padding: 25px 45px; border-radius: 12px; margin: 15px 0; border: 1px solid rgba(255,255,255,0.1); width: 1000px; justify-content: space-between; z-index: 10; }
+        #ui-layer { display: flex; align-items: center; background: var(--ui-bg); padding: 25px 45px; border-radius: 12px; margin: 15px 0; border: 1px solid rgba(255,255,255,0.1); width: 1000px; justify-content: space-between; z-index: 10; position: relative; }
         #status-text { width: 350px; font-size: 2.2rem; font-weight: 900; text-transform: uppercase; line-height: 1; }
-        #dice-slot-right { width: 90px; height: 90px; flex-shrink: 0; }
         #dice-box { width: 90px; height: 90px; background: white; color: black; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 4rem; font-weight: bold; transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); position: relative; }
-
         .floating-emoji { position: absolute; font-size: 4rem; animation: floatUp 1.2s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; pointer-events: none; z-index: 6000; }
         .dice-cinematic { position: fixed !important; top: 50% !important; left: 50% !important; transform: translate(-50%, -50%) scale(2.5) !important; z-index: 5000; opacity: 0.95; }
         .dice-red { animation: redSparkle 0.5s infinite alternate; }
         .dice-gold { animation: goldSparkle 0.5s infinite alternate; }
         .flipping { animation: flipping 1.2s cubic-bezier(0.45, 0.05, 0.55, 0.95); transform-style: preserve-3d; }
-
         #merch-tracker { position: fixed; left: 20px; top: 135px; width: 280px; background: var(--ui-bg); border-radius: 12px; padding: 20px; border: 1px solid #333; z-index: 1; }
         .player-entry { margin-bottom: 15px; border-bottom: 1px solid #444; padding-bottom: 10px; font-size: 0.8rem; transition: 0.3s; border-radius: 8px; padding: 10px; cursor: default; }
         .avatar-roster { width: 45px; height: 45px; border-radius: 50%; background: #111; border: 2px solid #555; }
-        
         .player { width: 75px; height: 75px; position: absolute; z-index: 100; transition: all 0.7s cubic-bezier(0.18, 0.89, 0.32, 1.28); background-size: contain; background-repeat: no-repeat; background-position: center bottom; pointer-events: none; animation: pieceHover 4s infinite ease-in-out; }
         .active-turn { animation: turnPulse 1.5s infinite ease-in-out; }
         .roster-active { animation: borderPulse 2s infinite; border: 1px solid var(--p-color); }
         .swap-target { filter: drop-shadow(0 0 20px var(--joy-glow)); animation: pulse 1s infinite; z-index: 1000 !important; pointer-events: auto !important; cursor: pointer; }
         .roster-swap { border: 2px solid var(--joy-glow) !important; cursor: pointer !important; }
-
         .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 2000; display: none; align-items: center; justify-content: center; }
         .popup { background: rgba(10, 10, 10, 0.9); backdrop-filter: blur(8px); padding: 45px; border-radius: 30px; border: 2px solid #444; width: 680px; text-align: center; transition: 0.4s; }
-        
         #rule-sidebar { position: fixed; right: -350px; top: 135px; width: 280px; background: var(--ui-bg); padding: 30px; border-radius: 20px; border: 2px solid var(--joy-glow); transition: 0.6s; z-index: 100; box-shadow: -10px 0 40px rgba(0,0,0,0.6); cursor: pointer; }
         #rule-sidebar.active { right: 25px; }
         .tag { font-size: 0.75rem; padding: 4px 8px; border-radius: 4px; font-weight: bold; margin-left: 5px; letter-spacing: 0.5px; }
         .tag-investor { background: var(--gold); color: black; }
         .tag-sellout { background: var(--fear-glow); color: white; }
-
         .intro-header { font-size: 3.5rem; color: var(--gold); animation: introGlow 2s ease-in-out infinite alternate; margin-bottom: 20px; font-weight: 900; letter-spacing: 4px; }
+        
+        /* New Controls */
+        #audio-toggle { position: absolute; top: 10px; right: 10px; background: #222; border: 1px solid #444; color: white; padding: 5px 10px; border-radius: 20px; cursor: pointer; font-size: 0.7rem; display: flex; align-items: center; gap: 5px; }
+        #audio-toggle:hover { background: #333; }
+        #restart-btn { width: 100%; margin-top: 10px; background: #333; color: #888; border: 1px solid #444; padding: 8px; border-radius: 6px; cursor: pointer; font-size: 0.7rem; font-weight: bold; transition: 0.2s; }
+        #restart-btn:hover { background: var(--fear-glow); color: white; border-color: white; }
     </style>
 </head>
 <body>
@@ -101,9 +78,13 @@
     <div id="merch-tracker">
         <h4 style="margin:0 0 10px 0; font-size: 0.65rem; letter-spacing: 2px; opacity: 0.6; color: var(--joy-glow);">TOUR STATS</h4>
         <div id="tracker-list"></div>
+        <button id="restart-btn" onclick="confirmSoftRestart()">RESTART TOUR</button>
     </div>
 
     <div id="ui-layer">
+        <button id="audio-toggle" onclick="toggleAudio()">
+            <span id="audio-icon">🔊</span> AUDIO: <span id="audio-status">ON</span>
+        </button>
         <div id="status-text">---</div>
         <div id="roll-btn-center">
             <button id="roll-btn" onclick="doRoll()" disabled style="background: var(--joy-glow); color: black; width: 220px; font-size: 1.6rem; font-weight:bold; padding:15px; border:none; border-radius:8px; cursor:pointer;">ROLL</button>
@@ -116,9 +97,6 @@
     <div id="board-container">
         <svg id="arrow-layer" viewbox="0 0 1100 700">
             <defs>
-                <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="0" refY="3.5" orient="auto">
-                    <polygon points="0 0, 10 3.5, 0 7" fill="rgba(210, 180, 140, 0.6)" />
-                </marker>
                 <marker id="arrowhead-subtle" markerWidth="10" markerHeight="7" refX="0" refY="3.5" orient="auto">
                     <polygon points="0 0, 10 3.5, 0 7" fill="rgba(210, 180, 140, 0.3)" />
                 </marker>
@@ -157,7 +135,7 @@
         0: { title: "START", emoji: "▶️", desc: "The quiet before the storm." },
         4: { title: "DAYSPRING", emoji: "☀️", shift: 3, isAuto: true, isTrack: true, desc: "Creative clarity strikes! Forward 3.", sound: "dayclip.wav" },
         6: { title: "FEARJOY", emoji: "☯️", isFearjoy: true, desc: "Flip the coin: JOY = +1, FEAR = -1." },
-        8: { title: "FIGMENT", emoji: "🛸", isFigment: true, isTrack: true, desc: "Step outside (1:00) for +2, or rush back for -1." },
+        8: { title: "FIGMENT", emoji: "🛸", isFigment: true, isTrack: true, desc: "Step outside (1:00) for +2, or rush back for -1.", sound: "figclip.wav" },
         9: { title: "JOY", emoji: "😄", shift: 1, isAuto: true, desc: "Momentum! Forward 1." },
         10: { title: "THE REMEDY", emoji: "💊", choice: 'remedy', isTrack: true, desc: "A major label exec offers a deal: move ahead 6 now, but every 6 you roll later becomes -2." },
         11: { title: "FEAR", emoji: "😱", shift: -1, isAuto: true, desc: "Doubt slows you. Back 1." },
@@ -190,27 +168,21 @@
         59: { title: "SWIMMIN'", emoji: "🌊", desc: "The tour is over. Legend status achieved." }
     };
 
-    let players = [], turnIdx = 0, isMoving = false, totalP = 0, currentSetupP = 0, selectedAvatar = null, isSwapping = false, isMayaPartner = false, sidebarTimer = null;
+    let players = [], turnIdx = 0, isMoving = false, totalP = 0, currentSetupP = 0, selectedAvatar = null, isSwapping = false, isMayaPartner = false, sidebarTimer = null, audioEnabled = true;
 
-    function getSpaceColor(pos) {
-        if (pos === -1 || pos >= boardLayout.length) return '#ffffff';
-        const name = boardLayout[pos];
-        if (name === 'FEAR') return 'var(--fear-glow)';
-        if (name === 'JOY') return 'var(--joy-glow)';
-        return '#ffffff';
-    }
+    function toggleAudio() { audioEnabled = !audioEnabled; document.getElementById('audio-status').innerText = audioEnabled ? 'ON' : 'OFF'; document.getElementById('audio-icon').innerText = audioEnabled ? '🔊' : '🔇'; }
+    function playSfx(file) { if(audioEnabled) { const a = new Audio(file); a.play().catch(e => console.log("Audio blocked")); } }
+
+    function confirmSoftRestart() { showStatusPopup("RESTART TOUR?", "Are you sure? This will reset all scores and positions, but keep your current artists.", "YES, RESTART", () => { players.forEach(p => { p.pos = 0; p.skipCount = 0; p.isInvestor = false; p.isSellout = false; p.grammys = 0; p.shirtsSold = 0; p.pillsTaken = 0; p.ghostCounter = 0; p.totalRollValue = 0; p.smileActive = false; p.nightDriveActive = false; p.accolades = []; }); turnIdx = 0; isMoving = false; isSwapping = false; updateUI(); updatePositions(); document.getElementById('roll-btn').disabled = false; }, "CANCEL", () => {}); }
+
+    function getSpaceColor(pos) { if (pos === -1 || pos >= boardLayout.length) return '#ffffff'; const name = boardLayout[pos]; if (name === 'FEAR') return 'var(--fear-glow)'; if (name === 'JOY') return 'var(--joy-glow)'; return '#ffffff'; }
 
     function drawCurvedArrow(x1, y1, x2, y2, bendOffset) {
         const svg = document.getElementById('arrow-layer');
         const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
-        let cx = (x1 + x2)/2 + bendOffset.x;
-        let cy = (y1 + y2)/2 + bendOffset.y;
+        let cx = (x1 + x2)/2 + bendOffset.x; let cy = (y1 + y2)/2 + bendOffset.y;
         path.setAttribute("d", `M ${x1} ${y1} Q ${cx} ${cy} ${x2} ${y2}`);
-        path.setAttribute("stroke", "rgba(210, 180, 140, 0.3)");
-        path.setAttribute("fill", "none");
-        path.setAttribute("stroke-width", "2");
-        path.setAttribute("stroke-dasharray", "4,4");
-        path.setAttribute("marker-end", "url(#arrowhead-subtle)");
+        path.setAttribute("stroke", "rgba(210, 180, 140, 0.3)"); path.setAttribute("fill", "none"); path.setAttribute("stroke-width", "2"); path.setAttribute("stroke-dasharray", "4,4"); path.setAttribute("marker-end", "url(#arrowhead-subtle)");
         svg.appendChild(path);
     }
 
@@ -218,15 +190,11 @@
     function pickAvatar(id, color) { selectedAvatar = { id, color, img: id+'.png' }; document.querySelectorAll('img').forEach(i=>i.style.opacity='0.3'); document.getElementById('sel-'+id).style.opacity='1'; }
     
     function confirmArtist() {
-        const nameInput = document.getElementById('name-input');
-        const name = nameInput.value.toUpperCase().trim() || `ARTIST ${currentSetupP+1}`;
-        const errorMsg = document.getElementById('name-error');
-        if(players.some(p => p.name === name)) { errorMsg.style.display = 'block'; return; }
-        errorMsg.style.display = 'none';
-        if(!selectedAvatar) return;
+        const nameInput = document.getElementById('name-input'); const name = nameInput.value.toUpperCase().trim() || `ARTIST ${currentSetupP+1}`;
+        const errorMsg = document.getElementById('name-error'); if(players.some(p => p.name === name)) { errorMsg.style.display = 'block'; return; }
+        errorMsg.style.display = 'none'; if(!selectedAvatar) return;
         players.push({ name, pos: 0, avatar: selectedAvatar, skipCount: 0, isInvestor: false, isSellout: false, grammys: 0, shirtsSold: 0, pillsTaken: 0, ghostCounter: 0, totalRollValue: 0, smileActive: false, nightDriveActive: false, accolades: [] });
-        currentSetupP++;
-        if(currentSetupP >= totalP) { document.getElementById('overlay-setup').style.display='none'; initBoard(); }
+        currentSetupP++; if(currentSetupP >= totalP) { document.getElementById('overlay-setup').style.display='none'; initBoard(); }
         else { nameInput.value=''; selectedAvatar=null; }
     }
 
@@ -234,47 +202,33 @@
         const board = document.getElementById('board-container'), containerRect = board.getBoundingClientRect(), spaceCoords = [];
         boardLayout.forEach((name, i) => {
             const s = document.createElement('div'); s.id = 's'+i; s.className = 'space';
-            if(name === "blank") { 
-                s.classList.add('blank'); s.innerHTML = `<span class="blank-num">${i}</span>`; 
-            } else {
-                const r = rules[i];
-                const emojiHtml = (r && r.emoji) ? `<div class="sp-emoji">${r.emoji}</div>` : '';
+            if(name === "blank") { s.classList.add('blank'); s.innerHTML = `<span class="blank-num">${i}</span>`; } 
+            else {
+                const r = rules[i]; const emojiHtml = (r && r.emoji) ? `<div class="sp-emoji">${r.emoji}</div>` : '';
                 s.innerHTML = `${emojiHtml}<div class="sp-text">${name}</div>`;
                 if(rules[i]?.isTrack) s.classList.add('tracklist-space');
-                if(name === "FEAR") s.classList.add('fear-space');
-                if(name === "JOY") s.classList.add('joy-space');
-                if(name === "FEARJOY") s.classList.add('hybrid');
-                if(i === 59) s.classList.add('win-track');
+                if(name === "FEAR") s.classList.add('fear-space'); if(name === "JOY") s.classList.add('joy-space'); if(name === "FEARJOY") s.classList.add('hybrid'); if(i === 59) s.classList.add('win-track');
             }
             if(i < 59 && name !== "START") {
-                let arrowDir = '';
-                if(i % 10 === 9) arrowDir = 'arrow-up';
-                else if(Math.floor(i / 10) % 2 === 0) arrowDir = 'arrow-right';
-                else arrowDir = 'arrow-left';
+                let arrowDir = ''; if(i % 10 === 9) arrowDir = 'arrow-up'; else if(Math.floor(i / 10) % 2 === 0) arrowDir = 'arrow-right'; else arrowDir = 'arrow-left';
                 const arr = document.createElement('div'); arr.className = `dir-arrow ${arrowDir}`; arr.innerHTML = "&#10140;"; s.appendChild(arr);
             }
             s.onclick = () => handleSpaceClick(i);
             let row = Math.floor(i / 10), col = (row % 2 === 0) ? (i % 10) : (9 - (i % 10));
-            s.style.gridRow = 6 - row; s.style.gridColumn = col + 1;
-            board.appendChild(s);
-            const rRect = s.getBoundingClientRect();
-            spaceCoords.push({ x: rRect.left + rRect.width/2 - containerRect.left, y: rRect.top + rRect.height/2 - containerRect.top });
+            s.style.gridRow = 6 - row; s.style.gridColumn = col + 1; board.appendChild(s);
+            const rRect = s.getBoundingClientRect(); spaceCoords.push({ x: rRect.left + rRect.width/2 - containerRect.left, y: rRect.top + rRect.height/2 - containerRect.top });
         });
         drawCurvedArrow(spaceCoords[15].x + 12, spaceCoords[15].y - 25, spaceCoords[23].x - 18, spaceCoords[23].y + 10, {x: 35, y: -20});
         drawCurvedArrow(spaceCoords[44].x, spaceCoords[44].y, spaceCoords[40].x, spaceCoords[40].y, {x: 0, y: 50});
         players.forEach((p, i) => {
             const el = document.createElement('div'); el.id = 'p'+i; el.className = 'player';
-            el.style.backgroundImage = `url('${p.avatar.img}')`;
-            el.onclick = () => handlePlayerClick(i);
+            el.style.backgroundImage = `url('${p.avatar.img}')`; el.onclick = () => handlePlayerClick(i);
             board.appendChild(el);
         });
         updateUI(); document.getElementById('roll-btn').disabled = false;
     }
 
-    function handleSpaceClick(i) {
-        const r = rules[i] || { title: boardLayout[i], desc: "The road continues." };
-        showSidebar(r.title, (r.emoji ? r.emoji + " " : "") + r.desc, getSpaceColor(i));
-    }
+    function handleSpaceClick(i) { const r = rules[i] || { title: boardLayout[i], desc: "The road continues." }; showSidebar(r.title, (r.emoji ? r.emoji + " " : "") + r.desc, getSpaceColor(i)); }
 
     function updateUI() {
         const p = players[turnIdx], list = document.getElementById('tracker-list');
@@ -285,8 +239,7 @@
             let isCurrent = (i === turnIdx);
             list.innerHTML += `<div id="roster-p${i}" class="player-entry ${isCurrent ? 'roster-active' : ''}" style="${isCurrent ? '--p-color:'+pl.avatar.color : ''}" onclick="handlePlayerClick(${i})">
                 <div style="display:flex;align-items:center;gap:10px;"><img src="${pl.avatar.img}" class="avatar-roster"><div><b>${pl.name}</b>${tags}<br><span style="font-size:1.1rem; letter-spacing:1px;">${pl.accolades.join('')}</span></div></div></div>`;
-            const boardPiece = document.getElementById('p'+i);
-            boardPiece.style.zIndex = (isCurrent ? 150 : 100);
+            const boardPiece = document.getElementById('p'+i); boardPiece.style.zIndex = (isCurrent ? 150 : 100);
             if(isCurrent) { boardPiece.classList.add('active-turn'); boardPiece.style.setProperty('--p-color', pl.avatar.color); }
             else { boardPiece.classList.remove('active-turn'); }
         });
@@ -296,38 +249,22 @@
     function updatePositions() {
         const countMap = {};
         players.forEach((p, i) => {
-            const target = document.getElementById('s'+p.pos), el = document.getElementById('p'+i);
-            if(!countMap[p.pos]) countMap[p.pos] = 0;
-            el.style.left = (target.offsetLeft + (countMap[p.pos] * 12)) + "px";
-            el.style.top = (target.offsetTop + (countMap[p.pos] * 12)) + "px";
-            countMap[p.pos]++;
+            const target = document.getElementById('s'+p.pos), el = document.getElementById('p'+i); if(!countMap[p.pos]) countMap[p.pos] = 0;
+            el.style.left = (target.offsetLeft + (countMap[p.pos] * 12)) + "px"; el.style.top = (target.offsetTop + (countMap[p.pos] * 12)) + "px"; countMap[p.pos]++;
         });
     }
 
     async function doRoll() {
-        if(isMoving || isSwapping || isMayaPartner) return;
-        document.getElementById('rule-sidebar').classList.remove('active');
+        if(isMoving || isSwapping || isMayaPartner) return; document.getElementById('rule-sidebar').classList.remove('active');
         const p = players[turnIdx];
-        
         if(p.skipCount > 0) { p.skipCount--; showStatusPopup("🛠 BUMMER", "Van is still in the shop. Turn skipped.", "OK", () => { endTurn(); }, "DARN", () => { endTurn(); }); return; }
-        
-        if(p.nightDriveActive) { 
-            showStatusPopup("🌙 NIGHTDRIVE CHECK", "Did you keep your eyes closed?", "YES", () => { p.nightDriveActive = false; checkNextHonor(p); }, "NO", () => { p.nightDriveActive = false; movePlayer(-1); }); 
-            return; 
-        }
-
+        if(p.nightDriveActive) { showStatusPopup("🌙 NIGHTDRIVE CHECK", "Did you keep your eyes closed?", "YES", () => { p.nightDriveActive = false; checkNextHonor(p); }, "NO", () => { p.nightDriveActive = false; movePlayer(-1); }); return; }
         checkNextHonor(p);
     }
 
     function checkNextHonor(p) {
-        if(p.ghostCounter > 0) { 
-            showStatusPopup("👻 GHOST CHECK", `Silence is required. Did you remain quiet?`, "YES", () => { p.ghostCounter = 0; checkNextHonor(p); }, "NO", () => { p.ghostCounter = 0; movePlayer(-1); }); 
-            return; 
-        }
-        if(p.smileActive) { 
-            showStatusPopup("💀 THE ENDLESS SMILE", "Did you keep smiling?", "HELD IT", () => { p.smileActive = false; checkNextHonor(p); }, "BROKE IT", () => { p.smileActive = false; endTurn(); }); 
-            return; 
-        }
+        if(p.ghostCounter > 0) { showStatusPopup("👻 GHOST CHECK", `Silence is required. Did you remain quiet?`, "YES", () => { p.ghostCounter = 0; checkNextHonor(p); }, "NO", () => { p.ghostCounter = 0; movePlayer(-1); }); return; }
+        if(p.smileActive) { showStatusPopup("💀 THE ENDLESS SMILE", "Did you keep smiling?", "HELD IT", () => { p.smileActive = false; checkNextHonor(p); }, "BROKE IT", () => { p.smileActive = false; endTurn(); }); return; }
         performActualRoll();
     }
 
@@ -339,46 +276,33 @@
         roll = Math.floor(Math.random()*6)+1; dice.innerText = roll;
         if(p.isInvestor && (roll === 1 || roll === 2)) { await new Promise(r => setTimeout(r, 500)); dice.classList.add('dice-gold'); spawnEmoji('👕'); showSidebar("INVESTMENT PAYOFF", "Merch is moving! Roll doubled.", "#ffffff"); p.shirtsSold++; p.accolades.push('👕'); roll *= 2; dice.innerText = roll; await new Promise(r => setTimeout(r, 2000)); updateUI(); }
         if(p.isSellout && roll === 6) { await new Promise(r => setTimeout(r, 500)); dice.classList.add('dice-red'); spawnEmoji('💊'); showSidebar("CONTRACT DEBT", "Forward 6 becomes Back 2.", "var(--fear-glow)"); p.pillsTaken++; p.accolades.push('💊'); roll = -2; dice.innerText = roll; await new Promise(r => setTimeout(r, 2000)); updateUI(); }
-        p.totalRollValue += Math.abs(roll);
-        await new Promise(r => setTimeout(r, 250)); dice.classList.remove('dice-cinematic', 'dice-red', 'dice-gold');
-        await new Promise(r => setTimeout(r, 250)); movePlayer(roll);
+        p.totalRollValue += Math.abs(roll); await new Promise(r => setTimeout(r, 250)); dice.classList.remove('dice-cinematic', 'dice-red', 'dice-gold'); await new Promise(r => setTimeout(r, 250)); movePlayer(roll);
     }
 
     function spawnEmoji(char) { const e = document.createElement('div'); e.className = 'floating-emoji'; e.innerText = char; e.style.left = "50%"; e.style.top = "50%"; document.body.appendChild(e); setTimeout(() => e.remove(), 1200); }
 
     async function movePlayer(n) {
         const p = players[turnIdx]; const dir = n > 0 ? 1 : -1;
-        let minPos = Math.min(...players.map(pl => pl.pos));
-        let isLast = (p.pos === minPos);
+        let minPos = Math.min(...players.map(pl => pl.pos)); let isLast = (p.pos === minPos);
         for(let i=0; i<Math.abs(n); i++) {
             if(p.pos + dir >= 0 && p.pos + dir < boardLayout.length) {
                 p.pos += dir; updatePositions();
                 if(dir > 0 && rules[p.pos]?.isGate && !isLast && i < Math.abs(n)-1) { i = 999; }
-                await new Promise(r => setTimeout(r, 300));
-                if(p.pos >= 59) { showWinScreen(); return; }
+                await new Promise(r => setTimeout(r, 300)); if(p.pos >= 59) { showWinScreen(); return; }
             }
         }
         checkSpace();
     }
 
     function checkSpace() {
-        const p = players[turnIdx], r = rules[p.pos];
-        if(!r) { endTurn(); return; }
-        const spaceCol = getSpaceColor(p.pos);
-        const popupEl = document.getElementById('main-popup');
-        popupEl.style.borderColor = spaceCol; popupEl.style.boxShadow = `0 0 30px ${spaceCol}`;
-        
-        if(r.sound) { const audio = new Audio(r.sound); audio.play().catch(e => console.log("Sound blocked by browser")); }
-
+        const p = players[turnIdx], r = rules[p.pos]; if(!r) { endTurn(); return; }
+        const spaceCol = getSpaceColor(p.pos); const popupEl = document.getElementById('main-popup'); popupEl.style.borderColor = spaceCol; popupEl.style.boxShadow = `0 0 30px ${spaceCol}`;
+        if(r.sound) { playSfx(r.sound); }
         if(r.choice === 'remedy' && p.isSellout) { showSidebar("CONTRACT ACTIVE", "Soul already sold.", spaceCol); endTurn(); return; }
         if(r.choice === 'merch' && p.isInvestor) { showSidebar("ALREADY INVESTED", "Inventory full.", spaceCol); endTurn(); return; }
         if(r.isAuto) { showSidebar(r.title, (r.emoji || "") + " " + (r.desc || "Moving..."), spaceCol); setTimeout(() => { movePlayer(r.shift); }, 1200); return; }
-        
         const modal = document.getElementById('overlay-event'), title = document.getElementById('event-title'), desc = document.getElementById('event-desc'), pBtn = document.getElementById('event-btn-primary'), sBtn = document.getElementById('event-btn-secondary'), timerUI = document.getElementById('timer-ui'), coin = document.getElementById('coin');
-        
-        coin.style.display = 'none'; pBtn.style.display = 'inline-block'; pBtn.disabled = false;
-        title.innerText = (r.emoji || "") + " " + r.title; desc.innerText = r.desc || "";
-        pBtn.innerText = "CONTINUE"; sBtn.style.display = 'none'; timerUI.style.display = 'none'; modal.style.display = 'flex';
+        coin.style.display = 'none'; pBtn.style.display = 'inline-block'; pBtn.disabled = false; title.innerText = (r.emoji || "") + " " + r.title; desc.innerText = r.desc || ""; pBtn.innerText = "CONTINUE"; sBtn.style.display = 'none'; timerUI.style.display = 'none'; modal.style.display = 'flex';
         
         if(r.skipTurns) { p.skipCount = r.skipTurns; pBtn.onclick = () => { modal.style.display='none'; endTurn(); }; }
         else if(r.isFigment) {
@@ -396,17 +320,14 @@
             pBtn.onclick = async () => { modal.style.display='none'; await new Promise(res => setTimeout(res, 800)); if(r.choice==='remedy'){p.isSellout=true; movePlayer(6);} else {p.isInvestor=true; movePlayer(-4); } };
             sBtn.onclick = () => { modal.style.display='none'; endTurn(); };
         } else if(r.isGrammy) {
-            let maxPos = Math.max(...players.map(pl => pl.pos));
-            let leaders = players.filter(pl => pl.pos === maxPos && pl !== p);
+            let maxPos = Math.max(...players.map(pl => pl.pos)); let leaders = players.filter(pl => pl.pos === maxPos && pl !== p);
             p.grammys++; p.accolades.push('🏆'); updateUI();
             if(p.pos === maxPos) { pBtn.onclick = async () => { modal.style.display='none'; await new Promise(res => setTimeout(res, 800)); movePlayer(1); }; }
             else if(leaders.length > 1) {
                 isSwapping = true; pBtn.innerText = "READY"; pBtn.onclick = () => { modal.style.display='none'; };
                 showSidebar("🏆 TIED LEADERS", "Multiple artists are tied for the lead. Select which one to swap with by clicking their picture on the roster.", "var(--gold)");
                 leaders.forEach(l => { const idx = players.indexOf(l); document.getElementById('p'+idx).classList.add('swap-target'); document.getElementById('roster-p'+idx).classList.add('roster-swap'); });
-            } else {
-                pBtn.onclick = () => { let lead = leaders[0]; let lp = lead.pos; lead.pos = p.pos; p.pos = lp; modal.style.display='none'; updatePositions(); endTurn(); };
-            }
+            } else { pBtn.onclick = () => { let lead = leaders[0]; let lp = lead.pos; lead.pos = p.pos; p.pos = lp; modal.style.display='none'; updatePositions(); endTurn(); }; }
         } else if(r.isTellus) {
             isSwapping = true; pBtn.innerText = "READY"; pBtn.onclick = () => { modal.style.display='none'; };
             desc.innerText = "CLICK ANOTHER ARTIST (ON BOARD OR ROSTER) TO SWAP PLACES.";
@@ -418,9 +339,7 @@
                 players.forEach((_, i) => { if(i !== turnIdx) { document.getElementById('p'+i).classList.add('swap-target'); document.getElementById('roster-p'+i).classList.add('roster-swap'); } });
             } else { pBtn.innerText = "LONELY TOUR"; pBtn.onclick = () => { modal.style.display='none'; endTurn(); }; }
         } else if(r.isOpeningAct) {
-            let maxPos = Math.max(...players.map(pl => pl.pos));
-            let isLead = (p.pos === maxPos);
-            pBtn.innerText = " "; pBtn.disabled = true;
+            let maxPos = Math.max(...players.map(pl => pl.pos)); let isLead = (p.pos === maxPos); pBtn.innerText = " "; pBtn.disabled = true;
             if(isLead) {
                 showSidebar("OPENING ACT", "You are the leader! Go back 2 spaces.", spaceCol);
                 setTimeout(() => { pBtn.innerText = "ACCEPT FATE (-2)"; pBtn.disabled = false; pBtn.onclick = async () => { modal.style.display='none'; await new Promise(res=>setTimeout(res,800)); movePlayer(-2); }; }, 2500);
@@ -436,8 +355,8 @@
         } else if(r.isLostRecording) { 
             pBtn.innerText = "ROLL TO REWIND"; 
             pBtn.onclick = async () => { 
-                pBtn.style.display='none'; coin.style.display='flex'; coin.innerText = "?"; coin.classList.add('flipping'); 
-                let rl; for(let j=0; j<12; j++) { coin.innerText = Math.floor(Math.random()*6)+1; await new Promise(r => setTimeout(r, 45)); }
+                pBtn.style.display='none'; coin.style.display='flex'; coin.innerText = "?"; coin.classList.add('flipping'); let rl;
+                for(let j=0; j<12; j++) { coin.innerText = Math.floor(Math.random()*6)+1; await new Promise(r => setTimeout(r, 45)); }
                 rl = Math.floor(Math.random()*6)+1; coin.innerText = rl; coin.classList.remove('flipping');
                 await new Promise(r => setTimeout(r, 1500)); modal.style.display='none'; await new Promise(res => setTimeout(res, 800)); movePlayer(-rl); 
             };
@@ -448,62 +367,47 @@
         if(isSwapping) { 
             if(!document.getElementById('roster-p'+idx).classList.contains('roster-swap') && !document.getElementById('p'+idx).classList.contains('swap-target')) return;
             let p = players[turnIdx], t = players[idx], lp = t.pos; t.pos = p.pos; p.pos = lp; isSwapping = false; 
-            document.querySelectorAll('.player').forEach(el => el.classList.remove('swap-target'));
-            document.querySelectorAll('.player-entry').forEach(el => el.classList.remove('roster-swap'));
+            document.querySelectorAll('.player').forEach(el => el.classList.remove('swap-target')); document.querySelectorAll('.player-entry').forEach(el => el.classList.remove('roster-swap'));
             updatePositions(); endTurn(); 
         } else if(isMayaPartner) {
-            if(idx === turnIdx) return;
-            isMayaPartner = false; let partnerIdx = idx;
-            document.querySelectorAll('.player').forEach(el => el.classList.remove('swap-target'));
-            document.querySelectorAll('.player-entry').forEach(el => el.classList.remove('roster-swap'));
+            if(idx === turnIdx) return; isMayaPartner = false; let partnerIdx = idx;
+            document.querySelectorAll('.player').forEach(el => el.classList.remove('swap-target')); document.querySelectorAll('.player-entry').forEach(el => el.classList.remove('roster-swap'));
             const modal = document.getElementById('overlay-event'), title = document.getElementById('event-title'), desc = document.getElementById('event-desc'), pBtn = document.getElementById('event-btn-primary'), sBtn = document.getElementById('event-btn-secondary'), timerUI = document.getElementById('timer-ui'), coin = document.getElementById('coin');
             title.innerText = "👁️ MAYA"; desc.innerText = `Hold eye contact with ${players[partnerIdx].name}!`;
-            coin.style.display = 'none'; sBtn.style.display = 'none'; timerUI.style.display = 'none';
-            pBtn.style.display = 'inline-block'; pBtn.disabled = false; pBtn.innerText = "START 10s TIMER";
+            coin.style.display = 'none'; sBtn.style.display = 'none'; timerUI.style.display = 'none'; pBtn.style.display = 'inline-block'; pBtn.disabled = false; pBtn.innerText = "START 10s TIMER";
             pBtn.onclick = () => {
-                pBtn.disabled = true; pBtn.style.display = 'none'; timerUI.style.display = 'block';
-                let t = 10; timerUI.innerText = t;
+                pBtn.disabled = true; pBtn.style.display = 'none'; timerUI.style.display = 'block'; let t = 10; timerUI.innerText = t;
                 const clock = setInterval(() => { t--; timerUI.innerText = t; if(t <= 0) { clearInterval(clock); timerUI.style.display = 'none'; pBtn.style.display = 'inline-block'; pBtn.disabled = false; pBtn.innerText = "WE HELD IT (+2)"; sBtn.style.display = 'inline-block'; sBtn.innerText = "WE BROKE (-1)";
                     pBtn.onclick = async () => { modal.style.display = 'none'; await new Promise(r=>setTimeout(r,500)); players[partnerIdx].pos += 2; updatePositions(); movePlayer(2); };
                     sBtn.onclick = async () => { modal.style.display = 'none'; await new Promise(r=>setTimeout(r,500)); players[partnerIdx].pos -= 1; if(players[partnerIdx].pos < 0) players[partnerIdx].pos = 0; updatePositions(); movePlayer(-1); };
                 } }, 1000);
-            };
-            modal.style.display = 'flex';
+            }; modal.style.display = 'flex';
         }
     }
 
     function showStatusPopup(t, d, b1, c1, b2, c2) {
-        const modal = document.getElementById('overlay-event'), popupEl = document.getElementById('main-popup');
-        popupEl.style.borderColor = '#444'; popupEl.style.boxShadow = 'none';
-        document.getElementById('event-title').innerText = t; document.getElementById('event-desc').innerText = d;
-        document.getElementById('coin').style.display = 'none';
+        const modal = document.getElementById('overlay-event'), popupEl = document.getElementById('main-popup'); popupEl.style.borderColor = '#444'; popupEl.style.boxShadow = 'none';
+        document.getElementById('event-title').innerText = t; document.getElementById('event-desc').innerText = d; document.getElementById('coin').style.display = 'none';
         const pBtn = document.getElementById('event-btn-primary'); pBtn.style.display='inline-block'; pBtn.innerText = b1; pBtn.onclick = async () => { modal.style.display='none'; await new Promise(r => setTimeout(r, 200)); c1(); };
         const sBtn = document.getElementById('event-btn-secondary'); sBtn.style.display='inline-block'; sBtn.innerText = b2; sBtn.onclick = async () => { modal.style.display='none'; await new Promise(r => setTimeout(r, 200)); c2(); };
         modal.style.display='flex';
     }
 
     function showSidebar(t, d, color = '#ffffff') { 
-        if(sidebarTimer) clearTimeout(sidebarTimer); 
-        const sb = document.getElementById('rule-sidebar');
-        sb.style.borderColor = color; sb.style.boxShadow = `-10px 0 40px ${color}`;
-        document.getElementById('side-title').innerText = t; document.getElementById('side-desc').innerText = d; 
-        sb.classList.add('active'); sidebarTimer = setTimeout(() => sb.classList.remove('active'), 8000); 
+        if(sidebarTimer) clearTimeout(sidebarTimer); const sb = document.getElementById('rule-sidebar'); sb.style.borderColor = color; sb.style.boxShadow = `-10px 0 40px ${color}`;
+        document.getElementById('side-title').innerText = t; document.getElementById('side-desc').innerText = d; sb.classList.add('active'); sidebarTimer = setTimeout(() => sb.classList.remove('active'), 8000); 
     }
 
     function showWinScreen() { 
         const p = players[turnIdx]; 
-        let statsHtml = `<h2 style="color:${p.avatar.color}; animation: winPulse 2s infinite ease-in-out; font-size: 2.8rem; margin: 10px 0; --p-color: ${p.avatar.color};">${p.name} WINS!</h2>`;
-        statsHtml += `<div style="text-align:left; margin-top:20px; font-family:monospace; max-height: 400px; overflow-y: auto; padding-right: 10px;">`;
+        let statsHtml = `<h2 style="color:${p.avatar.color}; animation: winPulse 2s infinite ease-in-out; font-size: 2.8rem; margin: 10px 0; --p-color: ${p.avatar.color};">${p.name} WINS!</h2><div style="text-align:left; margin-top:20px; font-family:monospace; max-height: 400px; overflow-y: auto; padding-right: 10px;">`;
         players.forEach(pl => { statsHtml += `<div style="margin-bottom:15px; border-bottom: 1px solid #444; display:flex; align-items:center; gap:15px; padding-bottom:15px;"><img src="${pl.avatar.img}" style="width:65px; height:65px; border-radius:50%; background:#111; border:3px solid ${pl.avatar.color};"><div style="flex-grow:1;"><b style="color:${pl.avatar.color}; font-size:1.3rem;">${pl.name}</b><br><span style="font-size:1.3rem; letter-spacing:2px; display:inline-block; margin:5px 0;">${pl.accolades.join('') || "—"}</span><br>GRAMMYS: ${pl.grammys} | SHIRTS: ${pl.shirtsSold} | PILLS: ${pl.pillsTaken}</div></div>`; });
         statsHtml += `</div>`;
-        const popupEl = document.getElementById('main-popup'); 
-        popupEl.style.borderColor = 'var(--blue-glow)'; 
-        popupEl.style.boxShadow = '0 0 60px var(--blue-glow)';
-        document.getElementById('event-title').innerText = "The tour is over. Go Swimmin!"; 
-        document.getElementById('event-desc').innerHTML = statsHtml;
-        document.getElementById('event-btn-primary').innerText = "RESTART TOUR"; 
-        document.getElementById('event-btn-primary').onclick = () => location.reload();
-        document.getElementById('event-btn-secondary').style.display = 'none'; 
+        const popupEl = document.getElementById('main-popup'); popupEl.style.borderColor = 'var(--blue-glow)'; popupEl.style.boxShadow = '0 0 60px var(--blue-glow)';
+        document.getElementById('event-title').innerText = "The tour is over. Go Swimmin!"; document.getElementById('event-desc').innerHTML = statsHtml;
+        document.getElementById('event-btn-primary').innerText = "NEW TOUR (SELECT ARTISTS)"; document.getElementById('event-btn-primary').onclick = () => location.reload();
+        document.getElementById('event-btn-secondary').style.display = 'inline-block'; document.getElementById('event-btn-secondary').innerText = "SAME ARTISTS (SOFT RESTART)";
+        document.getElementById('event-btn-secondary').onclick = () => { document.getElementById('overlay-event').style.display='none'; confirmSoftRestart(); };
         document.getElementById('overlay-event').style.display='flex'; 
     }
     
