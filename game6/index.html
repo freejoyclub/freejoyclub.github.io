@@ -673,8 +673,8 @@ function showWinScreen() {
                 <a href="https://freejoy.club" target="_blank" class="win-link-btn" style="--btn-color: #ffffff; color:#ffffff;">HOME</a>
                 
                 <div style="display:flex; gap:10px; width:80%; margin-top:5px;">
-                    <button id="hard-reset-win" class="win-link-btn" style="--btn-color: var(--fear-glow); color:var(--fear-glow); flex:1; cursor:pointer; background:transparent;">NEW TOUR</button>
-                    <button id="soft-reset-win" class="win-link-btn" style="--btn-color: #ffa500; color:#ffa500; flex:1; cursor:pointer; background:transparent;">RESTART</button>
+                    <button id="hard-reset-win" class="win-link-btn" style="--btn-color: var(--fear-glow); color:var(--fear-glow); flex:1; cursor:pointer;">NEW TOUR (Same Players)</button>
+                    <button id="soft-reset-win" class="win-link-btn" style="--btn-color: #ffa500; color:#ffa500; flex:1; cursor:pointer;">NEW BAND (New Players)</button>
                 </div>
             </div>
             <style>
@@ -687,6 +687,7 @@ function showWinScreen() {
                     border: 1px solid var(--btn-color);
                     border-radius: 12px;
                     width: 80%;
+                    background: transparent;
                     text-align: center;
                     transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
                     animation: floatBtn 3.5s infinite ease-in-out;
@@ -694,7 +695,7 @@ function showWinScreen() {
                     text-transform: uppercase;
                 }
                 .win-link-btn:hover {
-                    background: var(--btn-color);
+                    background: var(--btn-color) !important;
                     color: black !important;
                     box-shadow: 0 0 20px var(--btn-color);
                     transform: scale(1.05) translateY(-2px);
