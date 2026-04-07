@@ -1,6 +1,6 @@
 <!DOCTYPE html><html lang="en"><head>
     <meta charset="UTF-8">
-    <title>Fearjoy - v11.6.6</title>
+    <title>Fearjoy - v11.6.7</title>
     <style>
         :root {
             --wood-dark: #8b7355; 
@@ -354,7 +354,59 @@ function setPlayerCount(num) {
             updateSetupPrompt();
         }
     }
+function startMayaTimer(partnerIdx) {
+        const overlay = document.getElementById('overlay-event');
+        const desc = document.getElementById('event-desc');
+        const pBtn = document.getElementById('event-btn-primary');
+        const sBtn = document.getElementById('event-btn-secondary');
+        const partner = players[partnerIdx];
+        
+        // Setup Overlay for Timer
+        overlay.style.display = 'flex';
+        pBtn.style.display = 'none';
+        sBtn.style.display = 'none';
+        
+        let timeLeft = 10;
+        const updateTimerUI = () => {
+            desc.innerHTML = `
+                <div style="font-size:5rem; color:var(--blue-glow); text-shadow: 0 0 20px var(--blue-glow); margin-bottom:20px; animation: winPulse 1s infinite alternate;">${timeLeft}</div>
+                EYE CONTACT WITH ${partner.name}... <br>
+                <span style="color:#888; font-size:0.8rem; letter-spacing:2px;">DON'T LOOK AWAY</span>
+            `;
+        };
 
+        updateTimerUI();
+
+        const clock = setInterval(() => {
+            timeLeft--;
+            updateTimerUI();
+            
+            if (timeLeft <= 0) {
+                clearInterval(clock);
+                desc.innerHTML = `TIME'S UP.<br><br>Did you both successfully hold eye contact for 10 seconds?`;
+                pBtn.style.display = 'inline-block';
+                pBtn.innerText = "YES (BOTH +2)";
+                pBtn.onclick = () => {
+                    movePlayer(2); // Moves Current Player
+                    players[partnerIdx].pos = Math.min(59, players[partnerIdx].pos + 2); // Moves Partner
+                    updatePositions();
+                    overlay.style.display = 'none';
+                    endTurn();
+                };
+                
+                sBtn.style.display = 'inline-block';
+                sBtn.innerText = "NO (BOTH -1)";
+                sBtn.onclick = () => {
+                    movePlayer(-1); // Moves Current Player
+                    players[partnerIdx].pos = Math.max(0, players[partnerIdx].pos - 1); // Moves Partner
+                    updatePositions();
+                    overlay.style.display = 'none';
+                    endTurn();
+                };
+            }
+        }, 1000);
+    }
+        
     function initBoard() {
         const board = document.getElementById('board-container'), containerRect = board.getBoundingClientRect(), spaceCoords = [];
         boardLayout.forEach((name, i) => {
@@ -483,23 +535,35 @@ function setPlayerCount(num) {
                 showSidebar("🏆 TIED LEADERS", "Multiple artists are tied for the lead. Select which one to swap with by clicking their picture on the roster.", "var(--gold)");
                 leaders.forEach(l => { const idx = players.indexOf(l); document.getElementById('p'+idx).classList.add('swap-target'); document.getElementById('roster-p'+idx).classList.add('roster-swap'); });
             } else { pBtn.onclick = () => { modal.style.display='none'; let lead = leaders[0]; let lp = lead.pos; lead.pos = p.pos; p.pos = lp; updatePositions(); endTurn(); }; }
-        } else if(r.isTellus || r.isMaya) {
+       } else if(r.isTellus || r.isMaya) {
             if(players.length > 1) {
+                // Set the specific interaction state
                 isSwapping = r.isTellus; 
                 isMayaPartner = r.isMaya;
-                pBtn.innerText = "READY"; 
-                pBtn.onclick = () => { modal.style.display = 'none'; }; // Removes the "glass sheet" overlay
-                desc.innerText = r.isMaya ? "CLICK ANOTHER ARTIST TO MAKE EYE CONTACT. Break it = both Back 1. Hold it = both Forward 2." : "CLICK ANOTHER ARTIST TO SWAP PLACES.";
                 
-                // Activate the clickable targets
-                players.forEach((_, i) => { 
-                    if(i !== turnIdx) { 
-                        document.getElementById('p'+i).classList.add('swap-target'); 
-                        document.getElementById('roster-p'+i).classList.add('roster-swap'); 
-                    } 
-                });
+                pBtn.innerText = "READY"; 
+                pBtn.onclick = () => { 
+                    modal.style.display = 'none'; 
+                    // Activate board pieces and roster for selection
+                    players.forEach((_, i) => { 
+                        if(i !== turnIdx) { 
+                            const piece = document.getElementById('p'+i);
+                            const roster = document.getElementById('roster-p'+i);
+                            if(piece) {
+                                piece.style.pointerEvents = 'auto'; 
+                                piece.classList.add('swap-target'); 
+                            }
+                            if(roster) roster.classList.add('roster-swap'); 
+                        } 
+                    });
+                };
+                
+                desc.innerHTML = r.isMaya ? 
+                    "MAYA'S EYE CONTACT CHALLENGE.<br><br>Click another Artist's head or roster name. Hold eye contact for 10s for <b>Both +2</b>. Fail for <b>Both -1</b>." : 
+                    "TELLUS: THE GREAT SWAP.<br><br>Click another Artist's head or roster name to swap places on the board.";
             } else { 
-                desc.innerText = "SOLO TOUR: No other artists to interact with.";
+                // Solo player safety check
+                desc.innerText = "SOLO TOUR: There are no other artists on this tour to interact with.";
                 pBtn.innerText = "CONTINUE"; 
                 pBtn.onclick = () => { modal.style.display = 'none'; endTurn(); }; 
             }
@@ -529,39 +593,31 @@ function setPlayerCount(num) {
     }
 
     function handlePlayerClick(idx) {
-    // Check if we are currently in a "Selection" mode for a mechanic
-    if (isSwapping || isMayaPartner) {
-        if (idx === turnIdx) return; // Cannot select yourself
-        
-        // Ensure the target is valid (has the glow classes)
-        const rosterEl = document.getElementById('roster-p' + idx);
-        const playerEl = document.getElementById('p' + idx);
-        if (!rosterEl.classList.contains('roster-swap') && !playerEl.classList.contains('swap-target')) return;
+        if (idx === turnIdx) return; // Can't pick yourself
 
-        // Logic for Tellus (Swap)
         if (isSwapping) {
-            let p = players[turnIdx];
-            let t = players[idx];
-            let tempPos = t.pos;
-            t.pos = p.pos;
-            p.pos = tempPos;
             isSwapping = false;
-            
-            // Clean up UI glows
             document.querySelectorAll('.player').forEach(el => el.classList.remove('swap-target'));
             document.querySelectorAll('.player-entry').forEach(el => el.classList.remove('roster-swap'));
-            
+            const p = players[turnIdx];
+            const target = players[idx];
+            const oldPos = p.pos;
+            p.pos = target.pos;
+            target.pos = oldPos;
             updatePositions();
             endTurn();
         } 
-        // Logic for Maya (Eye Contact)
-        else if (isMayaPartner) {
+        else if (typeof isMayaPartner !== 'undefined' && isMayaPartner) {
             isMayaPartner = false;
-            document.querySelectorAll('.player').forEach(el => el.classList.remove('swap-target'));
+            // Clean up highlights
+            document.querySelectorAll('.player').forEach(el => {
+                el.classList.remove('swap-target');
+                el.style.pointerEvents = 'none'; 
+            });
             document.querySelectorAll('.player-entry').forEach(el => el.classList.remove('roster-swap'));
             
-            // This calls your existing Maya timer function
-            startMayaTimer(idx); 
+            // Open the popup back up for the timer
+            startMayaTimer(idx);
         }
     }
 }
