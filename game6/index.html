@@ -25,7 +25,7 @@
 
         body { animation: woodFade 20s ease-in-out infinite; background-image: repeating-linear-gradient(90deg, transparent, transparent 80px, rgba(0,0,0,0.05) 80px, rgba(0,0,0,0.05) 82px); color: white; font-family: 'Courier New', monospace; display: flex; flex-direction: column; align-items: center; margin: 0; min-height: 100vh; overflow: hidden; }
         
-        #board-container { 
+#board-container { 
             display: grid; grid-template-columns: repeat(10, 1fr); grid-template-rows: repeat(6, 1fr); 
             gap: 18px; padding: 50px; width: 1100px; height: 700px; 
             position: relative; z-index: 5; 
@@ -81,7 +81,6 @@
         .dice-red { animation: redSparkle 0.5s infinite alternate; }
         .dice-gold { animation: goldSparkle 0.5s infinite alternate; }
         .flipping { animation: flipping 1.2s cubic-bezier(0.45, 0.05, 0.55, 0.95); transform-style: preserve-3d; }
-        #merch-tracker { position: fixed; left: 20px; top: 135px; width: 280px; background: var(--ui-bg); border-radius: 12px; padding: 20px; border: 1px solid #333; z-index: 1; }
         .player-entry { margin-bottom: 15px; border-bottom: 1px solid #444; padding-bottom: 10px; font-size: 0.8rem; transition: 0.3s; border-radius: 8px; padding: 10px; cursor: default; }
         .avatar-roster { width: 45px; height: 45px; border-radius: 50%; background: #111; border: 2px solid #555; }
         .player { width: 75px; height: 75px; position: absolute; z-index: 100; transition: all 0.7s cubic-bezier(0.18, 0.89, 0.32, 1.28); background-size: contain; background-repeat: no-repeat; background-position: center bottom; pointer-events: none; animation: pieceHover 4s infinite ease-in-out; }
@@ -96,38 +95,96 @@
         .tag-sellout { background: var(--fear-glow); color: white; }
         .intro-header { font-size: 3.5rem; color: var(--gold); animation: introGlow 2s ease-in-out infinite alternate; margin-bottom: 20px; font-weight: 900; letter-spacing: 4px; }
         
-        #restart-btn { width: 100%; margin-top: 10px; background: #333; color: #888; border: 1px solid #444; padding: 8px; border-radius: 6px; cursor: pointer; font-size: 0.7rem; font-weight: bold; transition: 0.2s; }
-        #restart-btn:hover { background: var(--fear-glow); color: white; border-color: white; }
+    #nav-cluster { position: fixed; bottom: 25px; left: 25px; display: flex; flex-direction: column; align-items: flex-start; gap: 12px; z-index: 1000; }
+        
+        /* The Hover-Bubble Popup Buttons */
+        .nav-btn { 
+            padding: 0; 
+            width: 50px; 
+            height: 50px; 
+            border-radius: 50%; 
+            background: #111; 
+            color: white; 
+            font-weight: 900; 
+            font-size: 0; /* Hide text initially */
+            border: 1px solid #444; 
+            cursor: pointer; 
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
+            animation: navFloat 3.5s infinite ease-in-out; 
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            white-space: nowrap;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+        }
 
-        #nav-cluster { position: fixed; bottom: 25px; left: 25px; display: flex; flex-direction: column; align-items: flex-start; gap: 12px; z-index: 1000; }
-        .nav-btn { padding: 14px 24px; border-radius: 12px; background: #111; color: white; font-weight: 900; font-size: 1rem; border: 1px solid #444; cursor: pointer; transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); animation: navFloat 3.5s infinite ease-in-out; letter-spacing: 1.5px; text-transform: uppercase; width: 220px; text-align: left; }
-        .nav-btn:hover { transform: scale(1.05) translateX(10px); z-index: 1001; }
+        /* Expanding Logic */
+        .nav-btn:hover { 
+            width: 220px; 
+            border-radius: 12px; 
+            font-size: 1rem; 
+            padding: 0 20px;
+            justify-content: flex-start;
+            gap: 15px;
+            transform: translateX(10px);
+        }
+
+        /* Emoji Icons as "Knobs" */
+        .nav-btn::before { font-size: 1.5rem; flex-shrink: 0; }
+        .btn-restart::before { content: "🔄"; }
+        .btn-home::before { content: "🏠"; }
+        .btn-store::before { content: "🏬"; }
+        .btn-album::before { content: "▶️"; }
+
+        .btn-restart:hover { box-shadow: 0 0 20px #ff4500; border-color: #ff4500; color: #ff4500; }
         .btn-home:hover { box-shadow: 0 0 20px var(--tape-white); border-color: var(--tape-white); }
         .btn-store:hover { box-shadow: 0 0 20px var(--pink-glow); border-color: var(--pink-glow); color: var(--pink-glow); }
         .btn-album:hover { box-shadow: 0 0 20px var(--joy-glow); border-color: var(--joy-glow); color: var(--joy-glow); }
-        .btn-home { animation-delay: 0s; }
-        .btn-store { animation-delay: 0.2s; }
-        .btn-album { animation-delay: 0.4s; }
 
-        #audio-toggle { background: #222; border: 1px solid #444; color: white; padding: 10px 20px; border-radius: 10px; cursor: pointer; font-size: 0.8rem; font-weight: bold; display: flex; align-items: center; gap: 10px; width: 220px; box-sizing: border-box; transition: 0.3s; }
-        #audio-toggle:hover { border-color: var(--gold); box-shadow: 0 0 10px var(--gold); }
-    </style></head><body>
+        #audio-toggle { 
+            background: #222; border: 1px solid #444; color: white; width: 50px; height: 40px; 
+            border-radius: 10px; cursor: pointer; display: flex; align-items: center; justify-content: center; 
+            transition: 0.3s; overflow: hidden; font-size: 0;
+        }
+        #audio-toggle:hover { width: 180px; font-size: 0.8rem; gap: 10px; border-color: var(--gold); box-shadow: 0 0 10px var(--gold); }
+
+        /* Narrow, Transparent Tour Stats */
+        #merch-tracker { 
+            position: fixed; top: 100px; left: 20px; 
+            width: 120px; /* Cut width by half */
+            background: rgba(0, 0, 0, 0.7); /* 70% Transparent */
+            padding: 12px; border-radius: 15px; 
+            border: 1px solid rgba(255, 255, 255, 0.1); 
+            z-index: 5; font-family: monospace;
+            pointer-events: none; /* Let clicks pass through to board unless hovering entries */
+        }
+        #tracker-list { 
+            display: flex; flex-direction: column; gap: 15px; 
+            word-wrap: break-word; /* Force emoji stacking */
+        }
+        .roster-entry { display: flex; flex-direction: column; align-items: flex-start; gap: 4px; pointer-events: auto; }
+        .roster-entry div { display: flex; flex-wrap: wrap; gap: 2px; line-height: 1.2; font-size: 1.1rem; }
+    </style>
+</head>
+<body>
 
     <div id="nav-cluster">
         <button id="audio-toggle" onclick="toggleAudio()">
             <span id="audio-icon">🔊</span> AUDIO: <span id="audio-status">ON</span>
         </button>
+        <button class="nav-btn btn-restart" onclick="confirmSoftRestart()">Restart Tour</button>
         <button class="nav-btn btn-home" onclick="window.open('https://freejoy.club', '_blank')">Home</button>
         <button class="nav-btn btn-store" onclick="window.open('https://freejoy.club', '_blank')">Store</button>
         <button class="nav-btn btn-album" onclick="window.open('https://freejoy.club', '_blank')">Play the Album</button>
     </div>
 
     <div id="merch-tracker">
-        <h4 style="margin:0 0 10px 0; font-size: 0.65rem; letter-spacing: 2px; opacity: 0.6; color: var(--joy-glow);">TOUR STATS</h4>
+        <h4 style="margin:0 0 10px 0; font-size: 0.6rem; letter-spacing: 2px; opacity: 0.6; color: var(--joy-glow); text-transform: uppercase;">Tour Stats</h4>
         <div id="tracker-list"></div>
-        <button id="restart-btn" onclick="confirmSoftRestart()">RESTART TOUR</button>
     </div>
 
+        
     <div id="ui-layer">
         <div id="status-text">---</div>
         <div id="roll-btn-center">
