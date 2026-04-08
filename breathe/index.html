@@ -13,10 +13,11 @@
       color: white;
       margin: 0;
       padding: 30px 20px;
-      line-height: .9;
+      line-height: 1.2;
       text-shadow: 1px 1px 2px black;
       animation: bgfade 12s infinite;
       transition: background 3s ease-in-out;
+      overflow-x: hidden;
     }
 
     @keyframes bgfade {
@@ -28,62 +29,75 @@
       100% { background-color: #7a5d0b; }
     }
 
-    a {
-      display: block;
-      color: #FFD580;
-      text-decoration: none;
-      margin: 6px 0;
+    .video-item {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 12px auto;
+      cursor: pointer;
+      width: fit-content;
+      max-width: 90vw;
     }
 
-    a:hover {
-      text-decoration: underline;
+    .bubble-container {
+      display: flex;
+      align-items: center;
+      background: rgba(0, 0, 0, 0.4);
+      border-radius: 50px;
+      padding: 6px 18px;
+      transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      border: 1px solid rgba(255, 213, 128, 0.2);
+    }
+
+    .timer-bubble {
+      font-family: "Courier New", Courier, monospace;
+      background: #FFD580;
+      color: black;
+      border-radius: 20px;
+      padding: 2px 10px;
+      font-size: 0.9em;
+      margin-right: 12px;
+      text-shadow: none;
+      flex-shrink: 0;
+    }
+
+    .description {
+      color: #FFD580;
+      white-space: nowrap;
+      overflow: hidden;
+      max-width: 0;
+      opacity: 0;
+      transition: all 0.4s ease;
+      text-align: left;
+    }
+
+    .video-item:hover .bubble-container {
+      background: rgba(0, 0, 0, 0.8);
+      border-color: #FFD580;
+      transform: scale(1.05);
+    }
+
+    .video-item:hover .description {
+      max-width: 500px;
+      opacity: 1;
+      margin-left: 10px;
     }
 
     h1 {
-      margin-bottom: 12px; /* reduced by ~70% */
-      font-size: 2em;
+      margin-bottom: 25px;
+      font-size: 2.5em;
       animation: float 8s infinite ease-in-out;
       display: inline-block;
       position: relative;
     }
 
     @keyframes float {
-      0%   { top: 0; left: 0; }
-      25%  { top: -3px; left: 3px; }
-      50%  { top: 3px; left: -2px; }
-      75%  { top: -2px; left: -3px; }
-      100% { top: 0; left: 0; }
+      0% { transform: translate(0,0); }
+      25% { transform: translate(3px, -3px); }
+      50% { transform: translate(-2px, 3px); }
+      100% { transform: translate(0,0); }
     }
 
-    p {
-      white-space: pre-line;
-      margin-bottom: 40px;
-    }
-
-    .breathe-button {
-      background-color: black;
-      color: white;
-      padding: 10px 20px;
-      font-size: 2em;
-      font-family: Arial, sans-serif;
-      font-weight: bold;
-      border: none;
-      border-radius: 12px;
-      text-decoration: none;
-      display: inline-block;
-      margin: 20px auto 8px;
-      cursor: pointer;
-    }
-
-    .home-link {
-      font-size: 1.5em;
-      color: white;
-      text-decoration: none;
-      display: block;
-      margin-bottom: 10px;
-    }
-
-    /* NEW: Styling for the MOVE button */
     .move-button {
       background-color: black;
       color: #FFD580;
@@ -91,7 +105,7 @@
       border-radius: 12px;
       font-size: 1.8em;
       display: inline-block;
-      margin: 30px auto;
+      margin: 40px auto 20px;
       transition: all 0.4s ease;
       animation: move-float 10s infinite ease-in-out;
       position: relative;
@@ -99,50 +113,179 @@
     }
 
     .move-button:hover {
-      text-decoration: underline;
       transform: scale(1.08);
-      background-color: #222; /* brighten slightly */
+      background-color: #222;
     }
 
-    @keyframes move-float {
-      0%   { top: 0; left: 0; }
-      25%  { top: -4px; left: 4px; }
-      50%  { top: 4px; left: -3px; }
-      75%  { top: -3px; left: -4px; }
-      100% { top: 0; left: 0; }
+    .home-link {
+      font-size: 2em;
+      color: white;
+      text-decoration: none;
+      display: block;
+    }
+
+    #player-container {
+      display: none;
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 1000;
+      background: rgba(0,0,0,0.95);
+      padding: 15px;
+      border-radius: 20px;
+      border: 2px solid #FFD580;
+    }
+
+    #close-btn {
+      color: #FFD580;
+      background: none;
+      border: none;
+      font-weight: bold;
+      font-size: 1.5em;
+      cursor: pointer;
+      float: right;
+      margin-bottom: 10px;
+    }
+
+    .iframe-wrapper {
+      position: relative;
+      width: 85vw;
+      max-width: 560px;
+      aspect-ratio: 16/9;
+    }
+
+    .iframe-wrapper iframe {
+      width: 100%;
+      height: 100%;
+      border-radius: 10px;
     }
   </style>
 </head>
 <body>
+
   <h1>🫁 BREATHE 🫁</h1>
-  <p>
-    <a href="https://youtu.be/d3-K6FZAXLM?si=YbNrhwn8UCmhfcgw">4 min ✌️2-inhale 🫁 ☮️</a>
-    <a href="https://youtu.be/LFyVJIlSYkA?si=c4xG2RF8aNz0OA0E">5 min 🫁 sample platter 📦🔥+</a>
-    <a href="https://youtu.be/Vi0_7idqcFI?si=aJM80ueaO1_GCj7u">5 min 🐌 ☮️ 🫀 Huberman & Rubin HRV 🫀 Coherence</a>
-    <a href="https://youtu.be/iTiDZNhr1WI">5 min 🫁 breathe w/ arms</a>
-    <a href="https://youtu.be/5m2s8TTOKIA?si=s0TiVIUSYEkq6bY6">5 min - Tummo - 🐍 TT5</a>
-    <a href="https://youtu.be/61-mn1d5RIM?si=_ahykPFeZLUpN569">7 up then down 🔋 > 🐌 > 🐍 (sandy)</a>
-    <a href="https://youtu.be/errP3gH9OlE?si=CXDNMDXpRC2liS0_">8 min ENERGY 🫁 🔋 🐍 (sandy)</a>
-    <a href="https://youtu.be/esr7Wug7-88">8 min Fast 🔋 Energy 🐇</a>
-    <a href="https://youtu.be/GwIqNs8wWyY?si=ER4rsLZFErIV6o6H">10 min chill 🫁 (Tim) 🐌 3-part 🤌</a>
-    <a href="https://youtu.be/YtAD8pDUEzo?si=2OWwVeSxniFTfctu">10 min ENERGY 🔋 🫁 ☕️</a>
-    <a href="https://youtu.be/ThV8kV_mnz4">10 min Tummo - TT10 light</a>
-    <a href="https://youtu.be/cIApIwfQDm0?si=HPBLRvhm8XPfa7Xs">11 min 😄 🫁 multi ☕️ 🐌 11</a>
-    <a href="https://www.youtube.com/live/bBX611RjR6k?si=a0YUo5G82nbo4wGU">1-15 min (choose) 🫁 🐍 ⛰️ TT1+ Tummo Mtn.Climber (Tim V.V)</a>
-    <a href="https://youtu.be/0zjNHFq_NX8?si=0ITe0YZNX_qJklIF">5-20 min (choose ur adventure) 😃 🐍 🌄 🫁 5-20</a>
-    <a href="https://youtube.com/playlist?list=PLBecXMryivYtOfjKHCOAYTrI6OCd7zn88">🫁 QUICK ENERGY 🔋 PLAYLIST</a>
-  </p>
+
+  <div id="video-list">
+    <div class="video-item" data-id="uxayUBd6T7M">
+      <div class="bubble-container">
+        <span class="timer-bubble">1m</span> 📦 <span class="description">Box Breathing (Calm)</span>
+      </div>
+    </div>
+
+    <div class="video-item" data-id="aNXK7Gz1_6Y">
+      <div class="bubble-container">
+        <span class="timer-bubble">1m</span> 🌬️ <span class="description">Relaxing Deep Breath</span>
+      </div>
+    </div>
+
+    <div class="video-item" data-id="8VwufJrU5B8">
+      <div class="bubble-container">
+        <span class="timer-bubble">2m</span> 🌊 <span class="description">Anxiety Relief Flow</span>
+      </div>
+    </div>
+
+    <div class="video-item" data-id="d3-K6FZAXLM">
+      <div class="bubble-container">
+        <span class="timer-bubble">4m</span> ✌️ <span class="description">2-inhale 🫁 ☮️</span>
+      </div>
+    </div>
+
+    <div class="video-item" data-id="LFyVJIlSYkA">
+      <div class="bubble-container">
+        <span class="timer-bubble">5m</span> 🔥 <span class="description">Sample Platter 📦🔥+</span>
+      </div>
+    </div>
+
+    <div class="video-item" data-id="Vi0_7idqcFI">
+      <div class="bubble-container">
+        <span class="timer-bubble">5m</span> 🐌 <span class="description">HRV Coherence (Huberman/Rubin)</span>
+      </div>
+    </div>
+
+    <div class="video-item" data-id="iTiDZNhr1WI">
+      <div class="bubble-container">
+        <span class="timer-bubble">5m</span> 💪 <span class="description">Breathe w/ Arms</span>
+      </div>
+    </div>
+
+    <div class="video-item" data-id="5m2s8TTOKIA">
+      <div class="bubble-container">
+        <span class="timer-bubble">5m</span> 🐍 <span class="description">Tummo - TT5</span>
+      </div>
+    </div>
+
+    <div class="video-item" data-id="61-mn1d5RIM">
+      <div class="bubble-container">
+        <span class="timer-bubble">7m</span> 🔋 <span class="description">7 Up Then Down (Sandy)</span>
+      </div>
+    </div>
+
+    <div class="video-item" data-id="errP3gH9OlE">
+      <div class="bubble-container">
+        <span class="timer-bubble">8m</span> ⚡ <span class="description">Energy 🔋 🐍 (Sandy)</span>
+      </div>
+    </div>
+
+    <div class="video-item" data-id="esr7Wug7-88">
+      <div class="bubble-container">
+        <span class="timer-bubble">8m</span> 🐇 <span class="description">Fast Energy 🔋</span>
+      </div>
+    </div>
+
+    <div class="video-item" data-id="GwIqNs8wWyY">
+      <div class="bubble-container">
+        <span class="timer-bubble">10m</span> 🧘 <span class="description">Chill (Tim) 🐌 3-part</span>
+      </div>
+    </div>
+
+    <div class="video-item" data-id="YtAD8pDUEzo">
+      <div class="bubble-container">
+        <span class="timer-bubble">10m</span> ☕ <span class="description">Energy 🔋 🫁 ☕️</span>
+      </div>
+    </div>
+
+    <div class="video-item" data-id="ThV8kV_mnz4">
+      <div class="bubble-container">
+        <span class="timer-bubble">10m</span> 🐍 <span class="description">Tummo - TT10 Light</span>
+      </div>
+    </div>
+
+    <div class="video-item" data-id="cIApIwfQDm0">
+      <div class="bubble-container">
+        <span class="timer-bubble">11m</span> 😄 <span class="description">Multi ☕️ 🐌 11</span>
+      </div>
+    </div>
+  </div>
 
   <a class="move-button" href="https://freejoy.club/move">👉 MOVE 👈</a>
-  
-  <a class="home-link" href="https://freejoy.club" target="_blank" rel="noopener noreferrer">🏠</a>
+  <a class="home-link" href="https://freejoy.club" target="_blank">🏠</a>
+
+  <div id="player-container">
+    <button id="close-btn">✕</button>
+    <div class="iframe-wrapper">
+      <iframe id="video-frame" src="" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+    </div>
+  </div>
 
   <script>
-    document.querySelectorAll('a').forEach(link => {
-      if (!link.classList.contains('move-button')) {
-        link.setAttribute('target', '_blank');
-        link.setAttribute('rel', 'noopener noreferrer');
+    const container = document.getElementById('player-container');
+    const frame = document.getElementById('video-frame');
+    const closeBtn = document.getElementById('close-btn');
+
+    document.getElementById('video-list').addEventListener('click', (e) => {
+      const item = e.target.closest('.video-item');
+      if (item) {
+        const vidId = item.getAttribute('data-id');
+        // Using youtube-nocookie for better compatibility
+        frame.src = `https://www.youtube-nocookie.com/embed/${vidId}?autoplay=1`;
+        container.style.display = 'block';
       }
+    });
+
+    closeBtn.addEventListener('click', () => {
+      container.style.display = 'none';
+      frame.src = '';
     });
   </script>
 </body>
