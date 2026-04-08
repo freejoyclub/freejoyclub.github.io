@@ -567,7 +567,6 @@ function startMayaTimer(partnerIdx) {
                 } 
             };
             sBtn.onclick = () => { modal.style.display='none'; endTurn(); };
-        }
             
         } else if(r.isGrammy) {
             let maxPos = Math.max(...players.map(pl => pl.pos)); let leaders = players.filter(pl => pl.pos === maxPos && pl !== p);
