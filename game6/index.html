@@ -541,7 +541,7 @@ function startMayaTimer(partnerIdx) {
         for(let j=0; j<12; j++) { dice.innerText = Math.floor(Math.random()*6)+1; await new Promise(r => setTimeout(r, 45)); }
         roll = Math.floor(Math.random()*6)+1; dice.innerText = roll;
         if(p.isInvestor && (roll === 1 || roll === 2)) { await new Promise(r => setTimeout(r, 500)); dice.classList.add('dice-gold'); spawnEmoji('👕'); showSidebar("INVESTMENT PAYOFF", "Merch is moving! Roll doubled.", "#ffffff"); p.shirtsSold++; p.accolades.push('👕'); roll *= 2; dice.innerText = roll; await new Promise(r => setTimeout(r, 2000)); updateUI(); }
-        if(p.isSellout && roll === 6) { await new Promise(r => setTimeout(r, 500)); dice.classList.add('dice-red'); spawnEmoji('💊'); showSidebar("CONTRACT DEBT", "Forward 6 becomes Back 2.", "var(--fear-glow)"); p.pillsTaken++; p.accolades.push('💊'); roll = -2; dice.innerText = roll; await new Promise(r => setTimeout(r, 2000)); updateUI(); }
+        if(p.isSellout && roll === 6) { await new Promise(r => setTimeout(r, 500)); dice.classList.add('dice-red'); spawnEmoji('💊'); showSidebar("CONTRACT DEBT", "Label takes a cut! 6 becomes -2. Should've stayed indie...", "var(--fear-glow)"); p.pillsTaken++; p.accolades.push('💊'); roll = -2; dice.innerText = roll; await new Promise(r => setTimeout(r, 2000)); updateUI(); }
         p.totalRollValue += Math.abs(roll); await new Promise(r => setTimeout(r, 250)); dice.classList.remove('dice-cinematic', 'dice-red', 'dice-gold'); await new Promise(r => setTimeout(r, 250)); movePlayer(roll);
     }
 
