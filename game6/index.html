@@ -132,12 +132,12 @@
 
         /* Emoji Icons as "Knobs" - Explicitly centered and visible */
         .nav-btn::before { 
-            font-size: 1.5rem; 
+            font-size: 1.5rem !important; 
             flex-shrink: 0; 
             display: flex;
             align-items: center;
             justify-content: center;
-            visibility: visible; /* Ensures emoji bypasses any parent font-size: 0 */
+            visibility: visible; 
         }
 
         .btn-audio::before { content: "🔇"; }
@@ -181,42 +181,11 @@
         <button class="nav-btn btn-store" onclick="window.open('https://freejoy.club', '_blank')">Store</button>
         <button class="nav-btn btn-album" onclick="window.open('https://freejoy.club', '_blank')">Play the Album</button>
     </div>
-
-        /* Narrow, Transparent Tour Stats */
-        #merch-tracker { 
-            position: fixed; top: 100px; left: 20px; 
-            width: 120px; /* Cut width by half */
-            background: rgba(0, 0, 0, 0.4); /* 70% Transparent (dont u mean opaque, gemini?) */
-            padding: 12px; border-radius: 15px; 
-            border: 1px solid rgba(255, 255, 255, 0.1); 
-            z-index: 5; font-family: monospace;
-            pointer-events: none; /* Let clicks pass through to board unless hovering entries */
-        }
-        #tracker-list { 
-            display: flex; flex-direction: column; gap: 15px; 
-            word-wrap: break-word; /* Force emoji stacking */
-        }
-        .roster-entry { display: flex; flex-direction: column; align-items: flex-start; gap: 4px; pointer-events: auto; }
-        .roster-entry div { display: flex; flex-wrap: wrap; gap: 2px; line-height: 1.2; font-size: 1.1rem; }
-    </style>
-</head>
-<body>
-
-    <div id="nav-cluster">
-        <button id="audio-toggle" class="nav-btn" onclick="toggleAudio()">
-            🔇 AUDIO: <span id="audio-status">ON</span>
-        </button>
-        <button class="nav-btn btn-restart" onclick="confirmSoftRestart()">Restart Tour</button>
-        <button class="nav-btn btn-home" onclick="window.open('https://freejoy.club', '_blank')">Home</button>
-        <button class="nav-btn btn-store" onclick="window.open('https://freejoy.club', '_blank')">Store</button>
-        <button class="nav-btn btn-album" onclick="window.open('https://freejoy.club', '_blank')">Play the Album</button>
-    </div>
     
     <div id="merch-tracker">
         <h4 style="margin:0 0 10px 0; font-size: 0.6rem; letter-spacing: 2px; opacity: 0.6; color: var(--joy-glow); text-transform: uppercase;">Tour Stats</h4>
         <div id="tracker-list"></div>
     </div>
-
         
     <div id="ui-layer">
         <div id="status-text">---</div>
@@ -230,7 +199,7 @@
 
     <div id="board-container">
     </div>
-
+    
     <div id="overlay-event" class="overlay">
         <div class="popup" id="main-popup">
             <h1 id="event-title"></h1>
