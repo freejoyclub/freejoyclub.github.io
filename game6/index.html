@@ -132,22 +132,47 @@
 
         /* Emoji Icons as "Knobs" */
         .nav-btn::before { font-size: 1.5rem; flex-shrink: 0; }
+        .btn-audio::before { content: "🔇"; }
         .btn-restart::before { content: "🔄"; }
         .btn-home::before { content: "🏠"; }
         .btn-store::before { content: "👕"; }
         .btn-album::before { content: "▶️"; }
 
+        .btn-audio:hover { box-shadow: 0 0 20px var(--gold); border-color: var(--gold); color: var(--gold); }
         .btn-restart:hover { box-shadow: 0 0 20px #ff4500; border-color: #ff4500; color: #ff4500; }
         .btn-home:hover { box-shadow: 0 0 20px var(--tape-white); border-color: var(--tape-white); }
         .btn-store:hover { box-shadow: 0 0 20px var(--pink-glow); border-color: var(--pink-glow); color: var(--pink-glow); }
         .btn-album:hover { box-shadow: 0 0 20px var(--joy-glow); border-color: var(--joy-glow); color: var(--joy-glow); }
 
-        #audio-toggle { 
-            background: #222; border: 1px solid #444; color: white; width: 50px; height: 40px; 
-            border-radius: 10px; cursor: pointer; display: flex; align-items: center; justify-content: center; 
-            transition: 0.3s; overflow: hidden; font-size: 0;
+        /* Narrow, Transparent Tour Stats */
+        #merch-tracker { 
+            position: fixed; top: 100px; left: 20px; 
+            width: 120px; 
+            background: rgba(0, 0, 0, 0.4); 
+            padding: 12px; border-radius: 15px; 
+            border: 1px solid rgba(255, 255, 255, 0.1); 
+            z-index: 5; font-family: monospace;
+            pointer-events: none; 
         }
-        #audio-toggle:hover { width: 180px; font-size: 0.8rem; gap: 10px; border-color: var(--gold); box-shadow: 0 0 10px var(--gold); }
+        #tracker-list { 
+            display: flex; flex-direction: column; gap: 15px; 
+            word-wrap: break-word; 
+        }
+        .roster-entry { display: flex; flex-direction: column; align-items: flex-start; gap: 4px; pointer-events: auto; }
+        .roster-entry div { display: flex; flex-wrap: wrap; gap: 2px; line-height: 1.2; font-size: 1.1rem; }
+    </style>
+</head>
+<body>
+
+    <div id="nav-cluster">
+        <button id="audio-toggle" class="nav-btn btn-audio" onclick="toggleAudio()">
+            AUDIO: <span id="audio-status">ON</span>
+        </button>
+        <button class="nav-btn btn-restart" onclick="confirmSoftRestart()">Restart Tour</button>
+        <button class="nav-btn btn-home" onclick="window.open('https://freejoy.club', '_blank')">Home</button>
+        <button class="nav-btn btn-store" onclick="window.open('https://freejoy.club', '_blank')">Store</button>
+        <button class="nav-btn btn-album" onclick="window.open('https://freejoy.club', '_blank')">Play the Album</button>
+    </div>
 
         /* Narrow, Transparent Tour Stats */
         #merch-tracker { 
