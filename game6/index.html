@@ -71,9 +71,9 @@
             position: fixed !important; 
             top: 50% !important; 
             left: 50% !important; 
-            transform: translate3d(-50%, -50%, 0) scale(1.8) !important; 
+            transform: translate3d(-50%, -50%, 0) scale(2.2) !important; 
             z-index: 5000; 
-            opacity: 0.95; 
+            opacity: 0.90; 
             box-shadow: 0 0 50px rgba(255,255,255,0.4);
         }
         
@@ -118,7 +118,7 @@
             overflow: hidden;
             box-shadow: 0 4px 15px rgba(0,0,0,0.5);
         }
-
+        
         /* Expanding Logic */
         .nav-btn:hover { 
             width: 220px; 
@@ -130,8 +130,16 @@
             transform: translateX(10px);
         }
 
-        /* Emoji Icons as "Knobs" */
-        .nav-btn::before { font-size: 1.5rem; flex-shrink: 0; }
+        /* Emoji Icons as "Knobs" - Explicitly centered and visible */
+        .nav-btn::before { 
+            font-size: 1.5rem; 
+            flex-shrink: 0; 
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            visibility: visible; /* Ensures emoji bypasses any parent font-size: 0 */
+        }
+
         .btn-audio::before { content: "🔇"; }
         .btn-restart::before { content: "🔄"; }
         .btn-home::before { content: "🏠"; }
