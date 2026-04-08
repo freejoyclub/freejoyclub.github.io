@@ -124,17 +124,29 @@
       display: block;
     }
 
+    /* MINI PLAYER / OVERLAY */
     #player-container {
       display: none;
       position: fixed;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(0,0,0,0.85); /* The backdrop */
       z-index: 1000;
-      background: rgba(0,0,0,0.95);
-      padding: 15px;
-      border-radius: 20px;
-      border: 2px solid #FFD580;
+      display: none; /* Controlled by JS */
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+    }
+
+    #player-content {
+      position: relative;
+      background: #000;
+      padding: 10px;
+      border-radius: 15px;
+      border: 1px solid #FFD580;
+      box-shadow: 0 0 30px rgba(0,0,0,1);
     }
 
     #close-btn {
@@ -144,12 +156,12 @@
       font-weight: bold;
       font-size: 1.5em;
       cursor: pointer;
-      float: right;
-      margin-bottom: 10px;
+      position: absolute;
+      top: -40px;
+      right: 0;
     }
 
     .iframe-wrapper {
-      position: relative;
       width: 85vw;
       max-width: 560px;
       aspect-ratio: 16/9;
@@ -158,7 +170,7 @@
     .iframe-wrapper iframe {
       width: 100%;
       height: 100%;
-      border-radius: 10px;
+      border-radius: 8px;
     }
   </style>
 </head>
@@ -167,24 +179,6 @@
   <h1>🫁 BREATHE 🫁</h1>
 
   <div id="video-list">
-    <div class="video-item" data-id="uxayUBd6T7M">
-      <div class="bubble-container">
-        <span class="timer-bubble">1m</span> 📦 <span class="description">Box Breathing (Calm)</span>
-      </div>
-    </div>
-
-    <div class="video-item" data-id="aNXK7Gz1_6Y">
-      <div class="bubble-container">
-        <span class="timer-bubble">1m</span> 🌬️ <span class="description">Relaxing Deep Breath</span>
-      </div>
-    </div>
-
-    <div class="video-item" data-id="8VwufJrU5B8">
-      <div class="bubble-container">
-        <span class="timer-bubble">2m</span> 🌊 <span class="description">Anxiety Relief Flow</span>
-      </div>
-    </div>
-
     <div class="video-item" data-id="d3-K6FZAXLM">
       <div class="bubble-container">
         <span class="timer-bubble">4m</span> ✌️ <span class="description">2-inhale 🫁 ☮️</span>
@@ -261,10 +255,12 @@
   <a class="move-button" href="https://freejoy.club/move">👉 MOVE 👈</a>
   <a class="home-link" href="https://freejoy.club" target="_blank">🏠</a>
 
-  <div id="player-container">
-    <button id="close-btn">✕</button>
-    <div class="iframe-wrapper">
-      <iframe id="video-frame" src="" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+  <div id="player-container" style="display:none;">
+    <div id="player-content">
+      <button id="close-btn">✕ CLOSE</button>
+      <div class="iframe-wrapper">
+        <iframe id="video-frame" src="" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+      </div>
     </div>
   </div>
 
@@ -273,20 +269,31 @@
     const frame = document.getElementById('video-frame');
     const closeBtn = document.getElementById('close-btn');
 
+    // Open Player
     document.getElementById('video-list').addEventListener('click', (e) => {
       const item = e.target.closest('.video-item');
       if (item) {
         const vidId = item.getAttribute('data-id');
-        // Using youtube-nocookie for better compatibility
         frame.src = `https://www.youtube-nocookie.com/embed/${vidId}?autoplay=1`;
-        container.style.display = 'block';
+        container.style.display = 'flex';
       }
     });
 
-    closeBtn.addEventListener('click', () => {
+    // Function to kill the video and hide
+    const closePlayer = () => {
       container.style.display = 'none';
       frame.src = '';
-    });
+    };
+
+    // Close on button click
+    closeBtn.onclick = closePlayer;
+
+    // Close on click outside (targeting the backdrop container)
+    container.onclick = (e) => {
+      if (e.target === container) {
+        closePlayer();
+      }
+    };
   </script>
 </body>
 </html>
