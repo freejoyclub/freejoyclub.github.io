@@ -1,6 +1,6 @@
 <!DOCTYPE html><html lang="en"><head>
     <meta charset="UTF-8">
-    <title>Fearjoy - v11.6.9</title>
+    <title>Fearjoy - v11.7</title>
     <style>
         :root {
             --wood-dark: #8b7355; 
@@ -580,7 +580,23 @@ function startMayaTimer(partnerIdx) {
             pBtn.onclick = () => { pBtn.disabled = true; sBtn.style.display='none'; timerUI.style.display='block'; let t = 15; timerUI.innerText = t; const clock = setInterval(() => { t--; timerUI.innerText = t; if(t <= 0) { clearInterval(clock); pBtn.disabled = false; pBtn.innerText = "BREATHING COMPLETED"; pBtn.onclick = async () => { modal.style.display='none'; await new Promise(res => setTimeout(res, 800)); p.pos = 23; updatePositions(); endTurn(); }; } }, 1000); };
             sBtn.onclick = async () => { modal.style.display='none'; await new Promise(res => setTimeout(res, 800)); movePlayer(-2); };
 
-     } else if(r.choice) {
+        } else if(r.choice) {
+            const fadeOutVideo = (vid) => {
+                if (!vid) return;
+                let volume = 1;
+                const interval = 200; 
+                const step = 0.1; 
+                const fade = setInterval(() => {
+                    if (volume > 0.1) {
+                        volume -= step;
+                        vid.volume = volume;
+                    } else {
+                        vid.pause();
+                        clearInterval(fade);
+                    }
+                }, interval);
+            };
+
             // Only add video if the choice is remedy
             if (r.choice === 'remedy') {
                 desc.innerHTML = `
@@ -599,7 +615,7 @@ function startMayaTimer(partnerIdx) {
                     
                     if(cv) cv.onclick = (e) => { 
                         e.stopPropagation(); 
-                        if(vid) vid.pause(); // Kills the audio immediately
+                        fadeOutVideo(vid);
                         document.getElementById('video-wrapper').style.display = 'none'; 
                     };
                     
@@ -614,8 +630,7 @@ function startMayaTimer(partnerIdx) {
             sBtn.innerText = "PASS";
             
             pBtn.onclick = async () => { 
-                const vid = document.getElementById('remedy-video');
-                if(vid) vid.pause(); // Kill audio if they click the button instead of X
+                fadeOutVideo(document.getElementById('remedy-video'));
                 modal.style.display='none'; 
                 await new Promise(res => setTimeout(res, 800)); 
                 if(r.choice==='remedy'){
@@ -628,8 +643,7 @@ function startMayaTimer(partnerIdx) {
                 } 
             };
             sBtn.onclick = () => { 
-                const vid = document.getElementById('remedy-video');
-                if(vid) vid.pause(); // Kill audio if they pass
+                fadeOutVideo(document.getElementById('remedy-video'));
                 modal.style.display='none'; 
                 endTurn(); 
             };
