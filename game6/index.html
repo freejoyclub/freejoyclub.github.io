@@ -134,7 +134,7 @@
         .nav-btn::before { font-size: 1.5rem; flex-shrink: 0; }
         .btn-restart::before { content: "🔄"; }
         .btn-home::before { content: "🏠"; }
-        .btn-store::before { content: "🏬"; }
+        .btn-store::before { content: "👕"; }
         .btn-album::before { content: "▶️"; }
 
         .btn-restart:hover { box-shadow: 0 0 20px #ff4500; border-color: #ff4500; color: #ff4500; }
@@ -153,7 +153,7 @@
         #merch-tracker { 
             position: fixed; top: 100px; left: 20px; 
             width: 120px; /* Cut width by half */
-            background: rgba(0, 0, 0, 0.7); /* 70% Transparent */
+            background: rgba(0, 0, 0, 0.4); /* 70% Transparent (dont u mean opaque, gemini?) */
             padding: 12px; border-radius: 15px; 
             border: 1px solid rgba(255, 255, 255, 0.1); 
             z-index: 5; font-family: monospace;
@@ -170,15 +170,15 @@
 <body>
 
     <div id="nav-cluster">
-        <button id="audio-toggle" onclick="toggleAudio()">
-            <span id="audio-icon">🔊</span> AUDIO: <span id="audio-status">ON</span>
+        <button id="audio-toggle" class="nav-btn" onclick="toggleAudio()">
+            🔇 AUDIO: <span id="audio-status">ON</span>
         </button>
         <button class="nav-btn btn-restart" onclick="confirmSoftRestart()">Restart Tour</button>
         <button class="nav-btn btn-home" onclick="window.open('https://freejoy.club', '_blank')">Home</button>
         <button class="nav-btn btn-store" onclick="window.open('https://freejoy.club', '_blank')">Store</button>
         <button class="nav-btn btn-album" onclick="window.open('https://freejoy.club', '_blank')">Play the Album</button>
     </div>
-
+    
     <div id="merch-tracker">
         <h4 style="margin:0 0 10px 0; font-size: 0.6rem; letter-spacing: 2px; opacity: 0.6; color: var(--joy-glow); text-transform: uppercase;">Tour Stats</h4>
         <div id="tracker-list"></div>
