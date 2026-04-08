@@ -523,7 +523,7 @@ function startMayaTimer(partnerIdx) {
     async function doRoll() {
         if(isMoving || isSwapping || isMayaPartner) return; document.getElementById('rule-sidebar').classList.remove('active');
         const p = players[turnIdx];
-        if(p.skipCount > 0) { p.skipCount--; showStatusPopup("🛠 BUMMER", "Van is still in the shop. Turn skipped.", "OK", () => { endTurn(); }, "DARN", () => { endTurn(); }); return; }
+        if(p.skipCount > 0) { p.skipCount--; showStatusPopup("🛠 BUMMER", "Van is still in the shop. Turn skipped.", "BUMMER", () => { endTurn(); }, "DARN", () => { endTurn(); }); return; }
         if(p.nightDriveActive) { showStatusPopup("🌙 NIGHTDRIVE CHECK", "Did you keep your eyes closed?", "YES", () => { p.nightDriveActive = false; checkNextHonor(p); }, "NO", () => { p.nightDriveActive = false; movePlayer(-1); }); return; }
         checkNextHonor(p);
     }
