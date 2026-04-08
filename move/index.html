@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Move - Freejoy</title>
+  <title>MOVE - FJ</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -13,10 +13,11 @@
       color: white;
       margin: 0;
       padding: 40px 20px;
-      line-height: 1;
+      line-height: 1.2;
       text-shadow: 1px 1px 2px black;
       animation: bgfade 12s infinite;
       transition: background 3s ease-in-out;
+      overflow-x: hidden;
     }
 
     @keyframes bgfade {
@@ -27,129 +28,376 @@
       100% { background-color: #8B0000; }
     }
 
-    a {
-      display: block;
-      color: #FFD580;
-      text-decoration: none;
-      margin: 6px 0;
+    /* THE BUBBLE SYSTEM */
+    .video-item {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 12px auto;
+      cursor: pointer;
+      width: fit-content;
+      max-width: 90vw;
     }
 
-    a:hover {
-      text-decoration: underline;
+    .bubble-container {
+      display: flex;
+      align-items: center;
+      background: rgba(0, 0, 0, 0.4);
+      border-radius: 50px;
+      padding: 6px 18px;
+      transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      border: 1px solid rgba(255, 213, 128, 0.2);
+    }
+
+    .timer-bubble {
+      font-family: "Courier New", Courier, monospace;
+      background: #FFD580;
+      color: black;
+      border-radius: 20px;
+      padding: 2px 10px;
+      font-size: 0.9em;
+      margin-right: 12px;
+      text-shadow: none;
+      flex-shrink: 0;
+    }
+
+    .description {
+      color: #FFD580;
+      white-space: nowrap;
+      overflow: hidden;
+      max-width: 0;
+      opacity: 0;
+      transition: all 0.4s ease;
+      text-align: left;
+    }
+
+    .video-item:hover .bubble-container {
+      background: rgba(0, 0, 0, 0.8);
+      border-color: #FFD580;
+      transform: scale(1.05);
+    }
+
+    .video-item:hover .description {
+      max-width: 500px;
+      opacity: 1;
+      margin-left: 10px;
     }
 
     h1 {
-      margin-bottom: 12px;
-      font-size: 2em;
+      margin-bottom: 25px;
+      font-size: 2.5em;
       animation: float 8s infinite ease-in-out;
       display: inline-block;
       position: relative;
     }
 
     @keyframes float {
-      0%   { top: 0; left: 0; }
-      25%  { top: -3px; left: 3px; }
-      50%  { top: 3px; left: -2px; }
-      75%  { top: -2px; left: -3px; }
-      100% { top: 0; left: 0; }
-    }
-
-    p {
-      white-space: pre-line;
-      margin-bottom: 40px;
-    }
-
-    .breathe-button {
-      background-color: black;
-      color: white;
-      padding: 10px 20px;
-      font-size: 2em;
-      font-family: Arial, sans-serif;
-      font-weight: bold;
-      border: none;
-      border-radius: 12px;
-      text-decoration: none;
-      display: inline-block;
-      margin: 20px auto 8px;
-      cursor: pointer;
-    }
-
-    .home-link {
-      font-size: 1.5em;
-      color: white;
-      text-decoration: none;
-      display: block;
-      margin-bottom: 10px;
+      0% { transform: translate(0,0); }
+      25% { transform: translate(3px, -3px); }
+      50% { transform: translate(-2px, 3px); }
+      100% { transform: translate(0,0); }
     }
 
     .section-header {
       color: #CCCCCC;
-      margin: 20px 0 10px;
+      margin: 30px 0 15px;
       font-size: 1.2em;
       font-weight: normal;
+      text-transform: uppercase;
+      letter-spacing: 2px;
     }
-    
-    .time-badge {
-      color: #BBBBBB;
-      margin-left: 6px;
-      font-size: 0.9em;
-      font-weight: normal;
+
+    .breathe-button {
+      background-color: black;
+      color: #FFD580;
+      padding: 12px 24px;
+      border-radius: 12px;
+      font-size: 1.8em;
+      display: inline-block;
+      margin: 40px auto 20px;
+      transition: all 0.4s ease;
+      animation: move-float 10s infinite ease-in-out;
+      position: relative;
+      text-decoration: none;
     }
+
+    @keyframes move-float {
+      0% { top: 0; left: 0; }
+      50% { top: 4px; left: -3px; }
+      100% { top: 0; left: 0; }
+    }
+
+    .home-link {
+      font-size: 2em;
+      color: white;
+      text-decoration: none;
+      display: block;
+    }
+
+    /* MINI PLAYER / OVERLAY */
+    #player-container {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(0,0,0,0.85);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+    }
+
+    #player-content {
+      position: relative;
+      background: #000;
+      padding: 10px;
+      border-radius: 15px;
+      border: 1px solid #FFD580;
+      box-shadow: 0 0 30px rgba(0,0,0,1);
+    }
+
+    #close-btn {
+      color: #FFD580;
+      background: none;
+      border: none;
+      font-weight: bold;
+      font-size: 1.5em;
+      cursor: pointer;
+      position: absolute;
+      top: -40px;
+      right: 0;
+    }
+
+    .iframe-wrapper {
+      width: 85vw;
+      max-width: 560px;
+      aspect-ratio: 16/9;
+    }
+
+    .iframe-wrapper iframe {
+      width: 100%;
+      height: 100%;
+      border-radius: 8px;
+    }
+
+    /* Support for external playlist/channel links */
+    .external-link {
+      color: #FFD580;
+      text-decoration: none;
+      display: block;
+      margin: 8px 0;
+      font-size: 1.1em;
+    }
+    .external-link:hover { text-decoration: underline; }
   </style>
 </head>
 <body>
+
   <h1>💪 MOVEMENT 🦵</h1>
-  <p>
-    <a href="https://youtu.be/w24t5yPYnIY">1 MIN MOVE <span class="time-badge">[1m]</span></a>
-    <a href="https://youtu.be/oVzwUB28nLQ?si=-CzmJFyiayiTQnTc">☯️ Qi Gong 🚶‍♂️! <span class="time-badge">[5m]</span></a>
-    <a href="https://youtu.be/gSPgDpebM-Y">🧘‍♂️ B&F <span class="time-badge">[5m]</span></a>
-    <a href="https://youtu.be/VG3j8r2Ag_k?si=hY5wXV8_oC5b0CJs">🧘‍♂️ Tim <span class="time-badge">[5m]</span></a>
-    <a href="https://youtu.be/PVi1Vh6Dcok">Tim mobility! 🧘‍♂️ <span class="time-badge">[10m]</span></a>
-    <a href="https://youtu.be/FsBMyiLP_G0?si=_18taQonNYa3Rzet">Tim 1 <span class="time-badge">[10m]</span></a>
-    <a href="https://youtu.be/w2xk84OCTVo">MOVE <span class="time-badge">[10m]</span></a>
-    <a href="https://youtu.be/O38rtX9Luds?si=U6_gx3qtm0CpqvWL">🔟 Qi Gong <span class="time-badge">[10m]</span></a>
-    <a href="https://youtu.be/aRVFt79LqCM?si=DDI1aaVau7hk_zcq">Mobility - Julia <span class="time-badge">[10m]</span></a>
-    <a href="https://youtu.be/UxU8OCsNbYY?si=Nxth9WFZF6nZCBMx">Yoga - mid gentle <span class="time-badge">[12m]</span></a>
-    <a href="https://youtu.be/keyWzojUHbs?si=maaCunund07mWxF-">🔥 🌟 ENGAGE 💪 Tim <span class="time-badge">[14m]</span></a>
-    <a href="https://youtu.be/4xLEDm6xjgg?si=0jIIY0z3hE_smPcl">🌟 FULL body mobility <span class="time-badge">[14m]</span></a>
-    <a href="https://youtu.be/loIwcMca6n8?si=NctTBaWvNUSScXER">Tim semi chill <span class="time-badge">[15m]</span></a>
-    <a href="https://youtu.be/qVSgyTYqBQU">🧘‍♂️ Tim! <span class="time-badge">[15m]</span></a>
-    <a href="https://youtu.be/YxySUy2jU_s">🧘‍♂️ B&F 🔥 <span class="time-badge">[15m]</span></a>
-    <a href="https://youtu.be/tq-vxTqoiHw">🧘‍♀️ TIM - GREAT <span class="time-badge">[18m]</span></a>
-    <a href="https://youtu.be/fAuqtYPoHpk?si=9xKekSOrAHs9eruD">Ultimate TIM <span class="time-badge">[20m]</span></a>
-    <a href="https://youtu.be/YgVblti33RQ?si=vIeqhdQky1vvMwN6">🇬🇧 "Best 20" Tim <span class="time-badge">[20m]</span></a>
-    <a href="https://youtu.be/_c9MDeDJ7IA?si=7132eY_cMkFBAUdD">Tim banger <span class="time-badge">[20m]</span></a>
-    <a href="https://youtu.be/NC2WavCsu-s?si=AssVp-O0TdtTTRN8">TIM 🔥 😎 <span class="time-badge">[20m]</span></a>
-    <a href="https://youtu.be/PuUEbOjK9gw?si=Qc62EywyWu3z-WYo">🧘‍♂️ 🕉 🌞 🫡 Tim <span class="time-badge">[21m]</span></a>
-    <a href="https://youtu.be/DxN0HZA-Ayo?si=vkWitq3kIlEc2eVy">🧘‍♂️ Tim Daily <span class="time-badge">[22m]</span></a>
-    <a href="https://youtu.be/a9ZNCoNM604">🧘‍♀️ TIM <span class="time-badge">[25m]</span></a>
-    <a href="https://youtu.be/5cubPXdQ0ds?si=XpgIHa-dXOawimFO">Feel good rolls PRIMAL! <span class="time-badge">[30m]</span></a>
-    <a href="https://youtu.be/612k-CjtoqU?si=2Ns9gTVz0pdLJnH_">🧘‍♀️ Tim <span class="time-badge">[41m]</span></a>
+
+  <div id="video-list">
+    <div class="video-item" data-id="w24t5yPYnIY">
+      <div class="bubble-container">
+        <span class="timer-bubble">1m</span> 🦵 <span class="description">1 MIN MOVE</span>
+      </div>
+    </div>
+
+    <div class="video-item" data-id="oVzwUB28nLQ">
+      <div class="bubble-container">
+        <span class="timer-bubble">5m</span> 🚶‍♂️ <span class="description">☯️ Qi Gong !</span>
+      </div>
+    </div>
+
+    <div class="video-item" data-id="gSPgDpebM-Y">
+      <div class="bubble-container">
+        <span class="timer-bubble">5m</span> 🧘‍♂️ <span class="description">B&F Flow</span>
+      </div>
+    </div>
+
+    <div class="video-item" data-id="VG3j8r2Ag_k">
+      <div class="bubble-container">
+        <span class="timer-bubble">5m</span> 🧘‍♂️ <span class="description">Tim Flow</span>
+      </div>
+    </div>
+
+    <div class="video-item" data-id="PVi1Vh6Dcok">
+      <div class="bubble-container">
+        <span class="timer-bubble">10m</span> 🧘‍♂️ <span class="description">Tim Mobility</span>
+      </div>
+    </div>
+
+    <div class="video-item" data-id="FsBMyiLP_G0">
+      <div class="bubble-container">
+        <span class="timer-bubble">10m</span> 🧘‍♂️ <span class="description">Tim 1</span>
+      </div>
+    </div>
+
+    <div class="video-item" data-id="w2xk84OCTVo">
+      <div class="bubble-container">
+        <span class="timer-bubble">10m</span> 🦵 <span class="description">MOVE</span>
+      </div>
+    </div>
+
+    <div class="video-item" data-id="O38rtX9Luds">
+      <div class="bubble-container">
+        <span class="timer-bubble">10m</span> 🔟 <span class="description">Qi Gong</span>
+      </div>
+    </div>
+
+    <div class="video-item" data-id="aRVFt79LqCM">
+      <div class="bubble-container">
+        <span class="timer-bubble">10m</span> 🧘‍♀️ <span class="description">Mobility - Julia</span>
+      </div>
+    </div>
+
+    <div class="video-item" data-id="UxU8OCsNbYY">
+      <div class="bubble-container">
+        <span class="timer-bubble">12m</span> 🧘 <span class="description">Yoga - Mid Gentle</span>
+      </div>
+    </div>
+
+    <div class="video-item" data-id="keyWzojUHbs">
+      <div class="bubble-container">
+        <span class="timer-bubble">14m</span> 🔥 <span class="description">ENGAGE 💪 Tim</span>
+      </div>
+    </div>
+
+    <div class="video-item" data-id="4xLEDm6xjgg">
+      <div class="bubble-container">
+        <span class="timer-bubble">14m</span> 🌟 <span class="description">Full Body Mobility</span>
+      </div>
+    </div>
+
+    <div class="video-item" data-id="loIwcMca6n8">
+      <div class="bubble-container">
+        <span class="timer-bubble">15m</span> 🧘‍♂️ <span class="description">Tim Semi Chill</span>
+      </div>
+    </div>
+
+    <div class="video-item" data-id="qVSgyTYqBQU">
+      <div class="bubble-container">
+        <span class="timer-bubble">15m</span> 🧘‍♂️ <span class="description">Tim Flow</span>
+      </div>
+    </div>
+
+    <div class="video-item" data-id="YxySUy2jU_s">
+      <div class="bubble-container">
+        <span class="timer-bubble">15m</span> 🔥 <span class="description">B&F Burn</span>
+      </div>
+    </div>
+
+    <div class="video-item" data-id="tq-vxTqoiHw">
+      <div class="bubble-container">
+        <span class="timer-bubble">18m</span> 🧘‍♀️ <span class="description">TIM - Great</span>
+      </div>
+    </div>
+
+    <div class="video-item" data-id="fAuqtYPoHpk">
+      <div class="bubble-container">
+        <span class="timer-bubble">20m</span> 🧘‍♂️ <span class="description">Ultimate TIM</span>
+      </div>
+    </div>
+
+    <div class="video-item" data-id="YgVblti33RQ">
+      <div class="bubble-container">
+        <span class="timer-bubble">20m</span> 🇬🇧 <span class="description">Best 20 - Tim</span>
+      </div>
+    </div>
+
+    <div class="video-item" data-id="_c9MDeDJ7IA">
+      <div class="bubble-container">
+        <span class="timer-bubble">20m</span> 🧘‍♂️ <span class="description">Tim Banger</span>
+      </div>
+    </div>
+
+    <div class="video-item" data-id="NC2WavCsu-s">
+      <div class="bubble-container">
+        <span class="timer-bubble">20m</span> 🔥 <span class="description">TIM Elite</span>
+      </div>
+    </div>
+
+    <div class="video-item" data-id="PuUEbOjK9gw">
+      <div class="bubble-container">
+        <span class="timer-bubble">21m</span> 🌞 <span class="description">Yoga Flow Tim</span>
+      </div>
+    </div>
+
+    <div class="video-item" data-id="DxN0HZA-Ayo">
+      <div class="bubble-container">
+        <span class="timer-bubble">22m</span> 🧘‍♂️ <span class="description">Tim Daily</span>
+      </div>
+    </div>
+
+    <div class="video-item" data-id="a9ZNCoNM604">
+      <div class="bubble-container">
+        <span class="timer-bubble">25m</span> 🧘‍♀️ <span class="description">Yoga Tim</span>
+      </div>
+    </div>
+
+    <div class="video-item" data-id="5cubPXdQ0ds">
+      <div class="bubble-container">
+        <span class="timer-bubble">30m</span> 🦶 <span class="description">Feel Good Primal Rolls</span>
+      </div>
+    </div>
+
+    <div class="video-item" data-id="612k-CjtoqU">
+      <div class="bubble-container">
+        <span class="timer-bubble">41m</span> 🧘‍♀️ <span class="description">Yoga Tim Long</span>
+      </div>
+    </div>
 
     <div class="section-header">▶️ Playlists</div>
-    <a href="https://youtube.com/playlist?list=PLoAnh-GiKoq1d2f-wDgI1RInJYbvhGlm5&si=A6IKDN45BqWveUNy">☯️ Qi Gong playlist [5m]</a>
-    <a href="https://youtube.com/playlist?list=PLoAnh-GiKoq1j96ez4CaqbnI-LejbBhLH&si=s3A4MCdUtjqIjtWQ">☯️ Qi Gong playlist [10m]</a>
-    <a href="https://youtube.com/playlist?list=PLoAnh-GiKoq23GOzEVwDqG5blezv7TCvH&si=TbBpjL2WzShqbDY5">☯️ Qi Gong playlist [15m]</a>
-    <a href="https://youtube.com/playlist?list=PL9T0rODp2rcscM3lL6ugReiHxMeb7t6Th&si=iHNmjQYQxdjYJUMM">🧘‍♂️ 🕐 10-20 playlist</a>
-    <a href="https://www.youtube.com/watch?v=whf9pRHbH0o&list=PLPDHotOCPg8_Rl-iOmYxo6nkHHZCSVbgR">🦵5m Move - follow (StrengthSide) [5m]</a>
-
+    <a class="external-link" href="https://youtube.com/playlist?list=PLoAnh-GiKoq1d2f-wDgI1RInJYbvhGlm5" target="_blank">☯️ Qi Gong [5m]</a>
+    <a class="external-link" href="https://youtube.com/playlist?list=PLoAnh-GiKoq1j96ez4CaqbnI-LejbBhLH" target="_blank">☯️ Qi Gong [10m]</a>
+    <a class="external-link" href="https://youtube.com/playlist?list=PLoAnh-GiKoq23GOzEVwDqG5blezv7TCvH" target="_blank">☯️ Qi Gong [15m]</a>
+    <a class="external-link" href="https://youtube.com/playlist?list=PL9T0rODp2rcscM3lL6ugReiHxMeb7t6Th" target="_blank">🧘‍♂️ 🕐 10-20 Mixed</a>
 
     <div class="section-header">📺 Channels</div>
-    <a href="https://www.youtube.com/channel/UCciuZl2ydLCvN5txlLW0rIg">🧘‍♂️ Yoga With Tim Channel</a>
-    <a href="https://youtube.com/@breatheandflow?si=QN5MnoG0Gnw2jh4R">🧘‍♂️ Breathe and Flow Channel</a>
-
-  </p>
+    <a class="external-link" href="https://www.youtube.com/channel/UCciuZl2ydLCvN5txlLW0rIg" target="_blank">🧘‍♂️ Yoga With Tim</a>
+    <a class="external-link" href="https://youtube.com/@breatheandflow" target="_blank">🧘‍♂️ Breathe and Flow</a>
+  </div>
 
   <a class="breathe-button" href="https://freejoy.club/breathe">👉 BREATHE 👈</a>
-  <a class="home-link" href="https://freejoy.club" target="_blank" rel="noopener noreferrer">🏠</a>
+  <a class="home-link" href="https://freejoy.club" target="_blank">🏠</a>
 
-<script>
-  document.querySelectorAll('a').forEach(link => {
-    if (!link.classList.contains('breathe-button')) {
-      link.setAttribute('target', '_blank');
-      link.setAttribute('rel', 'noopener noreferrer');
-    }
-  });
-</script>
+  <div id="player-container">
+    <div id="player-content">
+      <button id="close-btn">✕ CLOSE</button>
+      <div class="iframe-wrapper">
+        <iframe id="video-frame" src="" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const container = document.getElementById('player-container');
+    const frame = document.getElementById('video-frame');
+    const closeBtn = document.getElementById('close-btn');
+
+    // Open Player
+    document.getElementById('video-list').addEventListener('click', (e) => {
+      const item = e.target.closest('.video-item');
+      if (item) {
+        const vidId = item.getAttribute('data-id');
+        frame.src = `https://www.youtube-nocookie.com/embed/${vidId}?autoplay=1`;
+        container.style.display = 'flex';
+      }
+    });
+
+    const closePlayer = () => {
+      container.style.display = 'none';
+      frame.src = '';
+    };
+
+    closeBtn.onclick = closePlayer;
+
+    container.onclick = (e) => {
+      if (e.target === container) {
+        closePlayer();
+      }
+    };
+  </script>
 </body>
 </html>
