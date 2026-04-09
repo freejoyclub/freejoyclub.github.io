@@ -4,8 +4,8 @@
     <title>Fearjoy - v11.7</title>
     <style>
         @font-face {
-            font-family: 'KCNeueTeeth';
-            src: url('KCNeueTeeth.otf') format('opentype');
+            font-family: 'KCStrikerSans';
+            src: url('KCStrikerSans.otf') format('opentype');
             font-weight: normal;
             font-style: normal;
         }
@@ -79,7 +79,7 @@
         #status-text {
             flex: 1;
             font-size: clamp(0.9rem, 3vw, 2.2rem);
-            font-family: 'KCNeueTeeth', 'Courier New', monospace;
+            font-family: 'KCStrikerSans', 'Courier New', monospace;
             text-transform: uppercase;
             line-height: 1;
             min-width: 0;
@@ -95,7 +95,7 @@
             color: black;
             width: clamp(100px, 20vw, 220px);
             font-size: clamp(1rem, 2.5vw, 1.6rem);
-            font-family: 'KCNeueTeeth', 'Courier New', monospace;
+            font-family: 'KCStrikerSans', 'Courier New', monospace;
             font-weight: bold;
             padding: clamp(8px, 1.5vh, 15px);
             border: none;
@@ -369,7 +369,7 @@
             text-align: center;
             transition: 0.4s;
         }
-        .popup h1 { font-family: 'KCNeueTeeth', 'Courier New', monospace; }
+        .popup h1 { font-family: 'KCStrikerSans', 'Courier New', monospace; }
 
         #rule-sidebar { position: fixed; right: -350px; top: clamp(80px, 14vh, 135px); width: 280px; background: var(--ui-bg); padding: 30px; border-radius: 20px; border: 2px solid var(--joy-glow); transition: 0.6s; z-index: 100; box-shadow: -10px 0 40px rgba(0,0,0,0.6); cursor: pointer; }
         #rule-sidebar.active { right: 25px; }
@@ -378,7 +378,7 @@
         .tag-investor { background: var(--gold); color: black; }
         .tag-sellout { background: var(--fear-glow); color: white; }
 
-        .intro-header { font-size: clamp(2rem, 6vw, 3.5rem); color: var(--gold); animation: introGlow 2s ease-in-out infinite alternate; margin-bottom: 20px; font-family: 'KCNeueTeeth', 'Courier New', monospace; letter-spacing: 4px; }
+        .intro-header { font-size: clamp(2rem, 6vw, 3.5rem); color: var(--gold); animation: introGlow 2s ease-in-out infinite alternate; margin-bottom: 20px; font-family: 'KCStrikerSans', 'Courier New', monospace; letter-spacing: 4px; }
 
         /* ── SETUP SCREEN ── */
         .setup-btn-large { padding: 20px 45px; font-size: 2.5rem; font-weight: bold; background: transparent; color: white; border: 2px solid white; border-radius: 12px; cursor: pointer; transition: all 0.2s ease; }
@@ -958,7 +958,7 @@
         const winSfx = new Audio('swimclip.wav');
         winSfx.play().catch(e => console.log("Audio play blocked"));
 
-        let statsHtml = `<h2 style="color:${p.avatar.color}; animation: winPulse 2s infinite ease-in-out; font-size: 2.2rem; font-family: 'KCNeueTeeth', 'Courier New', monospace; margin: 5px 0; --p-color: ${p.avatar.color}; text-shadow: 0 0 20px ${p.avatar.color};">${p.name} WINS!</h2>`;
+        let statsHtml = `<h2 style="color:${p.avatar.color}; animation: winPulse 2s infinite ease-in-out; font-size: 2.2rem; font-family: 'KCStrikerSans', 'Courier New', monospace; margin: 5px 0; --p-color: ${p.avatar.color}; text-shadow: 0 0 20px ${p.avatar.color};">${p.name} WINS!</h2>`;
         statsHtml += `<div class="recap-container" style="text-align:left; margin-top:15px; font-family:monospace; background: rgba(0,0,0,0.4); border-radius: 12px; padding: 12px; border: 1px solid #333;">`;
         
         players.forEach(pl => { 
