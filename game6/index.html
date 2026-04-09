@@ -1,7 +1,13 @@
 <!DOCTYPE html><html lang="en"><head>
     <meta charset="UTF-8">
-    <title>Fearjoy - v11.7</title>
+    <title>Fearjoy - v11.8: Claude 1</title>
     <style>
+        @font-face {
+    font-family: 'KCNeueTeeth';
+    src: url('KCNeueTeeth.otf') format('opentype');
+    font-weight: normal;
+    font-style: normal;
+}
         :root {
             --wood-dark: #8b7355; 
             --wood-mid: #b39b7d; 
@@ -54,7 +60,7 @@
             width: 1000px; justify-content: space-between; z-index: 10; position: relative; 
         }
 
-        #status-text { width: 350px; font-size: 2.2rem; font-weight: 900; text-transform: uppercase; line-height: 1; }
+        #status-text { width: 350px; font-size: 2.2rem; font-family: 'KCNeueTeeth', 'Courier New', monospace; text-transform: uppercase; line-height: 1; }     
         
         #dice-slot-right { width: 90px; height: 90px; display: flex; align-items: center; justify-content: center; }
         
@@ -88,12 +94,14 @@
         .roster-active { animation: borderPulse 2s infinite; border: 1px solid var(--p-color); }
         .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 2000; display: none; align-items: center; justify-content: center; }
         .popup { background: rgba(10, 10, 10, 0.9); backdrop-filter: blur(8px); padding: 45px; border-radius: 30px; border: 2px solid #444; width: 680px; text-align: center; transition: 0.4s; }
+        .popup h1 { font-family: 'KCNeueTeeth', 'Courier New', monospace; }
         #rule-sidebar { position: fixed; right: -350px; top: 135px; width: 280px; background: var(--ui-bg); padding: 30px; border-radius: 20px; border: 2px solid var(--joy-glow); transition: 0.6s; z-index: 100; box-shadow: -10px 0 40px rgba(0,0,0,0.6); cursor: pointer; }
         #rule-sidebar.active { right: 25px; }
         .tag { font-size: 0.75rem; padding: 4px 8px; border-radius: 4px; font-weight: bold; margin-left: 5px; letter-spacing: 0.5px; }
         .tag-investor { background: var(--gold); color: black; }
         .tag-sellout { background: var(--fear-glow); color: white; }
-        .intro-header { font-size: 3.5rem; color: var(--gold); animation: introGlow 2s ease-in-out infinite alternate; margin-bottom: 20px; font-weight: 900; letter-spacing: 4px; }
+        .intro-header { font-size: 3.5rem; color: var(--gold); animation: introGlow 2s ease-in-out infinite alternate; margin-bottom: 20px; font-family: 'KCNeueTeeth', 'Courier New', monospace; letter-spacing: 4px; } 
+
         
     #nav-cluster { position: fixed; bottom: 25px; left: 25px; display: flex; flex-direction: column; align-items: flex-start; gap: 12px; z-index: 1000; }
         
@@ -190,7 +198,7 @@
     <div id="ui-layer">
         <div id="status-text">---</div>
         <div id="roll-btn-center">
-            <button id="roll-btn" onclick="doRoll()" disabled style="background: var(--joy-glow); color: black; width: 220px; font-size: 1.6rem; font-weight:bold; padding:15px; border:none; border-radius:8px; cursor:pointer;">ROLL</button>
+            <button id="roll-btn" onclick="doRoll()" disabled style="background: var(--joy-glow); color: black; width: 220px; font-size: 1.6rem; font-family: 'KCNeueTeeth', 'Courier New', monospace; font-weight:bold; padding:15px; border:none; border-radius:8px; cursor:pointer;">ROLL</button>
         </div>
         <div id="dice-slot-right">
             <div id="dice-box">?</div>
@@ -760,8 +768,7 @@ function showWinScreen() {
         const winSfx = new Audio('swimclip.wav');
         winSfx.play().catch(e => console.log("Audio play blocked"));
 
-        let statsHtml = `<h2 style="color:${p.avatar.color}; animation: winPulse 2s infinite ease-in-out; font-size: 2.2rem; margin: 5px 0; --p-color: ${p.avatar.color}; text-shadow: 0 0 20px ${p.avatar.color};">${p.name} WINS!</h2>`;
-        statsHtml += `<div class="recap-container" style="text-align:left; margin-top:15px; font-family:monospace; background: rgba(0,0,0,0.4); border-radius: 12px; padding: 12px; border: 1px solid #333;">`;
+let statsHtml = `<h2 style="color:${p.avatar.color}; animation: winPulse 2s infinite ease-in-out; font-size: 2.2rem; font-family: 'KCNeueTeeth', 'Courier New', monospace; margin: 5px 0; --p-color: ${p.avatar.color}; text-shadow: 0 0 20px ${p.avatar.color};">${p.name} WINS!</h2>`;        statsHtml += `<div class="recap-container" style="text-align:left; margin-top:15px; font-family:monospace; background: rgba(0,0,0,0.4); border-radius: 12px; padding: 12px; border: 1px solid #333;">`;
         
         players.forEach(pl => { 
             const merchEmojis = "👕".repeat(pl.shirtsSold || 0);
