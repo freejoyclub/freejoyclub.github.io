@@ -1673,7 +1673,8 @@
         const popupEl=document.getElementById('main-popup');
         popupEl.style.borderColor=spaceCol;popupEl.style.boxShadow=`0 0 30px ${spaceCol}`;
         /* Only play space sound if it's the current player's turn space */
-        if(r.sound)playSpaceSfx(r.sound);
+        /* Remedy sound is fired manually below after video starts — skip it here */
+        if(r.sound && r.choice !== 'remedy') playSpaceSfx(r.sound);
         if(r.choice==='remedy'&&p.isSellout){showSidebar("CONTRACT ACTIVE","Soul already sold.",spaceCol);endTurn();return;}
         if(r.choice==='merch' &&p.isInvestor){showSidebar("ALREADY INVESTED","Inventory full.",spaceCol);endTurn();return;}
         if(r.isAuto){showSidebar(r.title,(r.emoji||"")+" "+(r.desc||"Moving..."),spaceCol);setTimeout(()=>movePlayer(r.shift),1500);return;}
@@ -1730,6 +1731,8 @@
                     const cv=document.getElementById('close-video');const vid=document.getElementById('remedy-video');
                     if(cv)cv.onclick=(e)=>{e.stopPropagation();fadeOutVideo(vid);document.getElementById('video-wrapper').style.display='none';};
                     if(vid)vid.play().catch(()=>{});
+                    /* Fire remedyclip after video has started so both play together without competing */
+                    setTimeout(()=>playSfx('remedyclip.wav'), 150);
                 },50);
             }
             pBtn.innerText=r.choice==='remedy'?"SIGN CONTRACT (+6)":"INVEST IN MERCH (-4)";
