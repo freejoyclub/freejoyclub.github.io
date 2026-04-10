@@ -92,39 +92,41 @@
         /* ── MAIN AREA (board + passes) — ORDER: board first, bar at bottom ── */
         #main-area { flex:1; display:flex; flex-direction:row; min-height:0; overflow:hidden; position:relative; }
 
-        /* ── BOTTOM UI BAR — metallic 1176-style rack compressor ── */
+        /* ── BOTTOM UI BAR — semi-transparent with subtle gradient ── */
         #ui-layer {
             display:flex; align-items:center; justify-content:center;
-            padding:0 clamp(10px,3vw,45px);
+            padding:0 clamp(32px,4vw,56px);
             height:var(--bar-h); min-height:var(--bar-h); max-height:var(--bar-h);
             border-radius:12px 12px 0 0;
-            border:1px solid rgba(255,255,255,0.12); border-bottom:none;
+            border:1px solid rgba(255,255,255,0.1); border-bottom:none;
             width:100%; box-sizing:border-box;
             z-index:20; position:relative; flex-shrink:0;
-            /* Metallic rack gear gradient */
             background:linear-gradient(180deg,
-                #2a2a2a 0%, #1e1e1e 15%, #252525 30%,
-                #1a1a1a 50%, #222 70%, #1c1c1c 85%, #181818 100%);
-            background-image:
-                linear-gradient(180deg,rgba(255,255,255,0.06) 0%,transparent 40%,transparent 60%,rgba(0,0,0,0.18) 100%),
-                repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(255,255,255,0.018) 2px,rgba(255,255,255,0.018) 4px);
-            box-shadow:0 -2px 12px rgba(0,0,0,0.6),inset 0 1px 0 rgba(255,255,255,0.07);
-            overflow:hidden;
+                rgba(0,0,0,0.55) 0%,
+                rgba(10,10,10,0.45) 40%,
+                rgba(0,0,0,0.5) 100%);
+            box-shadow:0 -2px 16px rgba(0,0,0,0.5);
+            overflow:visible;
         }
-        /* Metallic shine sweep */
+        /* Subtle metallic shine sweep */
         #ui-layer::after {
             content:''; position:absolute; inset:0; pointer-events:none;
-            background:linear-gradient(105deg,transparent 30%,rgba(255,255,255,0.035) 50%,transparent 65%);
+            border-radius:inherit;
+            background:linear-gradient(105deg,transparent 30%,rgba(255,255,255,0.025) 50%,transparent 65%);
             background-size:400% 100%;
             animation:barShine 8s ease-in-out infinite;
         }
-        /* Rack screws — four corners */
+        /* Four corner rack screws */
         #ui-layer::before {
             content:''; position:absolute; inset:0; pointer-events:none;
+            border-radius:inherit;
             background:
-                radial-gradient(circle 5px at 14px 50%,#555 40%,#333 70%,transparent 100%),
-                radial-gradient(circle 5px at calc(100% - 14px) 50%,#555 40%,#333 70%,transparent 100%);
+                radial-gradient(circle 5px at 18px 30%,#666 30%,#333 65%,transparent 100%),
+                radial-gradient(circle 5px at 18px 70%,#666 30%,#333 65%,transparent 100%),
+                radial-gradient(circle 5px at calc(100% - 18px) 30%,#666 30%,#333 65%,transparent 100%),
+                radial-gradient(circle 5px at calc(100% - 18px) 70%,#666 30%,#333 65%,transparent 100%);
         }
+        
         #ui-layer-color-wash {
             position:absolute; inset:0; pointer-events:none;
             background:linear-gradient(90deg,var(--current-player-color,transparent) 0%,transparent 35%);
@@ -139,44 +141,59 @@
             text-shadow:0 0 8px currentColor;
         }
 
-        /* ── VU METER ── */
+        /* ── VU METER — recessed glass viewport with glowing edge lights ── */
         #vu-meter {
             display:flex; flex-direction:column; align-items:center; justify-content:center;
-            width:clamp(36px,4.5vw,60px); flex-shrink:0; gap:3px;
+            width:clamp(42px,5.5vw,72px); flex-shrink:0; gap:2px;
             position:relative; z-index:1;
         }
+        /* Rounded-rect glass viewport */
         #vu-arc {
-            width:clamp(32px,4vw,52px); height:clamp(16px,2vw,26px);
-            position:relative; overflow:visible;
+            width:clamp(36px,4.8vw,62px); height:clamp(20px,2.6vw,34px);
+            position:relative; overflow:hidden;
+            border-radius:6px;
+            background:linear-gradient(180deg,rgba(40,32,8,0.85) 0%,rgba(20,16,4,0.95) 100%);
+            /* Inset glow — warm yellow/amber from edges, like lit indicator glass */
+            box-shadow:
+                inset 0 0 8px rgba(255,200,60,0.35),
+                inset 0 0 3px rgba(255,220,100,0.2),
+                0 0 6px rgba(255,180,40,0.15);
+            animation:vuGlow 2.5s ease-in-out infinite;
+            border:1px solid rgba(255,180,40,0.25);
+        }
+        @keyframes vuGlow {
+            0%,100%{box-shadow:inset 0 0 8px rgba(255,200,60,0.35),inset 0 0 3px rgba(255,220,100,0.2),0 0 6px rgba(255,180,40,0.15);}
+            50%{box-shadow:inset 0 0 14px rgba(255,210,70,0.5),inset 0 0 5px rgba(255,230,120,0.3),0 0 10px rgba(255,190,50,0.25);}
         }
         #vu-needle {
-            position:absolute; bottom:0; left:50%;
-            width:2px; height:clamp(14px,1.8vw,22px);
-            background:linear-gradient(to top,#ff4400,#ffaa00);
-            border-radius:2px 2px 0 0;
+            position:absolute; bottom:1px; left:50%;
+            width:1px; height:clamp(13px,1.7vw,20px);
+            background:linear-gradient(to top,#5a0000 0%,#aa1100 60%,#cc2200 100%);
+            border-radius:1px 1px 0 0;
             transform-origin:bottom center;
             transform:rotate(-45deg);
             animation:vuIdle 3s ease-in-out infinite;
             transition:transform 0.15s cubic-bezier(0.2,2,0.4,1);
-            box-shadow:0 0 4px #ff8800;
         }
-        #vu-label { font-size:clamp(0.3rem,0.5vw,0.48rem); letter-spacing:2px; color:rgba(255,255,255,0.35); text-transform:uppercase; }
         /* Tick marks */
         #vu-arc::before {
-            content:''; position:absolute; bottom:0; left:50%; width:1px;
-            height:clamp(16px,2vw,26px); border-radius:1px;
-            background:rgba(255,255,255,0.1);
+            content:''; position:absolute; bottom:1px; left:50%; width:1px;
+            height:clamp(13px,1.7vw,20px); border-radius:1px;
+            background:rgba(255,200,80,0.15);
             transform:rotate(-45deg); transform-origin:bottom center;
         }
         #vu-arc::after {
-            content:''; position:absolute; bottom:0; left:50%; width:1px;
-            height:clamp(16px,2vw,26px); border-radius:1px;
-            background:rgba(255,255,255,0.1);
+            content:''; position:absolute; bottom:1px; left:50%; width:1px;
+            height:clamp(13px,1.7vw,20px); border-radius:1px;
+            background:rgba(255,200,80,0.15);
             transform:rotate(45deg); transform-origin:bottom center;
         }
+        #vu-label { font-size:clamp(0.28rem,0.45vw,0.42rem); letter-spacing:2px; color:rgba(255,200,80,0.4); text-transform:uppercase; }
+        
 
-        /* ── HAMBURGER KNOB — always on top, now on RIGHT ── */
-        #nav-knob { position:absolute; right:clamp(10px,2vw,20px); top:50%; transform:translateY(-50%); z-index:99999; }
+        /* ── HAMBURGER KNOB — fixed so it's above ALL overlays and modals ── */
+        #nav-knob { position:fixed; right:clamp(14px,2vw,24px); bottom:calc(var(--bar-h)/2 - clamp(17px,2.25vw,26px)); z-index:99999; }
+        #nav-menu { bottom:calc(var(--bar-h) + 6px); }
         #nav-knob-btn {
             width:clamp(34px,4.5vw,52px); height:clamp(34px,4.5vw,52px);
             border-radius:50%; background:#111; border:1.5px solid #ff6600;
@@ -233,14 +250,15 @@
         #roll-btn:active { animation:rollBtnPress 0.25s ease forwards !important; }
         #roll-btn:disabled { opacity:0.35; animation:none; cursor:not-allowed; }
 
-        /* ── DICE SLOT ── */
+    /* ── DICE SLOT ── */
         #dice-slot-right {
-            width:clamp(46px,6.3vw,84px); height:clamp(46px,6.3vw,84px);
+            width:clamp(52px,7vw,90px); height:clamp(52px,7vw,90px);
             position:relative; flex-shrink:0;
             display:flex; align-items:center; justify-content:center;
+            padding:4px;
         }
         #dice-box {
-            width:clamp(38px,5.5vw,72px); height:clamp(38px,5.5vw,72px);
+            width:clamp(32px,4.5vw,60px); height:clamp(32px,4.5vw,60px);
             background:rgba(0,0,0,0.75); color:white;
             border:2px solid rgba(255,255,255,0.7); border-radius:12px;
             display:flex; align-items:center; justify-content:center;
@@ -334,8 +352,7 @@
         .pass-label  { font-size:clamp(0.38rem,0.58vw,0.58rem); letter-spacing:2px; color:rgba(55,35,5,0.5); text-transform:uppercase; margin-bottom:2px; }
         .pass-tags   { display:flex; flex-wrap:wrap; gap:3px; margin-bottom:clamp(2px,0.3vw,4px); min-height:10px; }
         .pass-accolades { font-size:clamp(0.7rem,1.08vw,1rem); letter-spacing:2px; min-height:10px; color:rgba(0,0,0,0.7); }
-        .pass-independent { font-size:clamp(0.44rem,0.7vw,0.65rem); letter-spacing:4px; color:rgba(55,35,5,0.35); }
-        .tag           { font-size:clamp(0.36rem,0.52vw,0.6rem); padding:2px 5px; border-radius:3px; font-weight:bold; letter-spacing:0.5px; }
+        .pass-independent { font-size:clamp(0.36rem,0.52vw,0.6rem); padding:2px 5px; border-radius:3px; font-weight:bold; letter-spacing:0.5px; background:#444; color:rgba(255,255,255,0.85); }        .tag           { font-size:clamp(0.36rem,0.52vw,0.6rem); padding:2px 5px; border-radius:3px; font-weight:bold; letter-spacing:0.5px; }
         .tag-investor  { background:var(--teal-glow); color:black; }
         .tag-sellout   { background:var(--fear-glow); color:white; }
         .tag-pitched   { background:var(--pitch-orange); color:black; }
@@ -463,7 +480,7 @@
             position:relative; overflow:hidden;
             padding:clamp(16px,3vw,45px); border-radius:30px;
             border:2px solid #444; width:min(680px,92vw);
-            max-height:88vh; overflow-y:auto;
+            max-height:92dvh; overflow-y:auto;
             text-align:center; transition:0.4s; box-sizing:border-box;
             transform-style:preserve-3d;
             animation:popupFloat 8s ease-in-out infinite;
@@ -503,8 +520,9 @@
 
         /* Rule sidebar — lore peek behaviour handled in JS */
         #rule-sidebar {
-            position:fixed; right:-400px; top:0; bottom:0;
+            position:fixed; right:-400px; top:calc(var(--bar-h) + 8px);
             width:min(260px,78vw);
+            max-height:calc(100dvh - var(--bar-h) - 24px);
             background:linear-gradient(160deg,rgba(8,8,8,0.88) 0%,rgba(28,28,28,0.88) 100%);
             backdrop-filter:blur(8px);
             padding:clamp(14px,2.2vw,26px);
@@ -1275,11 +1293,16 @@
         const p=players[playerIdx];
         let pool=[...BUCKET_BASE];
         if(lastBucketFile&&pool.length>1)pool=pool.filter(i=>i.file!==lastBucketFile);
+
         if(!p.merchdiscountPct){
             const anyoneHasDiscount=players.some(pl=>pl.merchdiscountPct>0);
             const pastMidpoint=p.pos>29;
-            const forceDiscount=!anyoneHasDiscount&&pastMidpoint;
-            if(forceDiscount||Math.random()<0.85)pool.push(MERCH_DISCOUNTS[Math.floor(Math.random()*MERCH_DISCOUNTS.length)]);
+            /* Hard guarantee: if no one has a discount yet and we're past midpoint,
+               return a discount directly — don't leave it to chance in the pool */
+            if(!anyoneHasDiscount&&pastMidpoint){
+                return MERCH_DISCOUNTS[Math.floor(Math.random()*MERCH_DISCOUNTS.length)];
+            }
+            if(Math.random()<0.85)pool.push(MERCH_DISCOUNTS[Math.floor(Math.random()*MERCH_DISCOUNTS.length)]);
         }
         if(!pool.length)return null;
         const item=pool[Math.floor(Math.random()*pool.length)];
@@ -1563,7 +1586,7 @@
         fpBtn.style.cssText='display:block;margin:10px auto 0;padding:8px 18px;background:transparent;border:1px solid rgba(255,255,255,0.3);color:rgba(255,255,255,0.5);font-family:Courier New,monospace;font-size:0.82rem;border-radius:6px;cursor:pointer;transition:all 0.2s;letter-spacing:1px;';
         fpBtn.innerText='Read the Fine Print ⬇️';
         const finePrint=document.createElement('div');
-        finePrint.style.cssText='display:none;margin-top:12px;padding:10px;background:rgba(0,0,0,0.4);border-radius:8px;border:1px solid rgba(255,255,255,0.1);font-family:Courier New,monospace;font-size:0.78rem;color:rgba(255,255,255,0.6);text-align:left;line-height:1.6;';
+        finePrint.style.cssText='display:none;margin-top:12px;padding:12px;background:rgba(0,0,0,0.45);border-radius:8px;border:1px solid rgba(255,255,255,0.18);font-family:Courier New,monospace;font-size:0.88rem;color:rgba(255,255,255,0.82);text-align:left;line-height:1.7;';
         finePrint.innerHTML=`If SIGNED: +5 spaces now. Label takes -1 from every other roll total (minimum roll stays 1). Pitching replaces your roll this turn. Pass the Gatekeeper freely once signed.<br><br>If DECLINED: Rewind -3 immediately.<br><br>One use per game. Cannot use after Gatekeeper.`;
         fpBtn.onclick=()=>{const open=finePrint.style.display==='block';finePrint.style.display=open?'none':'block';fpBtn.innerText=open?'Read the Fine Print ⬇️':'Hide Fine Print ⬆️';};
         step1.appendChild(fpBtn);step1.appendChild(finePrint);
@@ -1679,10 +1702,15 @@
     async function doRoll(){
         /* If in lore drop, resolve it and let the lore end, then the turn will 
            call endTurn → next turn's roll will be fresh. Don't double-roll. */
-        if(isInLoreDrop){
+    if(isInLoreDrop){
             stopActiveLoreVid();
             closeSidebar();
+            isInLoreDrop=false;
             if(loreDoneResolver){loreDoneResolver();loreDoneResolver=null;}
+            /* endTurn() will fire from movePlayer's await resolution,
+               but we want the NEXT player's roll to happen immediately.
+               Schedule it after the microtask queue clears. */
+            setTimeout(()=>doRoll(),80);
             return;
         }
         /* Normal modal blocks — do not roll during active game choice */
@@ -1968,7 +1996,7 @@
                 fpBtn2.style.cssText='display:block;margin:10px auto 0;padding:8px 18px;background:transparent;border:1px solid rgba(255,255,255,0.3);color:rgba(255,255,255,0.5);font-family:Courier New,monospace;font-size:0.82rem;border-radius:6px;cursor:pointer;transition:all 0.2s;letter-spacing:1px;';
                 fpBtn2.innerText='Read the Fine Print ⬇️';
                 const fp2body=document.createElement('div');
-                fp2body.style.cssText='display:none;margin-top:12px;padding:10px;background:rgba(0,0,0,0.4);border-radius:8px;border:1px solid rgba(255,255,255,0.1);font-family:Courier New,monospace;font-size:0.78rem;color:rgba(255,255,255,0.6);text-align:left;line-height:1.6;';
+                fp2body.style.cssText='display:none;margin-top:12px;padding:10px;background:rgba(0,0,0,0.6);border-radius:8px;border:1px solid rgba(255,255,255,0.1);font-family:Courier New,monospace;font-size:0.9rem;color:rgba(255,255,255,0.7);text-align:left;line-height:1.6;';
                 fp2body.innerText='Every 6 you roll becomes -2 for the rest of the game. Signing makes you a SELLOUT. You will pass the Gatekeeper freely as a signed artist.';
                 fpBtn2.onclick=()=>{const open=fp2body.style.display==='block';fp2body.style.display=open?'none':'block';fpBtn2.innerText=open?'Read the Fine Print ⬇️':'Hide Fine Print ⬆️';};
                 remedyDesc.appendChild(fpBtn2);remedyDesc.appendChild(fp2body);
@@ -2225,17 +2253,29 @@
     // ══════════════════════════════════════════════
     // WIN SCREEN
     // ══════════════════════════════════════════════
-    function showWinScreen(){
+
+        function showWinScreen(){
         const p=players[turnIdx];
         playSpaceSfx('swimclip.wav');
+        /* Sort players by position descending — winner first, then by distance */
+        const sorted=[...players].sort((a,b)=>b.pos-a.pos);
         let statsHtml=`<h2 style="color:${p.avatar.color};animation:winPulse 2s infinite ease-in-out;font-family:'KCStrikerSans','Courier New',monospace;margin:5px 0;--p-color:${p.avatar.color};text-shadow:0 0 20px ${p.avatar.color};">${p.name} WINS!</h2>`;
         statsHtml+=`<div style="text-align:left;margin-top:15px;font-family:monospace;background:rgba(0,0,0,0.4);border-radius:12px;padding:12px;border:1px solid #333;">`;
-        players.forEach(pl=>{
+        sorted.forEach((pl,rank)=>{
+            const isWinner=(rank===0);
+            const avatarSize=isWinner?68:48;
+            const nameSize=isWinner?'1.25rem':'1rem';
             const supporterLine=pl.hasThrifty?`<div style="font-size:0.7rem;color:var(--mystery-glow);letter-spacing:2px;margin-top:2px;">CODE: PLAYER${pl.merchdiscountPct} -- ${pl.merchdiscountPct}% OFF STORE</div>`:'';
-            statsHtml+=`<div style="margin-bottom:12px;border-bottom:1px solid #222;display:flex;align-items:center;gap:12px;padding-bottom:10px;">
-                <img src="${pl.avatar.img}" style="width:50px;height:50px;border-radius:50%;background:#000;border:2px solid ${pl.avatar.color};box-shadow:0 0 10px ${pl.avatar.color};">
-                <div style="flex-grow:1;"><b style="color:${pl.avatar.color};font-size:1.1rem;letter-spacing:1px;">${pl.name}</b>${supporterLine}
-                <div style="font-size:1.2rem;margin:2px 0;">${pl.accolades.join('')}</div></div></div>`;
+            statsHtml+=`<div style="margin-bottom:12px;border-bottom:1px solid #222;display:flex;align-items:center;gap:12px;padding-bottom:10px;${isWinner?'background:rgba(255,255,255,0.04);border-radius:8px;padding:10px;margin:-2px -2px 10px -2px;':''}">
+                <img src="${pl.avatar.img}" style="width:${avatarSize}px;height:${avatarSize}px;border-radius:50%;background:#000;border:${isWinner?3:2}px solid ${pl.avatar.color};box-shadow:0 0 ${isWinner?18:10}px ${pl.avatar.color};flex-shrink:0;">
+                <div style="flex-grow:1;">
+                  <div style="display:flex;align-items:center;gap:8px;">
+                    ${isWinner?`<span style="font-size:1rem;">🏆</span>`:`<span style="font-size:0.7rem;color:rgba(255,255,255,0.3);font-family:Courier New,monospace;">#${rank+1}</span>`}
+                    <b style="color:${pl.avatar.color};font-size:${nameSize};letter-spacing:1px;">${pl.name}</b>
+                  </div>
+                  ${supporterLine}
+                  <div style="font-size:${isWinner?'1.4rem':'1.1rem'};margin:4px 0;">${pl.accolades.join('')||'—'}</div>
+                </div></div>`;
         });
         statsHtml+=`</div>`;
         const popupEl=document.getElementById('main-popup');
