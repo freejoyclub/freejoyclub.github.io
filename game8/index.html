@@ -743,23 +743,23 @@
         13:{title:"JOY",              emoji:"😄", shift:1,  isAuto:true, desc:"Choose JOY! Forward 1."},
         15:{title:"DMITRI",           emoji:"👨‍🚀",timer:15,isDmitri:true,isTrack:true, desc:"Take DEEP BREATHS (15 sec) for the 5D shortcut. Skip = Rewind 2.",sound:"dmitriclip.wav"},
         17:{title:"FEARJOY",          emoji:"☯️", isFearjoy:true, desc:"Fear? Joy? Flip to find out.",sound:"coinclip.wav"},
-        18:{title:"NIGHTDRIVE",       emoji:"🌙", isNightDrive:true,isTrack:true, desc:"Fall asleep at the wheel! EYES CLOSED until next turn."},
+        18:{title:"NIGHTDRIVE",       emoji:"🌙", isNightDrive:true,isTrack:true, desc:"Fall asleep at the wheel! EYES CLOSED until next turn.", sound:"nightclip.wav"},
         19:{title:"JOY",              emoji:"😄", shift:1,  isAuto:true, desc:"PUREJOY! Forward 1."},
         20:{title:"INVEST IN MERCH",  emoji:"👕", choice:'merch', desc:"Do you INVEST by rewinding -4 now? Every 1 or 2 you roll later will be doubled."},
         21:{title:"FEAR",             emoji:"😱", shift:-1, isAuto:true, desc:"Self-doubt and vices. Rewind 1.",sound:"spookyclip1.wav"},
         23:{title:"5TH DIMENSION",    emoji:"✨", shift:1,  isAuto:true, desc:"You have transcended. Forward 1.",sound:"coinclip.wav"},
-        25:{title:"IT HAPPENS",       emoji:"🔔", isItHappens:true,isTrack:true, desc:"Suddenly, instantly, take an extra turn!"},
-        27:{title:"GHOST 2",          emoji:"👻", isGhost:true,isTrack:true, desc:"Stay silent for one turn. Make a sound = Rewind 1."},
-        28:{title:"MAYA",             emoji:"👁️",isMaya:true, desc:"Hold 10s of eye contact. Both hold? Both +2. Break? Both -1."},
+        25:{title:"IT HAPPENS",       emoji:"🔔", isItHappens:true,isTrack:true, desc:"Suddenly, instantly, take an extra turn!", sound:"happensclip.wav"},
+        27:{title:"GHOST 2",          emoji:"👻", isGhost:true,isTrack:true, desc:"Stay silent for one turn. Make a sound = Rewind 1.", sound:"ghostclip.wav"},
+        28:{title:"MAYA",             emoji:"👁️",isMaya:true, desc:"Hold 10s of eye contact. Both hold? Both +2. Break? Both -1.", sound:"mayaclip.wav"},
         30:{title:"WIN A GRAMMY",     emoji:"🏆", isGrammy:true, desc:"Grammy Won! Switch places with the leader! (If leader, Forward 1)"},
         32:{title:"FEAR",             emoji:"😱", shift:-1, isAuto:true, desc:"Fear of failure! Rewind 1.",sound:"spookyclip1.wav"},
         33:{title:"OPENING ACT",      emoji:"🎤", isOpeningAct:true, desc:"Slide 2 spaces behind the leader. If leader, Rewind 2."},
         35:{title:"JOY",              emoji:"😄", shift:1,  isAuto:true, desc:"EARJOY! Forward 1."},
-        37:{title:"TELLUS",           emoji:"📣", isTellus:true,isTrack:true, desc:"Swap positions with any artist."},
+        37:{title:"TELLUS",           emoji:"📣", isTellus:true,isTrack:true, desc:"Swap positions with any artist.", sound:"tellusclip.wav"},
         39:{title:"FEARJOY",          emoji:"☯️", isFearjoy:true, desc:"FEAR? JOY? Fate decides.",sound:"coinclip.wav"},
         42:{title:"ENCORE",           emoji:"👏", shift:3,  isAuto:true, desc:"Encore! Three more songs! Move forward 3."},
-        44:{title:"VOID",             emoji:"🌀", shift:-3, isAuto:true,isTrack:true, desc:"Lost in the Void. Rewind 3."},
-        47:{title:"THE ENDLESS SMILE",emoji:"💀", isSmile:true,isTrack:true, desc:"Remain smiling until your next turn. Break it for a penalty."},
+        44:{title:"VOID",             emoji:"🌀", shift:-3, isAuto:true,isTrack:true, desc:"Lost in the Void. Rewind 3.", sound:"voidclip.wav"},
+        47:{title:"THE ENDLESS SMILE",emoji:"💀", isSmile:true,isTrack:true, desc:"Remain smiling until your next turn. Break it for a penalty.", sound:"smile.wav"},
         48:{title:"GATEKEEPER",       emoji:"🚪", isGate:true, desc:"Industry Gatekeeper — stop here unless you're in last place."},
         52:{title:"FEARJOY",          emoji:"☯️", isFearjoy:true, desc:"Flip for destiny.",sound:"coinclip.wav"},
         53:{title:"VAN BREAKS DOWN",  emoji:"🛠", skipTurns:1, desc:"Van breaks! Skip a turn."},
@@ -1484,12 +1484,12 @@
     }
     function checkNextHonor(p){
         if(p.ghostCounter>0){
-            showStatusPopup("👻 GHOST CHECK","Silence required. Did you stay quiet?",
+            showStatusPopup("👻 GHOST CHECK","Did you stay quiet?",
                 "YES",()=>{p.ghostCounter=0;checkNextHonor(p);},
                 "NO", ()=>{p.ghostCounter=0;movePlayer(-1);});return;
         }
         if(p.smileActive){
-            showStatusPopup("💀 THE ENDLESS SMILE","Did you keep smiling?",
+            showStatusPopup("💀 THE ENDLESS SMILE","Did you smile endlessly?",
                 "HELD IT", ()=>{p.smileActive=false;checkNextHonor(p);},
                 "BROKE IT",()=>{p.smileActive=false;endTurn();});return;
         }
@@ -1514,7 +1514,7 @@
         }
         if(p.isSellout&&roll===6){
             dice.classList.add('dice-red');spawnEmoji('💊');
-            showSidebar("CONTRACT DEBT","Label takes a cut! 6 becomes -2. Should have stayed indie...","var(--fear-glow)");
+            showSidebar("CONTRACT DEBT","Label takes a cut! 6 becomes -2. Should've stayed indie...","var(--fear-glow)");
             playRemedyPunishment();
             await new Promise(r=>setTimeout(r,600));
             p.pillsTaken++;p.accolades.push('💊');roll=-2;dice.innerText=roll;
