@@ -1,14 +1,235 @@
+
+Hi.
+**CONTEXT:**
+I'm continuing development on Fearjoy, a single-file HTML browser board game for a band called Fearjoy. Current version is v16. I'll paste the full code separately. The game is a 60-space snakes-and-ladders-style board game with psychedelic/indie rock aesthetic, custom player setup, All-Access Pass cards, mystery spaces with a content bucket, dice teleport animations, and various special space mechanics. Font is KCStrikerSans (custom .otf in same directory). Audio files referenced: dayclip.wav, coinclip.wav, figclip.wav, remedyclip.wav, spookyclip1.wav, dmitriclip.wav, swimclip.wav, doorclip.wav (not yet added). Plus videos and images as noted, with more to be added. 
+
+---
+
+**BATCH C — Gameplay Mechanics (implement very carefully, lots of logic):**
+
+**Gatekeeper fix:** Any player who is NOT in last place and would roll PAST space 48 (Gatekeeper) should have their movement clipped to land exactly on space 48. Last place player passes through freely. Gatekeeper should also trigger doorclip.wav on landing. (doorclip.wav not yet in repo — flag it but wire it up anyway.)
+
+**Tied player stacking:** When two or more players share the same space, their avatar pieces should slightly shrink and shift off-center so both are mostly visible with slight overlap. Currently they fully stack and only the top one shows.
+
+**Grammy / Tellus / Maya — pass-as-selector:** Players should be able to click either a board piece OR the relevant player's Access Pass card as their selection target. Update modal descriptions to say "select another Artist's face on the board or their Pass card." Clickable targets (both pieces and passes) should glow white when in a selectable state.
+
+**6-second pick reminder:** For any mechanic requiring another player selection (Grammy swap, Tellus, Maya), if no selection is made within 6 seconds, a small right-side reminder popup appears explaining what to do. It auto-dismisses after 4 seconds or on click.
+
+**Cold Pitch confirmation flow (already partially in v16 — verify it matches this):** When player taps "Pitch to Labels" in expanded pass, a confirmation shows before their selection is finalized. First, the normal existing card telling the player the gamble (long shot: cold pitch, here are the stakes, etc..). Then if they select Pitch, one more warning: "Heads up! Pitching replaces your roll this turn. Proceed?" with "Let's Pitch" and "Cancel." If confirmed, pass closes, pitch resolves, turn ends. No roll happens. Reward on success is +5. Declined = -3. 1 in 3 chance. Cannot be used in first 3 spaces (pos 0, 1 or 2) or after Gatekeeper (pos > 48). One use per player per game.
+
+---
+
+**BATCH D — Performance, Audio, Accessibility:**
+
+**Preloading:** During the setup screen (while players are being configured), pre-load all known audio & video files and bucket images in the background with a small unobtrusive progress bar. Smooths out animation and content-pull choppiness on slower devices.
+
+**Master volume / mute:** The audio toggle should control a master AudioContext gain node so that sounds already playing are muted immediately when toggled off — not just blocking new ones. Sounds fade out rather than cutting abruptly. The 🔇 / 🔊 icon on the Sound On / Off button changes as the sound settings and button title are changed- mute icon for "sound off" status and vice versa. 
+---
+
+**GRANT'S TO-DO LIST (not code tasks — just reminders):**
+1. doorclip.wav — needs to be added to the game directory before Batch C Gatekeeper mechanic is fully functional.
+2. More bucket content — drop additional images/videos/audio into /bucket/ and add filenames to the BUCKET_BASE array in the JS.
+3. Real store/merch links — replace https://freejoy.club placeholder URLs in win screen and bucket link cards with actual store URLs when live.
+4. Real promo codes — update PLAYER20 / PLAYER25 / PLAYER30 in MERCH_DISCOUNTS array when real codes are set up in the store backend.
+5. Account system (future pass) — email collection via Formspree, login/create account for custom player name + color, board background options, lifetime accolade tracking. Discussed but not started. Then: "100 game merch sold accolades = $10 off merch ($20 min. purchase)" lifetime reward system.
+
+---
+
+**NOTES FOR CLAUDE:**
+- Always make surgical diffs when possible. Only do a full rewrite if the changes are too intertwined for clean diffs.
+- Never touch gameplay logic unless explicitly asked.
+- Keep all /* notes */ comments in the code for Grant's reference.
+- Font family fallback stack is 'KCStrikerSans', 'Courier New', monospace everywhere the custom font is used.
+- Mystery spaces are randomly assigned each game (~half of blanks). True blank spaces have no interaction.
+- The BUCKET_BASE array holds images/downloads. MERCH_DISCOUNTS is separate for one-per-player discount logic.
+
+Code to follow.
+
+Show more
+6:47 PM
+Got it — I have the full context for Fearjoy v16 and the Batch C + D tasks. Go ahead and paste the code whenever you're ready!
+
+
+fearjoy-v16.html
+html
+
+A full, careful rewrite please.
+
+6:48 PM
+
+Viewed 8 files
+Viewed 8 files
+Good — I have the full picture now. Let me build v17.
+
+
+Checking the skill file for frontend design
+Checking the skill file for frontend design
+Now I have everything. Let me write the full v17 rewrite carefully.
+
+
+Ran 3 commands, created a file
+Ran 3 commands, created a file
+All checks pass. Let me copy to outputs.
+
+
+Ran a command, read a file
+Ran a command, read a file
+Fearjoy v17 — here's exactly what changed and why:
+
+Batch C
+Gatekeeper clip (movePlayer): getLastPlaceIdx() is now called before the movement loop so last-place status is locked in at roll time. Non-last players hit space 48 and break out of the loop — they stop exactly there rather than skipping past. doorclip.wav fires in checkSpace → isGate. The wire is live; the file just needs to be dropped in the directory (flagged in two places in comments).
+
+Stacked piece rendering (updatePositions): Replaced the old offset-by-12px accumulator with a proper stackMap. When stackSize > 1, pieces shrink to 72% and fan into three fixed offsets (left-up, right-up, center-down) so all are visibly distinct and overlapping. Solo pieces stay full-size and perfectly centered.
+
+Grammy / Tellus / Maya — pass-as-selector: Pass cards now get a .pass-selectable class when isSwapping || isMayaPartner is active. Clicking a selectable pass card routes directly into handlePlayerClick(i). Board pieces use the existing .swap-target class which now has a proper white selectGlow animation. Modal descriptions updated to say "select another Artist's face on the board or their Pass card."
+
+6-second pick reminder: scheduleReminder(text) sets a 6s timeout that slides in #selection-reminder from the right. It auto-dismisses after 4s or on click. dismissReminder() is called on selection completion, endTurn, and Maya timer start. Wired to Grammy (multi-leader), Tellus, and Maya flows.
+
+Cold Pitch two-step: Step 1 shows the stakes card ("1 in 3, here's the gamble, etc.") with "Let's Pitch →" / "Stay Indie". Step 2 shows the "Heads Up — replaces your roll" warning with "Let's Pitch" / "Cancel". Eligibility: pos > 2 AND pos <= 48 (changed from pos > 1 to pos > 2 to cover spaces 0, 1, 2).
+
+Batch D
+Master volume/mute (AudioContext + masterGain): All audio now routes through a single masterGain node. toggleAudio() uses linearRampToValueAtTime to fade out (0.3s) or fade in (0.2s) — no abrupt cuts. The 🔊/🔇 icon updates with state alongside the "ON"/"OFF" label.
+
+Preloading: startPreload() kicks off when the player count is selected (setup step 1→2 transition). It fetches all audio through AudioContext.decodeAudioData (pre-caches the decoded buffers), preloads video metadata via <video preload="metadata">, and images via new Image(). A small progress bar at the bottom of the setup popup fades in and tracks percentage. Auto-hides after 1.2s on completion.
+
+Grant's to-do flags
+All five items from your list are preserved in comments. doorclip.wav is flagged in the preload array and the Gatekeeper space handler.
+
+
+Fearjoy v17
+Code · HTML 
+
+<!DOCTYPE html><html lang="en"><head> <meta charset="UTF-8"> <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"> <title>Fearjoy - v17</title> <style> @font-face { font-family: 'KCStrikerSans'; src
+
+pasted
+
+great! i got more sounds added in, and some other info slight changes. here's the updated code for that. using my pasted code, please do the following:
+...
+reduce the delay before auto-moves such as dayspring, 5D, fear, encore, void and joy. the INFO cards for these can stay up for ~2 extra seconds (before switching to the next card, if a new special or bucket space is landed on after the auto-move), but the auto-movement of the game piece itself should happen about twice as fast as it currently does.       
+
+....  alternate randomly between sliding sounds for each movement between spaces: "slide1.wav" "slide2.wav" "slide3.wav" and "slide4.wav" - triggered at the start of each movement toward the next piece; it's a slight wooden "sliding across a board" sound.      
+
+...  right now, the slight floating up and down of the PASSES resets with each turn, which is a little jarring. the float animation should be continuous between turns, with only the "Player's turn" glow switching between turns.
+...
+the passes should have a little orange "message-type" bubble pop up on the top right of the pass after around the 5th turn, if someone isn't a sellout and has the "pitch to labels" offer available. To clue them in that the offer exists.
+   ...
+when the dice goes to the center and back for the cinematic roll, the "roll button" and "name's turn" abruptly move since the dice is part of the cluster. they should either stay put, with the dice having its own dedicated space even when "leaving", or they should move back and forth smoothly to make room.      
+
+...  the roll button's hover and click animations should be a little more flashy.      
+
+...  the glow of the PASSES gets clipped on the "hover enlargement" - there should be a little more padding around the passes, within their dedicated area, and a very slight feather on all sides of the Passes area.
+   ....
+make the current background a fallback, but the main background should now be wood-bg.jpg (root of game8 directory)    
+
+...  the Vinyl spaces should "wiggle" back and forth (rotationally) every now and then, slightly, at random.   
+
+ ...  the true "blank spaces" should be less transparent.
+    ...
+all game spaces themselves should have slight mouse-hover behavior.
+   ...
+the white glow on the "select a player" mechanic (Maya, tellus, grammy leader-tie) is glowing around an "empty square" around the avatar png, not glowing around the actual png's shaped border like the normal gamepiece glow - it should be fixed.
+    ...
+selection buttons on central popups - the text should be larger.
+...
+sound fx should be added: randomly between dice1, dice2, dice3 and dice4.wav while "rolling" and dicedone.wav when the final result shows (whether from the original roll or a "contract" roll result (this includes the re-roll of the dice in "lost recording").
+...
+coin.wav should play whenever "merch is sold" during the "shirt animation" and it should replace the coinclip.wav on the "become investor" choice. (coinclip.wav can stay on the other spaces it's on).
+...
+make sure landing on the Endless Smile triggers smileclip.wav
+...
+if a song/sound is still playing from a former turn, crossfade it out only if another sound/song plays on the next turn (not for dice rolls and such, those can overlap - just an actual sound triggered by a special space)
+...
+make Merch Discounts a bit more likely than other random Lore / Bucket drops. still max one per player per game.
+...
+make the mystery-drop sidebar popups smaller and more transparent overall, and make the image container (the whole popup) adaptive to the size of the pic/video/content inside so it's not cropped.
+...
+update the bucket items to only include the following file names (plus the merch stuff):
+CP-30.jpg, IMG_20200116_191840_549.jpg, marco lay.jpg, milwaukeedee grant.jpg, miramar wheel bunz ariel.jpg, morganshootsthings Grant & jesse 2.jpg, morganshootsthings Grant & jesse.jpg, morganshootsthings Grant ok.jpg, story harmony hunting tunnel.mp4, story mu nightdrive 3.mp4
+
+code:
+
+Show more
+12:25 AM
+Let me read the full pasted v17 code carefully before making any changes.
+
+The document is already in context. Let me now implement all the changes carefully.
+
+
+Ran 2 commands, created a file
+Ran 2 commands, created a file
+All clean. Copy to outputs.
+
+
+Ran a command, read a file
+Ran a command, read a file
+Fearjoy v18 — here's every change and what drove each decision:
+
+Auto-move speed — sidebar display time cut from 3000ms to 1500ms (about half). The piece movement itself (300ms per step) was already fine; only the "info hold" before the piece starts moving changed.
+
+Slide sounds — playSlide() picks randomly from slide1–4.wav and fires at the top of every step in the movement loop, before the position updates. No crossfade — these are short taps.
+
+Pass float continuity — replaced the single passFloat keyframe + tilt CSS variable with three permanently-defined keyframes: passFloatA/B/C (with pre-baked tilt angles). Cards are assigned pass-float-a/b/c by i % 3 and the class never changes between renders. Delays are staggered (-1.3s, -2.6s) so the three cards bob at offset phases. Since the CSS animation keeps running on the same element, it never restarts — only the pass-active border switches between turns.
+
+Pitch bubble — a small orange 🎤 badge (pitch-bubble div) appears top-right of the card at turn 5+ if the player is eligible and hasn't seen it. It uses a bubblePop spring-in animation. Clicking it opens the pass. Once the pass is opened, pitchBubbleShown is set true and the bubble disappears. Resets on soft restart.
+
+Dice slot layout fix — #dice-slot-right is now position:relative with a fixed width/height matching the max dice size. #dice-box sits position:absolute inside it, so when the dice goes .dice-cinematic (which is position:fixed taking it out of flow entirely), the slot holds its width and neither the Roll button nor the status text shifts.
+
+Roll button hover/click — hover switches to rollHoverPulse (brighter, faster glow including a white accent), changes border to white and bg to a faint green tint, and fires a faster shimmer sweep. :active plays rollBtnPress (compress → overshoot bounce).
+
+Pass sidebar padding + feather — padding bumped up on all sides so the hover-scale glow has room. A CSS mask-image gradient feathers all edges of the sidebar container so clipping is impossible.
+
+Wood background — background-image now layers url('wood-bg.jpg') (cover, center) first, with the existing stripe pattern second. woodFade color animation is still on body as the fallback if the image fails to load.
+
+Vinyl wiggle — startVinylWiggles() runs after initBoard(). It picks a random tracklist space every 4–10s, applies .vinyl-wiggle (a gentle rotational wobble), and removes it after 950ms. It skips spaces currently spinning.
+
+True blank opacity — raised from 0.22 to 0.45, border-color from 0.25 to 0.35.
+
+Space hover — .space:hover scales to 1.08 with a soft white box-shadow. Mystery and tracklist spaces have their own hover overrides. True blanks hover to 0.82 with no glow.
+
+Swap-target glow shape — changed from box-shadow (which glows a square) to filter: drop-shadow() which follows the image's alpha channel and glows around the actual avatar silhouette.
+
+Popup button text — font-size bumped from clamp(0.85rem, 1.8vw, 1.1rem) to clamp(1rem, 2.1vw, 1.3rem) with slightly more padding.
+
+Dice sound FX — playDiceRoll() (random dice1–4.wav) fires every 4th tick during the shuffle loop. playDiceDone() fires when the final number lands — both in the main roll and in the Lost Recording re-roll.
+
+Coin/merch sounds — coin.wav plays on the INVESTOR merch-sold shirt animation (replaces coinclip.wav there). coin.wav also plays on the "Invest in Merch" confirmation button. coinclip.wav stays on all other spaces.
+
+Endless Smile — playSpaceSfx('smileclip.wav') fires in the isSmile branch (it was already in r.sound but the playSpaceSfx call at the top of checkSpace handles r.sound — the explicit call in the branch is for the crossfade-aware path since smile has its own special flow).
+
+Crossfade — playSpaceSfx() tracks lastSpaceSrc/lastSpaceGain. When a new space sound fires it ramps the previous one to 0 over 0.5s then stops it, then starts the new one. Dice rolls and slides use playSfx() (no crossfade) so they overlap freely.
+
+Merch discount probability — raised from 50% to 70% per mystery pull for eligible players.
+
+Mystery sidebar — width reduced to min(240px, 72vw), background opacity cut to ~55%. .bucket-img now uses height:auto; object-fit:contain (no fixed max-height), and .bucket-video is added for the new video bucket items.
+
+Bucket list — updated to exactly the files you listed. Added { type:'video' } entries for the two .mp4 files, wired to inline autoplay/muted/loop video elements.
+
+New audio files to add to directory: slide1–4.wav, dice1–4.wav, dicedone.wav, coin.wav, nightclip.wav, happensclip.wav, ghostclip.wav, mayaclip.wav, tellusclip.wav, voidclip.wav, smileclip.wav
+
+
+Fearjoy v18
+Code · HTML 
+
+
+Want to be notified when Claude responds?
+
+
+
+Claude is AI and can make mistakes. Please double-check responses.
+Fearjoy v18 · HTML
+Copy
+
 <!DOCTYPE html><html lang="en"><head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Fearjoy - v17</title>
+    <title>Fearjoy - v18</title>
     <style>
         @font-face {
             font-family: 'KCStrikerSans';
             src: url('KCStrikerSans.otf') format('opentype');
             font-weight: normal; font-style: normal;
         }
-
+ 
         /* ── DESIGN TOKENS ── */
         :root {
             --wood-dark:    #8b7355;
@@ -23,64 +244,77 @@
             --pink-glow:    #ff00ff;
             --mystery-glow: #dd99ff;
             --pitch-orange: #ff8800;
-
+ 
             /* Board sizing — fluid */
             --space-size:  clamp(24px, 5.8vw, 85px);
             --space-font:  clamp(0.28rem, 0.75vw, 0.75rem);
             --space-emoji: clamp(0.5rem,  1.1vw, 1.4rem);
             --board-gap:   clamp(2px, 0.85vw, 18px);
             --board-pad:   clamp(4px, 1.2vw, 40px);
-
-            /* UI bar — shrinks with viewport height */
+ 
+            /* UI bar */
             --bar-h: clamp(52px, 10vh, 110px);
         }
-
+ 
         /* ── KEYFRAMES ── */
         @keyframes woodFade      { 0%,100%{background-color:var(--wood-dark);}50%{background-color:var(--wood-mid);} }
         @keyframes floatUp       { 0%{transform:translateY(0) scale(1);opacity:1;}100%{transform:translateY(-150px) scale(1.5);opacity:0;} }
         @keyframes introGlow     { from{text-shadow:0 0 10px var(--gold),0 0 20px var(--gold);}to{text-shadow:0 0 20px var(--gold),0 0 40px #fffad1;} }
         @keyframes pieceHover    { 0%{transform:translate(0,0);}33%{transform:translate(3px,-3px);}66%{transform:translate(-2px,1px);}100%{transform:translate(0,0);} }
         @keyframes turnPulse     { 0%{filter:drop-shadow(0 0 5px var(--p-color));transform:translate(0,0) scale(1);}50%{filter:drop-shadow(0 0 20px var(--p-color));transform:translate(0,-4px) scale(1.15);}100%{filter:drop-shadow(0 0 5px var(--p-color));transform:translate(0,0) scale(1);} }
-        @keyframes borderPulse   { 0%{box-shadow:0 0 5px var(--p-color) inset,0 0 5px var(--p-color);}50%{box-shadow:0 0 15px var(--p-color) inset,0 0 15px var(--p-color);}100%{box-shadow:0 0 5px var(--p-color) inset,0 0 5px var(--p-color);} }
         @keyframes winPulse      { 0%{transform:scale(1);filter:drop-shadow(0 0 5px var(--p-color));}50%{transform:scale(1.1);filter:drop-shadow(0 0 20px var(--p-color));}100%{transform:scale(1);filter:drop-shadow(0 0 5px var(--p-color));} }
         @keyframes flipping      { 0%{transform:rotateY(0);}100%{transform:rotateY(1800deg);} }
         @keyframes rollPulse     { 0%,100%{box-shadow:0 0 8px var(--joy-glow),0 0 16px var(--joy-glow);}50%{box-shadow:0 0 18px var(--joy-glow),0 0 36px var(--joy-glow);} }
+        /* Flashier roll button hover shimmer */
         @keyframes shimmer       { 0%{background-position:-200% center;}100%{background-position:200% center;} }
+        @keyframes rollBtnPress  { 0%{transform:scale(1);}30%{transform:scale(0.93);}60%{transform:scale(1.06);}100%{transform:scale(1);} }
+        @keyframes rollHoverPulse{ 0%,100%{box-shadow:0 0 14px var(--joy-glow),0 0 28px var(--joy-glow),0 0 0px #fff;}50%{box-shadow:0 0 22px var(--joy-glow),0 0 44px var(--joy-glow),0 0 8px rgba(255,255,255,0.3);} }
         @keyframes diceGlow      { 0%,100%{box-shadow:0 0 6px rgba(255,255,255,0.4),inset 0 0 8px rgba(255,255,255,0.08);}50%{box-shadow:0 0 14px rgba(255,255,255,0.6),inset 0 0 14px rgba(255,255,255,0.12);} }
-        @keyframes passFloat     { 0%,100%{transform:rotate(var(--tilt)) translateY(0);}50%{transform:rotate(var(--tilt)) translateY(-4px);} }
+        /* Pass float — global continuous, not per-card */
+        @keyframes passFloat     { 0%,100%{translateY(0);}50%{translateY(-4px);} }
+        @keyframes passFloatA    { 0%,100%{transform:rotate(-2deg) translateY(0);}50%{transform:rotate(-2deg) translateY(-4px);} }
+        @keyframes passFloatB    { 0%,100%{transform:rotate(1.5deg) translateY(0);}50%{transform:rotate(1.5deg) translateY(-4px);} }
+        @keyframes passFloatC    { 0%,100%{transform:rotate(-1deg) translateY(0);}50%{transform:rotate(-1deg) translateY(-4px);} }
         @keyframes menuBloom     { 0%{opacity:0;transform:scale(0.7);}100%{opacity:1;transform:scale(1);} }
         @keyframes knobFlicker   { 0%,100%{box-shadow:0 0 6px #ff8800,0 0 2px #ff4400;border-color:#ff6600;}50%{box-shadow:0 0 14px #ff6600,0 0 4px #ff8800;border-color:#ff8800;} }
         @keyframes redSparkle    { 0%{box-shadow:0 0 10px var(--fear-glow);}100%{box-shadow:0 0 50px var(--fear-glow);background:#300;color:white;} }
         @keyframes goldSparkle   { 0%{box-shadow:0 0 10px var(--gold);}100%{box-shadow:0 0 50px var(--gold);background:#330;color:white;} }
         @keyframes mysteryPulse  { 0%,100%{box-shadow:0 0 8px var(--mystery-glow);}50%{box-shadow:0 0 22px var(--mystery-glow),0 0 44px var(--mystery-glow);} }
         @keyframes passNotify    { 0%,100%{box-shadow:0 0 5px var(--pitch-orange);}50%{box-shadow:0 0 20px var(--pitch-orange),0 0 40px var(--pitch-orange);} }
+        /* Vinyl wiggle — occasional, random-triggered via JS adding class */
         @keyframes vinylSpin     { 0%{transform:scale(1.15) rotate(0deg);animation-timing-function:ease-in;}30%{transform:scale(1.15) rotate(540deg);animation-timing-function:linear;}70%{transform:scale(1.15) rotate(1440deg);animation-timing-function:ease-out;}100%{transform:scale(1.15) rotate(1800deg);} }
+        @keyframes vinylWiggle   { 0%,100%{transform:scale(1.15) rotate(0deg);}20%{transform:scale(1.15) rotate(-3.5deg);}50%{transform:scale(1.15) rotate(3deg);}75%{transform:scale(1.15) rotate(-2deg);} }
         @keyframes spaceLand     { 0%{box-shadow:0 0 0px var(--land-color,white);}40%{box-shadow:0 0 30px var(--land-color,white),0 0 60px var(--land-color,white);}100%{box-shadow:0 0 0px var(--land-color,white);} }
+        /* Space hover glow */
+        @keyframes spaceHoverGlow{ 0%,100%{box-shadow:0 0 0px rgba(255,255,255,0.0);}100%{box-shadow:0 0 12px rgba(255,255,255,0.35);} }
         @keyframes diceRiseOut   { 0%{opacity:1;transform:translate(0,0) scale(1);}100%{opacity:0;transform:translate(0,-60px) scale(0.5);} }
         @keyframes diceFallIn    { 0%{opacity:0;transform:translate(0,-80px) scale(0.4);}100%{opacity:1;transform:translate(0,0) scale(1);} }
         @keyframes diceReturnOut { 0%{opacity:1;transform:translate(0,0) scale(1);}100%{opacity:0;transform:translate(60px,-60px) scale(0.3);} }
         @keyframes diceReappear  { 0%{opacity:0;transform:scale(0.3);}100%{opacity:1;transform:scale(1);} }
         @keyframes passExpandIn  { 0%{opacity:0;transform:scale(0.4);}100%{opacity:1;transform:scale(1);} }
         @keyframes btnFocusPulse { 0%,100%{outline-color:rgba(255,255,255,0.4);}50%{outline-color:white;} }
-        /* Popup shine bar — subtle horizontal sweep */
         @keyframes popupShine    { 0%{background-position:-200% center;}100%{background-position:200% center;} }
-        /* Reminder popup slide in from right */
         @keyframes reminderSlide { 0%{opacity:0;transform:translateX(60px);}100%{opacity:1;transform:translateX(0);} }
-        /* Selectable glow pulse for Grammy/Tellus/Maya targets */
         @keyframes selectGlow    { 0%,100%{box-shadow:0 0 8px white,0 0 16px white;}50%{box-shadow:0 0 20px white,0 0 40px white;} }
-        /* Preload progress bar fill */
         @keyframes progressPulse { 0%,100%{opacity:0.7;}50%{opacity:1;} }
-
+        /* Pitch bubble bounce-in */
+        @keyframes bubblePop     { 0%{transform:scale(0);}70%{transform:scale(1.2);}100%{transform:scale(1);} }
+ 
         /* ── PAGE SHELL ── */
         html,body { margin:0; padding:0; width:100%; height:100%; overflow:hidden; }
         body {
+            /* Wood background image — wood-bg.jpg is primary; woodFade color is fallback */
+            background-image: url('wood-bg.jpg'),
+                              repeating-linear-gradient(90deg,transparent,transparent 80px,rgba(0,0,0,0.05) 80px,rgba(0,0,0,0.05) 82px);
+            background-size: cover, auto;
+            background-position: center, 0 0;
+            background-repeat: no-repeat, repeat;
             animation:woodFade 20s ease-in-out infinite;
-            background-image:repeating-linear-gradient(90deg,transparent,transparent 80px,rgba(0,0,0,0.05) 80px,rgba(0,0,0,0.05) 82px);
             color:white; font-family:'Courier New',monospace;
             display:flex; flex-direction:column;
             height:100vh; height:100dvh; overflow:hidden;
         }
-
+ 
         /* ── TOP UI BAR ── */
         #ui-layer {
             display:flex; align-items:center; justify-content:center;
@@ -98,6 +332,7 @@
             background:linear-gradient(90deg,var(--current-player-color,transparent) 0%,transparent 40%);
             opacity:0.12; pointer-events:none; border-radius:inherit; transition:background 0.8s ease;
         }
+        /* Center cluster: dice gets a fixed-width invisible placeholder so it never displaces Roll/status */
         #ui-center-cluster { display:flex; align-items:center; gap:clamp(8px,2vw,28px); position:relative; z-index:1; }
         #status-text {
             font-size:clamp(0.9rem,2.8vw,2.2rem);
@@ -105,7 +340,7 @@
             text-transform:uppercase; line-height:1; white-space:nowrap;
             min-width:clamp(80px,14vw,200px); text-align:right;
         }
-
+ 
         /* ── HAMBURGER KNOB ── */
         #nav-knob { position:absolute; left:clamp(10px,2vw,20px); top:50%; transform:translateY(-50%); z-index:30; }
         #nav-knob-btn {
@@ -140,8 +375,8 @@
         .btn-home:hover    { border-color:var(--tape-white); box-shadow:0 0 12px rgba(255,255,255,0.4); }
         .btn-store:hover   { border-color:var(--pink-glow);  color:var(--pink-glow); box-shadow:0 0 12px var(--pink-glow); }
         .btn-album:hover   { border-color:var(--joy-glow);   color:var(--joy-glow);  box-shadow:0 0 12px var(--joy-glow); }
-
-        /* ── ROLL BUTTON ── */
+ 
+        /* ── ROLL BUTTON — flashier hover/click ── */
         #roll-btn {
             background:rgba(0,0,0,0.6); color:var(--joy-glow);
             width:clamp(90px,16vw,200px); font-size:clamp(0.9rem,2vw,1.6rem);
@@ -150,21 +385,24 @@
             border:2px solid var(--joy-glow); border-radius:999px;
             cursor:pointer; letter-spacing:3px;
             animation:rollPulse 2s ease-in-out infinite;
-            transition:all 0.3s ease; position:relative; overflow:hidden; flex-shrink:0;
+            transition:all 0.2s ease; position:relative; overflow:hidden; flex-shrink:0;
         }
         #roll-btn::after {
             content:''; position:absolute; inset:0;
-            background:linear-gradient(105deg,transparent 40%,rgba(0,255,136,0.25) 50%,transparent 60%);
-            background-size:200% 100%; opacity:0; transition:opacity 0.3s ease;
+            background:linear-gradient(105deg,transparent 30%,rgba(0,255,136,0.35) 50%,rgba(255,255,255,0.15) 55%,transparent 65%);
+            background-size:250% 100%; opacity:0; transition:opacity 0.2s ease;
         }
-        #roll-btn:hover::after { opacity:1; animation:shimmer 0.8s ease forwards; }
+        #roll-btn:hover { animation:rollHoverPulse 0.9s ease-in-out infinite; color:white; border-color:white; background:rgba(0,255,136,0.12); }
+        #roll-btn:hover::after { opacity:1; animation:shimmer 0.6s ease forwards; }
+        #roll-btn:active { animation:rollBtnPress 0.25s ease forwards !important; }
         #roll-btn:disabled { opacity:0.35; animation:none; cursor:not-allowed; }
-
-        /* ── DICE — extra padding so it never clips ── */
+ 
+        /* ── DICE SLOT — fixed size so dice departure doesn't shift layout ── */
         #dice-slot-right {
-            /* Wrapper gives extra breathing room around the dice box */
-            padding: clamp(4px,0.8vw,10px);
-            display:flex; align-items:center; justify-content:center; flex-shrink:0;
+            width:clamp(46px,6.3vw,84px); height:clamp(46px,6.3vw,84px);
+            /* Fixed placeholder — dice element moves out of flow when cinematic, slot stays */
+            position:relative; flex-shrink:0;
+            display:flex; align-items:center; justify-content:center;
         }
         #dice-box {
             width:clamp(38px,5.5vw,72px); height:clamp(38px,5.5vw,72px);
@@ -173,9 +411,11 @@
             display:flex; align-items:center; justify-content:center;
             font-size:clamp(1.6rem,3.6vw,3.5rem); font-weight:900;
             font-family:'KCStrikerSans','Courier New',monospace;
-            transition:all 0.5s cubic-bezier(0.175,0.885,0.32,1.275);
-            position:relative; animation:diceGlow 3s ease-in-out infinite;
+            transition:opacity 0.35s ease;
+            position:absolute;  /* absolute within slot so slot holds space */
+            animation:diceGlow 3s ease-in-out infinite;
         }
+        /* When cinematic, dice flies to center — slot still occupies its space */
         .dice-rise-out   { animation:diceRiseOut   0.35s ease-in  forwards !important; }
         .dice-fall-in    { animation:diceFallIn    0.4s  ease-out forwards !important; }
         .dice-return-out { animation:diceReturnOut 0.35s ease-in  forwards !important; }
@@ -184,14 +424,15 @@
             position:fixed !important; top:50% !important; left:50% !important;
             transform:translate3d(-50%,-50%,0) scale(2.2) !important;
             z-index:5000; opacity:0.90; box-shadow:0 0 50px rgba(255,255,255,0.4);
+            transition:none !important;
         }
         .dice-red  { animation:redSparkle  0.5s infinite alternate !important; }
         .dice-gold { animation:goldSparkle 0.5s infinite alternate !important; }
         .flipping  { animation:flipping 1.2s cubic-bezier(0.45,0.05,0.55,0.95); transform-style:preserve-3d; }
-
+ 
         /* ── MAIN AREA ── */
         #main-area { flex:1; display:flex; flex-direction:row; min-height:0; overflow:hidden; position:relative; }
-
+ 
         /* ── PASS SIDEBAR ── */
         #pass-sidebar {
             z-index:2;
@@ -199,8 +440,16 @@
             display:flex; flex-direction:column;
             justify-content:flex-start; align-items:center;
             gap:clamp(5px,1vh,14px);
-            padding:clamp(4px,0.7vw,10px) clamp(3px,0.6vw,8px);
+            /* Extra padding + feather on all sides so hover glow never clips */
+            padding:clamp(8px,1.2vw,16px) clamp(8px,1.1vw,14px);
             overflow:hidden; position:relative;
+            /* Soft feather on all edges */
+            -webkit-mask-image:linear-gradient(to bottom,transparent 0%,black 8%,black 92%,transparent 100%),
+                               linear-gradient(to right, transparent 0%, black 8%, black 100%);
+            -webkit-mask-composite:destination-in;
+            mask-image:linear-gradient(to bottom,transparent 0%,black 8%,black 92%,transparent 100%),
+                       linear-gradient(to right, transparent 0%, black 8%, black 100%);
+            mask-composite:intersect;
         }
         #lineup-label {
             font-size:clamp(0.7rem,1.1vw,1rem);
@@ -208,23 +457,26 @@
             text-transform:uppercase; text-align:center;
             flex-shrink:0; margin-bottom:2px; font-family:'Courier New',monospace;
         }
-
-        /* Pass card */
+ 
+        /* Pass card — floats continuously with staggered phases, not reset per turn */
         .access-pass {
             width:clamp(74px,10.5vw,152px);
             background:linear-gradient(160deg,#1a1a1a 60%,#2a2a2a);
             border-radius:10px; border:1px solid rgba(255,255,255,0.15);
             padding:clamp(5px,0.65vw,10px);
-            /* Reduced drop shadow */
             box-shadow:0 2px 10px rgba(0,0,0,0.5),inset 0 1px 0 rgba(255,255,255,0.08);
             position:relative;
-            transform:rotate(var(--tilt,-1.5deg));
-            animation:passFloat 4s ease-in-out infinite;
+            /* Float and tilt handled per-class below so animation never restarts */
             transition:border-color 0.4s,box-shadow 0.4s,transform 0.25s;
             cursor:pointer;
         }
+        /* Three tilt variants — assigned by JS index mod 3. Never reset between turns. */
+        .pass-float-a { animation:passFloatA 4s ease-in-out infinite; }
+        .pass-float-b { animation:passFloatB 4s ease-in-out infinite; animation-delay:-1.3s; }
+        .pass-float-c { animation:passFloatC 4s ease-in-out infinite; animation-delay:-2.6s; }
+ 
         .access-pass:hover {
-            transform:rotate(0deg) scale(1.07) !important; animation:none;
+            transform:rotate(0deg) scale(1.07) !important; animation:none !important;
             box-shadow:0 6px 22px rgba(0,0,0,0.6), 0 0 16px var(--p-color);
             border-color:var(--p-color); z-index:10;
         }
@@ -233,13 +485,24 @@
             box-shadow:0 2px 10px rgba(0,0,0,0.5),0 0 12px var(--p-color),inset 0 1px 0 rgba(255,255,255,0.08);
         }
         .access-pass.pass-notify { animation:passNotify 1.2s ease-in-out infinite !important; border-color:var(--pitch-orange) !important; }
-        /* Selectable pass card glow — Grammy/Tellus/Maya target state */
         .access-pass.pass-selectable {
             animation:selectGlow 1s ease-in-out infinite !important;
             border-color:white !important; cursor:crosshair !important;
             transform:rotate(0deg) scale(1.05) !important;
         }
-
+ 
+        /* Pitch nudge bubble — small orange ● badge top-right of pass */
+        .pitch-bubble {
+            position:absolute; top:-6px; right:-6px;
+            width:16px; height:16px; border-radius:50%;
+            background:var(--pitch-orange);
+            border:2px solid #111;
+            font-size:0.55rem; font-weight:bold; color:#111;
+            display:flex; align-items:center; justify-content:center;
+            animation:bubblePop 0.4s cubic-bezier(0.175,0.885,0.32,1.275) forwards;
+            z-index:5; cursor:pointer;
+        }
+ 
         .pass-clip {
             width:clamp(9px,1.5vw,16px); height:clamp(4px,0.7vw,8px);
             background:#888; border-radius:3px 3px 0 0;
@@ -258,9 +521,9 @@
         .tag-investor  { background:var(--gold);          color:black; }
         .tag-sellout   { background:var(--fear-glow);     color:white; }
         .tag-pitched   { background:var(--pitch-orange);  color:black; }
-        .tag-thrifty   { background:var(--mystery-glow);  color:black; } /* formerly "supporter" */
+        .tag-thrifty   { background:var(--mystery-glow);  color:black; }
         .pass-stripe   { background:linear-gradient(90deg,var(--p-color,#333) 0%,transparent 100%); opacity:0.15; height:clamp(2px,0.32vw,4px); border-radius:2px; margin-top:clamp(2px,0.3vw,5px); }
-
+ 
         /* ── PASS EXPANDED OVERLAY ── */
         #pass-expanded-backdrop { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.65); z-index:3000; align-items:center; justify-content:center; }
         #pass-expanded-backdrop.open { display:flex; }
@@ -288,12 +551,11 @@
             border-radius:8px; cursor:pointer; transition:all 0.25s ease;
         }
         #pitch-btn:hover { background:var(--pitch-orange); color:black; box-shadow:0 0 16px var(--pitch-orange); transform:translateY(-2px); }
-
+ 
         /* ── BOARD SCROLL ── */
         #board-scroll {
             flex:1; display:flex; align-items:center; justify-content:center;
             overflow:hidden;
-            /* Generous padding so board has breathing room on large screens */
             padding:clamp(8px,1.5vw,28px);
             box-sizing:border-box; min-height:0; min-width:0;
             z-index:5; position:relative;
@@ -305,10 +567,9 @@
             grid-template-rows:   repeat(6, var(--space-size));
             gap:var(--board-gap); padding:var(--board-pad);
             position:relative; z-index:5; flex-shrink:0;
-            /* Board scales up to fill available space on large screens */
             max-width:min(calc(10*var(--space-size) + 9*var(--board-gap) + 2*var(--board-pad)), 100%);
         }
-
+ 
         /* ── SPACES ── */
         .space {
             width:var(--space-size); height:var(--space-size);
@@ -316,8 +577,10 @@
             display:flex; flex-direction:column; align-items:center; justify-content:center;
             font-weight:bold; font-size:var(--space-font); line-height:1.1;
             background:rgba(255,255,255,0.05); text-align:center;
-            position:relative; transition:0.3s; cursor:help; box-sizing:border-box;
+            position:relative; transition:transform 0.18s ease, box-shadow 0.18s ease; cursor:help; box-sizing:border-box;
         }
+        /* Hover glow on all spaces */
+        .space:hover { transform:scale(1.08); box-shadow:0 0 14px rgba(255,255,255,0.3); z-index:6; }
         .space:not(.blank):not(.mystery-space):not(.true-blank) { font-family:'KCStrikerSans','Courier New',monospace; }
         .sp-emoji { font-size:var(--space-emoji); margin-bottom:2px; }
         .sp-text  { padding:0 2px; }
@@ -325,8 +588,8 @@
         .arrow-right { right:clamp(-8px,-1.2vw,-18px); top:50%; transform:translateY(-50%); }
         .arrow-left  { left: clamp(-8px,-1.2vw,-18px); top:50%; transform:translateY(-50%) rotate(180deg); }
         .arrow-up    { top: clamp(-10px,-1.6vw,-22px); left:50%; transform:translateX(-50%) rotate(-90deg); }
-
-        /* Mystery spaces — ~half of blanks, bright ?, purple glow */
+ 
+        /* Mystery spaces */
         .mystery-space {
             border-style:dashed !important; background:none !important;
             cursor:help; font-family:'Courier New',monospace !important;
@@ -335,46 +598,47 @@
             border-color:var(--mystery-glow) !important; color:var(--mystery-glow) !important;
             border-width:2px !important;
         }
+        .mystery-space:hover { transform:scale(0.9) !important; box-shadow:0 0 18px var(--mystery-glow); }
         .mystery-q { font-size:clamp(0.85rem,1.6vw,1.5rem); font-weight:bold; opacity:0.9; }
-
-        /* True blank spaces — off-white, very transparent, no glow, no cursor change */
+ 
+        /* True blank — less transparent than before */
         .true-blank {
-            opacity:0.22; transform:scale(0.75);
-            border-style:dashed !important; border-color:rgba(255,255,255,0.25) !important;
+            opacity:0.45; transform:scale(0.78);
+            border-style:dashed !important; border-color:rgba(255,255,255,0.35) !important;
             background:none !important; cursor:default;
             font-family:'Courier New',monospace !important;
         }
-
+        .true-blank:hover { transform:scale(0.82) !important; box-shadow:none; }
+ 
         /* Tracklist / vinyl */
         .tracklist-space { background:var(--vinyl) !important; border:3px double #666 !important; box-shadow:inset 0 0 15px #000; transform:scale(1.15); z-index:5; font-size:var(--space-font) !important; color:white !important; }
+        .tracklist-space:hover { transform:scale(1.22) !important; box-shadow:inset 0 0 15px #000, 0 0 14px rgba(255,255,255,0.25) !important; }
         .tracklist-space.vinyl-spinning { animation:vinylSpin 3.2s ease forwards !important; transform-origin:center center !important; }
+        .tracklist-space.vinyl-wiggle   { animation:vinylWiggle 0.9s ease-in-out !important; transform-origin:center center !important; }
         .win-track  { background:var(--vinyl) !important; border:4px solid var(--blue-glow) !important; box-shadow:0 0 30px var(--blue-glow); transform:scale(1.4) !important; z-index:10 !important; }
         .joy-space  { border-color:var(--joy-glow)  !important; color:var(--joy-glow)  !important; }
         .fear-space { border-color:var(--fear-glow) !important; color:var(--fear-glow) !important; }
         .hybrid     { border-style:dotted; border-width:3px; border-color:white; }
         .space-land { animation:spaceLand 1.2s ease-out forwards; }
-
+ 
         /* ── PLAYER PIECES ── */
         .player {
-            width:var(--space-size); height:var(--space-size);
             position:absolute; z-index:100;
             transition:all 0.7s cubic-bezier(0.18,0.89,0.32,1.28);
             background-size:contain; background-repeat:no-repeat; background-position:center bottom;
             pointer-events:none; animation:pieceHover 4s infinite ease-in-out;
         }
         .active-turn { animation:turnPulse 1.5s infinite ease-in-out; }
-        /* Selectable piece glow — white outline for Grammy/Tellus/Maya selection */
+        /* Selectable piece — drop-shadow on the image shape, not a box */
         .swap-target {
-            filter:drop-shadow(0 0 8px white) drop-shadow(0 0 16px white) !important;
-            animation:selectGlow 1s ease-in-out infinite !important;
+            filter:drop-shadow(0 0 6px white) drop-shadow(0 0 12px white) !important;
             pointer-events:auto !important; cursor:crosshair !important;
         }
         .floating-emoji { position:absolute; font-size:4rem; animation:floatUp 1.2s cubic-bezier(0.2,0.8,0.2,1) forwards; pointer-events:none; z-index:6000; }
-
+ 
         /* ── POPUPS & OVERLAYS ── */
         .overlay { position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:2000; display:none; align-items:center; justify-content:center; padding:clamp(10px,3vw,20px); box-sizing:border-box; }
-
-        /* Central popup — 10% transparent, gradient bg, shine bar */
+ 
         .popup {
             background:linear-gradient(160deg, rgba(8,8,8,0.90) 0%, rgba(28,28,28,0.90) 100%);
             backdrop-filter:blur(10px);
@@ -384,7 +648,6 @@
             max-height:88vh; overflow-y:auto;
             text-align:center; transition:0.4s; box-sizing:border-box;
         }
-        /* Shine bar pseudo-element on central popup */
         .popup::before {
             content:''; position:absolute; inset:0; pointer-events:none;
             background:linear-gradient(105deg,transparent 35%,rgba(255,255,255,0.04) 50%,transparent 65%);
@@ -393,12 +656,12 @@
         }
         .popup h1 { font-family:'KCStrikerSans','Courier New',monospace; font-size:clamp(1.2rem,4vw,2rem); margin:0 0 12px; position:relative; }
         #event-desc { font-size:clamp(1rem,2.2vw,1.35rem) !important; position:relative; }
-
-        /* Popup action buttons — StrikerSans */
+ 
+        /* Popup action buttons — larger text */
         #event-btn-primary, #event-btn-secondary {
             font-family:'KCStrikerSans','Courier New',monospace;
-            padding:clamp(10px,1.5vh,15px) clamp(16px,3vw,35px);
-            font-size:clamp(0.85rem,1.8vw,1.1rem);
+            padding:clamp(11px,1.7vh,18px) clamp(18px,3.2vw,40px);
+            font-size:clamp(1rem,2.1vw,1.3rem);
             font-weight:bold; cursor:pointer; border-radius:8px; border:none;
             transition:all 0.25s cubic-bezier(0.175,0.885,0.32,1.275);
             outline:2px solid transparent; outline-offset:3px; position:relative;
@@ -407,11 +670,11 @@
         #event-btn-secondary { display:none; background:#333; color:white; margin-left:clamp(8px,1.5vw,15px); }
         #event-btn-secondary:hover { transform:translateY(-2px) scale(1.04); background:#444; box-shadow:0 6px 20px rgba(0,0,0,0.4); }
         .btn-kb-focus { outline:2px solid white !important; animation:btnFocusPulse 1s ease-in-out infinite; }
-
-        /* Right sidebar — 20% transparent, StrikerSans header, larger Courier desc */
+ 
+        /* Right sidebar — mystery version is smaller and more transparent */
         #rule-sidebar {
             position:fixed; right:-400px; top:calc(var(--bar-h) + 8px);
-            width:min(300px,80vw);
+            width:min(280px,76vw);
             background:linear-gradient(160deg, rgba(8,8,8,0.80) 0%, rgba(28,28,28,0.80) 100%);
             backdrop-filter:blur(8px);
             padding:clamp(14px,2.2vw,26px);
@@ -420,17 +683,26 @@
             z-index:200; box-shadow:-10px 0 40px rgba(0,0,0,0.6); cursor:pointer;
         }
         #rule-sidebar.active { right:10px; }
-        /* Mystery sidebar — slightly smaller, 30% transparent */
+        /* Mystery sidebar — smaller, more transparent, adaptive to content */
         #rule-sidebar.mystery-sidebar {
-            background:linear-gradient(160deg, rgba(8,8,8,0.70) 0%, rgba(28,28,28,0.70) 100%);
-            font-size:0.92em; /* slightly smaller overall */
+            background:linear-gradient(160deg, rgba(6,6,6,0.55) 0%, rgba(18,18,18,0.55) 100%);
+            font-size:0.88em;
+            width:min(240px,72vw);
         }
         #side-sub   { font-size:0.75rem; letter-spacing:2px; color:rgba(255,255,255,0.4); text-transform:uppercase; margin-bottom:6px; font-family:'Courier New',monospace; }
         #side-title { font-family:'KCStrikerSans','Courier New',monospace; margin:0 0 8px; font-size:clamp(1rem,2.5vw,1.5rem); }
         #side-desc  { line-height:1.6; margin:0; font-size:clamp(0.85rem,1.6vw,1.05rem); font-family:'Courier New',monospace; }
-
-        /* Bucket content */
-        .bucket-img { width:100%; border-radius:8px; margin:10px 0; display:block; max-height:200px; object-fit:cover; }
+ 
+        /* Bucket content — adaptive image container (no fixed max-height crop) */
+        .bucket-img {
+            width:100%; border-radius:8px; margin:10px 0; display:block;
+            height:auto; /* adaptive — not cropped */
+            max-width:100%; object-fit:contain;
+        }
+        .bucket-video {
+            width:100%; border-radius:8px; margin:10px 0; display:block;
+            height:auto; max-width:100%;
+        }
         .bucket-link-card { background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.15); border-radius:10px; padding:14px; margin-top:10px; text-align:center; }
         .bucket-link-label{ font-size:1rem; font-weight:bold; margin-bottom:8px; color:var(--mystery-glow); }
         .bucket-code { font-family:'KCStrikerSans','Courier New',monospace; font-size:1.3rem; letter-spacing:4px; color:var(--gold); background:rgba(255,215,0,0.1); border:1px solid var(--gold); border-radius:6px; padding:8px 14px; display:inline-block; margin:8px 0; cursor:pointer; transition:all 0.2s ease; }
@@ -438,19 +710,18 @@
         .bucket-code-hint { font-size:0.65rem; color:rgba(255,255,255,0.4); letter-spacing:1px; margin-bottom:8px; }
         .bucket-btn { display:inline-block; text-decoration:none; background:var(--mystery-glow); color:black; font-weight:bold; font-size:0.85rem; letter-spacing:1px; text-transform:uppercase; padding:10px 20px; border-radius:8px; border:none; cursor:pointer; transition:all 0.25s ease; margin-top:6px; }
         .bucket-btn:hover { transform:translateY(-2px); box-shadow:0 0 16px var(--mystery-glow); }
-
-        /* Fearjoy coin + Lost Tape dice — StrikerSans */
+ 
+        /* Fearjoy coin + Lost Tape dice */
         #coin { font-family:'KCStrikerSans','Courier New',monospace; }
-        /* Lost tape uses same #coin element but displayed as a dice square */
         #coin.lost-tape-dice {
-            border-radius:12px !important; /* square corners = dice */
+            border-radius:12px !important;
             background:rgba(0,0,0,0.75) !important;
             border:3px solid rgba(255,255,255,0.7) !important;
             color:white !important;
         }
-
+ 
         .intro-header { font-size:clamp(1.6rem,5vw,3.5rem); color:var(--gold); animation:introGlow 2s ease-in-out infinite alternate; margin-bottom:16px; font-family:'KCStrikerSans','Courier New',monospace; letter-spacing:4px; }
-
+ 
         /* ── SETUP ── */
         .setup-btn-large  { padding:clamp(10px,2vh,20px) clamp(20px,4vw,45px); font-size:clamp(1.4rem,4vw,2.5rem); font-weight:bold; background:transparent; color:white; border:2px solid white; border-radius:12px; cursor:pointer; transition:all 0.2s ease; }
         .setup-btn-large:hover { background:white; color:black; transform:scale(1.1); }
@@ -465,28 +736,18 @@
         .color-swatch:hover { transform:scale(1.15); }
         .color-swatch.swatch-selected { border-color:white; transform:scale(1.2); box-shadow:0 0 10px currentColor; }
         .color-swatch.swatch-taken { opacity:0.2; cursor:not-allowed; pointer-events:none; }
-
-        /* ── PRELOAD PROGRESS BAR (setup screen) ── */
+ 
+        /* ── PRELOAD PROGRESS BAR ── */
         #preload-bar-wrap {
             position:absolute; bottom:12px; left:50%; transform:translateX(-50%);
             width:min(240px,70%); text-align:center; opacity:0; transition:opacity 0.5s;
         }
         #preload-bar-wrap.visible { opacity:1; }
-        #preload-bar-track {
-            width:100%; height:4px; background:rgba(255,255,255,0.12);
-            border-radius:4px; overflow:hidden; margin-bottom:4px;
-        }
-        #preload-bar-fill {
-            height:100%; width:0%; background:var(--joy-glow);
-            border-radius:4px; transition:width 0.3s ease;
-            animation:progressPulse 1.5s ease-in-out infinite;
-        }
-        #preload-bar-label {
-            font-size:0.6rem; letter-spacing:2px; color:rgba(255,255,255,0.35);
-            text-transform:uppercase; font-family:'Courier New',monospace;
-        }
-
-        /* ── SELECTION REMINDER POPUP (right side) ── */
+        #preload-bar-track { width:100%; height:4px; background:rgba(255,255,255,0.12); border-radius:4px; overflow:hidden; margin-bottom:4px; }
+        #preload-bar-fill  { height:100%; width:0%; background:var(--joy-glow); border-radius:4px; transition:width 0.3s ease; animation:progressPulse 1.5s ease-in-out infinite; }
+        #preload-bar-label { font-size:0.6rem; letter-spacing:2px; color:rgba(255,255,255,0.35); text-transform:uppercase; font-family:'Courier New',monospace; }
+ 
+        /* ── SELECTION REMINDER POPUP ── */
         #selection-reminder {
             position:fixed; right:clamp(10px,2vw,20px);
             top:calc(var(--bar-h) + clamp(50px,12vh,120px));
@@ -496,22 +757,13 @@
             border:1.5px solid rgba(255,255,255,0.5); border-radius:14px;
             padding:14px 16px; z-index:4000;
             display:none; box-shadow:-4px 0 24px rgba(0,0,0,0.6);
-            animation:reminderSlide 0.35s cubic-bezier(0.175,0.885,0.32,1.275) forwards;
             cursor:pointer;
         }
-        #selection-reminder.visible { display:block; }
-        #selection-reminder-text {
-            font-family:'Courier New',monospace;
-            font-size:0.78rem; line-height:1.5;
-            color:rgba(255,255,255,0.85); letter-spacing:0.3px;
-        }
-        #selection-reminder-title {
-            font-family:'KCStrikerSans','Courier New',monospace;
-            font-size:0.9rem; letter-spacing:2px; color:white;
-            margin-bottom:6px; text-transform:uppercase;
-        }
-
-        /* ── RESPONSIVE: bottom strip at 900px ── */
+        #selection-reminder.visible { display:block; animation:reminderSlide 0.35s cubic-bezier(0.175,0.885,0.32,1.275) forwards; }
+        #selection-reminder-text { font-family:'Courier New',monospace; font-size:0.78rem; line-height:1.5; color:rgba(255,255,255,0.85); letter-spacing:0.3px; }
+        #selection-reminder-title { font-family:'KCStrikerSans','Courier New',monospace; font-size:0.9rem; letter-spacing:2px; color:white; margin-bottom:6px; text-transform:uppercase; }
+ 
+        /* ── RESPONSIVE ── */
         @media (max-width:900px),(orientation:portrait) {
             :root {
                 --space-size:  clamp(20px,7.2vw,60px);
@@ -531,9 +783,8 @@
                 padding:clamp(3px,0.8vw,7px);
                 overflow-x:auto; overflow-y:hidden;
                 order:2; gap:clamp(5px,1.8vw,12px);
-                /* Slight feather on bottom-strip to soften edges */
-                -webkit-mask-image:linear-gradient(to bottom, black 80%, transparent 100%);
-                mask-image:         linear-gradient(to bottom, black 80%, transparent 100%);
+                -webkit-mask-image:linear-gradient(to right, transparent 0%, black 6%, black 94%, transparent 100%);
+                mask-image:linear-gradient(to right, transparent 0%, black 6%, black 94%, transparent 100%);
             }
             #board-scroll { order:1; }
             #lineup-label { writing-mode:horizontal-tb; margin-bottom:0; margin-right:6px; flex-shrink:0; }
@@ -542,7 +793,7 @@
     </style>
 </head>
 <body>
-
+ 
     <!-- ══ UI BAR ══ -->
     <div id="ui-layer">
         <div id="nav-knob">
@@ -550,7 +801,6 @@
                 <div class="knob-line"></div><div class="knob-line"></div><div class="knob-line"></div>
             </button>
             <div id="nav-menu">
-                <!-- Audio icon changes with state: 🔇 = muted, 🔊 = active -->
                 <button class="nav-menu-btn btn-audio" id="audio-btn" onclick="toggleAudio()"><span class="nav-icon" id="audio-icon">🔊</span> SOUND: <span id="audio-status">ON</span></button>
                 <button class="nav-menu-btn btn-restart" onclick="confirmSoftRestart();closeNavMenu()"><span class="nav-icon">🔄</span> Restart Tour</button>
                 <button class="nav-menu-btn btn-home"    onclick="window.open('https://freejoy.club','_blank')"><span class="nav-icon">🏠</span> Home</button>
@@ -561,10 +811,11 @@
         <div id="ui-center-cluster">
             <div id="status-text">---</div>
             <button id="roll-btn" onclick="doRoll()" disabled>ROLL</button>
+            <!-- Fixed-size slot so layout never shifts when dice goes cinematic -->
             <div id="dice-slot-right"><div id="dice-box">?</div></div>
         </div>
     </div>
-
+ 
     <!-- ══ MAIN AREA ══ -->
     <div id="main-area">
         <div id="pass-sidebar"><div id="lineup-label">Lineup</div></div>
@@ -572,7 +823,7 @@
             <div id="board-outer"><div id="board-container"></div></div>
         </div>
     </div>
-
+ 
     <!-- ══ PASS EXPANDED ══ -->
     <div id="pass-expanded-backdrop" onclick="collapsePass(event)">
         <div id="pass-expanded-card">
@@ -589,7 +840,7 @@
             <button id="pitch-btn" onclick="triggerColdPitch()">🎤 Pitch to Labels</button>
         </div>
     </div>
-
+ 
     <!-- ══ RULE SIDEBAR ══ -->
     <div id="rule-sidebar" onclick="closeSidebar()">
         <div id="side-sub"></div>
@@ -597,19 +848,18 @@
         <p  id="side-desc"  style="line-height:1.6;margin:0;"></p>
         <div id="side-bucket"></div>
     </div>
-
-    <!-- ══ SELECTION REMINDER POPUP ══ -->
+ 
+    <!-- ══ SELECTION REMINDER ══ -->
     <div id="selection-reminder" onclick="dismissReminder()">
         <div id="selection-reminder-title">👆 SELECT AN ARTIST</div>
         <div id="selection-reminder-text">Tap another Artist's face on the board, or their Pass card in the lineup.</div>
     </div>
-
+ 
     <!-- ══ EVENT OVERLAY ══ -->
     <div id="overlay-event" class="overlay">
         <div class="popup" id="main-popup">
             <h1 id="event-title"></h1>
             <div id="event-desc" style="color:#ccc;margin-bottom:25px;line-height:1.6;"></div>
-            <!-- Fearjoy coin — round. Lost Tape dice — gets .lost-tape-dice class for square look -->
             <div id="coin" style="width:140px;height:140px;background:var(--gold);border:8px solid #b8860b;border-radius:50%;margin:25px auto;display:none;align-items:center;justify-content:center;font-size:2.5rem;font-weight:bold;color:#5c4305;transform-style:preserve-3d;">?</div>
             <div id="timer-ui" style="font-size:clamp(2.5rem,8vw,5rem);font-weight:900;color:var(--joy-glow);margin:20px 0;display:none;"></div>
             <div id="action-bar">
@@ -618,7 +868,7 @@
             </div>
         </div>
     </div>
-
+ 
     <!-- ══ SETUP OVERLAY ══ -->
     <div id="overlay-setup" class="overlay" style="display:flex">
         <div class="popup" style="max-width:500px;width:92vw;position:relative;">
@@ -651,58 +901,52 @@
                     <div id="roster-list" style="display:flex;justify-content:center;gap:15px;flex-wrap:wrap;"></div>
                 </div>
             </div>
-            <!-- Preload progress bar — appears while players are being configured -->
             <div id="preload-bar-wrap">
                 <div id="preload-bar-track"><div id="preload-bar-fill"></div></div>
                 <div id="preload-bar-label">Loading assets...</div>
             </div>
         </div>
     </div>
-
+ 
     <script>
     // ══════════════════════════════════════════════════════════════════
     // BUCKET — Mystery Space Content Pool
-    // Types: image, link, download (video/audio stubs for future pass)
-    // Merch discount tiers: 20%, 25%, 30% — one per player per game, random
+    // Updated file list per Grant's notes.
     // ══════════════════════════════════════════════════════════════════
     const BUCKET_BASE = [
         /* ── IMAGES ── */
         { type:'image', file:'bucket/CP-30.jpg' },
-        { type:'image', file:'bucket/GrantFear2018.jpg' },
-        { type:'image', file:'bucket/IMG_20200116_191828_548.jpg' },
         { type:'image', file:'bucket/IMG_20200116_191840_549.jpg' },
-        { type:'image', file:'bucket/fearjoy poster 2x3 framed orange.png' },
-        { type:'image', file:'bucket/fearjoy yinyang round - psych blue brown.png' },
         { type:'image', file:'bucket/marco lay.jpg' },
         { type:'image', file:'bucket/milwaukeedee grant.jpg' },
         { type:'image', file:'bucket/miramar wheel bunz ariel.jpg' },
         { type:'image', file:'bucket/morganshootsthings Grant & jesse 2.jpg' },
         { type:'image', file:'bucket/morganshootsthings Grant & jesse.jpg' },
-        { type:'image', file:'bucket/morganshootsthings Grant disco 1.jpg' },
         { type:'image', file:'bucket/morganshootsthings Grant ok.jpg' },
+        /* ── VIDEOS ── */
+        { type:'video', file:'bucket/story harmony hunting tunnel.mp4' },
+        { type:'video', file:'bucket/story mu nightdrive 3.mp4' },
         /* ── DOWNLOAD — update url/label for new releases ── */
         // { type:'download', label:'Secret demo (download)', url:'https://freejoy.club/demo' },
     ];
-
-    /* Merch discount tiers — kept separate so we can manage one-per-player logic.
+ 
+    /* Merch discount tiers — one per player per game, boosted probability vs regular drops.
        Update codes/urls here when real store promos are set up. */
     const MERCH_DISCOUNTS = [
         { type:'link', label:'20% off merch', url:'https://freejoy.club', code:'PLAYER20', codeHint:'tap to copy' },
         { type:'link', label:'25% off merch', url:'https://freejoy.club', code:'PLAYER25', codeHint:'tap to copy' },
         { type:'link', label:'30% off merch — MAX DISCOUNT!', url:'https://freejoy.club', code:'PLAYER30', codeHint:'tap to copy — best we offer!', isMax:true },
     ];
-
-    /* Tracks the highest discount % offered to any player this game — for win screen */
+ 
     let highestDiscountPct = 0;
-
-    /* Colors — decoupled from avatars */
+ 
     const AVAILABLE_COLORS = [
         {hex:'#00ccff',name:'Cyan'},{hex:'#ffcc00',name:'Gold'},
         {hex:'#ff00ff',name:'Magenta'},{hex:'#00ff88',name:'Mint'},
         {hex:'#ff4444',name:'Red'},{hex:'#ff8800',name:'Orange'},
     ];
     const DEFAULT_COLORS = ['#00ccff','#ffcc00','#ff00ff'];
-
+ 
     const boardLayout = [
         "START","blank","blank","blank","DAYSPRING","blank","FEARJOY","blank","FIGMENT","JOY",
         "THE REMEDY","FEAR","VAN BREAKS DOWN","JOY","blank","DMITRI","blank","FEARJOY","NIGHTDRIVE","JOY",
@@ -711,8 +955,7 @@
         "blank","blank","ENCORE","blank","VOID","blank","blank","THE ENDLESS SMILE","GATEKEEPER","blank",
         "blank","blank","FEARJOY","VAN BREAKS DOWN","blank","LOST RECORDING","blank","FEARJOY","blank","SWIMMIN"
     ];
-
-    /* Simplified display names for board spaces — full titles kept in rules{} for popups */
+ 
     const DISPLAY_NAMES = {
         "VAN BREAKS DOWN": "VAN BREAKS",
         "WIN A GRAMMY":    "GRAMMY",
@@ -720,17 +963,14 @@
         "OPENING ACT":     "OPENER",
         "LOST RECORDING":  "LOST TAPE",
     };
-
+ 
     const TRACKLIST_INDICES = [4,8,10,15,18,25,27,37,44,47];
     const GRAMMY_SPACE      = 30;
     const GATEKEEPER_SPACE  = 48;
-
-    /* Blank space indices — used to randomly assign mystery vs true-blank on initBoard */
+ 
     const BLANK_INDICES = boardLayout.reduce((arr,n,i)=>{ if(n==="blank") arr.push(i); return arr; },[]);
-
-    /* mysterySpaces is set fresh each game in initBoard() */
     let mysterySpaces = new Set();
-
+ 
     const rules = {
         0: {title:"START",            emoji:"▶️", desc:"Play the tape."},
         4: {title:"DAYSPRING",        emoji:"☀️", shift:3,  isAuto:true,isTrack:true, desc:"The sun rises! Spring ahead 3.",sound:"dayclip.wav"},
@@ -759,7 +999,7 @@
         39:{title:"FEARJOY",          emoji:"☯️", isFearjoy:true, desc:"FEAR? JOY? Fate decides.",sound:"coinclip.wav"},
         42:{title:"ENCORE",           emoji:"👏", shift:3,  isAuto:true, desc:"Encore! Three more songs! Move forward 3."},
         44:{title:"VOID",             emoji:"🌀", shift:-3, isAuto:true,isTrack:true, desc:"Lost in the Void. Rewind 3.", sound:"voidclip.wav"},
-        47:{title:"THE ENDLESS SMILE",emoji:"💀", isSmile:true,isTrack:true, desc:"Remain smiling until your next turn. Break it for a penalty.", sound:"smile.wav"},
+        47:{title:"THE ENDLESS SMILE",emoji:"💀", isSmile:true,isTrack:true, desc:"Remain smiling until your next turn. Break it for a penalty.", sound:"smileclip.wav"},
         48:{title:"GATEKEEPER",       emoji:"🚪", isGate:true, desc:"Industry Gatekeeper — stop here unless you're in last place."},
         52:{title:"FEARJOY",          emoji:"☯️", isFearjoy:true, desc:"Flip for destiny.",sound:"coinclip.wav"},
         53:{title:"VAN BREAKS DOWN",  emoji:"🛠", skipTurns:1, desc:"Van breaks! Skip a turn."},
@@ -767,7 +1007,7 @@
         57:{title:"FEARJOY",          emoji:"☯️", isFearjoy:true, desc:"FEAR or JOY: JOY = +1, FEAR = -1.",sound:"coinclip.wav"},
         59:{title:"SWIMMIN'",         emoji:"🌊", desc:"The tour is a success. Go Swimmin!"}
     };
-
+ 
     // ══════════════════════════════════════════════
     // GAME STATE
     // ══════════════════════════════════════════════
@@ -777,14 +1017,17 @@
     let sidebarTimer=null;
     let expandedPassIdx=null;
     let reminderTimer=null, reminderDismissTimer=null;
-
+    /* Global turn counter — for pitch bubble nudge (shows after turn 5) */
+    let globalTurnCount=0;
+ 
     // ══════════════════════════════════════════════
-    // AUDIO — AudioContext master gain for instant mute + fade
+    // AUDIO — AudioContext master gain + crossfade
     // ══════════════════════════════════════════════
     let audioCtx=null, masterGain=null, audioEnabled=true;
-    /* All currently-playing AudioBufferSourceNodes tracked for instant mute */
     const activeSources=new Set();
-
+    /* Track the last "space" sound source for crossfade logic */
+    let lastSpaceSrc=null, lastSpaceGain=null;
+ 
     function getAudioCtx(){
         if(!audioCtx){
             audioCtx=new(window.AudioContext||window.webkitAudioContext)();
@@ -794,7 +1037,8 @@
         }
         return audioCtx;
     }
-
+ 
+    /* Generic SFX — for dice, UI etc. No crossfade, just play */
     function playSfx(url){
         if(!audioEnabled)return;
         const ctx=getAudioCtx();
@@ -806,9 +1050,51 @@
             activeSources.add(src);
             src.onended=()=>activeSources.delete(src);
             src.start();
-        }).catch(()=>{/* file not found — silent fail */});
+        }).catch(()=>{});
     }
-
+ 
+    /* Space sound — crossfades out previous space sound before starting new one */
+    function playSpaceSfx(url){
+        if(!audioEnabled)return;
+        const ctx=getAudioCtx();
+        if(ctx.state==='suspended')ctx.resume();
+        /* Fade out last space sound if still playing */
+        if(lastSpaceSrc&&lastSpaceGain){
+            try{
+                lastSpaceGain.gain.setValueAtTime(lastSpaceGain.gain.value,ctx.currentTime);
+                lastSpaceGain.gain.linearRampToValueAtTime(0,ctx.currentTime+0.5);
+                setTimeout(()=>{try{lastSpaceSrc.stop();}catch(e){}},600);
+            }catch(e){}
+            lastSpaceSrc=null;lastSpaceGain=null;
+        }
+        fetch(url).then(r=>r.arrayBuffer()).then(buf=>ctx.decodeAudioData(buf)).then(decoded=>{
+            const gainNode=ctx.createGain();gainNode.gain.value=1;
+            gainNode.connect(masterGain);
+            const src=ctx.createBufferSource();src.buffer=decoded;src.connect(gainNode);
+            activeSources.add(src);
+            src.onended=()=>{activeSources.delete(src);if(lastSpaceSrc===src){lastSpaceSrc=null;lastSpaceGain=null;}};
+            src.start();
+            lastSpaceSrc=src;lastSpaceGain=gainNode;
+        }).catch(()=>{});
+    }
+ 
+    /* Slide SFX — random between slide1-4.wav, no crossfade */
+    function playSlide(){
+        const n=Math.floor(Math.random()*4)+1;
+        playSfx(`slide${n}.wav`);
+    }
+ 
+    /* Dice roll SFX — random between dice1-4.wav during rolling */
+    function playDiceRoll(){
+        const n=Math.floor(Math.random()*4)+1;
+        playSfx(`dice${n}.wav`);
+    }
+ 
+    /* Dice done SFX */
+    function playDiceDone(){
+        playSfx('dicedone.wav');
+    }
+ 
     function playRemedyPunishment(){
         if(!audioEnabled)return;
         const ctx=getAudioCtx();
@@ -818,82 +1104,91 @@
             gainNode.connect(masterGain);
             const src=ctx.createBufferSource();src.buffer=decoded;src.connect(gainNode);
             activeSources.add(src);src.onended=()=>activeSources.delete(src);src.start();
-            /* Fade out after 2 seconds */
             setTimeout(()=>{
                 gainNode.gain.setValueAtTime(1,ctx.currentTime);
                 gainNode.gain.linearRampToValueAtTime(0,ctx.currentTime+0.5);
-                setTimeout(()=>{src.stop().catch(()=>{});},600);
+                setTimeout(()=>{try{src.stop();}catch(e){}},600);
             },2000);
         }).catch(()=>{});
     }
-
+ 
     function toggleAudio(){
         audioEnabled=!audioEnabled;
         const ctx=getAudioCtx();
         if(!audioEnabled){
-            /* Fade all playing sounds out over 0.3s then mute gain node */
             masterGain.gain.setValueAtTime(masterGain.gain.value,ctx.currentTime);
             masterGain.gain.linearRampToValueAtTime(0,ctx.currentTime+0.3);
         } else {
-            /* Restore gain */
             masterGain.gain.setValueAtTime(0,ctx.currentTime);
             masterGain.gain.linearRampToValueAtTime(1,ctx.currentTime+0.2);
         }
         document.getElementById('audio-status').innerText=audioEnabled?'ON':'OFF';
         document.getElementById('audio-icon').innerText=audioEnabled?'🔊':'🔇';
     }
-
+ 
     // ══════════════════════════════════════════════
-    // PRELOADING — runs during setup screen
-    // Pre-fetches all audio, bucket images, and videos
-    // so playback is smooth during the game
+    // PRELOADING
     // ══════════════════════════════════════════════
     const AUDIO_FILES=[
         'dayclip.wav','coinclip.wav','figclip.wav','remedyclip.wav',
         'spookyclip1.wav','dmitriclip.wav','swimclip.wav',
-        'doorclip.wav',  /* ⚠️ GRANT: doorclip.wav not yet in repo — add before Gatekeeper sound works */
+        'doorclip.wav',  /* ⚠️ GRANT: doorclip.wav not yet in repo */
+        'nightclip.wav','happensclip.wav','ghostclip.wav','mayaclip.wav',
+        'tellusclip.wav','voidclip.wav','smileclip.wav',
+        'slide1.wav','slide2.wav','slide3.wav','slide4.wav',
+        'dice1.wav','dice2.wav','dice3.wav','dice4.wav','dicedone.wav',
+        'coin.wav',
     ];
     const VIDEO_FILES=['trevortrim.mp4'];
-
+ 
     function startPreload(){
         const wrap=document.getElementById('preload-bar-wrap');
         const fill=document.getElementById('preload-bar-fill');
         const label=document.getElementById('preload-bar-label');
         wrap.classList.add('visible');
-
         const imageSrcs=BUCKET_BASE.filter(i=>i.type==='image').map(i=>i.file);
-        const allFiles=[...AUDIO_FILES,...VIDEO_FILES,...imageSrcs];
-        let loaded=0;
-        const total=allFiles.length;
+        const videoSrcs=BUCKET_BASE.filter(i=>i.type==='video').map(i=>i.file);
+        const allFiles=[...AUDIO_FILES,...VIDEO_FILES,...videoSrcs,...imageSrcs];
+        let loaded=0;const total=allFiles.length;
         if(!total){wrap.classList.remove('visible');return;}
-
         function onLoad(){
             loaded++;
             const pct=Math.round((loaded/total)*100);
             fill.style.width=pct+'%';
             label.innerText=`Loading assets… ${pct}%`;
-            if(loaded>=total){
-                label.innerText='Ready!';
-                setTimeout(()=>wrap.classList.remove('visible'),1200);
-            }
+            if(loaded>=total){label.innerText='Ready!';setTimeout(()=>wrap.classList.remove('visible'),1200);}
         }
-
         allFiles.forEach(src=>{
             if(src.match(/\.(wav|mp3|ogg)$/i)){
-                /* Audio: fetch into ArrayBuffer for AudioContext pre-cache */
                 const ctx=getAudioCtx();
                 fetch(src).then(r=>r.arrayBuffer()).then(buf=>ctx.decodeAudioData(buf)).then(onLoad).catch(onLoad);
             } else if(src.match(/\.(mp4|webm|mov)$/i)){
-                /* Video: just preload metadata via <video> */
                 const v=document.createElement('video');v.preload='metadata';
                 v.onloadedmetadata=onLoad;v.onerror=onLoad;v.src=src;
             } else {
-                /* Image */
                 const img=new Image();img.onload=onLoad;img.onerror=onLoad;img.src=src;
             }
         });
     }
-
+ 
+    // ══════════════════════════════════════════════
+    // VINYL WIGGLE — random idle wiggle for tracklist spaces
+    // ══════════════════════════════════════════════
+    function startVinylWiggles(){
+        function wiggleRandom(){
+            const el=TRACKLIST_INDICES[Math.floor(Math.random()*TRACKLIST_INDICES.length)];
+            const s=document.getElementById('s'+el);
+            if(s&&!s.classList.contains('vinyl-spinning')){
+                s.classList.remove('vinyl-wiggle');void s.offsetWidth;
+                s.classList.add('vinyl-wiggle');
+                setTimeout(()=>s.classList.remove('vinyl-wiggle'),950);
+            }
+            /* Next wiggle 4–10 seconds away */
+            setTimeout(wiggleRandom,4000+Math.random()*6000);
+        }
+        setTimeout(wiggleRandom,3000+Math.random()*4000);
+    }
+ 
     // ══════════════════════════════════════════════
     // KEYBOARD ACCESSIBILITY
     // ══════════════════════════════════════════════
@@ -916,14 +1211,14 @@
         if(e.code==='Space'||e.code==='Enter'){e.preventDefault();btns[kbFocusIdx]?.click();}
     });
     function resetKbFocus(){kbFocusIdx=0;document.querySelectorAll('.btn-kb-focus').forEach(b=>b.classList.remove('btn-kb-focus'));}
-
+ 
     // ══════════════════════════════════════════════
     // NAV + RESTART
     // ══════════════════════════════════════════════
     function toggleNavMenu(){document.getElementById('nav-menu').classList.toggle('open');}
     function closeNavMenu() {document.getElementById('nav-menu').classList.remove('open');}
     document.addEventListener('click',e=>{if(!document.getElementById('nav-knob').contains(e.target))closeNavMenu();});
-
+ 
     function confirmSoftRestart(){
         showStatusPopup("RESTART TOUR?","Are you sure? Resets scores but keeps your artists.",
             "YES, RESTART",()=>{
@@ -933,10 +1228,9 @@
                     p.totalRollValue=0;p.smileActive=false;p.nightDriveActive=false;
                     p.accolades=[];p.grammyNominator=null;
                     p.usedColdPitch=false;p.hasSeenGatekeeperHint=false;p.hasThrifty=false;
-                    p.merchdiscountPct=0;
+                    p.merchdiscountPct=0;p.pitchBubbleShown=false;
                 });
-                highestDiscountPct=0;
-                /* Re-randomize mystery spaces each game */
+                highestDiscountPct=0;globalTurnCount=0;
                 assignMysterySpaces();
                 turnIdx=0;isMoving=false;isSwapping=false;
                 updateUI();updatePositions();
@@ -944,10 +1238,9 @@
             },"CANCEL",()=>{}
         );
     }
-
+ 
     // ══════════════════════════════════════════════
-    // SELECTION REMINDER — fires 6s after swap/maya/grammy starts
-    // Auto-dismisses after 4s or on click
+    // SELECTION REMINDER
     // ══════════════════════════════════════════════
     function scheduleReminder(text){
         clearReminder();
@@ -955,8 +1248,6 @@
         document.getElementById('selection-reminder-text').innerText=text;
         reminderTimer=setTimeout(()=>{
             el.classList.add('visible');
-            el.style.animation='none';void el.offsetWidth;
-            el.style.animation='reminderSlide 0.35s cubic-bezier(0.175,0.885,0.32,1.275) forwards';
             reminderDismissTimer=setTimeout(()=>dismissReminder(),4000);
         },6000);
     }
@@ -968,7 +1259,7 @@
         if(reminderTimer){clearTimeout(reminderTimer);reminderTimer=null;}
         if(reminderDismissTimer){clearTimeout(reminderDismissTimer);reminderDismissTimer=null;}
     }
-
+ 
     // ══════════════════════════════════════════════
     // HELPERS
     // ══════════════════════════════════════════════
@@ -988,7 +1279,7 @@
     }
     function triggerVinylSpin(pos){
         const el=document.getElementById('s'+pos);if(!el)return;
-        el.classList.remove('vinyl-spinning');void el.offsetWidth;el.classList.add('vinyl-spinning');
+        el.classList.remove('vinyl-spinning','vinyl-wiggle');void el.offsetWidth;el.classList.add('vinyl-spinning');
         setTimeout(()=>el.classList.remove('vinyl-spinning'),3200);
     }
     function awardPassiveGrammy(playerIdx,nominatorName){
@@ -998,24 +1289,21 @@
     function checkPassiveGrammys(nominatorName){
         players.forEach((p,i)=>{if(i!==turnIdx&&p.pos===GRAMMY_SPACE&&!p.grammyNominator)awardPassiveGrammy(i,nominatorName);});
     }
-    /* Returns the index of the player(s) in last place */
     function getLastPlaceIdx(){
         const minPos=Math.min(...players.map(p=>p.pos));
         return players.reduce((arr,p,i)=>{if(p.pos===minPos)arr.push(i);return arr;},[]);
     }
     window.addEventListener('resize',()=>setTimeout(updatePositions,100));
     window.addEventListener('orientationchange',()=>setTimeout(updatePositions,300));
-
+ 
     // ══════════════════════════════════════════════
-    // MYSTERY SPACE ASSIGNMENT — randomized each game
-    // ~half of all blank indices become mystery spaces
+    // MYSTERY SPACE ASSIGNMENT
     // ══════════════════════════════════════════════
     function assignMysterySpaces(){
         mysterySpaces=new Set();
         const shuffled=[...BLANK_INDICES].sort(()=>Math.random()-0.5);
         const half=Math.ceil(shuffled.length/2);
         for(let i=0;i<half;i++) mysterySpaces.add(shuffled[i]);
-        /* Update existing board if already built (for restart) */
         BLANK_INDICES.forEach(i=>{
             const el=document.getElementById('s'+i);
             if(!el)return;
@@ -1026,24 +1314,21 @@
                 el.style.cursor='help';
             } else {
                 el.className='space true-blank';
-                el.innerHTML='';
-                el.onclick=null;
-                el.style.cursor='default';
+                el.innerHTML='';el.onclick=null;el.style.cursor='default';
             }
         });
     }
-
+ 
     // ══════════════════════════════════════════════
-    // BUCKET — per-player merch discount logic
-    // Each player gets at most one merch discount per game, randomly
+    // BUCKET — boosted merch discount probability
+    // 70% chance of including a discount if eligible (up from 50%)
     // ══════════════════════════════════════════════
     function getRandomBucketItem(playerIdx){
         const p=players[playerIdx];
-        /* If player hasn't had a discount yet, randomly decide now (50% chance per pull) */
         const pool=[...BUCKET_BASE];
         if(!p.merchdiscountPct){
-            /* 50% chance to include a random discount tier in this pull */
-            if(Math.random()<0.5){
+            /* 70% chance to include a discount — more likely than a regular drop */
+            if(Math.random()<0.70){
                 const discount=MERCH_DISCOUNTS[Math.floor(Math.random()*MERCH_DISCOUNTS.length)];
                 pool.push(discount);
             }
@@ -1051,7 +1336,7 @@
         if(!pool.length)return null;
         return pool[Math.floor(Math.random()*pool.length)];
     }
-
+ 
     function renderBucketItem(item,container,playerIdx){
         container.innerHTML='';
         if(!item)return;
@@ -1059,6 +1344,14 @@
             const img=document.createElement('img');
             img.src=item.file;img.className='bucket-img';img.alt='Mystery drop';
             container.appendChild(img);
+        } else if(item.type==='video'){
+            /* Inline autoplay video — adaptive height, no crop */
+            const vid=document.createElement('video');
+            vid.src=item.file;vid.className='bucket-video';
+            vid.autoplay=true;vid.loop=true;vid.muted=true;vid.playsInline=true;
+            vid.setAttribute('playsinline','');
+            container.appendChild(vid);
+            vid.play().catch(()=>{});
         } else if(item.type==='link'||item.type==='download'){
             const card=document.createElement('div');card.className='bucket-link-card';
             const lbl=document.createElement('div');lbl.className='bucket-link-label';lbl.innerText=item.label;card.appendChild(lbl);
@@ -1074,7 +1367,6 @@
                         const orig=codeEl.innerText;codeEl.innerText='COPIED!';
                         setTimeout(()=>codeEl.innerText=orig,2000);
                     }).catch(()=>{});
-                    /* Mark player as Thrifty and record discount pct */
                     if(playerIdx!==undefined&&players[playerIdx]&&!players[playerIdx].hasThrifty){
                         const pct=parseInt(item.code.replace(/\D/g,''))||20;
                         players[playerIdx].hasThrifty=true;
@@ -1094,9 +1386,8 @@
             }
             container.appendChild(card);
         }
-        /* Video/audio — future pass */
     }
-
+ 
     // ══════════════════════════════════════════════
     // SETUP
     // ══════════════════════════════════════════════
@@ -1120,7 +1411,6 @@
         document.getElementById('setup-step-2').style.display='block';
         selectedColor=DEFAULT_COLORS[currentSetupP]||DEFAULT_COLORS[0];
         renderSwatches();updateSetupPrompt();
-        /* Begin preloading assets now that we know we're going to play */
         startPreload();
     }
     function updateSetupPrompt(){
@@ -1148,7 +1438,7 @@
             grammys:0,shirtsSold:0,pillsTaken:0,accolades:[],
             ghostCounter:0,totalRollValue:0,smileActive:false,nightDriveActive:false,
             grammyNominator:null,usedColdPitch:false,hasSeenGatekeeperHint:false,
-            hasThrifty:false,merchdiscountPct:0
+            hasThrifty:false,merchdiscountPct:0,pitchBubbleShown:false
         });
         document.getElementById('tour-roster').style.display='block';
         document.getElementById('roster-list').innerHTML+=`<div class="roster-item"><img src="${selectedAvatar.img}" class="roster-img" style="border:2px solid ${color}"><span>${name}</span></div>`;
@@ -1163,12 +1453,11 @@
             updateSetupPrompt();
         }
     }
-
+ 
     // ══════════════════════════════════════════════
     // BOARD INIT
     // ══════════════════════════════════════════════
     function initBoard(){
-        /* Assign mystery vs true-blank randomly */
         assignMysterySpaces();
         const board=document.getElementById('board-container');
         boardLayout.forEach((name,i)=>{
@@ -1180,12 +1469,10 @@
                     s.onclick=()=>handleMysteryClick(i);
                 } else {
                     s.classList.add('true-blank');
-                    /* No content, no click */
                 }
             } else {
                 const r=rules[i];
                 const emojiHtml=(r&&r.emoji)?`<div class="sp-emoji">${r.emoji}</div>`:'';
-                /* Use simplified display name if available */
                 const displayName=DISPLAY_NAMES[name]||name;
                 s.innerHTML=`${emojiHtml}<div class="sp-text">${displayName}</div>`;
                 if(TRACKLIST_INDICES.includes(i))s.classList.add('tracklist-space');
@@ -1214,39 +1501,49 @@
         });
         updateUI();
         document.getElementById('roll-btn').disabled=false;
+        startVinylWiggles();
     }
-
+ 
     // ══════════════════════════════════════════════
-    // MYSTERY CLICK (info sidebar only)
+    // MYSTERY CLICK
     // ══════════════════════════════════════════════
     function handleMysteryClick(i){
         const sb=document.getElementById('rule-sidebar');
         sb.classList.add('mystery-sidebar');
         showSidebar('Mystery Lore Drop','','var(--mystery-glow)',`Space ${i}`);
     }
-
+ 
     // ══════════════════════════════════════════════
     // PASSES
+    // The float animation class is fixed per card index mod 3.
+    // It never changes between turns so the animation is continuous.
+    // Only the pass-active border/glow switches with turnIdx.
+    // Pitch bubble appears after turn 5 for eligible players.
     // ══════════════════════════════════════════════
+    const FLOAT_CLASSES=['pass-float-a','pass-float-b','pass-float-c'];
+ 
     function renderPasses(){
         const sidebar=document.getElementById('pass-sidebar');
         sidebar.querySelectorAll('.access-pass').forEach(c=>c.remove());
-        const tilts=[-2,1.5,-1];
         players.forEach((pl,i)=>{
             const isCurrent=(i===turnIdx);
-            const tilt=tilts[i%tilts.length];
             const tags=(pl.isInvestor?'<span class="tag tag-investor">INVESTOR</span>':'')
                       +(pl.isSellout ?'<span class="tag tag-sellout">SELLOUT</span>':'')
                       +(pl.usedColdPitch?'<span class="tag tag-pitched">PITCHED</span>':'')
                       +(pl.hasThrifty?'<span class="tag tag-thrifty">THRIFTY</span>':'');
             const notify=isCurrent&&pl.pos===GATEKEEPER_SPACE&&!pl.hasSeenGatekeeperHint&&!pl.isSellout&&!pl.usedColdPitch;
-            /* selectable = Grammy/Tellus/Maya selection mode active and this is not the current player */
             const selectable=(isSwapping||isMayaPartner)&&i!==turnIdx;
+ 
+            /* Pitch bubble: show after globalTurnCount>=5, eligible, not yet shown */
+            const pitchEligibleNow=!pl.isSellout&&!pl.usedColdPitch&&pl.pos>2&&pl.pos<=GATEKEEPER_SPACE;
+            const showBubble=globalTurnCount>=5&&pitchEligibleNow&&!pl.pitchBubbleShown;
+ 
             const card=document.createElement('div');
-            card.className='access-pass'+(isCurrent?' pass-active':'')+(notify?' pass-notify':'')+(selectable?' pass-selectable':'');
-            card.style.setProperty('--tilt',tilt+'deg');
+            card.className='access-pass '+FLOAT_CLASSES[i%3]
+                +(isCurrent?' pass-active':'')
+                +(notify?' pass-notify':'')
+                +(selectable?' pass-selectable':'');
             card.style.setProperty('--p-color',pl.avatar.color);
-            card.style.animationDelay=(i*0.4)+'s';
             card.id='pass-'+i;
             card.innerHTML=`
                 <div class="pass-clip"></div>
@@ -1260,7 +1557,14 @@
                 <div class="pass-label">Accolades</div>
                 <div class="pass-accolades">${pl.accolades.join('')||'—'}</div>
                 <div class="pass-stripe"></div>`;
-            /* If selectable, clicking the pass card also triggers swap/maya selection */
+ 
+            if(showBubble){
+                const bub=document.createElement('div');
+                bub.className='pitch-bubble';bub.title='Pitch to Labels available!';bub.innerText='🎤';
+                bub.onclick=(e)=>{e.stopPropagation();expandPass(i);};
+                card.appendChild(bub);
+            }
+ 
             if(selectable){
                 card.onclick=(e)=>{e.stopPropagation();handlePlayerClick(i);};
             } else {
@@ -1269,11 +1573,13 @@
             sidebar.appendChild(card);
         });
     }
-
+ 
     function expandPass(idx){
         expandedPassIdx=idx;
         const pl=players[idx];
         const isCurrent=(idx===turnIdx);
+        /* Mark bubble as shown when player opens the pass */
+        if(pl.pitchBubbleShown===false&&globalTurnCount>=5)pl.pitchBubbleShown=true;
         const tags=(pl.isInvestor?'<span class="tag tag-investor" style="font-size:0.75rem;padding:3px 8px;">INVESTOR</span>':'')
                   +(pl.isSellout ?'<span class="tag tag-sellout"  style="font-size:0.75rem;padding:3px 8px;">SELLOUT</span>':'')
                   +(pl.usedColdPitch?'<span class="tag tag-pitched" style="font-size:0.75rem;padding:3px 8px;">PITCHED</span>':'')
@@ -1287,12 +1593,6 @@
         document.getElementById('exp-tags').innerHTML=tags||'<span style="opacity:0.4;font-size:0.8rem;letter-spacing:3px;">INDEPENDENT</span>';
         document.getElementById('exp-accolades').innerText=pl.accolades.join('')||'—';
         document.getElementById('exp-stripe').style.background=`linear-gradient(90deg,${pl.avatar.color} 0%,transparent 100%)`;
-        /* Cold Pitch eligibility:
-           - Must be current player's own pass
-           - Not already pitched this game
-           - Not a sellout
-           - Cannot be in first 3 spaces (pos 0, 1, or 2)
-           - Cannot be used after Gatekeeper (pos > 48) */
         const pitchEligible=isCurrent&&!isMoving&&!pl.isSellout&&!pl.usedColdPitch&&pl.pos>2&&pl.pos<=GATEKEEPER_SPACE;
         document.getElementById('pitch-btn').style.display=pitchEligible?'block':'none';
         if(pl.pos===GATEKEEPER_SPACE&&pitchEligible){pl.hasSeenGatekeeperHint=true;}
@@ -1306,32 +1606,25 @@
         document.getElementById('pass-expanded-backdrop').classList.remove('open');
         expandedPassIdx=null;
     }
-
+ 
     // ══════════════════════════════════════════════
-    // COLD PITCH — two-step confirmation flow
-    // Step 1: Explain the stakes (long shot card)
-    // Step 2: "Replaces your roll" warning → "Let's Pitch" / "Cancel"
-    // Reward: +5 on success, -3 on decline. 1 in 3 chance.
-    // Restrictions: pos > 2, pos <= 48, one per game, not sellout
+    // COLD PITCH — two-step flow
     // ══════════════════════════════════════════════
     function triggerColdPitch(){
         collapsePass();
         const p=players[turnIdx];
-
-        /* Step 1 — stake-explanation card */
         showStatusPopup(
             "🎤 Cold Pitch",
             "Long shot time. You're going direct to labels with your tape.\n\n1 in 3 chance of getting SIGNED (+5 spaces). If they pass: Rewind -3.\n\nIf signed, a label deal follows you — every 6 you roll later becomes -2.\n\nOne use per game. Cannot use after the Gatekeeper.",
             "Let's Pitch →",
             ()=>{
-                /* Step 2 — "replaces your roll" warning */
                 showStatusPopup(
                     "⚠️ Heads Up!",
                     "Pitching replaces your roll this turn. You will NOT roll after pitching. Proceed?",
                     "Let's Pitch",
                     async()=>{
                         p.usedColdPitch=true;
-                        playSfx('remedyclip.wav');
+                        playSpaceSfx('remedyclip.wav');
                         document.getElementById('overlay-event').style.display='none';
                         const accepted=Math.random()<(1/3);
                         await new Promise(r=>setTimeout(r,400));
@@ -1365,7 +1658,7 @@
             ()=>{document.getElementById('overlay-event').style.display='none';}
         );
     }
-
+ 
     // ══════════════════════════════════════════════
     // UI UPDATE
     // ══════════════════════════════════════════════
@@ -1379,66 +1672,48 @@
         document.getElementById('ui-layer').style.setProperty('--current-player-color',p.avatar.color);
         renderPasses();updatePositions();
     }
-
+ 
     // ══════════════════════════════════════════════
     // UPDATE POSITIONS — stacked piece offset
-    // When multiple players share a space, their pieces
-    // shrink and shift so all are partially visible
     // ══════════════════════════════════════════════
     function updatePositions(){
-        /* Build a map: pos → list of player indices at that pos */
         const stackMap={};
         players.forEach((p,i)=>{
             if(!stackMap[p.pos])stackMap[p.pos]=[];
             stackMap[p.pos].push(i);
         });
-
         players.forEach((p,i)=>{
             const target=document.getElementById('s'+p.pos);
             const el=document.getElementById('p'+i);
             if(!target||!el)return;
-
             const stack=stackMap[p.pos];
             const stackSize=stack.length;
             const myStackIdx=stack.indexOf(i);
-
-            /* Base size from the space element */
             const spaceW=target.offsetWidth;
             const spaceH=target.offsetHeight;
-
-            /* When stacked: pieces shrink to 72% and shift so they fan out visibly */
             if(stackSize>1){
                 const scale=0.72;
-                const pieceW=spaceW*scale;
-                const pieceH=spaceH*scale;
-                /* Fan offsets: spread pieces in a small arc so all show */
+                const pieceW=spaceW*scale;const pieceH=spaceH*scale;
                 const offsets=[
-                    {x:-spaceW*0.18, y:-spaceH*0.12},
-                    {x: spaceW*0.18, y:-spaceH*0.12},
-                    {x: 0,           y: spaceH*0.14},
+                    {x:-spaceW*0.18,y:-spaceH*0.12},
+                    {x: spaceW*0.18,y:-spaceH*0.12},
+                    {x: 0,          y: spaceH*0.14},
                 ];
                 const off=offsets[myStackIdx]||{x:0,y:0};
-                /* Center in space then apply offset */
-                const baseX=target.offsetLeft+(spaceW-pieceW)/2+off.x;
-                const baseY=target.offsetTop +(spaceH-pieceH)/2+off.y;
-                el.style.left=baseX+'px';
-                el.style.top =baseY+'px';
-                el.style.width =pieceW+'px';
-                el.style.height=pieceH+'px';
+                el.style.left=(target.offsetLeft+(spaceW-pieceW)/2+off.x)+'px';
+                el.style.top =(target.offsetTop +(spaceH-pieceH)/2+off.y)+'px';
+                el.style.width=pieceW+'px';el.style.height=pieceH+'px';
             } else {
-                /* Solo on space — full size, perfectly centered */
                 el.style.left=target.offsetLeft+'px';
                 el.style.top =target.offsetTop+'px';
-                el.style.width =spaceW+'px';
-                el.style.height=spaceH+'px';
+                el.style.width=spaceW+'px';el.style.height=spaceH+'px';
             }
-
             el.style.zIndex=(i===turnIdx?150:100+myStackIdx);
             if(i===turnIdx){el.classList.add('active-turn');el.style.setProperty('--p-color',p.avatar.color);}
             else el.classList.remove('active-turn');
         });
     }
-
+ 
     // ══════════════════════════════════════════════
     // DICE TELEPORT
     // ══════════════════════════════════════════════
@@ -1457,7 +1732,7 @@
         d.classList.remove('dice-reappear');
         d.style.animation='diceGlow 3s ease-in-out infinite';
     }
-
+ 
     // ══════════════════════════════════════════════
     // ROLL FLOW
     // ══════════════════════════════════════════════
@@ -1495,19 +1770,26 @@
         }
         performActualRoll();
     }
-
+ 
     async function performActualRoll(){
         const p=players[turnIdx];
         isMoving=true;document.getElementById('roll-btn').disabled=true;
         const dice=document.getElementById('dice-box');dice.innerText="?";
         await diceGoToCinematic();
         let roll;
-        for(let j=0;j<12;j++){dice.innerText=Math.floor(Math.random()*6)+1;await new Promise(r=>setTimeout(r,45));}
+        /* Play a random dice roll sound on each shuffle tick (every ~4 ticks) */
+        for(let j=0;j<12;j++){
+            dice.innerText=Math.floor(Math.random()*6)+1;
+            if(j%4===0)playDiceRoll();
+            await new Promise(r=>setTimeout(r,45));
+        }
         roll=Math.floor(Math.random()*6)+1;dice.innerText=roll;
+        playDiceDone();
         await new Promise(r=>setTimeout(r,500));
         if(p.isInvestor&&(roll===1||roll===2)){
             dice.classList.add('dice-gold');spawnEmoji('👕');
             showSidebar("INVESTMENT PAYOFF","Merch is moving! Roll doubled.","#ffffff");
+            playSfx('coin.wav'); /* coin.wav for merch sold */
             await new Promise(r=>setTimeout(r,600));
             p.shirtsSold++;p.accolades.push('👕');roll*=2;dice.innerText=roll;
             await new Promise(r=>setTimeout(r,1400));updateUI();
@@ -1518,37 +1800,37 @@
             playRemedyPunishment();
             await new Promise(r=>setTimeout(r,600));
             p.pillsTaken++;p.accolades.push('💊');roll=-2;dice.innerText=roll;
+            /* dicedone again for re-shown result */
+            playDiceDone();
             await new Promise(r=>setTimeout(r,1400));updateUI();
         }
         p.totalRollValue+=Math.abs(roll);
         await diceReturnToBar();
         movePlayer(roll);
     }
-
+ 
     function spawnEmoji(char){
         const e=document.createElement('div');e.className='floating-emoji';e.innerText=char;
         e.style.left="50%";e.style.top="50%";document.body.appendChild(e);
         setTimeout(()=>e.remove(),1200);
     }
-
+ 
     // ══════════════════════════════════════════════
     // MOVEMENT
+    // Auto-moves trigger after ~1.5s (down from 3s).
+    // Slide SFX plays at the start of each step.
     // ══════════════════════════════════════════════
     async function movePlayer(n){
         const p=players[turnIdx];const dir=n>0?1:-1;
-        /* Evaluate last-place status before the move begins (not mid-move) */
         const lastPlaceIdxList=getLastPlaceIdx();
         const isLast=lastPlaceIdxList.includes(turnIdx);
-
+ 
         for(let i=0;i<Math.abs(n);i++){
             if(p.pos+dir>=0&&p.pos+dir<boardLayout.length){
+                playSlide(); /* Slide sound at each step */
                 p.pos+=dir;updatePositions();
-
-                /* ── GATEKEEPER CLIP (Batch C) ──
-                   If player is NOT in last place and they would move PAST space 48,
-                   stop them exactly on 48. Last place passes through freely. */
+                /* Gatekeeper clip — non-last-place stops exactly on 48 */
                 if(dir>0&&p.pos===GATEKEEPER_SPACE&&!isLast&&i<Math.abs(n)-1){
-                    /* Clip movement — player lands on Gatekeeper and stops */
                     break;
                 }
                 await new Promise(r=>setTimeout(r,300));
@@ -1557,7 +1839,6 @@
         }
         flashSpaceLanding(p.pos);
         if(TRACKLIST_INDICES.includes(p.pos))triggerVinylSpin(p.pos);
-        /* Mystery landing: bucket pull after 750ms */
         if(mysterySpaces.has(p.pos)){
             await new Promise(r=>setTimeout(r,750));
             const item=getRandomBucketItem(turnIdx);
@@ -1572,9 +1853,11 @@
         await new Promise(r=>setTimeout(r,750));
         checkSpace();
     }
-
+ 
     // ══════════════════════════════════════════════
     // SPACE LOGIC
+    // Auto-move sidebar shows for ~1.5s then moves — about 2x faster
+    // Lost Recording dicedone plays after the re-roll result appears
     // ══════════════════════════════════════════════
     function checkSpace(){
         const p=players[turnIdx],r=rules[p.pos];
@@ -1582,11 +1865,13 @@
         const spaceCol=getSpaceColor(p.pos);
         const popupEl=document.getElementById('main-popup');
         popupEl.style.borderColor=spaceCol;popupEl.style.boxShadow=`0 0 30px ${spaceCol}`;
-        if(r.sound)playSfx(r.sound);
+        /* Space sounds routed through playSpaceSfx for crossfade */
+        if(r.sound)playSpaceSfx(r.sound);
         if(r.choice==='remedy'&&p.isSellout){showSidebar("CONTRACT ACTIVE","Soul already sold.",spaceCol);endTurn();return;}
         if(r.choice==='merch' &&p.isInvestor) {showSidebar("ALREADY INVESTED","Inventory full.",spaceCol);endTurn();return;}
-        /* Auto-spaces: hold sidebar 3s so player can read why they moved before any mystery bucket fires */
-        if(r.isAuto){showSidebar(r.title,(r.emoji||"")+" "+(r.desc||"Moving..."),spaceCol);setTimeout(()=>movePlayer(r.shift),3000);return;}
+        /* Auto-spaces: sidebar shows ~1.5s then auto-moves (was 3s) */
+        if(r.isAuto){showSidebar(r.title,(r.emoji||"")+" "+(r.desc||"Moving..."),spaceCol);setTimeout(()=>movePlayer(r.shift),1500);return;}
+ 
         const modal  =document.getElementById('overlay-event');
         const title  =document.getElementById('event-title');
         const desc   =document.getElementById('event-desc');
@@ -1594,7 +1879,6 @@
         const sBtn   =document.getElementById('event-btn-secondary');
         const timerUI=document.getElementById('timer-ui');
         const coin   =document.getElementById('coin');
-        /* Reset Lost Tape dice appearance */
         coin.classList.remove('lost-tape-dice');
         coin.style.cssText='width:140px;height:140px;background:var(--gold);border:8px solid #b8860b;border-radius:50%;margin:25px auto;display:none;align-items:center;justify-content:center;font-size:2.5rem;font-weight:bold;color:#5c4305;transform-style:preserve-3d;';
         coin.style.display='none';
@@ -1602,7 +1886,7 @@
         title.innerText=(r.emoji||"")+" "+r.title;
         desc.innerText=r.desc||"";pBtn.innerText="CONTINUE";sBtn.style.display='none';timerUI.style.display='none';
         modal.style.display='flex';resetKbFocus();
-
+ 
         if(r.skipTurns){
             p.skipCount=r.skipTurns;pBtn.onclick=()=>{modal.style.display='none';endTurn();};
         } else if(r.isFigment){
@@ -1640,7 +1924,17 @@
             }
             pBtn.innerText=r.choice==='remedy'?"SIGN CONTRACT (+6)":"INVEST IN MERCH (-4)";
             sBtn.style.display='inline-block';sBtn.innerText="PASS";
-            pBtn.onclick=async()=>{fadeOutVideo(document.getElementById('remedy-video'));modal.style.display='none';await new Promise(res=>setTimeout(res,800));if(r.choice==='remedy'){p.isSellout=true;movePlayer(6);}else{playSfx("coinclip.wav");p.isInvestor=true;movePlayer(-4);}};
+            pBtn.onclick=async()=>{
+                fadeOutVideo(document.getElementById('remedy-video'));
+                modal.style.display='none';
+                await new Promise(res=>setTimeout(res,800));
+                if(r.choice==='remedy'){p.isSellout=true;movePlayer(6);}
+                else{
+                    /* coin.wav replaces coinclip.wav for the "become investor" choice */
+                    playSfx('coin.wav');
+                    p.isInvestor=true;movePlayer(-4);
+                }
+            };
             sBtn.onclick=()=>{fadeOutVideo(document.getElementById('remedy-video'));modal.style.display='none';endTurn();};
         } else if(r.isGrammy){
             let maxPos=Math.max(...players.map(pl=>pl.pos));
@@ -1651,10 +1945,8 @@
                 isSwapping=true;pBtn.innerText="READY";
                 pBtn.onclick=()=>{
                     modal.style.display='none';
-                    /* Enable board pieces and pass cards as selection targets */
                     leaders.forEach(l=>{const idx=players.indexOf(l);document.getElementById('p'+idx).classList.add('swap-target');});
                     renderPasses();
-                    /* Schedule 6s reminder */
                     scheduleReminder("Tap another Artist's face on the board, or their Pass card in the lineup.");
                 };
                 desc.innerText="Multiple artists tied at the lead. Select another Artist's face on the board or their Pass card.";
@@ -1668,14 +1960,11 @@
                 pBtn.innerText="READY";
                 pBtn.onclick=()=>{
                     modal.style.display='none';
-                    /* Enable board pieces as click targets */
                     players.forEach((_,i)=>{if(i!==turnIdx){const piece=document.getElementById('p'+i);if(piece){piece.style.pointerEvents='auto';piece.classList.add('swap-target');}}});
-                    /* Enable pass cards as click targets too (handled via pass-selectable class in renderPasses) */
                     renderPasses();
-                    /* Schedule 6s reminder */
                     const reminderMsg=r.isMaya
-                        ?"Tap another Artist's face on the board, or their Pass card in the lineup to start the eye contact challenge."
-                        :"Tap another Artist's face on the board, or their Pass card in the lineup to swap places.";
+                        ?"Tap another Artist's face on the board, or their Pass card to start the eye contact challenge."
+                        :"Tap another Artist's face on the board, or their Pass card to swap places.";
                     scheduleReminder(reminderMsg);
                 };
                 desc.innerHTML=r.isMaya
@@ -1686,7 +1975,6 @@
                 pBtn.innerText="CONTINUE";pBtn.onclick=()=>{modal.style.display='none';endTurn();};
             }
         } else if(r.isOpeningAct){
-            /* No reading delay — buttons appear immediately */
             let maxPos=Math.max(...players.map(pl=>pl.pos));let isLead=(p.pos===maxPos);
             if(isLead){
                 pBtn.innerText="ACCEPT FATE (-2)";
@@ -1702,38 +1990,43 @@
                 };
             }
         } else if(r.isGhost){p.ghostCounter=1;pBtn.innerText="I WILL BE SILENT";pBtn.onclick=()=>{modal.style.display='none';endTurn();};}
-        else if(r.isSmile){p.smileActive=true;pBtn.innerText="I WILL SMILE";pBtn.onclick=()=>{modal.style.display='none';endTurn();};}
+        else if(r.isSmile){
+            p.smileActive=true;
+            /* smileclip.wav on landing */
+            playSpaceSfx('smileclip.wav');
+            pBtn.innerText="I WILL SMILE";pBtn.onclick=()=>{modal.style.display='none';endTurn();};
+        }
         else if(r.isNightDrive){p.nightDriveActive=true;pBtn.innerText="EYES CLOSED";pBtn.onclick=()=>{modal.style.display='none';endTurn();};}
         else if(r.isGate){
-            /* ── GATEKEEPER SPACE (Batch C) ──
-               Plays doorclip.wav on landing.
-               ⚠️ GRANT: doorclip.wav not yet in repo — wire is live, just needs the file. */
-            playSfx('doorclip.wav');
-            /* Trigger gatekeeper hint glow on pass card for eligible players */
+            /* ⚠️ GRANT: doorclip.wav not yet in repo — wire is live */
+            playSpaceSfx('doorclip.wav');
             const cp=players[turnIdx];
             if(!cp.isSellout&&!cp.usedColdPitch){cp.hasSeenGatekeeperHint=false;renderPasses();}
             pBtn.innerText="PAY YOUR DUES";pBtn.onclick=()=>{modal.style.display='none';endTurn();};
         }
         else if(r.isItHappens){pBtn.onclick=async()=>{modal.style.display='none';await new Promise(res=>setTimeout(res,800));isMoving=false;performActualRoll();};}
         else if(r.isLostRecording){
-            /* Lost Tape: coin displayed as a dice (square) */
             pBtn.innerText="ROLL TO REWIND";
             pBtn.onclick=async()=>{
                 pBtn.style.display='none';
-                /* Style coin as dice */
                 coin.style.display='flex';
                 coin.style.cssText='width:130px;height:130px;background:rgba(0,0,0,0.75);border:3px solid rgba(255,255,255,0.7);border-radius:12px;margin:20px auto;display:flex;align-items:center;justify-content:center;font-size:2.5rem;font-weight:bold;color:white;transform-style:preserve-3d;font-family:KCStrikerSans,Courier New,monospace;';
                 coin.innerText="?";coin.classList.add('flipping');
                 let rl;
-                for(let j=0;j<12;j++){coin.innerText=Math.floor(Math.random()*6)+1;await new Promise(r=>setTimeout(r,45));}
+                for(let j=0;j<12;j++){
+                    coin.innerText=Math.floor(Math.random()*6)+1;
+                    if(j%4===0)playDiceRoll();
+                    await new Promise(r=>setTimeout(r,45));
+                }
                 rl=Math.floor(Math.random()*6)+1;coin.innerText=rl;coin.classList.remove('flipping');
+                playDiceDone(); /* dicedone after lost recording re-roll */
                 await new Promise(r=>setTimeout(r,1500));
                 modal.style.display='none';coin.style.display='none';
                 await new Promise(res=>setTimeout(res,800));movePlayer(-rl);
             };
         } else {pBtn.onclick=()=>{modal.style.display='none';endTurn();};}
     }
-
+ 
     // ══════════════════════════════════════════════
     // MAYA TIMER
     // ══════════════════════════════════════════════
@@ -1761,11 +2054,9 @@
             }
         },1000);
     }
-
+ 
     // ══════════════════════════════════════════════
-    // PLAYER CLICK (swap / maya)
-    // Triggered by clicking a board piece OR a pass card
-    // (pass card click is routed here via handlePlayerClick)
+    // PLAYER CLICK (swap / maya) — board piece or pass card
     // ══════════════════════════════════════════════
     function handlePlayerClick(idx){
         if(idx===turnIdx)return;
@@ -1784,7 +2075,7 @@
             startMayaTimer(idx);
         }
     }
-
+ 
     // ══════════════════════════════════════════════
     // SIDEBAR
     // ══════════════════════════════════════════════
@@ -1804,7 +2095,7 @@
         sb.classList.remove('active','mystery-sidebar');
         if(sidebarTimer)clearTimeout(sidebarTimer);
     }
-
+ 
     // ══════════════════════════════════════════════
     // STATUS POPUP
     // ══════════════════════════════════════════════
@@ -1822,13 +2113,13 @@
         else sBtn.style.display='none';
         modal.style.display='flex';resetKbFocus();
     }
-
+ 
     // ══════════════════════════════════════════════
     // WIN SCREEN
     // ══════════════════════════════════════════════
     function showWinScreen(){
         const p=players[turnIdx];
-        playSfx('swimclip.wav');
+        playSpaceSfx('swimclip.wav');
         let statsHtml=`<h2 style="color:${p.avatar.color};animation:winPulse 2s infinite ease-in-out;font-family:'KCStrikerSans','Courier New',monospace;margin:5px 0;--p-color:${p.avatar.color};text-shadow:0 0 20px ${p.avatar.color};">${p.name} WINS!</h2>`;
         statsHtml+=`<div style="text-align:left;margin-top:15px;font-family:monospace;background:rgba(0,0,0,0.4);border-radius:12px;padding:12px;border:1px solid #333;">`;
         players.forEach(pl=>{
@@ -1843,14 +2134,10 @@
         popupEl.style.borderColor=p.avatar.color;popupEl.style.boxShadow=`0 0 80px ${p.avatar.color}`;
         document.getElementById('event-title').innerText="The tour is over. Go Swimmin!";
         document.getElementById('event-desc').innerHTML=statsHtml;
-        /* Store label updates to highest discount offered this game */
         const storeLbl=highestDiscountPct>0?`STORE (${highestDiscountPct}% OFF)`:'STORE';
-        /* ── WIN SCREEN LINKS — update hrefs/text for new releases/promos ── */
         const linkStack=`
             <div style="display:flex;flex-direction:column;gap:10px;align-items:center;margin-top:20px;">
-                <!-- PRIMARY CTA — update href + text for each new release -->
                 <a href="https://freejoy.club" target="_blank" class="win-link-btn win-cta" style="--btn-color:var(--joy-glow);color:var(--joy-glow);font-size:1.1rem;padding:14px 28px;">▶ PLAY THE ALBUM</a>
-                <!-- Store link — reflects highest discount offered this game -->
                 <a href="https://freejoy.club" target="_blank" class="win-link-btn" style="--btn-color:#ff00ff;color:#ff00ff;">${storeLbl}</a>
                 <a href="https://freejoy.club" target="_blank" class="win-link-btn" style="--btn-color:#ffffff;color:#ffffff;">HOME</a>
                 <div style="display:flex;gap:10px;width:min(400px,90%);margin-top:5px;">
@@ -1870,16 +2157,16 @@
         document.getElementById('soft-reset-win').onclick=()=>{document.getElementById('overlay-event').style.display='none';confirmSoftRestart();};
         document.getElementById('overlay-event').style.display='flex';
     }
-
+ 
     // ══════════════════════════════════════════════
     // END TURN
     // ══════════════════════════════════════════════
     function endTurn(){
         dismissReminder();
-        /* Clean up any lingering selectable states */
         isSwapping=false;isMayaPartner=false;
         document.querySelectorAll('.player').forEach(el=>{el.classList.remove('swap-target');el.style.pointerEvents='none';});
         turnIdx=(turnIdx+1)%players.length;
+        globalTurnCount++;
         isMoving=false;
         document.getElementById('roll-btn').disabled=false;
         updateUI();
@@ -1887,3 +2174,7 @@
     </script>
 </body>
 </html>
+ 
+
+
+
