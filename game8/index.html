@@ -226,14 +226,13 @@
             text-transform:uppercase; text-align:center;
             flex-shrink:0; margin-bottom:2px; font-family:'Courier New',monospace;
         }
-
-        /* Pass card */
+    /* Pass card — paper feel */
         .access-pass {
             width:clamp(74px,10.5vw,152px);
-            background:linear-gradient(160deg,#1a1a1a 60%,#2a2a2a);
-            border-radius:10px; border:1px solid rgba(255,255,255,0.15);
+            background:linear-gradient(160deg,#f5f0e8 0%,#ede5d0 55%,#e4d9c0 100%);
+            border-radius:10px; border:1px solid rgba(120,90,40,0.35);
             padding:clamp(5px,0.65vw,10px);
-            box-shadow:0 2px 10px rgba(0,0,0,0.5),inset 0 1px 0 rgba(255,255,255,0.08);
+            box-shadow:0 2px 10px rgba(0,0,0,0.35),inset 0 1px 0 rgba(255,255,255,0.7),inset 0 -1px 0 rgba(0,0,0,0.08);
             position:relative;
             transition:border-color 0.4s,box-shadow 0.4s,transform 0.25s;
             cursor:pointer;
@@ -265,23 +264,23 @@
             animation:bubblePop 0.4s cubic-bezier(0.175,0.885,0.32,1.275) forwards;
             z-index:5; cursor:pointer;
         }
-        .pass-clip { width:clamp(9px,1.5vw,16px); height:clamp(4px,0.7vw,8px); background:#888; border-radius:3px 3px 0 0; margin:0 auto clamp(2px,0.35vw,5px); position:relative; }
+         .pass-clip { width:clamp(9px,1.5vw,16px); height:clamp(4px,0.7vw,8px); background:#888; border-radius:3px 3px 0 0; margin:0 auto clamp(2px,0.35vw,5px); position:relative; }
         .pass-clip::after { content:''; position:absolute; bottom:-3px; left:50%; transform:translateX(-50%); width:60%; height:3px; background:#666; border-radius:0 0 2px 2px; }
-        .pass-all-access { font-family:'Courier New',monospace; font-size:clamp(0.34rem,0.52vw,0.5rem); letter-spacing:2px; color:rgba(255,255,255,0.3); text-transform:uppercase; text-align:center; margin-bottom:clamp(2px,0.3vw,4px); }
-        .pass-header { display:flex; align-items:center; gap:clamp(3px,0.4vw,6px); border-bottom:1px solid rgba(255,255,255,0.1); padding-bottom:clamp(2px,0.3vw,5px); margin-bottom:clamp(2px,0.3vw,5px); }
+        .pass-all-access { font-family:'Courier New',monospace; font-size:clamp(0.34rem,0.52vw,0.5rem); letter-spacing:2px; color:rgba(80,55,20,0.5); text-transform:uppercase; text-align:center; margin-bottom:clamp(2px,0.3vw,4px); }
+        .pass-header { display:flex; align-items:center; gap:clamp(3px,0.4vw,6px); border-bottom:1px solid rgba(100,70,20,0.2); padding-bottom:clamp(2px,0.3vw,5px); margin-bottom:clamp(2px,0.3vw,5px); }
         .pass-avatar { width:clamp(17px,2.7vw,34px); height:clamp(17px,2.7vw,34px); border-radius:50%; border:2px solid var(--p-color,#555); background:#000; flex-shrink:0; }
-        .pass-name   { font-family:'KCStrikerSans','Courier New',monospace; font-size:clamp(0.62rem,1.04vw,1rem); color:var(--p-color,white); letter-spacing:1px; text-transform:uppercase; word-break:break-all; }
-        .pass-label  { font-size:clamp(0.38rem,0.58vw,0.58rem); letter-spacing:2px; color:rgba(255,255,255,0.35); text-transform:uppercase; margin-bottom:2px; }
+        .pass-name   { font-family:'KCStrikerSans','Courier New',monospace; font-size:clamp(0.62rem,1.04vw,1rem); color:var(--p-color,black); letter-spacing:1px; text-transform:uppercase; word-break:break-all; filter:brightness(0.6); }
+        .pass-label  { font-size:clamp(0.38rem,0.58vw,0.58rem); letter-spacing:2px; color:rgba(60,40,10,0.5); text-transform:uppercase; margin-bottom:2px; }
         .pass-tags   { display:flex; flex-wrap:wrap; gap:3px; margin-bottom:clamp(2px,0.3vw,4px); min-height:10px; }
-        .pass-accolades   { font-size:clamp(0.7rem,1.08vw,1rem); letter-spacing:2px; min-height:10px; }
-        .pass-independent { font-size:clamp(0.44rem,0.7vw,0.65rem); letter-spacing:4px; opacity:0.35; }
+        .pass-accolades   { font-size:clamp(0.7rem,1.08vw,1rem); letter-spacing:2px; min-height:10px; color:rgba(0,0,0,0.75); }
+        .pass-independent { font-size:clamp(0.44rem,0.7vw,0.65rem); letter-spacing:4px; color:rgba(60,40,10,0.35); }
         .tag           { font-size:clamp(0.36rem,0.52vw,0.6rem); padding:2px 5px; border-radius:3px; font-weight:bold; letter-spacing:0.5px; }
         .tag-investor  { background:var(--gold);          color:black; }
         .tag-sellout   { background:var(--fear-glow);     color:white; }
         .tag-pitched   { background:var(--pitch-orange);  color:black; }
         .tag-thrifty   { background:var(--mystery-glow);  color:black; }
-        .pass-stripe   { background:linear-gradient(90deg,var(--p-color,#333) 0%,transparent 100%); opacity:0.15; height:clamp(2px,0.32vw,4px); border-radius:2px; margin-top:clamp(2px,0.3vw,5px); }
-
+        .pass-stripe   { background:linear-gradient(90deg,var(--p-color,#888) 0%,transparent 100%); opacity:0.3; height:clamp(2px,0.32vw,4px); border-radius:2px; margin-top:clamp(2px,0.3vw,5px); }
+     
         /* ── PASS EXPANDED ── */
         #pass-expanded-backdrop { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.65); z-index:3000; align-items:center; justify-content:center; }
         #pass-expanded-backdrop.open { display:flex; }
