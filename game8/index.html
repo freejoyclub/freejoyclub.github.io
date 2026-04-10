@@ -1106,18 +1106,26 @@
     // ══════════════════════════════════════════════
     // BUCKET
     // ══════════════════════════════════════════════
+
     function getRandomBucketItem(playerIdx){
         const p=players[playerIdx];
         const pool=[...BUCKET_BASE];
         if(!p.merchdiscountPct){
-            if(Math.random()<0.70){
+            /* Check if ANY player has already received a discount this game */
+            const anyoneHasDiscount=players.some(pl=>pl.merchdiscountPct>0);
+            /* Guarantee: if no one has gotten one yet and this is a mystery landing,
+               check if we're past the halfway point of the board — if so, force it.
+               Otherwise 85% chance to include one. */
+            const pastMidpoint=p.pos>29;
+            const forceDiscount=!anyoneHasDiscount&&pastMidpoint;
+            if(forceDiscount||Math.random()<0.85){
                 pool.push(MERCH_DISCOUNTS[Math.floor(Math.random()*MERCH_DISCOUNTS.length)]);
             }
         }
         if(!pool.length)return null;
         return pool[Math.floor(Math.random()*pool.length)];
     }
-
+        
     function renderBucketItem(item,container,playerIdx){
         container.innerHTML='';
         if(!item)return;
