@@ -1140,7 +1140,6 @@
             const sb=document.getElementById('rule-sidebar');
             const origClose=sb.onclick;
             sb.onclick=(e)=>{fadeVideoAudioOut(vid,true);sb.onclick=origClose;if(origClose)origClose(e);};
-        }
         } else if(item.type==='link'||item.type==='download'){
             const card=document.createElement('div');card.className='bucket-link-card';
             const lbl=document.createElement('div');lbl.className='bucket-link-label';lbl.innerText=item.label;card.appendChild(lbl);
