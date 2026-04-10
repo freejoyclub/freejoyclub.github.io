@@ -753,17 +753,17 @@
     const rules = {
         0: {title:"START",            emoji:"▶️", desc:"Play the tape."},
         4: {title:"DAYSPRING",        emoji:"☀️", shift:3,  isAuto:true,isTrack:true, desc:"The sun rises! Spring ahead 3.",sound:"dayclip.wav"},
-        6: {title:"FEARJOY",          emoji:"☯️", isFearjoy:true, desc:"Flip the coin: JOY = +1, FEAR = -1.",sound:"coinclip.wav"},
+        6: {title:"FEARJOY",          emoji:"☯️", isFearjoy:true, desc:"Flip the coin: JOY = +1, FEAR = -1.",sound:"coin.wav"},
         8: {title:"FIGMENT",          emoji:"🛸", isFigment:true,isTrack:true, desc:"Step outside (1:00) for +2, or stay indoors for -1.",sound:"figclip.wav"},
-        9: {title:"JOY",              emoji:"😄", shift:1,  isAuto:true, desc:"FREEJOY! Forward 1."},
+        9: {title:"JOY",              emoji:"😄", shift:1,  isAuto:true, desc:"FREEJOY! Forward 1.", sound:"coinclip.wav"},
         10:{title:"THE REMEDY",       emoji:"💊", choice:'remedy',isTrack:true, desc:"A major label offers a deal: Move ahead 6 now, but every 6 you roll later becomes -2.",sound:"remedyclip.wav"},
         11:{title:"FEAR",             emoji:"😱", shift:-1, isAuto:true, desc:"Get scared. Rewind 1.",sound:"spookyclip1.wav"},
         12:{title:"VAN BREAKS DOWN",  emoji:"🛠", skipTurns:1, desc:"Tour van breaks down! Skip a turn for repairs."},
-        13:{title:"JOY",              emoji:"😄", shift:1,  isAuto:true, desc:"Choose JOY! Forward 1."},
+        13:{title:"JOY",              emoji:"😄", shift:1,  isAuto:true, desc:"Choose JOY! Forward 1.", sound:"coinclip.wav"},
         15:{title:"DMITRI",           emoji:"👨‍🚀",timer:15,isDmitri:true,isTrack:true, desc:"Take DEEP BREATHS (15 sec) for the 5D shortcut. Skip = Rewind 2.",sound:"dmitriclip.wav"},
-        17:{title:"FEARJOY",          emoji:"☯️", isFearjoy:true, desc:"Fear? Joy? Flip to find out.",sound:"coinclip.wav"},
+        17:{title:"FEARJOY",          emoji:"☯️", isFearjoy:true, desc:"Fear? Joy? Flip to find out.",sound:"coin.wav"},
         18:{title:"NIGHTDRIVE",       emoji:"🌙", isNightDrive:true,isTrack:true, desc:"Fall asleep at the wheel! EYES CLOSED until next turn.", sound:"nightclip.wav"},
-        19:{title:"JOY",              emoji:"😄", shift:1,  isAuto:true, desc:"PUREJOY! Forward 1."},
+        19:{title:"JOY",              emoji:"😄", shift:1,  isAuto:true, desc:"PUREJOY! Forward 1.", sound:"coinclip.wav"},
         20:{title:"INVEST IN MERCH",  emoji:"👕", choice:'merch', desc:"Do you INVEST by rewinding -4 now? Every 1 or 2 you roll later will be doubled."},
         21:{title:"FEAR",             emoji:"😱", shift:-1, isAuto:true, desc:"Self-doubt and vices. Rewind 1.",sound:"spookyclip1.wav"},
         23:{title:"5TH DIMENSION",    emoji:"✨", shift:1,  isAuto:true, desc:"You have transcended. Forward 1.",sound:"coinclip.wav"},
@@ -773,17 +773,17 @@
         30:{title:"WIN A GRAMMY",     emoji:"🏆", isGrammy:true, desc:"Grammy Won! Switch places with the leader! (If leader, Forward 1)"},
         32:{title:"FEAR",             emoji:"😱", shift:-1, isAuto:true, desc:"Fear of failure! Rewind 1.",sound:"spookyclip1.wav"},
         33:{title:"OPENING ACT",      emoji:"🎤", isOpeningAct:true, desc:"Slide 2 spaces behind the leader. If leader, Rewind 2."},
-        35:{title:"JOY",              emoji:"😄", shift:1,  isAuto:true, desc:"EARJOY! Forward 1."},
+        35:{title:"JOY",              emoji:"😄", shift:1,  isAuto:true, desc:"EARJOY! Forward 1.", sound:"coinclip.wav"},
         37:{title:"TELLUS",           emoji:"📣", isTellus:true,isTrack:true, desc:"Swap positions with any artist.", sound:"tellusclip.wav"},
-        39:{title:"FEARJOY",          emoji:"☯️", isFearjoy:true, desc:"FEAR? JOY? Fate decides.",sound:"coinclip.wav"},
+        39:{title:"FEARJOY",          emoji:"☯️", isFearjoy:true, desc:"FEAR? JOY? Fate decides.",sound:"coin.wav"},
         42:{title:"ENCORE",           emoji:"👏", shift:3,  isAuto:true, desc:"Encore! Three more songs! Move forward 3."},
         44:{title:"VOID",             emoji:"🌀", shift:-3, isAuto:true,isTrack:true, desc:"Lost in the Void. Rewind 3.", sound:"voidclip.wav"},
         47:{title:"THE ENDLESS SMILE",emoji:"💀", isSmile:true,isTrack:true, desc:"Remain smiling until your next turn. Break it for a penalty.", sound:"smileclip.wav"},
         48:{title:"GATEKEEPER",       emoji:"🚪", isGate:true, desc:"Industry Gatekeeper — stop here unless you're in last place."},
-        52:{title:"FEARJOY",          emoji:"☯️", isFearjoy:true, desc:"Flip for destiny.",sound:"coinclip.wav"},
+        52:{title:"FEARJOY",          emoji:"☯️", isFearjoy:true, desc:"Flip for destiny.",sound:"coin.wav"},
         53:{title:"VAN BREAKS DOWN",  emoji:"🛠", skipTurns:1, desc:"Van breaks! Skip a turn."},
-        55:{title:"LOST RECORDING",   emoji:"📼", isLostRecording:true, desc:"Tape erased! Roll and rewind that amount."},
-        57:{title:"FEARJOY",          emoji:"☯️", isFearjoy:true, desc:"FEAR or JOY: JOY = +1, FEAR = -1.",sound:"coinclip.wav"},
+        55:{title:"LOST RECORDING",   emoji:"📼", isLostRecording:true, desc:"Tape erased! Roll and rewind that amount.", sound:"mistakeclip.wav"},
+        57:{title:"FEARJOY",          emoji:"☯️", isFearjoy:true, desc:"FEAR or JOY: JOY = +1, FEAR = -1.",sound:"coin.wav"},
         59:{title:"SWIMMIN'",         emoji:"🌊", desc:"The tour is a success. Go Swimmin!"}
     };
 
@@ -1393,8 +1393,8 @@
         collapsePass();
         const p=players[turnIdx];
         showStatusPopup(
-            "🎤 Cold Pitch",
-            "Long shot time. You're going direct to labels with your tape.\n\n1 in 3 chance of getting SIGNED (+5 spaces). If they pass: Rewind -3.\n\nIf signed, a label deal follows you — every 6 you roll later becomes -2.\n\nOne use per game. Cannot use after the Gatekeeper.",
+            "🎤 Long Shot: Cold Pitch",
+            "Go direct to major labels with your tape.\n\n1 in 3 chance of getting SIGNED (+5 spaces now!). If they pass: Rewind -3 now.\n\nCaution: if SIGNED, the label takes -1 from every future roll's total.\n\nOne use per game. Cannot use after the Gatekeeper.",
             "Let's Pitch →",
             ()=>{
                 showStatusPopup(
