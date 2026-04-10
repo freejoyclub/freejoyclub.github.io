@@ -1,7 +1,7 @@
 <!DOCTYPE html><html lang="en"><head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Fearjoy - v19</title>
+    <title>Fearjoy - v20</title>
     <style>
         @font-face {
             font-family: 'KCStrikerSans';
@@ -24,12 +24,13 @@
             --mystery-glow: #dd99ff;
             --pitch-orange: #ff8800;
             --bar-h: clamp(52px, 10vh, 110px);
-            /* Board sizing */
             --space-size:  clamp(24px, 5.8vw, 85px);
             --space-font:  clamp(0.28rem, 0.75vw, 0.75rem);
             --space-emoji: clamp(0.5rem,  1.1vw, 1.4rem);
             --board-gap:   clamp(2px, 0.85vw, 18px);
             --board-pad:   clamp(4px, 0.8vw, 24px);
+            /* Pass sidebar width — used for board centering offset */
+            --pass-w: clamp(90px, 12.5vw, 175px);
         }
 
         /* ── KEYFRAMES ── */
@@ -45,14 +46,14 @@
         @keyframes rollBtnPress  { 0%{transform:scale(1);}30%{transform:scale(0.93);}60%{transform:scale(1.06);}100%{transform:scale(1);} }
         @keyframes rollHoverPulse{ 0%,100%{box-shadow:0 0 14px var(--joy-glow),0 0 28px var(--joy-glow),0 0 0px #fff;}50%{box-shadow:0 0 22px var(--joy-glow),0 0 44px var(--joy-glow),0 0 8px rgba(255,255,255,0.3);} }
         @keyframes diceGlow      { 0%,100%{box-shadow:0 0 6px rgba(255,255,255,0.4),inset 0 0 8px rgba(255,255,255,0.08);}50%{box-shadow:0 0 14px rgba(255,255,255,0.6),inset 0 0 14px rgba(255,255,255,0.12);} }
-        /* Continuous pass floats — three tilts, staggered, never reset */
+        /* Stronger contract/merch dice sparkle */
+        @keyframes redSparkle    { 0%{box-shadow:0 0 12px var(--fear-glow),0 0 0px #fff;}100%{box-shadow:0 0 60px var(--fear-glow),0 0 30px #ff8888;background:#300;color:white;} }
+        @keyframes goldSparkle   { 0%{box-shadow:0 0 12px var(--gold),0 0 0px #fff;}100%{box-shadow:0 0 60px var(--gold),0 0 30px #ffe066;background:#330;color:white;} }
         @keyframes passFloatA    { 0%,100%{transform:rotate(-2deg) translateY(0);}50%{transform:rotate(-2deg) translateY(-4px);} }
         @keyframes passFloatB    { 0%,100%{transform:rotate(1.5deg) translateY(0);}50%{transform:rotate(1.5deg) translateY(-4px);} }
         @keyframes passFloatC    { 0%,100%{transform:rotate(-1deg) translateY(0);}50%{transform:rotate(-1deg) translateY(-4px);} }
         @keyframes menuBloom     { 0%{opacity:0;transform:scale(0.7);}100%{opacity:1;transform:scale(1);} }
         @keyframes knobFlicker   { 0%,100%{box-shadow:0 0 6px #ff8800,0 0 2px #ff4400;border-color:#ff6600;}50%{box-shadow:0 0 14px #ff6600,0 0 4px #ff8800;border-color:#ff8800;} }
-        @keyframes redSparkle    { 0%{box-shadow:0 0 10px var(--fear-glow);}100%{box-shadow:0 0 50px var(--fear-glow);background:#300;color:white;} }
-        @keyframes goldSparkle   { 0%{box-shadow:0 0 10px var(--gold);}100%{box-shadow:0 0 50px var(--gold);background:#330;color:white;} }
         @keyframes mysteryPulse  { 0%,100%{box-shadow:0 0 8px var(--mystery-glow);}50%{box-shadow:0 0 22px var(--mystery-glow),0 0 44px var(--mystery-glow);} }
         @keyframes passNotify    { 0%,100%{box-shadow:0 0 5px var(--pitch-orange);}50%{box-shadow:0 0 20px var(--pitch-orange),0 0 40px var(--pitch-orange);} }
         @keyframes vinylSpin     { 0%{transform:scale(1.15) rotate(0deg);animation-timing-function:ease-in;}30%{transform:scale(1.15) rotate(540deg);animation-timing-function:linear;}70%{transform:scale(1.15) rotate(1440deg);animation-timing-function:ease-out;}100%{transform:scale(1.15) rotate(1800deg);} }
@@ -69,10 +70,15 @@
         @keyframes selectGlow    { 0%,100%{box-shadow:0 0 8px white,0 0 16px white;}50%{box-shadow:0 0 20px white,0 0 40px white;} }
         @keyframes progressPulse { 0%,100%{opacity:0.7;}50%{opacity:1;} }
         @keyframes bubblePop     { 0%{transform:scale(0);}70%{transform:scale(1.2);}100%{transform:scale(1);} }
-        /* Tape shine — travels from start to end of SVG tape path */
+        /* Lawyer phone wiggle */
+        @keyframes phoneWiggle   { 0%,100%{transform:rotate(0deg);}20%{transform:rotate(-15deg);}40%{transform:rotate(15deg);}60%{transform:rotate(-10deg);}80%{transform:rotate(10deg);} }
         @keyframes tapeShine     { 0%{stroke-dashoffset:2000;}100%{stroke-dashoffset:-2000;} }
+        /* Contract dice flash — used when pitch label cuts roll */
+        @keyframes contractFlash { 0%,100%{box-shadow:0 0 8px var(--fear-glow);}50%{box-shadow:0 0 40px var(--fear-glow),0 0 80px #ff0000;background:#400;color:#fff;} }
+        /* Slower float-up for emojis on contract events */
+        @keyframes floatUpSlow   { 0%{transform:translateY(0) scale(1);opacity:1;}100%{transform:translateY(-180px) scale(1.8);opacity:0;} }
 
-      /* ── PAGE SHELL ── */
+        /* ── PAGE SHELL ── */
         html,body { margin:0; padding:0; width:100%; height:100%; overflow:hidden; }
         body {
             background:none;
@@ -90,7 +96,6 @@
             background-position: center, 0 0;
             background-repeat: no-repeat, repeat;
             filter: blur(3px);
-            /* Scale up slightly so blur doesn't leave transparent edges */
             transform: scale(1.04);
         }
 
@@ -119,8 +124,8 @@
             min-width:clamp(80px,14vw,200px); text-align:right;
         }
 
-        /* ── HAMBURGER KNOB ── */
-        #nav-knob { position:absolute; left:clamp(10px,2vw,20px); top:50%; transform:translateY(-50%); z-index:30; }
+        /* ── HAMBURGER KNOB — always on top ── */
+        #nav-knob { position:absolute; left:clamp(10px,2vw,20px); top:50%; transform:translateY(-50%); z-index:99999; }
         #nav-knob-btn {
             width:clamp(34px,4.5vw,52px); height:clamp(34px,4.5vw,52px);
             border-radius:50%; background:#111; border:1.5px solid #ff6600;
@@ -136,7 +141,7 @@
             background:var(--ui-bg); border:1px solid #333; border-radius:14px;
             padding:12px; min-width:200px;
             box-shadow:0 10px 40px rgba(0,0,0,0.7);
-            animation:menuBloom 0.2s ease forwards; z-index:500;
+            animation:menuBloom 0.2s ease forwards; z-index:99999;
         }
         #nav-menu.open { display:flex; }
         .nav-menu-btn {
@@ -175,7 +180,7 @@
         #roll-btn:active { animation:rollBtnPress 0.25s ease forwards !important; }
         #roll-btn:disabled { opacity:0.35; animation:none; cursor:not-allowed; }
 
-        /* ── DICE SLOT — fixed so departing dice doesn't shift layout ── */
+        /* ── DICE SLOT ── */
         #dice-slot-right {
             width:clamp(46px,6.3vw,84px); height:clamp(46px,6.3vw,84px);
             position:relative; flex-shrink:0;
@@ -202,9 +207,10 @@
             z-index:5000; opacity:0.90; box-shadow:0 0 50px rgba(255,255,255,0.4);
             transition:none !important;
         }
-        .dice-red  { animation:redSparkle  0.5s infinite alternate !important; }
-        .dice-gold { animation:goldSparkle 0.5s infinite alternate !important; }
-        .flipping  { animation:flipping 1.2s cubic-bezier(0.45,0.05,0.55,0.95); transform-style:preserve-3d; }
+        .dice-red      { animation:redSparkle    0.5s infinite alternate !important; }
+        .dice-gold     { animation:goldSparkle   0.5s infinite alternate !important; }
+        .dice-contract { animation:contractFlash 0.6s infinite alternate !important; }
+        .flipping      { animation:flipping 1.2s cubic-bezier(0.45,0.05,0.55,0.95); transform-style:preserve-3d; }
 
         /* ── MAIN AREA ── */
         #main-area { flex:1; display:flex; flex-direction:row; min-height:0; overflow:hidden; position:relative; }
@@ -212,14 +218,12 @@
         /* ── PASS SIDEBAR ── */
         #pass-sidebar {
             z-index:2;
-            width:clamp(90px,12.5vw,175px); flex-shrink:0;
+            width:var(--pass-w); flex-shrink:0;
             display:flex; flex-direction:column;
             justify-content:flex-start; align-items:center;
-            /* More padding around individual passes */
             gap:clamp(8px,1.4vh,18px);
-            padding:clamp(10px,1.4vw,20px) clamp(10px,1.3vw,18px);
+            padding:clamp(12px,1.6vw,24px) clamp(12px,1.5vw,20px);
             overflow:hidden; position:relative;
-            /* Feather on all edges */
             -webkit-mask-image:linear-gradient(to bottom,transparent 0%,black 8%,black 92%,transparent 100%),
                                linear-gradient(to right,transparent 0%,black 8%,black 100%);
             -webkit-mask-composite:destination-in;
@@ -228,18 +232,20 @@
             mask-composite:intersect;
         }
         #lineup-label {
-            font-size:clamp(0.7rem,1.1vw,1rem);
-            letter-spacing:3px; color:rgba(255,255,255,0.45);
+            font-size:clamp(0.75rem,1.2vw,1.1rem);
+            letter-spacing:4px; color:rgba(255,255,255,0.65);
             text-transform:uppercase; text-align:center;
-            flex-shrink:0; margin-bottom:2px; font-family:'Courier New',monospace;
+            flex-shrink:0; margin-bottom:4px; font-family:'KCStrikerSans','Courier New',monospace;
+            font-weight:bold;
         }
-    /* Pass card — paper feel */
+
+        /* Pass card — warm off-white paper */
         .access-pass {
             width:clamp(74px,10.5vw,152px);
-            background:linear-gradient(160deg,#f5f0e8 0%,#ede5d0 55%,#e4d9c0 100%);
-            border-radius:10px; border:1px solid rgba(120,90,40,0.35);
+            background:linear-gradient(160deg,#ede8dc 0%,#e2d9c4 55%,#d8ccb0 100%);
+            border-radius:10px; border:1px solid rgba(100,75,30,0.4);
             padding:clamp(5px,0.65vw,10px);
-            box-shadow:0 2px 10px rgba(0,0,0,0.35),inset 0 1px 0 rgba(255,255,255,0.7),inset 0 -1px 0 rgba(0,0,0,0.08);
+            box-shadow:0 2px 12px rgba(0,0,0,0.4),inset 0 1px 0 rgba(255,255,255,0.6),inset 0 -1px 0 rgba(0,0,0,0.1);
             position:relative;
             transition:border-color 0.4s,box-shadow 0.4s,transform 0.25s;
             cursor:pointer;
@@ -254,7 +260,7 @@
         }
         .access-pass.pass-active {
             border-color:var(--p-color);
-            box-shadow:0 2px 10px rgba(0,0,0,0.5),0 0 12px var(--p-color),inset 0 1px 0 rgba(255,255,255,0.08);
+            box-shadow:0 2px 10px rgba(0,0,0,0.5),0 0 14px var(--p-color),inset 0 1px 0 rgba(255,255,255,0.5);
         }
         .access-pass.pass-notify { animation:passNotify 1.2s ease-in-out infinite !important; border-color:var(--pitch-orange) !important; }
         .access-pass.pass-selectable {
@@ -271,23 +277,24 @@
             animation:bubblePop 0.4s cubic-bezier(0.175,0.885,0.32,1.275) forwards;
             z-index:5; cursor:pointer;
         }
-         .pass-clip { width:clamp(9px,1.5vw,16px); height:clamp(4px,0.7vw,8px); background:#888; border-radius:3px 3px 0 0; margin:0 auto clamp(2px,0.35vw,5px); position:relative; }
-        .pass-clip::after { content:''; position:absolute; bottom:-3px; left:50%; transform:translateX(-50%); width:60%; height:3px; background:#666; border-radius:0 0 2px 2px; }
-        .pass-all-access { font-family:'Courier New',monospace; font-size:clamp(0.34rem,0.52vw,0.5rem); letter-spacing:2px; color:rgba(80,55,20,0.5); text-transform:uppercase; text-align:center; margin-bottom:clamp(2px,0.3vw,4px); }
-        .pass-header { display:flex; align-items:center; gap:clamp(3px,0.4vw,6px); border-bottom:1px solid rgba(100,70,20,0.2); padding-bottom:clamp(2px,0.3vw,5px); margin-bottom:clamp(2px,0.3vw,5px); }
+        .pass-clip { width:clamp(9px,1.5vw,16px); height:clamp(4px,0.7vw,8px); background:#999; border-radius:3px 3px 0 0; margin:0 auto clamp(2px,0.35vw,5px); position:relative; }
+        .pass-clip::after { content:''; position:absolute; bottom:-3px; left:50%; transform:translateX(-50%); width:60%; height:3px; background:#777; border-radius:0 0 2px 2px; }
+        .pass-all-access { font-family:'Courier New',monospace; font-size:clamp(0.34rem,0.52vw,0.5rem); letter-spacing:2px; color:rgba(70,45,10,0.5); text-transform:uppercase; text-align:center; margin-bottom:clamp(2px,0.3vw,4px); }
+        .pass-header { display:flex; align-items:center; gap:clamp(3px,0.4vw,6px); border-bottom:1px solid rgba(90,60,15,0.25); padding-bottom:clamp(2px,0.3vw,5px); margin-bottom:clamp(2px,0.3vw,5px); }
         .pass-avatar { width:clamp(17px,2.7vw,34px); height:clamp(17px,2.7vw,34px); border-radius:50%; border:2px solid var(--p-color,#555); background:#000; flex-shrink:0; }
-        .pass-name   { font-family:'KCStrikerSans','Courier New',monospace; font-size:clamp(0.62rem,1.04vw,1rem); color:var(--p-color,black); letter-spacing:1px; text-transform:uppercase; word-break:break-all; filter:brightness(0.6); }
-        .pass-label  { font-size:clamp(0.38rem,0.58vw,0.58rem); letter-spacing:2px; color:rgba(60,40,10,0.5); text-transform:uppercase; margin-bottom:2px; }
+        .pass-name   { font-family:'KCStrikerSans','Courier New',monospace; font-size:clamp(0.62rem,1.04vw,1rem); color:var(--p-color,#333); letter-spacing:1px; text-transform:uppercase; word-break:break-all; filter:brightness(0.55) saturate(1.2); }
+        .pass-label  { font-size:clamp(0.38rem,0.58vw,0.58rem); letter-spacing:2px; color:rgba(55,35,5,0.5); text-transform:uppercase; margin-bottom:2px; }
         .pass-tags   { display:flex; flex-wrap:wrap; gap:3px; margin-bottom:clamp(2px,0.3vw,4px); min-height:10px; }
-        .pass-accolades   { font-size:clamp(0.7rem,1.08vw,1rem); letter-spacing:2px; min-height:10px; color:rgba(0,0,0,0.75); }
-        .pass-independent { font-size:clamp(0.44rem,0.7vw,0.65rem); letter-spacing:4px; color:rgba(60,40,10,0.35); }
+        .pass-accolades   { font-size:clamp(0.7rem,1.08vw,1rem); letter-spacing:2px; min-height:10px; color:rgba(0,0,0,0.7); }
+        .pass-independent { font-size:clamp(0.44rem,0.7vw,0.65rem); letter-spacing:4px; color:rgba(55,35,5,0.35); }
         .tag           { font-size:clamp(0.36rem,0.52vw,0.6rem); padding:2px 5px; border-radius:3px; font-weight:bold; letter-spacing:0.5px; }
         .tag-investor  { background:var(--gold);          color:black; }
         .tag-sellout   { background:var(--fear-glow);     color:white; }
         .tag-pitched   { background:var(--pitch-orange);  color:black; }
         .tag-thrifty   { background:var(--mystery-glow);  color:black; }
-        .pass-stripe   { background:linear-gradient(90deg,var(--p-color,#888) 0%,transparent 100%); opacity:0.3; height:clamp(2px,0.32vw,4px); border-radius:2px; margin-top:clamp(2px,0.3vw,5px); }
-     
+        /* Stripe — darker so it shows on warm-white background */
+        .pass-stripe   { background:linear-gradient(90deg,var(--p-color,#888) 0%,transparent 100%); opacity:0.45; height:clamp(2px,0.32vw,4px); border-radius:2px; margin-top:clamp(2px,0.3vw,5px); filter:brightness(0.7); }
+
         /* ── PASS EXPANDED ── */
         #pass-expanded-backdrop { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.65); z-index:3000; align-items:center; justify-content:center; }
         #pass-expanded-backdrop.open { display:flex; }
@@ -316,7 +323,9 @@
         }
         #pitch-btn:hover { background:var(--pitch-orange); color:black; box-shadow:0 0 16px var(--pitch-orange); transform:translateY(-2px); }
 
-        /* ── BOARD SCROLL — centred, fills space, adaptive ── */
+        /* ── BOARD SCROLL ── */
+        /* Board is centered on the FULL viewport by using negative margin-left
+           to compensate for the pass sidebar width on wide screens */
         #board-scroll {
             flex:1; display:flex; align-items:center; justify-content:center;
             overflow:hidden;
@@ -328,9 +337,13 @@
                 rgba(140,100,55,0.35) 50%,
                 transparent 75%);
         }
-        
-        #board-outer { display:flex; align-items:center; justify-content:center; width:100%; height:100%; position:relative; z-index:1; }
-        /* SVG tape path — sits behind board-container, above the overlay */
+        /* Offset the board centre to account for the pass sidebar on wide screens.
+           This makes the board visually centred on the full viewport. */
+        #board-outer {
+            display:flex; align-items:center; justify-content:center;
+            width:100%; height:100%; position:relative; z-index:1;
+            margin-left:calc(var(--pass-w) * -1);
+        }
         #tape-svg {
             position:absolute; inset:0; width:100%; height:100%;
             pointer-events:none; z-index:2; overflow:visible;
@@ -357,7 +370,6 @@
         .space:not(.blank):not(.mystery-space):not(.true-blank) { font-family:'KCStrikerSans','Courier New',monospace; }
         .sp-emoji { font-size:var(--space-emoji); margin-bottom:2px; }
         .sp-text  { padding:0 2px; }
-        /* Arrows — more prominent */
         .dir-arrow {
             position:absolute;
             font-size:clamp(0.75rem,1.5vw,2rem);
@@ -378,7 +390,6 @@
         }
         .mystery-space:hover { transform:scale(0.9) !important; box-shadow:0 0 18px var(--mystery-glow); }
         .mystery-q { font-size:clamp(0.85rem,1.6vw,1.5rem); font-weight:bold; opacity:0.9; }
-        /* True blank — much more opaque */
         .true-blank {
             opacity:0.65; transform:scale(0.78);
             border-style:dashed !important; border-color:rgba(255,255,255,0.5) !important;
@@ -408,7 +419,9 @@
             filter:drop-shadow(0 0 6px white) drop-shadow(0 0 12px white) !important;
             pointer-events:auto !important; cursor:crosshair !important;
         }
-        .floating-emoji { position:absolute; font-size:4rem; animation:floatUp 1.2s cubic-bezier(0.2,0.8,0.2,1) forwards; pointer-events:none; z-index:6000; }
+        /* Slow float for contract events */
+        .floating-emoji      { position:absolute; font-size:4rem; animation:floatUp 1.2s cubic-bezier(0.2,0.8,0.2,1) forwards; pointer-events:none; z-index:6000; }
+        .floating-emoji-slow { position:absolute; font-size:4.5rem; animation:floatUpSlow 2.2s cubic-bezier(0.2,0.8,0.2,1) forwards; pointer-events:none; z-index:6000; }
 
         /* ── POPUPS & OVERLAYS ── */
         .overlay { position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:2000; display:none; align-items:center; justify-content:center; padding:clamp(10px,3vw,20px); box-sizing:border-box; }
@@ -441,6 +454,8 @@
         #event-btn-secondary { display:none; background:#333; color:white; margin-left:clamp(8px,1.5vw,15px); }
         #event-btn-secondary:hover { transform:translateY(-2px) scale(1.04); background:#444; box-shadow:0 6px 20px rgba(0,0,0,0.4); }
         .btn-kb-focus { outline:2px solid white !important; animation:btnFocusPulse 1s ease-in-out infinite; }
+
+        /* Rule sidebar */
         #rule-sidebar {
             position:fixed; right:-400px; top:calc(var(--bar-h) + 8px);
             width:min(240px,72vw);
@@ -502,7 +517,7 @@
             display:none; box-shadow:-4px 0 24px rgba(0,0,0,0.6); cursor:pointer;
         }
         #selection-reminder.visible { display:block; animation:reminderSlide 0.35s cubic-bezier(0.175,0.885,0.32,1.275) forwards; }
-        #selection-reminder-text  { font-family:'Courier New',monospace; font-size:0.78rem; line-height:1.5; color:rgba(255,255,255,0.85); letter-spacing:0.3px; }
+        #selection-reminder-text  { font-family:'Courier New',monospace; font-size:0.78rem; line-height:1.5; color:rgba(255,255,255,0.85); }
         #selection-reminder-title { font-family:'KCStrikerSans','Courier New',monospace; font-size:0.9rem; letter-spacing:2px; color:white; margin-bottom:6px; text-transform:uppercase; }
 
         /* ── RESPONSIVE ── */
@@ -514,22 +529,32 @@
                 --board-gap:   clamp(2px,1.1vw,9px);
                 --board-pad:   clamp(3px,1.1vw,12px);
                 --bar-h:       clamp(48px,9vh,78px);
+                --pass-w:      100%;
             }
             #main-area { flex-direction:column; }
             #pass-sidebar {
                 width:100%; flex-direction:row;
-                height:clamp(70px,12vh,100px);
-                min-height:clamp(70px,12vh,100px);
-                max-height:clamp(70px,12vh,100px);
+                height:clamp(80px,14vh,110px);
+                min-height:clamp(80px,14vh,110px);
+                max-height:clamp(80px,14vh,110px);
                 flex-shrink:0; justify-content:center; align-items:center;
-                padding:clamp(3px,0.8vw,7px);
+                /* "LINEUP" sits to the left of the centred pass cluster */
+                padding:clamp(4px,1vw,10px) clamp(8px,2vw,16px);
                 overflow-x:auto; overflow-y:hidden;
-                order:2; gap:clamp(5px,1.8vw,12px);
-                -webkit-mask-image:linear-gradient(to right,transparent 0%,black 6%,black 94%,transparent 100%);
-                mask-image:linear-gradient(to right,transparent 0%,black 6%,black 94%,transparent 100%);
+                order:2; gap:clamp(6px,2vw,14px);
+                /* Feather left and right edges */
+                -webkit-mask-image:linear-gradient(to right,transparent 0%,black 5%,black 95%,transparent 100%);
+                mask-image:linear-gradient(to right,transparent 0%,black 5%,black 95%,transparent 100%);
             }
             #board-scroll { order:1; justify-content:center; }
-            #lineup-label { writing-mode:horizontal-tb; margin-bottom:0; margin-right:6px; flex-shrink:0; }
+            /* Undo the board-centre offset on portrait — no sidebar to compensate for */
+            #board-outer { margin-left:0; }
+            #lineup-label {
+                writing-mode:horizontal-tb;
+                margin-bottom:0; margin-right:8px; flex-shrink:0;
+                font-size:clamp(0.7rem,2vw,0.95rem);
+                letter-spacing:3px;
+            }
             .access-pass  { width:clamp(72px,22vw,115px); flex-shrink:0; }
         }
     </style>
@@ -562,7 +587,6 @@
         <div id="pass-sidebar"><div id="lineup-label">Lineup</div></div>
         <div id="board-scroll">
             <div id="board-outer">
-                <!-- Tape SVG sits behind board — drawn in JS after initBoard -->
                 <svg id="tape-svg" xmlns="http://www.w3.org/2000/svg"></svg>
                 <div id="board-container"></div>
             </div>
@@ -597,7 +621,7 @@
     <!-- ══ SELECTION REMINDER ══ -->
     <div id="selection-reminder" onclick="dismissReminder()">
         <div id="selection-reminder-title">👆 SELECT AN ARTIST</div>
-        <div id="selection-reminder-text">Tap another Artist's face on the board, or their Pass card in the lineup.</div>
+        <div id="selection-reminder-text">Tap another Artist's face on the board, or their Pass card.</div>
     </div>
 
     <!-- ══ EVENT OVERLAY ══ -->
@@ -697,12 +721,11 @@
         "5TH DIMENSION":"5D","OPENING ACT":"OPENER","LOST RECORDING":"LOST TAPE",
     };
     const TRACKLIST_INDICES = [4,8,10,15,18,25,27,37,44,47];
-    const GRAMMY_SPACE   = 30;
+    const GRAMMY_SPACE    = 30;
     const GATEKEEPER_SPACE = 48;
     const BLANK_INDICES = boardLayout.reduce((arr,n,i)=>{ if(n==="blank") arr.push(i); return arr; },[]);
     let mysterySpaces = new Set();
 
-    /* Updated rules per Grant's latest paste */
     const rules = {
         0: {title:"START",            emoji:"▶️", desc:"Play the tape."},
         4: {title:"DAYSPRING",        emoji:"☀️", shift:3,  isAuto:true,isTrack:true, desc:"The sun rises! Spring ahead 3.",sound:"dayclip.wav"},
@@ -729,7 +752,7 @@
         35:{title:"JOY",              emoji:"😄", shift:1,  isAuto:true, desc:"EARJOY! Forward 1.", sound:"coinclip.wav"},
         37:{title:"TELLUS",           emoji:"📣", isTellus:true,isTrack:true, desc:"Swap positions with any artist.", sound:"tellusclip.wav"},
         39:{title:"FEARJOY",          emoji:"☯️", isFearjoy:true, desc:"FEAR? JOY? Fate decides.",sound:"coin.wav"},
-        42:{title:"ENCORE",           emoji:"👏", shift:3,  isAuto:true, desc:"Encore! Three more songs! Move forward 3."},
+        42:{title:"ENCORE",           emoji:"👏", shift:3,  isAuto:true, desc:"Encore! Three more songs! Move forward 3.", sound:"coinclip.wav"},
         44:{title:"VOID",             emoji:"🌀", shift:-3, isAuto:true,isTrack:true, desc:"Lost in the Void. Rewind 3.", sound:"voidclip.wav"},
         47:{title:"THE ENDLESS SMILE",emoji:"💀", isSmile:true,isTrack:true, desc:"Remain smiling until your next turn. Break it for a penalty.", sound:"smileclip.wav"},
         48:{title:"GATEKEEPER",       emoji:"🚪", isGate:true, desc:"Industry Gatekeeper — stop here unless you're in last place."},
@@ -749,13 +772,16 @@
     let sidebarTimer=null, expandedPassIdx=null;
     let reminderTimer=null, reminderDismissTimer=null;
     let globalTurnCount=0;
-    /* Track whether we just came from a soft restart (skip instructions) */
     let isRestart=false;
+    /* Track last bucket item shown to avoid immediate repeat */
+    let lastBucketFile=null;
+    /* Track active lore video element so Roll can cut it */
+    let activeLoreVid=null;
 
     // ══════════════════════════════════════════════
     // AUDIO
     // ══════════════════════════════════════════════
- let audioCtx=null, masterGain=null, audioEnabled=true;
+    let audioCtx=null, masterGain=null, audioEnabled=true;
     const activeSources=new Set();
 
     function getAudioCtx(){
@@ -767,8 +793,6 @@
         }
         return audioCtx;
     }
-
-    /* Generic SFX — dice, slides, UI; can overlap */
     function playSfx(url, volume=1){
         if(!audioEnabled)return;
         const ctx=getAudioCtx();
@@ -779,17 +803,11 @@
             activeSources.add(src);src.onended=()=>activeSources.delete(src);src.start();
         }).catch(()=>{});
     }
-
- /* Space sound — all sounds overlap freely, no crossfade */
     function playSpaceSfx(url){ playSfx(url); }
-
-    /* coin.wav at half volume */
     function playCoinSfx(){playSfx('coin.wav',0.5);}
-
     function playSlide(){const n=Math.floor(Math.random()*4)+1;playSfx(`slide${n}.wav`);}
     function playDiceRoll(){const n=Math.floor(Math.random()*4)+1;playSfx(`dice${n}.wav`);}
     function playDiceDone(){playSfx('dicedone.wav');}
-
     function playRemedyPunishment(){
         if(!audioEnabled)return;
         const ctx=getAudioCtx();if(ctx.state==='suspended')ctx.resume();
@@ -804,7 +822,6 @@
             },2000);
         }).catch(()=>{});
     }
-
     function toggleAudio(){
         audioEnabled=!audioEnabled;
         const ctx=getAudioCtx();
@@ -818,8 +835,6 @@
         document.getElementById('audio-status').innerText=audioEnabled?'ON':'OFF';
         document.getElementById('audio-icon').innerText=audioEnabled?'🔊':'🔇';
     }
-
-    /* Video audio — fade in/out over 2s, half volume by default */
     function fadeVideoAudioIn(vid){
         if(!vid)return;
         vid.muted=false;vid.volume=0;
@@ -830,9 +845,16 @@
         let v=vid.volume;
         const step=setInterval(()=>{v=Math.max(0,v-0.05);vid.volume=v;if(v<=0){clearInterval(step);if(thenPause)vid.pause();}},100);
     }
+    /* Stop any active lore video and fade its audio */
+    function stopActiveLoreVid(){
+        if(activeLoreVid){
+            fadeVideoAudioOut(activeLoreVid,true);
+            activeLoreVid=null;
+        }
+    }
 
     // ══════════════════════════════════════════════
-    // PRELOADING
+    // PRELOADING — includes all bucket content
     // ══════════════════════════════════════════════
     const AUDIO_FILES=[
         'dayclip.wav','coinclip.wav','figclip.wav','remedyclip.wav',
@@ -893,76 +915,55 @@
     }
 
     // ══════════════════════════════════════════════
-    // TAPE PATH SVG — drawn after board renders
-    // A dark-tan/bronze wavy path following the board layout,
-    // with a slow shine sweep animation.
+    // TAPE PATH SVG
     // ══════════════════════════════════════════════
- function drawTapePath(){
+    function drawTapePath(){
         const svg=document.getElementById('tape-svg');
         const outer=document.getElementById('board-outer');
         if(!svg||!outer)return;
-        /* Size the SVG viewport to match its container exactly */
         svg.setAttribute('viewBox',`0 0 ${outer.offsetWidth} ${outer.offsetHeight}`);
         svg.setAttribute('width', outer.offsetWidth);
         svg.setAttribute('height', outer.offsetHeight);
-        /* Measure centres relative to board-outer, which is the SVG's containing block */
         const origin=outer.getBoundingClientRect();
         const pts=[];
         boardLayout.forEach((_,i)=>{
             const el=document.getElementById('s'+i);
             if(!el)return;
             const r=el.getBoundingClientRect();
-            pts.push({
-                x:r.left - origin.left + r.width/2,
-                y:r.top  - origin.top  + r.height/2
-            });
+            pts.push({x:r.left-origin.left+r.width/2, y:r.top-origin.top+r.height/2});
         });
         if(pts.length<2)return;
-        /* Smooth cubic-bezier path through all space centres */
         let d=`M${pts[0].x},${pts[0].y}`;
         for(let i=1;i<pts.length;i++){
             const p=pts[i-1],c=pts[i];
-            const cp1x=p.x+(c.x-p.x)*0.5; const cp1y=p.y;
-            const cp2x=p.x+(c.x-p.x)*0.5; const cp2y=c.y;
+            const cp1x=p.x+(c.x-p.x)*0.5;const cp1y=p.y;
+            const cp2x=p.x+(c.x-p.x)*0.5;const cp2y=c.y;
             d+=` C${cp1x},${cp1y} ${cp2x},${cp2y} ${c.x},${c.y}`;
         }
         svg.innerHTML='';
-        /* Wave filter */
         const filt=document.createElementNS('http://www.w3.org/2000/svg','filter');
-        filt.setAttribute('id','tapeBlur');
-        filt.setAttribute('x','-5%'); filt.setAttribute('y','-5%');
-        filt.setAttribute('width','110%'); filt.setAttribute('height','110%');
+        filt.setAttribute('id','tapeBlur');filt.setAttribute('x','-5%');filt.setAttribute('y','-5%');
+        filt.setAttribute('width','110%');filt.setAttribute('height','110%');
         const fe=document.createElementNS('http://www.w3.org/2000/svg','feTurbulence');
-        fe.setAttribute('type','turbulence'); fe.setAttribute('baseFrequency','0.015 0.02');
-        fe.setAttribute('numOctaves','2'); fe.setAttribute('seed','4');
+        fe.setAttribute('type','turbulence');fe.setAttribute('baseFrequency','0.015 0.02');
+        fe.setAttribute('numOctaves','2');fe.setAttribute('seed','4');
         const disp=document.createElementNS('http://www.w3.org/2000/svg','feDisplacementMap');
-        disp.setAttribute('in','SourceGraphic'); disp.setAttribute('scale','4');
-        disp.setAttribute('xChannelSelector','R'); disp.setAttribute('yChannelSelector','G');
-        filt.appendChild(fe); filt.appendChild(disp);
-        svg.appendChild(filt);
-        /* Base tape stripe */
+        disp.setAttribute('in','SourceGraphic');disp.setAttribute('scale','4');
+        disp.setAttribute('xChannelSelector','R');disp.setAttribute('yChannelSelector','G');
+        filt.appendChild(fe);filt.appendChild(disp);svg.appendChild(filt);
         const base=document.createElementNS('http://www.w3.org/2000/svg','path');
-        base.setAttribute('d',d);
-        base.setAttribute('fill','none');
-        base.setAttribute('stroke','rgba(139,100,50,0.40)');
-        base.setAttribute('stroke-width','5');
-        base.setAttribute('stroke-linecap','round');
-        base.setAttribute('stroke-linejoin','round');
-        base.setAttribute('filter','url(#tapeBlur)');
-        svg.appendChild(base);
-        /* Shine sweep */
+        base.setAttribute('d',d);base.setAttribute('fill','none');
+        base.setAttribute('stroke','rgba(139,100,50,0.40)');base.setAttribute('stroke-width','5');
+        base.setAttribute('stroke-linecap','round');base.setAttribute('stroke-linejoin','round');
+        base.setAttribute('filter','url(#tapeBlur)');svg.appendChild(base);
         const totalLen=4000;
         const shine=document.createElementNS('http://www.w3.org/2000/svg','path');
-        shine.setAttribute('d',d);
-        shine.setAttribute('fill','none');
-        shine.setAttribute('stroke','rgba(255,210,140,0.55)');
-        shine.setAttribute('stroke-width','2.5');
+        shine.setAttribute('d',d);shine.setAttribute('fill','none');
+        shine.setAttribute('stroke','rgba(255,210,140,0.55)');shine.setAttribute('stroke-width','2.5');
         shine.setAttribute('stroke-linecap','round');
-        shine.setAttribute('stroke-dasharray',`60 ${totalLen}`);
-        shine.setAttribute('stroke-dashoffset','4000');
+        shine.setAttribute('stroke-dasharray',`60 ${totalLen}`);shine.setAttribute('stroke-dashoffset','4000');
         shine.setAttribute('style','animation:tapeShine 7s linear infinite;');
-        shine.setAttribute('filter','url(#tapeBlur)');
-        svg.appendChild(shine);
+        shine.setAttribute('filter','url(#tapeBlur)');svg.appendChild(shine);
     }
 
     // ══════════════════════════════════════════════
@@ -1006,10 +1007,12 @@
                     p.accolades=[];p.grammyNominator=null;
                     p.usedColdPitch=false;p.hasSeenGatekeeperHint=false;p.hasThrifty=false;
                     p.merchdiscountPct=0;p.pitchBubbleShown=false;
+                    p.coldPitchRollCount=0;
                 });
-                highestDiscountPct=0;globalTurnCount=0;
+                highestDiscountPct=0;globalTurnCount=0;lastBucketFile=null;
                 assignMysterySpaces();
                 turnIdx=0;isMoving=false;isSwapping=false;
+                stopActiveLoreVid();
                 updateUI();updatePositions();
                 document.getElementById('roll-btn').disabled=false;
             },"CANCEL",()=>{}
@@ -1059,20 +1062,16 @@
         el.classList.remove('vinyl-spinning','vinyl-wiggle');void el.offsetWidth;el.classList.add('vinyl-spinning');
         setTimeout(()=>el.classList.remove('vinyl-spinning'),3200);
     }
-    /* Grammy award — accolade only, no swap. Called for passive/indirect landing. */
     function awardGrammyAccolade(playerIdx,nominatorName,fromSwap=false){
-        const p=players[playerIdx];
-        p.grammys++;p.accolades.push('🏆');
+        const p=players[playerIdx];p.grammys++;p.accolades.push('🏆');
         if(!fromSwap)p.grammyNominator=nominatorName;
         renderPasses();
     }
     function checkPassiveGrammys(nominatorName){
         players.forEach((p,i)=>{if(i!==turnIdx&&p.pos===GRAMMY_SPACE)awardGrammyAccolade(i,nominatorName,false);});
     }
-    /* Award Grammy to a player who was SWAPPED to the Grammy space — no nominator popup, just sidebar */
     function awardSwapGrammy(playerIdx){
-        const p=players[playerIdx];
-        p.grammys++;p.accolades.push('🏆');
+        const p=players[playerIdx];p.grammys++;p.accolades.push('🏆');
         renderPasses();
         showSidebar('🏆 Grammy!',`Congrats ${p.name} on your Grammy!`,'var(--gold)');
     }
@@ -1106,17 +1105,18 @@
 
     // ══════════════════════════════════════════════
     // BUCKET
+    // Guaranteed one merch discount per game (max one per player).
+    // No back-to-back repeats of the same file.
     // ══════════════════════════════════════════════
-
     function getRandomBucketItem(playerIdx){
         const p=players[playerIdx];
-        const pool=[...BUCKET_BASE];
+        let pool=[...BUCKET_BASE];
+        /* Remove last-shown item to avoid back-to-back repeat */
+        if(lastBucketFile&&pool.length>1){
+            pool=pool.filter(i=>i.file!==lastBucketFile);
+        }
         if(!p.merchdiscountPct){
-            /* Check if ANY player has already received a discount this game */
             const anyoneHasDiscount=players.some(pl=>pl.merchdiscountPct>0);
-            /* Guarantee: if no one has gotten one yet and this is a mystery landing,
-               check if we're past the halfway point of the board — if so, force it.
-               Otherwise 85% chance to include one. */
             const pastMidpoint=p.pos>29;
             const forceDiscount=!anyoneHasDiscount&&pastMidpoint;
             if(forceDiscount||Math.random()<0.85){
@@ -1124,9 +1124,11 @@
             }
         }
         if(!pool.length)return null;
-        return pool[Math.floor(Math.random()*pool.length)];
+        const item=pool[Math.floor(Math.random()*pool.length)];
+        if(item.file)lastBucketFile=item.file;
+        return item;
     }
-        
+
     function renderBucketItem(item,container,playerIdx){
         container.innerHTML='';
         if(!item)return;
@@ -1134,19 +1136,18 @@
             const img=document.createElement('img');
             img.src=item.file;img.className='bucket-img';img.alt='Mystery drop';
             container.appendChild(img);
-} else if(item.type==='video'){
+        } else if(item.type==='video'){
             const vid=document.createElement('video');
             vid.src=item.file;vid.className='bucket-video';
             vid.autoplay=true;vid.loop=false;vid.muted=false;vid.volume=0;vid.playsInline=true;
             vid.setAttribute('playsinline','');
             container.appendChild(vid);
+            activeLoreVid=vid;
             vid.play().then(()=>fadeVideoAudioIn(vid)).catch(()=>{vid.muted=true;vid.play().catch(()=>{});});
-            /* Stop audio when video ends naturally */
-            vid.addEventListener('ended',()=>fadeVideoAudioOut(vid,true),{once:true});
-            /* Stop audio when sidebar is closed manually */
+            vid.addEventListener('ended',()=>{fadeVideoAudioOut(vid,true);if(activeLoreVid===vid)activeLoreVid=null;},{once:true});
             const sb=document.getElementById('rule-sidebar');
             const origClose=sb.onclick;
-            sb.onclick=(e)=>{fadeVideoAudioOut(vid,true);sb.onclick=origClose;if(origClose)origClose(e);};
+            sb.onclick=(e)=>{stopActiveLoreVid();sb.onclick=origClose;if(origClose)origClose(e);};
         } else if(item.type==='link'||item.type==='download'){
             const card=document.createElement('div');card.className='bucket-link-card';
             const lbl=document.createElement('div');lbl.className='bucket-link-label';lbl.innerText=item.label;card.appendChild(lbl);
@@ -1226,8 +1227,9 @@
         players.push({
             name,pos:0,avatar:{id:selectedAvatar.id,img:selectedAvatar.img,color},
             skipCount:0,isInvestor:false,
-            isSellout:false,           /* true if signed via Remedy space */
-            isColdPitchSellout:false,  /* true if signed via Cold Pitch — distinct debuff: -1 from every roll total */
+            isSellout:false,
+            isColdPitchSellout:false,
+            coldPitchRollCount:0,  /* counts rolls since cold pitch signed — cut fires on even rolls */
             grammys:0,shirtsSold:0,pillsTaken:0,accolades:[],
             ghostCounter:0,totalRollValue:0,smileActive:false,nightDriveActive:false,
             grammyNominator:null,usedColdPitch:false,hasSeenGatekeeperHint:false,
@@ -1295,28 +1297,24 @@
         updateUI();
         document.getElementById('roll-btn').disabled=false;
         startVinylWiggles();
-        /* Draw tape after DOM settles */
         setTimeout(drawTapePath,200);
-        /* Show instructions if first game */
-        if(!isRestart){
-            setTimeout(showInstructions,400);
-        }
+        if(!isRestart) setTimeout(showInstructions,400);
     }
 
     // ══════════════════════════════════════════════
-    // INSTRUCTIONS POPUP — shown once before first roll
+    // INSTRUCTIONS — short version on "I'm good", detailed on "Show me"
     // ══════════════════════════════════════════════
     function showInstructions(){
         showStatusPopup(
-            "🎵 How to Play",
-            "Click / Enter / Space to Roll and Select.\nArrow Keys + Enter for Choices.\nClick spaces to discover rules.\nSound on/off in the menu.\nFirst to go Swimmin' wins!",
+            "🎵 Fearjoy",
+            "Roll + Move. Land on spaces for surprises. First to Swimmin' wins. Sound on/off in the menu. Click spaces to peek at rules.",
             "I'm good!",
-            ()=>{/* dismiss — game ready */},
+            ()=>{},
             "Show me!",
             ()=>{
                 showStatusPopup(
-                    "📋 Details",
-                    "Each turn: Roll the dice and move forward. Land on special spaces for good or bad effects. Collect Accolades along the way.\n\nOpen your All-Access Pass (sidebar) for secret offers.\n\nFirst artist to reach SWIMMIN' wins the tour!",
+                    "📋 How to Play",
+                    "Click / Enter / Space to Roll and Select. Arrow Keys + Enter for Choices. Click spaces to discover rules. Sound on/off in the menu.\n\nLand on special spaces for good or bad effects. Collect Accolades. Open your All-Access Pass (sidebar) for secret offers. First artist to reach SWIMMIN' wins the tour!",
                     "Let's go!",
                     ()=>{},
                     "",()=>{}
@@ -1330,14 +1328,12 @@
     // MYSTERY CLICK
     // ══════════════════════════════════════════════
     function handleMysteryClick(i){
-        const sb=document.getElementById('rule-sidebar');
-        sb.classList.add('mystery-sidebar');
+        document.getElementById('rule-sidebar').classList.add('mystery-sidebar');
         showSidebar('Mystery Lore Drop','','var(--mystery-glow)',`Space ${i}`);
     }
 
     // ══════════════════════════════════════════════
     // PASSES
-    // Float class fixed per index, never reset between turns.
     // ══════════════════════════════════════════════
     const FLOAT_CLASSES=['pass-float-a','pass-float-b','pass-float-c'];
 
@@ -1415,58 +1411,100 @@
     }
 
     // ══════════════════════════════════════════════
-    // COLD PITCH — two-step flow
-    // Updated mechanic: on success isColdPitchSellout=true.
-    // Effect: every roll (after investor modifier, before move),
-    // subtract 1 from total (min 1). Does NOT apply to Lost Tape re-rolls.
+    // COLD PITCH — two-step with lawyer card
+    // On success: isColdPitchSellout=true, coldPitchRollCount=0
+    // Debuff: label cuts -1 every OTHER roll (when coldPitchRollCount is odd)
+    // Min roll stays 1. Pitch deal allows passing Gatekeeper freely.
     // ══════════════════════════════════════════════
     function triggerColdPitch(){
         collapsePass();
         const p=players[turnIdx];
+
+        /* Step 1 — Lawyer card: sell side visible, fine print hidden behind button */
+        const step1Desc=document.createElement('div');
+        step1Desc.innerHTML=`
+            <div style="margin-bottom:12px;">
+                Go direct to major labels with your tape.<br><br>
+                <b style="color:var(--joy-glow);font-size:1.1em;">1 in 3 chance of getting SIGNED (+5 spaces now!)</b>
+            </div>
+            <div style="margin-top:18px;font-family:'Courier New',monospace;font-size:0.85rem;color:rgba(255,255,255,0.5);">
+                <span id="lawyer-phone" style="display:inline-block;animation:phoneWiggle 1.8s ease-in-out infinite;">📞</span>
+                Hey! It's your lawyer! I suggest you:
+            </div>`;
+        /* Show the populated popup, then swap desc to our custom element */
         showStatusPopup(
-            "🎤 Long Shot: Cold Pitch",
-            "Go direct to major labels with your tape.\n\n1 in 3 chance of getting SIGNED (+5 spaces now!). If they pass: Rewind -3 now.\n\nCaution: if SIGNED, the label takes -1 from every future roll's total.\n\nOne use per game. Cannot use after the Gatekeeper.",
+            "🎤 Cold Pitch",
+            "",
             "Let's Pitch →",
-            ()=>{
-                showStatusPopup(
-                    "⚠️ Heads Up!",
-                    "Pitching replaces your roll this turn. You will NOT roll after pitching. Proceed?",
-                    "Let's Pitch",
-                    async()=>{
-                        p.usedColdPitch=true;
-                        playSpaceSfx('remedyclip.wav');
-                        document.getElementById('overlay-event').style.display='none';
-                        const accepted=Math.random()<(1/3);
-                        await new Promise(r=>setTimeout(r,400));
-                        if(accepted){
-                            p.isColdPitchSellout=true;p.accolades.push('📝');
-                            showStatusPopup("✅ SIGNED!","Label deal locked in. They get a cut of every roll from here on.",
-                                "LET'S GO",async()=>{
-                                    document.getElementById('overlay-event').style.display='none';
-                                    spawnEmoji('📝');renderPasses();
-                                    await new Promise(r=>setTimeout(r,400));movePlayer(5);
-                                },"",()=>{}
-                            );
-                            document.getElementById('event-btn-secondary').style.display='none';
-                        } else {
-                            showStatusPopup("❌ DECLINED!","Your music sucks. Get back in the studio!",
-                                "BACK TO THE GRIND",async()=>{
-                                    document.getElementById('overlay-event').style.display='none';
-                                    spawnEmoji('💀');
-                                    await new Promise(r=>setTimeout(r,400));movePlayer(-3);
-                                },"",()=>{}
-                            );
-                            document.getElementById('event-btn-secondary').style.display='none';
-                        }
-                        renderPasses();
-                    },
-                    "Cancel",
-                    ()=>{document.getElementById('overlay-event').style.display='none';}
-                );
-            },
+            ()=>coldPitchStep2(p),
             "Stay Indie",
             ()=>{document.getElementById('overlay-event').style.display='none';}
         );
+        /* Replace text desc with rich HTML including the fine print button */
+        const descEl=document.getElementById('event-desc');
+        descEl.innerHTML='';
+        descEl.appendChild(step1Desc);
+        /* Fine print toggle button */
+        const fpBtn=document.createElement('button');
+        fpBtn.style.cssText='display:block;margin:10px auto 0;padding:8px 18px;background:transparent;border:1px solid rgba(255,255,255,0.3);color:rgba(255,255,255,0.5);font-family:Courier New,monospace;font-size:0.82rem;border-radius:6px;cursor:pointer;transition:all 0.2s;letter-spacing:1px;';
+        fpBtn.innerText='Read the Fine Print ⬇️';
+        const finePrint=document.createElement('div');
+        finePrint.style.cssText='display:none;margin-top:12px;padding:10px;background:rgba(0,0,0,0.4);border-radius:8px;border:1px solid rgba(255,255,255,0.1);font-family:Courier New,monospace;font-size:0.78rem;color:rgba(255,255,255,0.6);text-align:left;line-height:1.6;';
+        finePrint.innerHTML=`If SIGNED: +5 spaces now, but label takes -1 from every other roll total going forward (minimum roll stays 1). Also lets you pass through the Gatekeeper freely.<br><br>If DECLINED: Rewind -3 immediately.<br><br>One use per game. Cannot use after Gatekeeper.`;
+        fpBtn.onclick=()=>{
+            const open=finePrint.style.display==='block';
+            finePrint.style.display=open?'none':'block';
+            fpBtn.innerText=open?'Read the Fine Print ⬇️':'Hide Fine Print ⬆️';
+        };
+        step1Desc.appendChild(fpBtn);
+        step1Desc.appendChild(finePrint);
+    }
+
+    function coldPitchStep2(p){
+        /* Step 2 — last chance to read fine print before replacing roll */
+        const step2Desc=document.createElement('div');
+        step2Desc.innerHTML=`Pitching <b>replaces your roll</b> this turn. You will NOT roll after pitching.<br><br>`;
+        const fp2=document.createElement('div');
+        fp2.style.cssText='margin-top:8px;font-family:Courier New,monospace;font-size:0.78rem;color:rgba(255,255,255,0.4);';
+        fp2.innerHTML=`<span style="cursor:pointer;text-decoration:underline;" onclick="this.parentElement.querySelector('.fp2-body').style.display='block';this.style.display='none';">Didn't read the fine print?</span><div class="fp2-body" style="display:none;margin-top:6px;padding:8px;background:rgba(0,0,0,0.35);border-radius:6px;line-height:1.6;">If SIGNED: +5 spaces, label takes -1 every other roll (min 1), pass Gatekeeper freely. If DECLINED: -3. One use per game.</div>`;
+        step2Desc.appendChild(fp2);
+        showStatusPopup(
+            "⚠️ Heads Up!",
+            "",
+            "Let's Pitch",
+            async()=>{
+                p.usedColdPitch=true;
+                playSpaceSfx('remedyclip.wav');
+                document.getElementById('overlay-event').style.display='none';
+                const accepted=Math.random()<(1/3);
+                await new Promise(r=>setTimeout(r,400));
+                if(accepted){
+                    p.isColdPitchSellout=true;p.coldPitchRollCount=0;p.accolades.push('📝');
+                    showStatusPopup("✅ SIGNED!","Label deal locked in. They get a cut of every other roll from here on.",
+                        "LET'S GO",async()=>{
+                            document.getElementById('overlay-event').style.display='none';
+                            spawnEmoji('📝',true);renderPasses();
+                            await new Promise(r=>setTimeout(r,400));movePlayer(5);
+                        },"",()=>{}
+                    );
+                    document.getElementById('event-btn-secondary').style.display='none';
+                } else {
+                    showStatusPopup("❌ DECLINED!","Your music sucks. Get back in the studio!",
+                        "BACK TO THE GRIND",async()=>{
+                            document.getElementById('overlay-event').style.display='none';
+                            spawnEmoji('💀',true);
+                            await new Promise(r=>setTimeout(r,400));movePlayer(-3);
+                        },"",()=>{}
+                    );
+                    document.getElementById('event-btn-secondary').style.display='none';
+                }
+                renderPasses();
+            },
+            "Cancel",
+            ()=>{document.getElementById('overlay-event').style.display='none';}
+        );
+        document.getElementById('event-desc').innerHTML='';
+        document.getElementById('event-desc').appendChild(step2Desc);
     }
 
     // ══════════════════════════════════════════════
@@ -1525,7 +1563,7 @@
     async function diceReturnToBar(){
         const d=document.getElementById('dice-box');
         d.classList.add('dice-return-out');await new Promise(r=>setTimeout(r,350));
-        d.classList.remove('dice-cinematic','dice-return-out','dice-red','dice-gold');
+        d.classList.remove('dice-cinematic','dice-return-out','dice-red','dice-gold','dice-contract');
         d.classList.add('dice-reappear');await new Promise(r=>setTimeout(r,350));
         d.classList.remove('dice-reappear');
         d.style.animation='diceGlow 3s ease-in-out infinite';
@@ -1533,12 +1571,14 @@
 
     // ══════════════════════════════════════════════
     // ROLL FLOW
-    // +0.5s rolling time, +0.25s pause on result before returning
-    // ColdPitch debuff: -1 from roll total after all other modifiers (min 1)
+    // Roll cuts any active lore video.
+    // ColdPitch: -1 every OTHER roll (odd coldPitchRollCount), min 1.
     // ══════════════════════════════════════════════
     async function doRoll(){
         if(isMoving||isSwapping||isMayaPartner)return;
-        document.getElementById('rule-sidebar').classList.remove('active');
+        /* Cut any playing lore video when roll is triggered */
+        stopActiveLoreVid();
+        closeSidebar();
         const p=players[turnIdx];
         if(p.grammyNominator){
             const nom=p.grammyNominator;p.grammyNominator=null;
@@ -1576,7 +1616,6 @@
         isMoving=true;document.getElementById('roll-btn').disabled=true;
         const dice=document.getElementById('dice-box');dice.innerText="?";
         await diceGoToCinematic();
-        /* Shuffle ticks — +0.5s total via more ticks and slightly longer pauses */
         let roll;
         for(let j=0;j<16;j++){
             dice.innerText=Math.floor(Math.random()*6)+1;
@@ -1585,58 +1624,76 @@
         }
         roll=Math.floor(Math.random()*6)+1;dice.innerText=roll;
         playDiceDone();
-        /* +0.25s extra pause on result (was 500ms, now 750ms) */
         await new Promise(r=>setTimeout(r,750));
+
+        /* Investor merch doubling — gold dice, slow emoji */
         if(p.isInvestor&&(roll===1||roll===2)){
-            dice.classList.add('dice-gold');spawnEmoji('👕');
+            dice.classList.add('dice-gold');spawnEmoji('👕',true);
             showSidebar("INVESTMENT PAYOFF","Merch is moving! Roll doubled.","#ffffff");
             playCoinSfx();
-            await new Promise(r=>setTimeout(r,600));
+            await new Promise(r=>setTimeout(r,800));
             p.shirtsSold++;p.accolades.push('👕');roll*=2;dice.innerText=roll;
-            await new Promise(r=>setTimeout(r,1400));updateUI();
+            await new Promise(r=>setTimeout(r,1800));updateUI();
         }
+
+        /* Remedy sellout penalty — 6 becomes -2, red dice */
         if(p.isSellout&&roll===6){
-            dice.classList.add('dice-red');spawnEmoji('💊');
+            dice.classList.add('dice-red');spawnEmoji('💊',true);
             showSidebar("CONTRACT DEBT","Label takes a cut! 6 becomes -2. Should've stayed indie...","var(--fear-glow)");
             playRemedyPunishment();
-            await new Promise(r=>setTimeout(r,600));
+            await new Promise(r=>setTimeout(r,800));
             p.pillsTaken++;p.accolades.push('💊');roll=-2;dice.innerText=roll;
             playDiceDone();
-            await new Promise(r=>setTimeout(r,1400));updateUI();
+            await new Promise(r=>setTimeout(r,1800));updateUI();
         }
-        /* Cold Pitch label debuff: -1 from total (after all other mods), min 1 for positive rolls */
+
+        /* Cold Pitch debuff: -1 every OTHER roll, min 1 */
         if(p.isColdPitchSellout&&roll>0){
-            roll=Math.max(1,roll-1);
-            dice.innerText=roll;
-            showSidebar("LABEL CUTS IN",`The label takes their cut. Roll adjusted to ${roll}.`,"var(--pitch-orange)");
-            await new Promise(r=>setTimeout(r,900));updateUI();
+            p.coldPitchRollCount++;
+            if(p.coldPitchRollCount%2===1){
+                /* Odd roll — label cuts */
+                dice.classList.add('dice-contract');spawnEmoji('📝',true);
+                showSidebar("CONTRACT CUT","Label takes their cut this roll. -1 total.","var(--pitch-orange)");
+                await new Promise(r=>setTimeout(r,700));
+                roll=Math.max(1,roll-1);dice.innerText=roll;
+                await new Promise(r=>setTimeout(r,1200));updateUI();
+            }
         }
+
         p.totalRollValue+=Math.abs(roll);
         await diceReturnToBar();
         movePlayer(roll);
     }
 
-    function spawnEmoji(char){
-        const e=document.createElement('div');e.className='floating-emoji';e.innerText=char;
+    /* spawnEmoji — slow=true for contract/merch events */
+    function spawnEmoji(char,slow=false){
+        const e=document.createElement('div');
+        e.className=slow?'floating-emoji-slow':'floating-emoji';
+        e.innerText=char;
         e.style.left="50%";e.style.top="50%";document.body.appendChild(e);
-        setTimeout(()=>e.remove(),1200);
+        setTimeout(()=>e.remove(),slow?2400:1200);
     }
 
     // ══════════════════════════════════════════════
     // MOVEMENT
-    // playSlide for every step including swaps.
-    // For simultaneous moves (Maya), prefer tracklist sounds.
+    // Gatekeeper: blocks all non-last-place players
+    // UNLESS they are isColdPitchSellout (pitch deal allows free passage)
     // ══════════════════════════════════════════════
-    /* movePlayer — standard player movement */
     async function movePlayer(n,skipSpaceCheck=false){
         const p=players[turnIdx];const dir=n>0?1:-1;
         const lastPlaceIdxList=getLastPlaceIdx();
         const isLast=lastPlaceIdxList.includes(turnIdx);
+        /* Cold pitch deal bypasses gatekeeper */
+        const pitchPassthrough=p.isColdPitchSellout;
+
         for(let i=0;i<Math.abs(n);i++){
             if(p.pos+dir>=0&&p.pos+dir<boardLayout.length){
                 playSlide();
                 p.pos+=dir;updatePositions();
-                if(dir>0&&p.pos===GATEKEEPER_SPACE&&!isLast&&i<Math.abs(n)-1)break;
+                /* Block at gatekeeper unless last place or pitch deal holder */
+                if(dir>0&&p.pos===GATEKEEPER_SPACE&&!isLast&&!pitchPassthrough&&i<Math.abs(n)-1){
+                    break;
+                }
                 await new Promise(r=>setTimeout(r,300));
                 if(p.pos>=59){showWinScreen();return;}
             }
@@ -1644,33 +1701,39 @@
         if(skipSpaceCheck){updatePositions();return;}
         flashSpaceLanding(p.pos);
         if(TRACKLIST_INDICES.includes(p.pos))triggerVinylSpin(p.pos);
+
+        /* Mystery landing — lore drop lingers 20s, video waits for end */
         if(mysterySpaces.has(p.pos)){
             await new Promise(r=>setTimeout(r,750));
             const item=getRandomBucketItem(turnIdx);
             renderBucketItem(item,document.getElementById('side-bucket'),turnIdx);
-            const sb=document.getElementById('rule-sidebar');
-            sb.classList.add('mystery-sidebar');
+            document.getElementById('rule-sidebar').classList.add('mystery-sidebar');
             showSidebar('Mystery Lore Drop','','var(--mystery-glow)',`Space ${p.pos}`);
-            /* For videos: wait for duration to be known, then timeout = full video length.
-               For images/other: 500ms then end turn as before. */
             const bucketVid=document.getElementById('side-bucket').querySelector('video');
             if(bucketVid){
                 await new Promise(res=>{
-                    const onEnd=()=>{fadeVideoAudioOut(bucketVid,true);res();};
+                    const onEnd=()=>{fadeVideoAudioOut(bucketVid,true);if(activeLoreVid===bucketVid)activeLoreVid=null;res();};
                     bucketVid.addEventListener('ended',onEnd,{once:true});
-                    /* Safety cap: if duration unknown or very long, cap at 90s */
-                    bucketVid.addEventListener('loadedmetadata',()=>{
+                    const setCap=()=>{
                         const cap=Math.min((bucketVid.duration||30)*1000, 90000);
-                        setTimeout(()=>{bucketVid.removeEventListener('ended',onEnd);fadeVideoAudioOut(bucketVid,true);res();},cap);
-                    },{once:true});
-                    /* If metadata already loaded */
-                    if(bucketVid.readyState>=1){
-                        const cap=Math.min((bucketVid.duration||30)*1000, 90000);
-                        setTimeout(()=>{bucketVid.removeEventListener('ended',onEnd);fadeVideoAudioOut(bucketVid,true);res();},cap);
-                    }
+                        setTimeout(()=>{bucketVid.removeEventListener('ended',onEnd);fadeVideoAudioOut(bucketVid,true);if(activeLoreVid===bucketVid)activeLoreVid=null;res();},cap);
+                    };
+                    if(bucketVid.readyState>=1){setCap();}
+                    else{bucketVid.addEventListener('loadedmetadata',setCap,{once:true});}
                 });
             } else {
-                await new Promise(r=>setTimeout(r,500));
+                /* Image/discount — linger 20s or until sidebar dismissed */
+                await new Promise(res=>{
+                    const t=setTimeout(res,20000);
+                    /* If sidebar is manually closed, resolve early */
+                    const origClose=document.getElementById('rule-sidebar').onclick;
+                    document.getElementById('rule-sidebar').onclick=(e)=>{
+                        clearTimeout(t);
+                        document.getElementById('rule-sidebar').onclick=origClose;
+                        if(origClose)origClose(e);
+                        res();
+                    };
+                });
             }
             endTurn();return;
         }
@@ -1678,7 +1741,6 @@
         checkSpace();
     }
 
-    /* movePlayerDirect — teleport (for Opening Act, swaps) — plays slide once */
     function movePlayerDirect(playerIdx,targetPos){
         playSlide();
         players[playerIdx].pos=Math.max(0,Math.min(59,targetPos));
@@ -1694,9 +1756,7 @@
         const spaceCol=getSpaceColor(p.pos);
         const popupEl=document.getElementById('main-popup');
         popupEl.style.borderColor=spaceCol;popupEl.style.boxShadow=`0 0 30px ${spaceCol}`;
-        /* Only play space sound if it's the current player's turn space */
-        /* Remedy sound is fired manually below after video starts — skip it here */
-        if(r.sound && r.choice !== 'remedy') playSpaceSfx(r.sound);
+        if(r.sound && r.choice!=='remedy') playSpaceSfx(r.sound);
         if(r.choice==='remedy'&&p.isSellout){showSidebar("CONTRACT ACTIVE","Soul already sold.",spaceCol);endTurn();return;}
         if(r.choice==='merch' &&p.isInvestor){showSidebar("ALREADY INVESTED","Inventory full.",spaceCol);endTurn();return;}
         if(r.isAuto){showSidebar(r.title,(r.emoji||"")+" "+(r.desc||"Moving..."),spaceCol);setTimeout(()=>movePlayer(r.shift),1500);return;}
@@ -1732,7 +1792,6 @@
                 setTimeout(()=>{
                     const win=Math.random()>0.5;
                     coin.innerText=win?"JOY":"FEAR";coin.classList.remove('flipping');
-                    /* Play coinclip for JOY, spookyclip for FEAR */
                     if(win)playSfx('coinclip.wav');else playSfx('spookyclip1.wav');
                     setTimeout(async()=>{modal.style.display='none';coin.style.display='none';await new Promise(res=>setTimeout(res,800));movePlayer(win?1:-1);},1200);
                 },1200);
@@ -1753,8 +1812,7 @@
                     const cv=document.getElementById('close-video');const vid=document.getElementById('remedy-video');
                     if(cv)cv.onclick=(e)=>{e.stopPropagation();fadeOutVideo(vid);document.getElementById('video-wrapper').style.display='none';};
                     if(vid)vid.play().catch(()=>{});
-                    /* Fire remedyclip after video has started so both play together without competing */
-                    setTimeout(()=>playSfx('remedyclip.wav'), 150);
+                    setTimeout(()=>playSfx('remedyclip.wav'),150);
                 },50);
             }
             pBtn.innerText=r.choice==='remedy'?"SIGN CONTRACT (+6)":"INVEST IN MERCH (-4)";
@@ -1763,41 +1821,38 @@
                 fadeOutVideo(document.getElementById('remedy-video'));
                 modal.style.display='none';
                 await new Promise(res=>setTimeout(res,800));
-                if(r.choice==='remedy'){p.isSellout=true;movePlayer(6);}
-                else{playCoinSfx();p.isInvestor=true;movePlayer(-4);}
+                if(r.choice==='remedy'){
+                    p.isSellout=true;
+                    p.accolades.push('📝'); /* signed accolade for remedy too */
+                    movePlayer(6);
+                } else {
+                    playCoinSfx();p.isInvestor=true;movePlayer(-4);
+                }
             };
             sBtn.onclick=()=>{fadeOutVideo(document.getElementById('remedy-video'));modal.style.display='none';endTurn();};
         } else if(r.isGrammy){
-            /* Grammy: always awards accolade. Then either forward 1 (if leading) or swap. */
             let maxPos=Math.max(...players.map(pl=>pl.pos));
             let leaders=players.filter(pl=>pl.pos===maxPos&&pl!==p);
             p.grammys++;p.accolades.push('🏆');updateUI();
             if(p.pos===maxPos){
-                /* Player IS the leader — forward 1 */
                 pBtn.onclick=async()=>{modal.style.display='none';await new Promise(res=>setTimeout(res,800));movePlayer(1);};
             } else if(leaders.length>1){
-                /* Tied leaders — pick one to swap */
                 isSwapping=true;pBtn.innerText="READY";
                 pBtn.onclick=()=>{
                     modal.style.display='none';
                     leaders.forEach(l=>{const idx=players.indexOf(l);document.getElementById('p'+idx).classList.add('swap-target');});
                     renderPasses();
-                    scheduleReminder("Tap another Artist's face on the board, or their Pass card in the lineup.");
+                    scheduleReminder("Tap another Artist's face on the board, or their Pass card.");
                 };
                 desc.innerText="Multiple artists tied at the lead. Select another Artist's face on the board or their Pass card.";
                 showSidebar("🏆 TIED LEADERS","Multiple artists tied. Click one to swap.","var(--gold)");
             } else if(leaders.length===1){
-                /* Swap with the single leader */
                 pBtn.onclick=()=>{
                     modal.style.display='none';
                     const lead=leaders[0];const lp=lead.pos;
-                    /* Slide sounds for both */
-                    playSlide();
-                    lead.pos=p.pos;p.pos=lp;
-                    /* If leader was swapped to Grammy space, award them accolade via sidebar only */
+                    playSlide();lead.pos=p.pos;p.pos=lp;
                     if(lead.pos===GRAMMY_SPACE)awardSwapGrammy(players.indexOf(lead));
-                    checkPassiveGrammys(p.name);
-                    updatePositions();endTurn();
+                    checkPassiveGrammys(p.name);updatePositions();endTurn();
                 };
             } else {
                 pBtn.onclick=()=>{modal.style.display='none';endTurn();};
@@ -1810,16 +1865,14 @@
                     modal.style.display='none';
                     players.forEach((_,i)=>{if(i!==turnIdx){const piece=document.getElementById('p'+i);if(piece){piece.style.pointerEvents='auto';piece.classList.add('swap-target');}}});
                     renderPasses();
-                    const reminderMsg=r.isMaya
-                        ?"Tap another Artist's face on the board, or their Pass card to start the eye contact challenge."
-                        :"Tap another Artist's face on the board, or their Pass card to swap places.";
-                    scheduleReminder(reminderMsg);
+                    scheduleReminder(r.isMaya
+                        ?"Tap an Artist's face or Pass card to start the eye contact challenge."
+                        :"Tap an Artist's face or Pass card to swap places.");
                 };
                 desc.innerHTML=r.isMaya
-                    ?`MAYA'S EYE CONTACT CHALLENGE.<br><br>Select another Artist's face on the board or their Pass card. Hold eye contact for 10s for <b>Both +2</b>. Avoid eye contact for <b>Both -1</b>.<br><br><span style="color:rgba(255,255,255,0.5);font-size:0.85em;">(Or click "Fear of Intimacy" to skip and move back 1.)</span>`
-                    :"TELLUS: THE GREAT SWAP.<br><br>Select another Artist's face on the board or their Pass card to swap places.";
+                    ?`MAYA'S EYE CONTACT CHALLENGE.<br><br>Select an Artist on the board or their Pass card. Hold eye contact for 10s for <b>Both +2</b>. Avoid for <b>Both -1</b>.<br><br><span style="color:rgba(255,255,255,0.5);font-size:0.85em;">(Or "Fear of Intimacy" to skip and move back 1.)</span>`
+                    :"TELLUS: THE GREAT SWAP.<br><br>Select an Artist's face on the board or their Pass card to swap places.";
                 if(r.isMaya){
-                    /* Third button: Fear of Intimacy */
                     const fearBtn=document.createElement('button');
                     fearBtn.id='maya-fear-btn';
                     fearBtn.style.cssText='display:inline-block;margin-top:10px;padding:8px 20px;background:transparent;border:1px solid rgba(255,100,100,0.5);color:rgba(255,100,100,0.7);font-family:Courier New,monospace;font-size:0.85rem;border-radius:6px;cursor:pointer;letter-spacing:1px;transition:all 0.2s;';
@@ -1840,7 +1893,6 @@
                 pBtn.innerText="CONTINUE";pBtn.onclick=()=>{modal.style.display='none';endTurn();};
             }
         } else if(r.isOpeningAct){
-            /* Opening Act — confirm first, then spring directly to target */
             let maxPos=Math.max(...players.map(pl=>pl.pos));let isLead=(p.pos===maxPos);
             if(isLead){
                 pBtn.innerText="ACCEPT FATE (-2)";
@@ -1850,7 +1902,6 @@
                 pBtn.onclick=async()=>{
                     modal.style.display='none';
                     await new Promise(res=>setTimeout(res,500));
-                    /* Spring directly (teleport) to 2 behind leader — one slide sound */
                     const targetPos=Math.max(0,maxPos-2);
                     movePlayerDirect(turnIdx,targetPos);
                     await new Promise(res=>setTimeout(res,400));
@@ -1859,33 +1910,28 @@
                     if(mysterySpaces.has(players[turnIdx].pos)){
                         const item=getRandomBucketItem(turnIdx);
                         renderBucketItem(item,document.getElementById('side-bucket'),turnIdx);
-                        const sb=document.getElementById('rule-sidebar');
-                        sb.classList.add('mystery-sidebar');
+                        document.getElementById('rule-sidebar').classList.add('mystery-sidebar');
                         showSidebar('Mystery Lore Drop','','var(--mystery-glow)',`Space ${players[turnIdx].pos}`);
-                        await new Promise(res=>setTimeout(res,500));
-                        endTurn();return;
+                        await new Promise(res=>setTimeout(res,500));endTurn();return;
                     }
-                    await new Promise(res=>setTimeout(res,500));
-                    checkSpace();
+                    await new Promise(res=>setTimeout(res,500));checkSpace();
                 };
             }
         } else if(r.isGhost){p.ghostCounter=1;pBtn.innerText="I WILL BE SILENT";pBtn.onclick=()=>{modal.style.display='none';endTurn();};}
         else if(r.isSmile){
+            /* smileclip.wav plays via r.sound above — no duplicate call needed */
             p.smileActive=true;
-            playSpaceSfx('smileclip.wav');
             pBtn.innerText="I WILL SMILE";pBtn.onclick=()=>{modal.style.display='none';endTurn();};
         }
         else if(r.isNightDrive){p.nightDriveActive=true;pBtn.innerText="EYES CLOSED";pBtn.onclick=()=>{modal.style.display='none';endTurn();};}
         else if(r.isGate){
-            /* ⚠️ GRANT: doorclip.wav not yet in repo */
-            playSpaceSfx('doorclip.wav');
+            playSpaceSfx('doorclip.wav'); /* ⚠️ GRANT: not yet in repo */
             const cp=players[turnIdx];
             if(!cp.isSellout&&!cp.isColdPitchSellout&&!cp.usedColdPitch){cp.hasSeenGatekeeperHint=false;renderPasses();}
             pBtn.innerText="PAY YOUR DUES";pBtn.onclick=()=>{modal.style.display='none';endTurn();};
         }
         else if(r.isItHappens){pBtn.onclick=async()=>{modal.style.display='none';await new Promise(res=>setTimeout(res,800));isMoving=false;performActualRoll();};}
         else if(r.isLostRecording){
-            /* Lost Recording — dice re-roll; does NOT apply cold pitch debuff */
             pBtn.innerText="ROLL TO REWIND";
             pBtn.onclick=async()=>{
                 pBtn.style.display='none';
@@ -1900,7 +1946,7 @@
                 }
                 rl=Math.floor(Math.random()*6)+1;coin.innerText=rl;coin.classList.remove('flipping');
                 playDiceDone();
-                await new Promise(r=>setTimeout(r,1750)); /* +0.25s pause */
+                await new Promise(r=>setTimeout(r,1750));
                 modal.style.display='none';coin.style.display='none';
                 await new Promise(res=>setTimeout(res,800));movePlayer(-rl);
             };
@@ -1909,11 +1955,9 @@
 
     // ══════════════════════════════════════════════
     // MAYA TIMER
-    // For simultaneous moves, favour tracklist sounds
     // ══════════════════════════════════════════════
     function startMayaTimer(partnerIdx){
         dismissReminder();
-        /* Clean up fear btn if still present */
         const fb=document.getElementById('maya-fear-btn');if(fb)fb.remove();
         const overlay=document.getElementById('overlay-event');
         const desc=document.getElementById('event-desc');
@@ -1931,21 +1975,14 @@
                 desc.innerHTML=`TIME'S UP.<br><br>Did you both hold eye contact?`;
                 pBtn.style.display='inline-block';pBtn.innerText="YES (BOTH +2)";
                 pBtn.onclick=()=>{
-                    /* Favour tracklist sound for the space landed on after simultaneous moves */
-                    const curPos=players[turnIdx].pos;
-                    const partPos=players[partnerIdx].pos;
-                    const curIsTrack=TRACKLIST_INDICES.includes(curPos);
-                    const partIsTrack=TRACKLIST_INDICES.includes(partPos);
-                    /* Move both — one slide per player */
+                    const curPos=players[turnIdx].pos;const partPos=players[partnerIdx].pos;
+                    const curIsTrack=TRACKLIST_INDICES.includes(curPos);const partIsTrack=TRACKLIST_INDICES.includes(partPos);
                     playSlide();players[turnIdx].pos=Math.min(59,players[turnIdx].pos+2);
                     playSlide();players[partnerIdx].pos=Math.min(59,players[partnerIdx].pos+2);
                     updatePositions();
-                    /* Play one sound: prefer tracklist space sound, else active player's space sound */
                     const landPos=curIsTrack?curPos:(partIsTrack?partPos:curPos);
-                    const landR=rules[landPos];
-                    if(landR&&landR.sound)playSpaceSfx(landR.sound);
-                    checkPassiveGrammys(players[turnIdx].name);
-                    overlay.style.display='none';endTurn();
+                    const landR=rules[landPos];if(landR&&landR.sound)playSpaceSfx(landR.sound);
+                    checkPassiveGrammys(players[turnIdx].name);overlay.style.display='none';endTurn();
                 };
                 sBtn.style.display='inline-block';sBtn.innerText="NO (BOTH -1)";
                 sBtn.onclick=()=>{
@@ -1959,7 +1996,7 @@
     }
 
     // ══════════════════════════════════════════════
-    // PLAYER CLICK — swap/maya, board piece or pass card
+    // PLAYER CLICK
     // ══════════════════════════════════════════════
     function handlePlayerClick(idx){
         if(idx===turnIdx)return;
@@ -1968,13 +2005,10 @@
             document.querySelectorAll('.player').forEach(el=>{el.classList.remove('swap-target');el.style.pointerEvents='none';});
             const p=players[turnIdx],target=players[idx];
             const oldPos=p.pos;
-            /* Slide sounds for swap */
             playSlide();p.pos=target.pos;
             playSlide();target.pos=oldPos;
-            /* If either player lands on Grammy space via swap, award accolade via sidebar */
             if(p.pos===GRAMMY_SPACE)awardSwapGrammy(turnIdx);
             if(target.pos===GRAMMY_SPACE)awardSwapGrammy(idx);
-            /* Tellus: don't replay the space sound of the space you were just swapped to */
             checkPassiveGrammys(p.name);updatePositions();renderPasses();endTurn();
         } else if(isMayaPartner){
             dismissReminder();isMayaPartner=false;
@@ -1995,11 +2029,11 @@
         document.getElementById('side-desc').innerText=desc;
         if(!subtext||!subtext.startsWith('Space'))document.getElementById('side-bucket').innerHTML='';
         sb.classList.add('active');
-        /* Reset onclick each time in case video handler was installed */
         sb.onclick=closeSidebar;
         sidebarTimer=setTimeout(()=>{sb.classList.remove('active','mystery-sidebar');},8000);
     }
     function closeSidebar(){
+        stopActiveLoreVid();
         const sb=document.getElementById('rule-sidebar');
         sb.classList.remove('active','mystery-sidebar');
         if(sidebarTimer)clearTimeout(sidebarTimer);
@@ -2009,7 +2043,6 @@
     // STATUS POPUP
     // ══════════════════════════════════════════════
     function showStatusPopup(t,d,b1,c1,b2,c2){
-        /* Clean up any leftover Maya fear button */
         const fb=document.getElementById('maya-fear-btn');if(fb)fb.remove();
         const modal=document.getElementById('overlay-event'),popupEl=document.getElementById('main-popup');
         popupEl.style.borderColor='#444';popupEl.style.boxShadow='none';
@@ -2074,7 +2107,6 @@
     // ══════════════════════════════════════════════
     function endTurn(){
         dismissReminder();
-        /* Clean up Maya fear btn */
         const fb=document.getElementById('maya-fear-btn');if(fb)fb.remove();
         isSwapping=false;isMayaPartner=false;
         document.querySelectorAll('.player').forEach(el=>{el.classList.remove('swap-target');el.style.pointerEvents='none';});
