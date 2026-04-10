@@ -754,9 +754,8 @@
     // ══════════════════════════════════════════════
     // AUDIO
     // ══════════════════════════════════════════════
-    let audioCtx=null, masterGain=null, audioEnabled=true;
+ let audioCtx=null, masterGain=null, audioEnabled=true;
     const activeSources=new Set();
-    let lastSpaceSrc=null, lastSpaceGain=null;
 
     function getAudioCtx(){
         if(!audioCtx){
@@ -780,27 +779,8 @@
         }).catch(()=>{});
     }
 
-    /* Space sound — crossfades previous space sound out over 0.5s */
-    function playSpaceSfx(url){
-        if(!audioEnabled)return;
-        const ctx=getAudioCtx();
-        if(ctx.state==='suspended')ctx.resume();
-        if(lastSpaceSrc&&lastSpaceGain){
-            try{
-                lastSpaceGain.gain.setValueAtTime(lastSpaceGain.gain.value,ctx.currentTime);
-                lastSpaceGain.gain.linearRampToValueAtTime(0,ctx.currentTime+0.5);
-                setTimeout(()=>{try{lastSpaceSrc.stop();}catch(e){}},600);
-            }catch(e){}
-            lastSpaceSrc=null;lastSpaceGain=null;
-        }
-        fetch(url).then(r=>r.arrayBuffer()).then(buf=>ctx.decodeAudioData(buf)).then(decoded=>{
-            const gainNode=ctx.createGain();gainNode.gain.value=1;gainNode.connect(masterGain);
-            const src=ctx.createBufferSource();src.buffer=decoded;src.connect(gainNode);
-            activeSources.add(src);
-            src.onended=()=>{activeSources.delete(src);if(lastSpaceSrc===src){lastSpaceSrc=null;lastSpaceGain=null;}};
-            src.start();lastSpaceSrc=src;lastSpaceGain=gainNode;
-        }).catch(()=>{});
-    }
+ /* Space sound — all sounds overlap freely, no crossfade */
+    function playSpaceSfx(url){ playSfx(url); }
 
     /* coin.wav at half volume */
     function playCoinSfx(){playSfx('coin.wav',0.5);}
@@ -1149,7 +1129,7 @@
             /* Unmuted by default, half volume, fade in/out over 2s */
             const vid=document.createElement('video');
             vid.src=item.file;vid.className='bucket-video';
-            vid.autoplay=true;vid.loop=true;vid.muted=false;vid.volume=0;vid.playsInline=true;
+            vid.autoplay=true;vid.loop=false;vid.muted=false;vid.volume=0;vid.playsInline=true;
             vid.setAttribute('playsinline','');
             container.appendChild(vid);
             vid.play().then(()=>{fadeVideoAudioIn(vid);}).catch(()=>{vid.muted=true;vid.play().catch(()=>{});});
