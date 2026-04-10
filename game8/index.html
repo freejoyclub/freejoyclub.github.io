@@ -72,19 +72,26 @@
         /* Tape shine — travels from start to end of SVG tape path */
         @keyframes tapeShine     { 0%{stroke-dashoffset:2000;}100%{stroke-dashoffset:-2000;} }
 
-        /* ── PAGE SHELL ── */
+      /* ── PAGE SHELL ── */
         html,body { margin:0; padding:0; width:100%; height:100%; overflow:hidden; }
         body {
-            /* wood-bg.jpg primary, woodFade color fallback */
+            background:none;
+            animation:woodFade 20s ease-in-out infinite;
+            color:white; font-family:'Courier New',monospace;
+            display:flex; flex-direction:column;
+            height:100vh; height:100dvh; overflow:hidden;
+            position:relative;
+        }
+        body::before {
+            content:''; position:fixed; inset:0; z-index:-1;
             background-image: url('wood-bg.jpg'),
                               repeating-linear-gradient(90deg,transparent,transparent 80px,rgba(0,0,0,0.05) 80px,rgba(0,0,0,0.05) 82px);
             background-size: cover, auto;
             background-position: center, 0 0;
             background-repeat: no-repeat, repeat;
-            animation:woodFade 20s ease-in-out infinite;
-            color:white; font-family:'Courier New',monospace;
-            display:flex; flex-direction:column;
-            height:100vh; height:100dvh; overflow:hidden;
+            filter: blur(3px);
+            /* Scale up slightly so blur doesn't leave transparent edges */
+            transform: scale(1.04);
         }
 
         /* ── TOP UI BAR ── */
