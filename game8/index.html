@@ -1133,18 +1133,20 @@
             const img=document.createElement('img');
             img.src=item.file;img.className='bucket-img';img.alt='Mystery drop';
             container.appendChild(img);
-        } else if(item.type==='video'){
-            /* Unmuted by default, half volume, fade in/out over 2s */
+} else if(item.type==='video'){
             const vid=document.createElement('video');
             vid.src=item.file;vid.className='bucket-video';
             vid.autoplay=true;vid.loop=false;vid.muted=false;vid.volume=0;vid.playsInline=true;
             vid.setAttribute('playsinline','');
             container.appendChild(vid);
-            vid.play().then(()=>{fadeVideoAudioIn(vid);}).catch(()=>{vid.muted=true;vid.play().catch(()=>{});});
-            /* Fade out audio when sidebar closes */
+            vid.play().then(()=>fadeVideoAudioIn(vid)).catch(()=>{vid.muted=true;vid.play().catch(()=>{});});
+            /* Stop audio when video ends naturally */
+            vid.addEventListener('ended',()=>fadeVideoAudioOut(vid,true),{once:true});
+            /* Stop audio when sidebar is closed manually */
             const sb=document.getElementById('rule-sidebar');
             const origClose=sb.onclick;
-            sb.onclick=(e)=>{fadeVideoAudioOut(vid,true);if(origClose)origClose(e);closeSidebar();};
+            sb.onclick=(e)=>{fadeVideoAudioOut(vid,true);sb.onclick=origClose;if(origClose)origClose(e);};
+        }
         } else if(item.type==='link'||item.type==='download'){
             const card=document.createElement('div');card.className='bucket-link-card';
             const lbl=document.createElement('div');lbl.className='bucket-link-label';lbl.innerText=item.label;card.appendChild(lbl);
@@ -1649,7 +1651,27 @@
             const sb=document.getElementById('rule-sidebar');
             sb.classList.add('mystery-sidebar');
             showSidebar('Mystery Lore Drop','','var(--mystery-glow)',`Space ${p.pos}`);
-            await new Promise(r=>setTimeout(r,500));
+            /* For videos: wait for duration to be known, then timeout = full video length.
+               For images/other: 500ms then end turn as before. */
+            const bucketVid=document.getElementById('side-bucket').querySelector('video');
+            if(bucketVid){
+                await new Promise(res=>{
+                    const onEnd=()=>{fadeVideoAudioOut(bucketVid,true);res();};
+                    bucketVid.addEventListener('ended',onEnd,{once:true});
+                    /* Safety cap: if duration unknown or very long, cap at 90s */
+                    bucketVid.addEventListener('loadedmetadata',()=>{
+                        const cap=Math.min((bucketVid.duration||30)*1000, 90000);
+                        setTimeout(()=>{bucketVid.removeEventListener('ended',onEnd);fadeVideoAudioOut(bucketVid,true);res();},cap);
+                    },{once:true});
+                    /* If metadata already loaded */
+                    if(bucketVid.readyState>=1){
+                        const cap=Math.min((bucketVid.duration||30)*1000, 90000);
+                        setTimeout(()=>{bucketVid.removeEventListener('ended',onEnd);fadeVideoAudioOut(bucketVid,true);res();},cap);
+                    }
+                });
+            } else {
+                await new Promise(r=>setTimeout(r,500));
+            }
             endTurn();return;
         }
         await new Promise(r=>setTimeout(r,750));
