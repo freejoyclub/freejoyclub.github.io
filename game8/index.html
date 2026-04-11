@@ -2126,7 +2126,7 @@
                 fpBtn2.innerText='Read the Fine Print ⬇️';
                 const fp2body=document.createElement('div');
                 fp2body.style.cssText='display:none;margin-top:12px;padding:10px;background:rgba(0,0,0,0.6);border-radius:8px;border:1px solid rgba(255,255,255,0.3);font-family:Courier New,monospace;font-size:0.85rem;color:rgba(255,255,255,0.7);text-align:left;line-height:1.6;';
-                fp2body.innerText='Every 6 you roll becomes -2 for the rest of the game. Signing makes you a SELLOUT. You will pass the Gatekeeper freely as a signed artist.';
+                fp2body.innerText='Remedy Contract: <br> *Every 6 you roll becomes -2 for the rest of the game* <br> The label owns your biggest singles. <br> You may pass the Gatekeeper freely as a signed artist. <br> Heads up: Fans may label you a Sellout!';
                 fpBtn2.onclick=()=>{const open=fp2body.style.display==='block';fp2body.style.display=open?'none':'block';fpBtn2.innerText=open?'Read the Fine Print ⬇️':'Hide Fine Print ⬆️';};
                 remedyDesc.appendChild(fpBtn2);remedyDesc.appendChild(fp2body);
                 desc.innerHTML='';desc.appendChild(remedyDesc);
