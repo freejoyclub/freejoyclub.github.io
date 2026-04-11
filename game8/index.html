@@ -1,18 +1,23 @@
 <!DOCTYPE html><html lang="en"><head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Fearjoy - v23</title>
+    <title>Fearjoy - v24</title>
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
     <style>
+        * { -webkit-tap-highlight-color:transparent; -webkit-touch-callout:none; outline:none; }
         @font-face { font-family:'KCStrikerSans'; src:url('KCStrikerSans.otf') format('opentype'); font-weight:normal; font-style:normal; }
 
         :root {
             --wood-dark:#8b7355; --wood-mid:#b39b7d; --tape-white:#fdfdfd;
             --joy-glow:#00ff88; --fear-glow:#ff4444; --gold:#ffd700;
-            --ui-bg:rgba(0,0,0,0.98); --vinyl:url('vinyl.png');
+            --ui-bg:rgba(0,0,0,0.98); --vinyl:#111111;
             --blue-glow:#00ccff; --teal-glow:#00ddcc;
             --pink-glow:#ff00ff; --mystery-glow:#dd99ff; --pitch-orange:#ff8800;
+            --roll-color:#00ff88; /* updated each turn to current player color */
             --bar-h:clamp(52px,10vh,110px);
-            --space-size:clamp(24px,5.8vw,85px);
+            --space-size:clamp(24px,5.8vw,min(8.5vh,85px));
             --space-font:clamp(0.28rem,0.75vw,0.75rem);
             --space-emoji:clamp(0.5rem,1.1vw,1.4rem);
             --board-gap:clamp(2px,0.85vw,18px);
@@ -28,28 +33,26 @@
         @keyframes turnPulse     { 0%{filter:drop-shadow(0 0 5px var(--p-color));transform:translate(0,0) scale(1);}50%{filter:drop-shadow(0 0 20px var(--p-color));transform:translate(0,-4px) scale(1.15);}100%{filter:drop-shadow(0 0 5px var(--p-color));transform:translate(0,0) scale(1);} }
         @keyframes winPulse      { 0%{transform:scale(1);filter:drop-shadow(0 0 5px var(--p-color));}50%{transform:scale(1.1);filter:drop-shadow(0 0 20px var(--p-color));}100%{transform:scale(1);filter:drop-shadow(0 0 5px var(--p-color));} }
         @keyframes flipping      { 0%{transform:rotateY(0);}100%{transform:rotateY(1800deg);} }
-        @keyframes rollPulse     { 0%,100%{box-shadow:0 0 8px var(--joy-glow),0 0 16px var(--joy-glow);}50%{box-shadow:0 0 18px var(--joy-glow),0 0 36px var(--joy-glow);} }
+        /* Roll button pulse uses current player color via CSS var */
+        @keyframes rollPulse     { 0%,100%{box-shadow:0 0 8px var(--roll-color,#00ff88),0 0 16px var(--roll-color,#00ff88);}50%{box-shadow:0 0 18px var(--roll-color,#00ff88),0 0 36px var(--roll-color,#00ff88);} }
+        @keyframes rollHoverPulse{ 0%,100%{box-shadow:0 0 14px var(--roll-color,#00ff88),0 0 28px var(--roll-color,#00ff88);}50%{box-shadow:0 0 22px var(--roll-color,#00ff88),0 0 44px var(--roll-color,#00ff88),0 0 8px rgba(255,255,255,0.3);} }
+        @keyframes rollBtnPress  { 0%{transform:scale(1);box-shadow:none;}40%{transform:scale(0.96);box-shadow:inset 0 2px 6px rgba(0,0,0,0.6);}100%{transform:scale(1);box-shadow:none;} }
         @keyframes shimmer       { 0%{background-position:-200% center;}100%{background-position:200% center;} }
-        @keyframes rollBtnPress  { 0%{transform:scale(1);}30%{transform:scale(0.93);}60%{transform:scale(1.06);}100%{transform:scale(1);} }
-        @keyframes rollHoverPulse{ 0%,100%{box-shadow:0 0 14px var(--joy-glow),0 0 28px var(--joy-glow);}50%{box-shadow:0 0 22px var(--joy-glow),0 0 44px var(--joy-glow),0 0 8px rgba(255,255,255,0.3);} }
         @keyframes diceGlow      { 0%,100%{box-shadow:0 0 6px rgba(255,255,255,0.4),inset 0 0 8px rgba(255,255,255,0.08);}50%{box-shadow:0 0 14px rgba(255,255,255,0.6),inset 0 0 14px rgba(255,255,255,0.12);} }
         @keyframes redSparkle    { 0%{box-shadow:0 0 12px var(--fear-glow);}100%{box-shadow:0 0 60px var(--fear-glow),0 0 30px #ff8888;background:#300;color:white;} }
         @keyframes tealSparkle   { 0%{box-shadow:0 0 12px var(--teal-glow);}100%{box-shadow:0 0 60px var(--teal-glow),0 0 30px #88ffee;background:#003330;color:white;} }
         @keyframes contractFlash { 0%,100%{box-shadow:0 0 8px var(--fear-glow);}50%{box-shadow:0 0 40px var(--fear-glow),0 0 80px #ff0000;background:#400;color:#fff;} }
-        /* Pass cards — slow 3D float+rotate */
         @keyframes passFloatA    { 0%{transform:rotate(-2deg) rotateX(1deg) translateY(0);}33%{transform:rotate(-1.5deg) rotateX(-0.5deg) translateY(-3px);}66%{transform:rotate(-2.5deg) rotateX(0.8deg) translateY(-1px);}100%{transform:rotate(-2deg) rotateX(1deg) translateY(0);} }
         @keyframes passFloatB    { 0%{transform:rotate(1.5deg) rotateX(-0.5deg) translateY(0);}33%{transform:rotate(2deg) rotateX(1deg) translateY(-4px);}66%{transform:rotate(1deg) rotateX(-0.8deg) translateY(-2px);}100%{transform:rotate(1.5deg) rotateX(-0.5deg) translateY(0);} }
         @keyframes passFloatC    { 0%{transform:rotate(-1deg) rotateX(0.5deg) translateY(0);}33%{transform:rotate(-0.5deg) rotateX(-1deg) translateY(-3px);}66%{transform:rotate(-1.5deg) rotateX(0.3deg) translateY(-1px);}100%{transform:rotate(-1deg) rotateX(0.5deg) translateY(0);} }
-        /* Popup card — slow 3D float */
         @keyframes popupFloat    { 0%{transform:translateY(0) rotateX(0deg) rotateZ(0deg);}25%{transform:translateY(-4px) rotateX(0.4deg) rotateZ(0.2deg);}50%{transform:translateY(-2px) rotateX(-0.3deg) rotateZ(-0.15deg);}75%{transform:translateY(-5px) rotateX(0.2deg) rotateZ(0.1deg);}100%{transform:translateY(0) rotateX(0deg) rotateZ(0deg);} }
-        /* Popup shine — more prominent */
         @keyframes popupShine    { 0%{background-position:-300% center;opacity:0;}40%{opacity:1;}60%{opacity:1;}100%{background-position:300% center;opacity:0;} }
         @keyframes menuBloom     { 0%{opacity:0;transform:scale(0.7);}100%{opacity:1;transform:scale(1);} }
-        @keyframes knobFlicker   { 0%,100%{box-shadow:0 0 6px #ff8800,0 0 2px #ff4400;border-color:#ff6600;}50%{box-shadow:0 0 14px #ff6600,0 0 4px #ff8800;border-color:#ff8800;} }
         @keyframes mysteryPulse  { 0%,100%{box-shadow:0 0 8px var(--mystery-glow);}50%{box-shadow:0 0 22px var(--mystery-glow),0 0 44px var(--mystery-glow);} }
         @keyframes passNotify    { 0%,100%{box-shadow:0 0 5px var(--pitch-orange);}50%{box-shadow:0 0 20px var(--pitch-orange),0 0 40px var(--pitch-orange);} }
         @keyframes vinylSpin     { 0%{transform:scale(1.15) rotate(0deg);animation-timing-function:ease-in;}30%{transform:scale(1.15) rotate(540deg);animation-timing-function:linear;}70%{transform:scale(1.15) rotate(1440deg);animation-timing-function:ease-out;}100%{transform:scale(1.15) rotate(1800deg);} }
         @keyframes vinylWiggle   { 0%,100%{transform:scale(1.15) rotate(0deg);}20%{transform:scale(1.15) rotate(-3.5deg);}50%{transform:scale(1.15) rotate(3deg);}75%{transform:scale(1.15) rotate(-2deg);} }
+        @keyframes reelSpin      { from{transform:scale(1.15) rotate(0deg);}to{transform:scale(1.15) rotate(360deg);} }
         @keyframes spaceLand     { 0%{box-shadow:0 0 0px var(--land-color,white);}40%{box-shadow:0 0 30px var(--land-color,white),0 0 60px var(--land-color,white);}100%{box-shadow:0 0 0px var(--land-color,white);} }
         @keyframes diceRiseOut   { 0%{opacity:1;transform:translate(0,0) scale(1);}100%{opacity:0;transform:translate(0,-60px) scale(0.5);} }
         @keyframes diceFallIn    { 0%{opacity:0;transform:translate(0,-80px) scale(0.4);}100%{opacity:1;transform:translate(0,0) scale(1);} }
@@ -62,15 +65,13 @@
         @keyframes progressPulse { 0%,100%{opacity:0.7;}50%{opacity:1;} }
         @keyframes bubblePop     { 0%{transform:scale(0);}70%{transform:scale(1.2);}100%{transform:scale(1);} }
         @keyframes phoneWiggle   { 0%,100%{transform:rotate(0deg);}20%{transform:rotate(-15deg);}40%{transform:rotate(15deg);}60%{transform:rotate(-10deg);}80%{transform:rotate(10deg);} }
-        /* Tape shine — slower, more random feel via cubic-bezier */
-        @keyframes tapeShine     { 0%{stroke-dashoffset:5000;opacity:0;}10%{opacity:1;}80%{opacity:0.8;}100%{stroke-dashoffset:-5000;opacity:0;} }
-        /* Lore sidebar peek — slides almost all the way off right, tab lingers */
+        /* Tape shine — slow, soft, allowed to bleed beyond stroke */
+        @keyframes tapeShine     { 0%{stroke-dashoffset:5000;opacity:0;}8%{opacity:0.6;}85%{opacity:0.45;}100%{stroke-dashoffset:-5000;opacity:0;} }
         @keyframes lorePeekOut   { 0%{right:10px;}100%{right:calc(-100% + 18px);} }
         @keyframes lorePeekIn    { 0%{right:calc(-100% + 18px);}100%{right:10px;} }
-        /* VU meter needle */
-        @keyframes vuIdle        { 0%,100%{transform:rotate(-45deg);}50%{transform:rotate(-40deg);} }
-        /* Bar shine */
         @keyframes barShine      { 0%{background-position:-400% center;}100%{background-position:400% center;} }
+        /* VU needle bounce animation during roll */
+        @keyframes vuBounce      { 0%{transform:rotate(-45deg);}25%{transform:rotate(20deg);}50%{transform:rotate(-30deg);}75%{transform:rotate(35deg);}100%{transform:rotate(-45deg);} }
 
         /* ── PAGE SHELL ── */
         html,body { margin:0; padding:0; width:100%; height:100%; overflow:hidden; }
@@ -82,135 +83,130 @@
         }
         body::before {
             content:''; position:fixed; inset:0; z-index:-1;
-            background-image:url('wood-bg.jpg'),
+            background-image:url('wood-bg.jpg?v=24'),
                 repeating-linear-gradient(90deg,transparent,transparent 80px,rgba(0,0,0,0.05) 80px,rgba(0,0,0,0.05) 82px);
             background-size:cover,auto; background-position:center,0 0;
             background-repeat:no-repeat,repeat;
-            filter:blur(3px); transform:scale(1.04);
+            filter:blur(4px); transform:scale(1.05);
         }
 
         /* ── MAIN AREA (board + passes) — ORDER: board first, bar at bottom ── */
         #main-area { flex:1; display:flex; flex-direction:row; min-height:0; overflow:hidden; position:relative; }
 
-        /* ── BOTTOM UI BAR — opaque 1176-style rack compressor ── */
+        /* ── BOTTOM UI BAR — opaque near-black 1176 rack compressor ── */
         #ui-layer {
             display:flex; align-items:center; justify-content:center;
-            padding:0 clamp(32px,4vw,56px);
+            padding:0 clamp(28px,3.5vw,50px);
             height:var(--bar-h); min-height:var(--bar-h); max-height:var(--bar-h);
             border-radius:12px 12px 0 0;
-            border:1px solid rgba(255,255,255,0.12); border-bottom:none;
+            border:1px solid rgba(255,255,255,0.1); border-bottom:none;
             width:100%; box-sizing:border-box;
             z-index:20; position:relative; flex-shrink:0;
-            /* Fully opaque dark metallic */
-            background:linear-gradient(180deg,
-                #2a2a2a 0%, #1e1e1e 15%, #252525 30%,
-                #1a1a1a 50%, #222 70%, #1c1c1c 85%, #181818 100%);
-            box-shadow:0 -2px 16px rgba(0,0,0,0.8),inset 0 1px 0 rgba(255,255,255,0.07);
+            background:linear-gradient(180deg,#111 0%,#0a0a0a 40%,#080808 70%,#060606 100%);
+            box-shadow:0 -2px 16px rgba(0,0,0,0.9),inset 0 1px 0 rgba(255,255,255,0.05);
             overflow:visible;
         }
-        /* Metallic shine sweep */
         #ui-layer::after {
             content:''; position:absolute; inset:0; pointer-events:none;
             border-radius:inherit; overflow:hidden;
-            background:linear-gradient(105deg,transparent 30%,rgba(255,255,255,0.03) 50%,transparent 65%);
-            background-size:400% 100%;
-            animation:barShine 8s ease-in-out infinite;
+            background:linear-gradient(105deg,transparent 30%,rgba(255,255,255,0.025) 50%,transparent 65%);
+            background-size:400% 100%; animation:barShine 8s ease-in-out infinite;
         }
-    /* Four corner rack screws — phillips head SVG, small cross */
+        /* Four corner dome rack screws — pure black cross, darker dome */
         #ui-layer::before {
             content:''; position:absolute; inset:0; pointer-events:none;
             border-radius:inherit;
             background-image:
-                url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16'%3E%3Ccircle cx='8' cy='8' r='6' fill='%23444' stroke='%23666' stroke-width='1'/%3E%3Cg stroke='%23222' stroke-width='1.2' stroke-linecap='round' transform='rotate(15,8,8)'%3E%3Cline x1='8' y1='4.5' x2='8' y2='11.5'/%3E%3Cline x1='4.5' y1='8' x2='11.5' y2='8'/%3E%3C/g%3E%3C/svg%3E"),
-                url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16'%3E%3Ccircle cx='8' cy='8' r='6' fill='%23444' stroke='%23666' stroke-width='1'/%3E%3Cg stroke='%23222' stroke-width='1.2' stroke-linecap='round' transform='rotate(40,8,8)'%3E%3Cline x1='8' y1='4.5' x2='8' y2='11.5'/%3E%3Cline x1='4.5' y1='8' x2='11.5' y2='8'/%3E%3C/g%3E%3C/svg%3E"),
-                url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16'%3E%3Ccircle cx='8' cy='8' r='6' fill='%23444' stroke='%23666' stroke-width='1'/%3E%3Cg stroke='%23222' stroke-width='1.2' stroke-linecap='round' transform='rotate(65,8,8)'%3E%3Cline x1='8' y1='4.5' x2='8' y2='11.5'/%3E%3Cline x1='4.5' y1='8' x2='11.5' y2='8'/%3E%3C/g%3E%3C/svg%3E"),
-                url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16'%3E%3Ccircle cx='8' cy='8' r='6' fill='%23444' stroke='%23666' stroke-width='1'/%3E%3Cg stroke='%23222' stroke-width='1.2' stroke-linecap='round' transform='rotate(10,8,8)'%3E%3Cline x1='8' y1='4.5' x2='8' y2='11.5'/%3E%3Cline x1='4.5' y1='8' x2='11.5' y2='8'/%3E%3C/g%3E%3C/svg%3E");
-            background-repeat: no-repeat, no-repeat, no-repeat, no-repeat;
-            background-position:
-                10px 15%,
-                10px 85%,
-                calc(100% - 10px) 15%,
-                calc(100% - 10px) 85%;
-            background-size: 16px 16px, 16px 16px, 16px 16px, 16px 16px;
+                url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14'%3E%3Ccircle cx='7' cy='7' r='5.5' fill='url(%23d1)'/%3E%3Cdefs%3E%3CradialGradient id='d1' cx='40%25' cy='35%25'%3E%3Cstop offset='0' stop-color='%23555'/%3E%3Cstop offset='60%25' stop-color='%23222'/%3E%3Cstop offset='100%25' stop-color='%23000'/%3E%3C/radialGradient%3E%3C/defs%3E%3Cg stroke='%23000' stroke-width='1' stroke-linecap='round' transform='rotate(15,7,7)'%3E%3Cline x1='7' y1='3.5' x2='7' y2='10.5'/%3E%3Cline x1='3.5' y1='7' x2='10.5' y2='7'/%3E%3C/g%3E%3C/svg%3E"),
+                url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14'%3E%3Ccircle cx='7' cy='7' r='5.5' fill='url(%23d2)'/%3E%3Cdefs%3E%3CradialGradient id='d2' cx='40%25' cy='35%25'%3E%3Cstop offset='0' stop-color='%23555'/%3E%3Cstop offset='60%25' stop-color='%23222'/%3E%3Cstop offset='100%25' stop-color='%23000'/%3E%3C/radialGradient%3E%3C/defs%3E%3Cg stroke='%23000' stroke-width='1' stroke-linecap='round' transform='rotate(40,7,7)'%3E%3Cline x1='7' y1='3.5' x2='7' y2='10.5'/%3E%3Cline x1='3.5' y1='7' x2='10.5' y2='7'/%3E%3C/g%3E%3C/svg%3E"),
+                url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14'%3E%3Ccircle cx='7' cy='7' r='5.5' fill='url(%23d3)'/%3E%3Cdefs%3E%3CradialGradient id='d3' cx='40%25' cy='35%25'%3E%3Cstop offset='0' stop-color='%23555'/%3E%3Cstop offset='60%25' stop-color='%23222'/%3E%3Cstop offset='100%25' stop-color='%23000'/%3E%3C/radialGradient%3E%3C/defs%3E%3Cg stroke='%23000' stroke-width='1' stroke-linecap='round' transform='rotate(65,7,7)'%3E%3Cline x1='7' y1='3.5' x2='7' y2='10.5'/%3E%3Cline x1='3.5' y1='7' x2='10.5' y2='7'/%3E%3C/g%3E%3C/svg%3E"),
+                url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14'%3E%3Ccircle cx='7' cy='7' r='5.5' fill='url(%23d4)'/%3E%3Cdefs%3E%3CradialGradient id='d4' cx='40%25' cy='35%25'%3E%3Cstop offset='0' stop-color='%23555'/%3E%3Cstop offset='60%25' stop-color='%23222'/%3E%3Cstop offset='100%25' stop-color='%23000'/%3E%3C/radialGradient%3E%3C/defs%3E%3Cg stroke='%23000' stroke-width='1' stroke-linecap='round' transform='rotate(10,7,7)'%3E%3Cline x1='7' y1='3.5' x2='7' y2='10.5'/%3E%3Cline x1='3.5' y1='7' x2='10.5' y2='7'/%3E%3C/g%3E%3C/svg%3E");
+            background-repeat:no-repeat,no-repeat,no-repeat,no-repeat;
+            background-position:8px 12%,8px 88%,calc(100% - 8px) 12%,calc(100% - 8px) 88%;
+            background-size:14px 14px,14px 14px,14px 14px,14px 14px;
         }
-        
         #ui-layer-color-wash {
             position:absolute; inset:0; pointer-events:none;
             background:linear-gradient(90deg,var(--current-player-color,transparent) 0%,transparent 35%);
             opacity:0.08; transition:background 0.8s ease;
         }
-        #ui-center-cluster { display:flex; align-items:center; gap:clamp(8px,2vw,28px); position:relative; z-index:1; }
+        #ui-center-cluster { display:flex; align-items:center; gap:clamp(5px,1.5vw,22px); position:relative; z-index:1; flex-shrink:1; min-width:0; }
         #status-text {
-            font-size:clamp(0.9rem,2.8vw,2.2rem);
+            font-size:clamp(0.95rem,3vw,2.4rem);
             font-family:'KCStrikerSans','Courier New',monospace;
             text-transform:uppercase; line-height:1; white-space:nowrap;
-            min-width:clamp(80px,14vw,200px); text-align:right;
-            text-shadow:0 0 8px currentColor;
+            min-width:clamp(70px,12vw,180px); text-align:right;
+            text-shadow:0 0 8px currentColor; flex-shrink:1;
         }
 
-        /* ── VU METER — recessed glass viewport ── */
+        /* ── VU METER — amber glass, 6 notches ── */
         #vu-meter {
             display:flex; flex-direction:column; align-items:center; justify-content:center;
-            width:clamp(42px,5.5vw,72px); flex-shrink:0;
+            width:clamp(38px,5vw,66px); flex-shrink:2;
             position:relative; z-index:1;
         }
         #vu-arc {
-            width:clamp(38px,5vw,66px); height:clamp(26px,3.2vw,42px);
-            position:relative; overflow:hidden; border-radius:7px;
-            background:linear-gradient(180deg,rgba(35,28,5,0.95) 0%,rgba(18,14,2,0.99) 100%);
-            box-shadow:inset 0 0 10px rgba(255,200,60,0.4),inset 0 0 4px rgba(255,230,120,0.25),0 0 8px rgba(255,180,40,0.2);
+            width:clamp(34px,4.5vw,60px); height:clamp(28px,3.8vw,50px);
+            position:relative; overflow:hidden; border-radius:6px;
+            background:linear-gradient(180deg,#c47a00 0%,#a36200 40%,#7a4a00 100%);
             animation:vuGlow 2.5s ease-in-out infinite;
-            border:1px solid rgba(255,180,40,0.3);
+            border:1px solid rgba(255,180,40,0.4);
         }
         @keyframes vuGlow {
-            0%,100%{box-shadow:inset 0 0 10px rgba(255,200,60,0.4),inset 0 0 4px rgba(255,230,120,0.25),0 0 8px rgba(255,180,40,0.2);}
-            50%{box-shadow:inset 0 0 18px rgba(255,210,70,0.55),inset 0 0 6px rgba(255,240,130,0.35),0 0 14px rgba(255,190,50,0.3);}
+            0%,100%{box-shadow:inset 0 0 14px rgba(255,180,0,0.35),0 0 8px rgba(255,160,0,0.2);}
+            50%{box-shadow:inset 0 0 22px rgba(255,200,30,0.55),0 0 14px rgba(255,180,0,0.35);}
         }
         #vu-needle {
             position:absolute; bottom:2px; left:50%;
-            width:1px; height:clamp(18px,2.4vw,32px);
-            background:linear-gradient(to top,#4a0000 0%,#991100 55%,#bb2200 100%);
+            width:1px; height:clamp(19px,2.6vw,36px);
+            background:linear-gradient(to top,#2a0000 0%,#770000 55%,#aa1100 100%);
             border-radius:1px 1px 0 0;
             transform-origin:bottom center;
             transform:rotate(-45deg);
-            /* Direct settle only — no idle animation loop, no initial jump */
-            transition:transform 0.18s cubic-bezier(0.15,3,0.35,1);
+            transition:transform 0.2s cubic-bezier(0.15,3.5,0.3,1);
         }
-        /* Tick marks as absolute positioned divs via JS — ::before used for edge glow frame */
+        #vu-needle.rolling { animation:vuBounce 0.35s ease-in-out infinite; }
+        /* 6 black notch marks via repeated linear-gradient overlay */
         #vu-arc::before {
-            content:''; position:absolute; inset:0; pointer-events:none; border-radius:inherit;
+            content:''; position:absolute; bottom:0; left:0; right:0; top:0;
+            pointer-events:none;
             background:
-                linear-gradient(to bottom,rgba(255,200,80,0.12) 0%,transparent 30%,transparent 70%,rgba(255,200,80,0.08) 100%),
-                linear-gradient(to right,rgba(255,200,80,0.12) 0%,transparent 25%,transparent 75%,rgba(255,200,80,0.12) 100%);
+                linear-gradient(to right,transparent 13%,rgba(0,0,0,0.35) 13%,rgba(0,0,0,0.35) 14%,transparent 14%),
+                linear-gradient(to right,transparent 27%,rgba(0,0,0,0.35) 27%,rgba(0,0,0,0.35) 28%,transparent 28%),
+                linear-gradient(to right,transparent 41%,rgba(0,0,0,0.4) 41%,rgba(0,0,0,0.4) 42.5%,transparent 42.5%),
+                linear-gradient(to right,transparent 57%,rgba(0,0,0,0.35) 57%,rgba(0,0,0,0.35) 58%,transparent 58%),
+                linear-gradient(to right,transparent 71%,rgba(0,0,0,0.35) 71%,rgba(0,0,0,0.35) 72%,transparent 72%),
+                linear-gradient(to right,transparent 85%,rgba(0,0,0,0.35) 85%,rgba(0,0,0,0.35) 86%,transparent 86%);
         }
         #vu-arc::after { display:none; }
 
-        /* ── HAMBURGER KNOB — FIXED, above ALL overlays and modals ── */
+        /* ── NAV KNOB + MUTE — fixed above all, flex row, prefer shrink ── */
         #nav-knob {
             position:fixed;
-            right:clamp(28px,3.5vw,48px); /* inset from edge to avoid screw overlap */
+            right:clamp(6px,2vw,24px);
             bottom:calc(var(--bar-h)/2 - clamp(17px,2.25vw,26px));
-            z-index:999999; /* above .overlay z-index:2000 and everything else */
+            z-index:999999;
+            display:flex; align-items:center; gap:clamp(3px,0.5vw,6px);
+            flex-shrink:2;
         }
         #nav-knob-btn {
-            width:clamp(32px,4vw,46px); height:clamp(32px,4vw,46px);
-            border-radius:6px; background:#2a2a2a; border:1.5px solid #555;
+            width:clamp(28px,3.5vw,46px); height:clamp(26px,3.2vw,42px);
+            border-radius:6px; background:#1a1a1a; border:1.5px solid #444;
             cursor:pointer; display:flex; align-items:center; justify-content:center;
-            flex-direction:column; gap:4px; transition:all 0.25s ease;
-            padding:0; box-shadow:0 2px 6px rgba(0,0,0,0.5);
+            flex-direction:column; gap:3px; transition:all 0.15s ease;
+            padding:0; box-shadow:0 2px 5px rgba(0,0,0,0.6);
+            flex-shrink:2;
         }
-        #nav-knob-btn:hover { background:#333; border-color:rgba(255,255,255,0.4); box-shadow:0 0 12px rgba(255,255,255,0.2); }
-        .knob-line { width:45%; height:2px; background:rgba(255,255,255,0.7); border-radius:2px; pointer-events:none; }
+        #nav-knob-btn:hover { background:#252525; border-color:rgba(255,255,255,0.35); }
+        #nav-knob-btn:active { box-shadow:inset 0 2px 5px rgba(0,0,0,0.7); transform:scale(0.96); background:#111; }
+        .knob-line { width:45%; height:2px; background:rgba(255,255,255,0.65); border-radius:2px; pointer-events:none; }
         #nav-menu {
             display:none; flex-direction:column; gap:8px;
-            position:fixed;
-            bottom:calc(var(--bar-h) + 8px);
-            right:clamp(8px,2vw,16px);
-            background:rgba(18,18,18,0.98); border:1px solid #444; border-radius:14px;
+            position:fixed; bottom:calc(var(--bar-h) + 8px); right:clamp(6px,2vw,16px);
+            background:rgba(14,14,14,0.98); border:1px solid #333; border-radius:14px;
             padding:12px; min-width:220px;
-            box-shadow:0 -10px 40px rgba(0,0,0,0.8);
-            animation:menuBloom 0.2s ease forwards;
-            z-index:999999;
+            box-shadow:0 -10px 40px rgba(0,0,0,0.85);
+            animation:menuBloom 0.2s ease forwards; z-index:999999;
         }
         #nav-menu.open { display:flex; }
         .nav-menu-btn {
@@ -232,58 +228,59 @@
         .btn-home:hover       { border-color:var(--tape-white); box-shadow:0 0 12px rgba(255,255,255,0.4); }
         .btn-store:hover      { border-color:var(--pink-glow);  color:var(--pink-glow); box-shadow:0 0 12px var(--pink-glow); }
         .btn-album:hover      { border-color:var(--joy-glow);   color:var(--joy-glow);  box-shadow:0 0 12px var(--joy-glow); }
-        /* nav-knob is a flex row: mute + hamburger side by side */
-        #nav-knob { display:flex; align-items:center; gap:6px; }
-        /* Mute button — always on top, red glow */
+        /* Mute button */
         #mute-btn {
-            width:clamp(42px,5.5vw,64px); height:clamp(32px,4vw,46px);
-            border-radius:6px; background:#2a2a2a; border:1.5px solid #880000;
-            cursor:pointer; color:#cc2222; font-family:sans-serif;
-            font-size:clamp(0.5rem,0.8vw,0.72rem); font-weight:bold;
+            width:clamp(28px,3.8vw,52px); height:clamp(26px,3.2vw,42px);
+            border-radius:6px; background:#1a1a1a; border:1.5px solid #660000;
+            cursor:pointer; color:#bb1111; font-family:sans-serif;
+            font-size:clamp(0.42rem,0.7vw,0.65rem); font-weight:bold;
             letter-spacing:1px; text-transform:uppercase;
-            box-shadow:0 0 8px rgba(180,0,0,0.4);
+            box-shadow:0 0 6px rgba(160,0,0,0.35);
             transition:all 0.15s ease;
             display:flex; align-items:center; justify-content:center;
+            flex-shrink:2;
         }
-        #mute-btn:hover { box-shadow:0 0 14px rgba(220,0,0,0.6); }
+        #mute-btn:hover { box-shadow:0 0 12px rgba(200,0,0,0.5); }
+        #mute-btn:active { box-shadow:inset 0 2px 5px rgba(0,0,0,0.7); transform:scale(0.96); }
         #mute-btn.muted {
-            background:#aa0000; border-color:#ff2222; color:#000;
-            box-shadow:inset 0 2px 4px rgba(0,0,0,0.5),0 0 16px rgba(255,0,0,0.5);
+            background:#880000; border-color:#cc0000; color:#000;
+            box-shadow:inset 0 2px 4px rgba(0,0,0,0.6),0 0 14px rgba(220,0,0,0.45);
         }
 
-        /* ── ROLL BUTTON ── */
+        /* ── ROLL BUTTON — uses current player color via --roll-color ── */
         #roll-btn {
-            background:rgba(0,0,0,0.6); color:var(--joy-glow);
-            width:clamp(90px,16vw,200px); font-size:clamp(0.9rem,2vw,1.6rem);
+            background:rgba(0,0,0,0.65); color:var(--roll-color);
+            width:clamp(65px,13vw,180px); font-size:clamp(0.82rem,1.8vw,1.45rem);
             font-family:'KCStrikerSans','Courier New',monospace;
-            font-weight:bold; padding:clamp(7px,1.3vh,15px);
-            border:2px solid var(--joy-glow); border-radius:11px;
+            font-weight:bold; padding:clamp(6px,1.2vh,13px);
+            border:2px solid var(--roll-color); border-radius:11px;
             cursor:pointer; letter-spacing:3px;
             animation:rollPulse 2s ease-in-out infinite;
-            transition:all 0.2s ease; position:relative; overflow:hidden; flex-shrink:0;
+            transition:border-color 0.3s ease,color 0.3s ease;
+            position:relative; overflow:hidden; flex-shrink:1;
         }
         #roll-btn::after {
             content:''; position:absolute; inset:0;
-            background:linear-gradient(105deg,transparent 30%,rgba(0,255,136,0.35) 50%,rgba(255,255,255,0.15) 55%,transparent 65%);
+            background:linear-gradient(105deg,transparent 30%,rgba(255,255,255,0.18) 50%,rgba(255,255,255,0.08) 55%,transparent 65%);
             background-size:250% 100%; opacity:0; transition:opacity 0.2s ease;
         }
-        #roll-btn:hover { animation:rollHoverPulse 0.9s ease-in-out infinite; color:white; border-color:white; background:rgba(0,255,136,0.12); }
         #roll-btn:hover::after { opacity:1; animation:shimmer 0.6s ease forwards; }
-        #roll-btn:active { animation:rollBtnPress 0.25s ease forwards !important; }
+        #roll-btn:active { animation:rollBtnPress 0.2s ease forwards !important; }
         #roll-btn:disabled { opacity:0.35; animation:none; cursor:not-allowed; }
 
-        /* ── DICE SLOT ── */
+        /* ── DICE SLOT — smaller, prefer shrink ── */
         #dice-slot-right {
-            width:clamp(46px,6.3vw,84px); height:clamp(46px,6.3vw,84px);
-            position:relative; flex-shrink:0;
+            width:clamp(36px,5vw,66px); height:clamp(36px,5vw,66px);
+            position:relative; flex-shrink:2;
             display:flex; align-items:center; justify-content:center;
+            padding:3px;
         }
         #dice-box {
-            width:clamp(38px,5.5vw,72px); height:clamp(38px,5.5vw,72px);
+            width:clamp(28px,4vw,54px); height:clamp(28px,4vw,54px);
             background:rgba(0,0,0,0.75); color:white;
-            border:2px solid rgba(255,255,255,0.7); border-radius:12px;
+            border:2px solid rgba(255,255,255,0.65); border-radius:10px;
             display:flex; align-items:center; justify-content:center;
-            font-size:clamp(1.6rem,3.6vw,3.5rem); font-weight:900;
+            font-size:clamp(1.1rem,2.6vw,2.8rem); font-weight:700;
             font-family:'KCStrikerSans','Courier New',monospace;
             transition:opacity 0.35s ease; position:absolute;
             animation:diceGlow 3s ease-in-out infinite; cursor:pointer;
@@ -310,7 +307,7 @@
             justify-content:flex-start; align-items:center;
             gap:clamp(8px,1.4vh,18px);
             padding:clamp(12px,1.6vw,24px) clamp(12px,1.5vw,20px);
-            overflow:hidden; position:relative;
+            overflow:hidden; position:relative; background:transparent;
             -webkit-mask-image:linear-gradient(to bottom,transparent 0%,black 8%,black 92%,transparent 100%),
                                linear-gradient(to right,transparent 0%,black 8%,black 100%);
             -webkit-mask-composite:destination-in;
@@ -385,21 +382,25 @@
         #pass-expanded-backdrop { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.65); z-index:3000; align-items:center; justify-content:center; }
         #pass-expanded-backdrop.open { display:flex; }
         #pass-expanded-card {
-            background:linear-gradient(160deg,#1c1c1c 60%,#2e2e2e);
+            background:linear-gradient(160deg,#ede8dc 0%,#e2d9c4 55%,#d8ccb0 100%);
             border-radius:18px; border:2px solid var(--exp-color,#555);
             padding:clamp(18px,3vw,36px); width:min(340px,88vw); max-height:88vh; overflow-y:auto;
             box-shadow:0 0 60px var(--exp-color,#555);
             animation:passExpandIn 0.3s cubic-bezier(0.175,0.885,0.32,1.275) forwards;
             font-family:'Courier New',monospace; position:relative;
         }
-        #pass-expanded-card .exp-close { position:absolute; top:12px; right:16px; font-size:1.4rem; cursor:pointer; opacity:0.6; transition:opacity 0.2s; }
-        #pass-expanded-card .exp-close:hover { opacity:1; }
+        #pass-expanded-card .exp-close { position:absolute; top:12px; right:16px; font-size:1.4rem; cursor:pointer; opacity:0.5; color:#333; transition:opacity 0.2s; }
+        #pass-expanded-card .exp-close:hover { opacity:0.9; }
         .exp-avatar    { width:64px; height:64px; border-radius:50%; border:3px solid var(--exp-color,#555); background:#000; display:block; margin:0 auto 10px; }
-        .exp-name      { font-family:'KCStrikerSans','Courier New',monospace; font-size:clamp(1.4rem,4vw,2rem); color:var(--exp-color,white); letter-spacing:2px; text-transform:uppercase; margin:0 0 12px; text-align:center; }
-        .exp-section-label { font-size:0.6rem; letter-spacing:3px; color:rgba(255,255,255,0.35); text-transform:uppercase; margin:10px 0 4px; }
+        .exp-name      { font-family:'KCStrikerSans','Courier New',monospace; font-size:clamp(1.4rem,4vw,2rem); color:var(--exp-color,#333); filter:brightness(0.7) saturate(1.2); letter-spacing:2px; text-transform:uppercase; margin:0 0 12px; text-align:center; }
+        .exp-section-label { font-size:0.6rem; letter-spacing:3px; color:rgba(55,35,5,0.5); text-transform:uppercase; margin:10px 0 4px; }
         .exp-tags      { display:flex; flex-wrap:wrap; gap:6px; margin-bottom:8px; }
-        .exp-accolades { font-size:1.6rem; letter-spacing:4px; min-height:24px; }
-        .exp-pass-stripe { background:linear-gradient(90deg,var(--exp-color,#333) 0%,transparent 100%); opacity:0.2; height:4px; border-radius:2px; margin-top:16px; }
+        .exp-accolades { font-size:1.6rem; letter-spacing:4px; min-height:24px; color:rgba(0,0,0,0.75); }
+        .exp-pass-stripe { background:linear-gradient(90deg,var(--exp-color,#333) 0%,transparent 100%); height:4px; border-radius:2px; margin-top:16px; }
+        /* Pass stripe uses full bright color */
+        .pass-stripe   { background:linear-gradient(90deg,var(--p-color,#888) 0%,transparent 100%); height:clamp(2px,0.32vw,4px); border-radius:2px; margin-top:clamp(2px,0.3vw,5px); }
+        /* INDIE tag — shown when no sellout status */
+        .tag-indie     { background:#2a2a2a; color:rgba(255,255,255,0.85); }
         #pitch-btn {
             display:none; width:100%; margin-top:14px; padding:10px;
             background:transparent; border:2px solid var(--pitch-orange);
@@ -409,13 +410,12 @@
         }
         #pitch-btn:hover { background:var(--pitch-orange); color:black; box-shadow:0 0 16px var(--pitch-orange); transform:translateY(-2px); }
 
-        /* ── BOARD SCROLL ── */
+        /* ── BOARD SCROLL — fully transparent, no color overlay ── */
         #board-scroll {
             flex:1; display:flex; align-items:center; justify-content:center;
-            overflow:hidden; padding:clamp(6px,1vw,18px);
+            overflow:hidden; padding:clamp(4px,0.6vw,12px);
             box-sizing:border-box; min-height:0; min-width:0;
             z-index:5; position:relative;
-            background:radial-gradient(ellipse 90% 85% at center,rgba(160,120,70,0.55) 0%,rgba(140,100,55,0.35) 50%,transparent 75%);
         }
         #board-outer {
             display:flex; align-items:center; justify-content:center;
@@ -476,11 +476,22 @@
             background:none !important; cursor:default; font-family:'Courier New',monospace !important;
         }
         .true-blank:hover { transform:scale(0.82) !important; box-shadow:none; }
-        .tracklist-space { background:var(--vinyl) !important; border:3px double #666 !important; box-shadow:inset 0 0 15px #000; transform:scale(1.15); z-index:5; font-size:var(--space-font) !important; color:white !important; }
+        .tracklist-space {
+            background:url('vinyl.png?v=24') center/cover var(--vinyl) !important;
+            border:3px double #666 !important; box-shadow:inset 0 0 15px #000;
+            transform:scale(1.15); z-index:5; font-size:var(--space-font) !important; color:white !important;
+        }
         .tracklist-space:hover { transform:scale(1.22) !important; box-shadow:inset 0 0 15px #000,0 0 14px rgba(255,255,255,0.25) !important; }
         .tracklist-space.vinyl-spinning { animation:vinylSpin 3.2s ease forwards !important; transform-origin:center center !important; }
         .tracklist-space.vinyl-wiggle   { animation:vinylWiggle 0.9s ease-in-out !important; transform-origin:center center !important; }
-        .win-track  { background:var(--vinyl) !important; border:4px solid var(--blue-glow) !important; box-shadow:0 0 30px var(--blue-glow); transform:scale(1.4) !important; z-index:10 !important; }
+        /* Reel spaces (0 and 59) */
+        .reel-space {
+            background:url('reel1.png?v=24') center/cover rgba(0,0,0,0.5) !important;
+            border:3px solid rgba(255,255,255,0.4) !important;
+            transform:scale(1.15); z-index:5;
+        }
+        .reel-space.reel-spinning { animation:reelSpin 12s linear infinite !important; transform-origin:center center !important; }
+        .win-track  { background:url('reel1.png?v=24') center/cover rgba(0,0,0,0.5) !important; border:4px solid var(--blue-glow) !important; box-shadow:0 0 30px var(--blue-glow); transform:scale(1.4) !important; z-index:10 !important; }
         .joy-space  { border-color:var(--joy-glow)  !important; color:var(--joy-glow)  !important; }
         .fear-space { border-color:var(--fear-glow) !important; color:var(--fear-glow) !important; }
         .hybrid     { border-style:dotted; border-width:3px; border-color:white; }
@@ -547,17 +558,20 @@
         }
         .btn-fear:hover { background:rgba(255,68,68,0.15); transform:translateY(-2px); box-shadow:0 0 16px var(--fear-glow); }
 
-        /* Rule sidebar — lore peek behaviour handled in JS */
+        /* Rule sidebar — PERMANENT: always content-adaptive, never full-height */
         #rule-sidebar {
-            position:fixed; right:-400px; top:0; bottom:0;
+            position:fixed; right:-400px;
+            top:calc(var(--bar-h) + 8px);
             width:min(260px,78vw);
-            background:linear-gradient(160deg,rgba(8,8,8,0.88) 0%,rgba(28,28,28,0.88) 100%);
+            max-height:calc(100dvh - var(--bar-h) - 24px);
+            height:auto;
+            background:linear-gradient(160deg,rgba(8,8,8,0.92) 0%,rgba(28,28,28,0.92) 100%);
             backdrop-filter:blur(8px);
             padding:clamp(14px,2.2vw,26px);
             border-radius:20px 0 0 20px; border:2px solid var(--joy-glow); border-right:none;
             transition:right 0.55s cubic-bezier(0.175,0.885,0.32,1.275);
             z-index:200; box-shadow:-10px 0 40px rgba(0,0,0,0.6); cursor:pointer;
-            display:flex; flex-direction:column;
+            display:flex; flex-direction:column; overflow-y:auto;
         }
         #rule-sidebar.active { right:0; }
         /* Peek tab — visible when sidebar is peeked off-screen */
@@ -590,6 +604,27 @@
         .bucket-btn:hover { transform:translateY(-2px); box-shadow:0 0 16px var(--mystery-glow); }
         #coin { font-family:'KCStrikerSans','Courier New',monospace; }
         #coin.lost-tape-dice { border-radius:12px !important; background:rgba(0,0,0,0.75) !important; border:3px solid rgba(255,255,255,0.7) !important; color:white !important; }
+        /* Timer display — KCStrikerSans, large */
+        #timer-ui {
+            font-family:'KCStrikerSans','Courier New',monospace;
+            font-size:clamp(2.8rem,9vw,5.5rem);
+            font-weight:900; color:var(--joy-glow);
+            margin:16px 0; display:none; line-height:1;
+        }
+        .btn-nevermind {
+            display:inline-block; margin-top:10px; padding:8px 20px;
+            background:transparent; border:1px solid rgba(255,68,68,0.55);
+            color:rgba(255,68,68,0.7); font-family:'Courier New',monospace;
+            font-size:0.78rem; letter-spacing:1px; border-radius:6px;
+            cursor:pointer; transition:all 0.2s ease;
+        }
+        .btn-nevermind:hover { background:rgba(255,68,68,0.12); color:var(--fear-glow); border-color:var(--fear-glow); }
+        /* Credits line */
+        .credits-line {
+            font-family:'Courier New',monospace; font-size:0.62rem;
+            letter-spacing:2px; color:rgba(255,255,255,0.3);
+            text-align:center; margin-top:16px; text-transform:uppercase;
+        }
         .intro-header { font-size:clamp(1.6rem,5vw,3.5rem); color:var(--gold); animation:introGlow 2s ease-in-out infinite alternate; margin-bottom:16px; font-family:'KCStrikerSans','Courier New',monospace; letter-spacing:4px; }
 
         /* ── SETUP ── */
@@ -627,9 +662,13 @@
         /* ── RESPONSIVE ── */
         @media (max-width:900px),(orientation:portrait) {
             :root {
-                --space-size:clamp(20px,7.2vw,60px); --space-font:clamp(0.25rem,1.4vw,0.62rem);
-                --space-emoji:clamp(0.42rem,1.7vw,1rem); --board-gap:clamp(2px,1.1vw,9px);
-                --board-pad:clamp(3px,1.1vw,12px); --bar-h:clamp(48px,9vh,78px); --pass-w:100%;
+                --space-size:clamp(22px,7.8vw,70px);
+                --space-font:clamp(0.25rem,1.4vw,0.62rem);
+                --space-emoji:clamp(0.42rem,1.7vw,1rem);
+                --board-gap:clamp(2px,1.1vw,9px);
+                --board-pad:clamp(3px,1.1vw,12px);
+                --bar-h:clamp(48px,9vh,78px);
+                --pass-w:100%;
             }
             #main-area { flex-direction:column; }
             #pass-sidebar {
@@ -639,7 +678,6 @@
                 padding:clamp(4px,1vw,10px) clamp(8px,2vw,16px);
                 overflow-x:auto; overflow-y:visible;
                 order:2; gap:clamp(6px,2vw,14px);
-                /* Wider feather + more padding so glow doesn't clip */
                 -webkit-mask-image:linear-gradient(to right,transparent 0%,black 7%,black 93%,transparent 100%);
                 mask-image:linear-gradient(to right,transparent 0%,black 7%,black 93%,transparent 100%);
             }
@@ -647,9 +685,23 @@
             #board-outer { margin-left:0; }
             #lineup-label { writing-mode:horizontal-tb; margin-bottom:0; margin-right:8px; flex-shrink:0; font-size:clamp(0.7rem,2vw,0.95rem); letter-spacing:3px; }
             .access-pass { width:clamp(72px,22vw,115px); flex-shrink:0; }
-            #rule-sidebar { top:auto; bottom:0; height:auto; max-height:60vh; border-radius:20px 20px 0 0; border-bottom:none; border-right:2px solid var(--joy-glow); }
+            /* Portrait rule-sidebar — content-adaptive, slides up from bottom */
+            #rule-sidebar {
+                top:auto; bottom:calc(var(--bar-h) + 4px);
+                max-height:55vh; height:auto;
+                border-radius:20px 20px 0 0;
+                border-bottom:none; border-right:2px solid var(--joy-glow);
+                right:-100%; transition:right 0.55s cubic-bezier(0.175,0.885,0.32,1.275);
+            }
             #rule-sidebar.active { right:0; }
             #lore-peek-tab { left:50%; top:auto; bottom:calc(100% + 2px); transform:translateX(-50%) rotate(90deg); height:28px; width:60px; border-radius:10px 10px 0 0; }
+        }
+        /* Large screen — push space size up more aggressively */
+        @media (min-width:1400px) {
+            :root { --space-size:clamp(60px,5.5vw,110px); }
+        }
+        @media (min-width:1900px) {
+            :root { --space-size:clamp(80px,5.8vw,140px); }
         }
     </style>
 </head>
@@ -825,7 +877,7 @@
         {hex:'#ff00ff',name:'Magenta'},{hex:'#00ff88',name:'Mint'},
         {hex:'#ff4444',name:'Red'},{hex:'#ff8800',name:'Orange'},
     ];
-    const DEFAULT_COLORS=['#00ccff','#ffcc00','#ff00ff'];
+    const DEFAULT_COLORS=['#00ccff','#00ff88','#ff00ff'];
 
     const boardLayout=[
         "START","blank","blank","blank","DAYSPRING","blank","FEARJOY","blank","FIGMENT","JOY",
@@ -893,7 +945,9 @@
     let isInLoreDrop=false;
     /* layoutMode: 'landscape' (10×6) or 'portrait' (6×10) */
     let layoutMode='landscape';
-    let preloadDoneBeforeGame=false; /* tracks if preload finished before initBoard */
+    let preloadDoneBeforeGame=false;
+    let reelSpinning=false; /* true once first movement begins */
+    let metronomeInterval=null; /* click-track for timers */
 
     // ══════════════════════════════════════════════
     // AUDIO — +6dB master, coin +3dB net, soft limiter
@@ -966,7 +1020,8 @@
     const TRACKLIST_SOUNDS=new Set([
         'dayclip.wav','figclip.wav','remedyclip.wav','dmitriclip.wav',
         'nightclip.wav','happensclip.wav','ghostclip.wav','mayaclip.wav',
-        'tellusclip.wav','voidclip.wav','smileclip.wav','swimclip.wav'
+        'tellusclip.wav','voidclip.wav','smileclip.wav','swimclip.wav',
+        'doorclip.wav','mistakeclip.wav'
     ]);
 
     /* playSpaceSfx — route to track or sfx */
@@ -976,7 +1031,34 @@
     }
 
     function playCoinSfx(){playSfx('coin.wav',0.707);}
-    function playSlide(){const n=Math.floor(Math.random()*4)+1;playSfx(`slide${n}.wav`);}
+    function playSlide(){
+        const n=Math.floor(Math.random()*4)+1;playSfx(`slide${n}.wav`);
+        /* Start reel spinning on first movement */
+        if(!reelSpinning){
+            reelSpinning=true;
+            [0,59].forEach(idx=>{
+                const s=document.getElementById('s'+idx);
+                if(s)s.classList.add('reel-spinning');
+            });
+        }
+    }
+
+    /* Metronome click track — MetronomeUp beat 1, Metronome x3 beats 2-4, repeats each second */
+    let _metroBeat=0;
+    function startMetronome(){
+        stopMetronome();_metroBeat=0;
+        function tick(){
+            if(_metroBeat===0)playSfx('MetronomeUp.wav',0.6);
+            else playSfx('Metronome.wav',0.5);
+            _metroBeat=(_metroBeat+1)%4;
+        }
+        tick(); /* immediate first beat */
+        metronomeInterval=setInterval(tick,1000);
+    }
+    function stopMetronome(){
+        if(metronomeInterval){clearInterval(metronomeInterval);metronomeInterval=null;}
+        _metroBeat=0;
+    }
 
     function playDiceRoll(){
         if(masterMuted||!audioEnabled||!sfxEnabled)return;
@@ -1087,20 +1169,21 @@
     // ══════════════════════════════════════════════
     // VU METER
     // ══════════════════════════════════════════════
-    function animateVU(targetDeg){
+    function vuStartRoll(){
         const needle=document.getElementById('vu-needle');
         if(!needle)return;
-        needle.style.animation='none';
-        needle.style.transition='transform 0.2s cubic-bezier(0.15,3,0.35,1)';
-        needle.style.transform=`rotate(${targetDeg}deg)`;
+        /* Reset to far left first */
+        needle.style.transition='none';
+        needle.style.transform='rotate(-45deg)';
+        void needle.offsetWidth; /* force reflow */
+        /* Then bounce during roll */
+        needle.classList.add('rolling');
     }
     function vuRollAnimation(finalRoll){
         const needle=document.getElementById('vu-needle');
         if(!needle)return;
-        /* Map 1-6 to -45deg through +45deg */
+        needle.classList.remove('rolling');
         const deg=-45+((finalRoll-1)/5)*90;
-        /* Cancel any existing animation, then bounce straight to result */
-        needle.style.animation='none';
         needle.style.transition='transform 0.22s cubic-bezier(0.15,3.5,0.3,1)';
         needle.style.transform=`rotate(${deg}deg)`;
     }
@@ -1319,9 +1402,12 @@
                     p.hasPlotArmor=false;p.wasPassivelyMoved=false;
                 });
                 highestDiscountPct=0;globalTurnCount=0;lastBucketFile=null;
+                /* Stop reel spinning until movement resumes */
+                reelSpinning=false;
+                [0,59].forEach(idx=>{const s=document.getElementById('s'+idx);if(s)s.classList.remove('reel-spinning');});
                 assignMysterySpaces();
-                turnIdx=0;isMoving=false;isSwapping=false;isInLoreDrop=false;loreDoneResolver=null;
-                stopActiveLoreVid();
+                turnIdx=0;isMoving=false;isRolling=false;isSwapping=false;isInLoreDrop=false;loreDoneResolver=null;
+                stopMetronome();stopActiveLoreVid();
                 updateUI();updatePositions();
                 document.getElementById('roll-btn').disabled=false;
             },"CANCEL",()=>{}
@@ -1405,7 +1491,8 @@
     // ══════════════════════════════════════════════
     function assignMysterySpaces(){
         mysterySpaces=new Set();
-        const shuffled=[...BLANK_INDICES].sort(()=>Math.random()-0.5);
+        /* No mystery lore before Dayspring (space 4) — exclude indices 0-3 */
+        const shuffled=[...BLANK_INDICES].filter(i=>i>=4).sort(()=>Math.random()-0.5);
         const half=Math.ceil(shuffled.length/2);
         for(let i=0;i<half;i++)mysterySpaces.add(shuffled[i]);
         BLANK_INDICES.forEach(i=>{
@@ -1550,6 +1637,7 @@
         const name=ni.value.toUpperCase().trim();
         const errEl=document.getElementById('name-error');
         if(!name||!selectedAvatar){errEl.innerText="NAME & PIC REQUIRED";errEl.style.display='block';return;}
+        if(name.length>15){errEl.innerText="MAX 15 CHARACTERS";errEl.style.display='block';return;}
         if(players.some(p=>p.name===name)){errEl.innerText="NAME ALREADY TAKEN";errEl.style.display='block';return;}
         errEl.style.display='none';
         const color=selectedColor||DEFAULT_COLORS[currentSetupP]||'#ffffff';
@@ -1664,7 +1752,7 @@
             a.innerHTML='➜';
             /* Position and rotate based on direction */
             let tx=cx,ty=cy,rot=0,ox=0,oy=0;
-            const off=sr.width*0.72;
+            const off=sr.width*0.55;
             if(dir==='right'){ox=off;rot=0;}
             else if(dir==='left'){ox=-off;rot=180;}
             else if(dir==='down'){oy=off;rot=90;}
@@ -1708,6 +1796,16 @@
                     s.innerHTML=`<span class="mystery-q">?</span>`;
                     s.onclick=()=>handleMysteryClick(i);
                 } else {s.classList.add('true-blank');}
+            } else if(i===0){
+                /* START — reel space, no text overlay, originates the tape */
+                s.classList.add('tracklist-space','reel-space');
+                s.innerHTML=''; /* no text on space 0 */
+                s.onclick=()=>handleSpaceClick(i);
+            } else if(i===59){
+                /* SWIMMIN — reel space, keeps SWIMMIN text and blue glow */
+                s.classList.add('reel-space','win-track');
+                s.innerHTML=`<div class="sp-text">SWIMMIN'</div>`;
+                s.onclick=()=>handleSpaceClick(i);
             } else {
                 const r=rules[i];
                 const emojiHtml=(r&&r.emoji)?`<div class="sp-emoji">${r.emoji}</div>`:'';
@@ -1717,10 +1815,8 @@
                 if(name==="FEAR")s.classList.add('fear-space');
                 if(name==="JOY")s.classList.add('joy-space');
                 if(name==="FEARJOY")s.classList.add('hybrid');
-                if(i===59)s.classList.add('win-track');
                 s.onclick=()=>handleSpaceClick(i);
             }
-            /* No arrows appended to spaces — they are board-level overlays */
             board.appendChild(s);
         });
         /* Apply grid placement */
@@ -1748,7 +1844,7 @@
             "Let's Play",()=>{},
             "Show Me",()=>{
                 showStatusPopup("📋 How to Play",
-                    "ROLL with Click, Spacebar, or Enter. Click (or Arrow Keys + Enter) for Choices. Click spaces / passes to discover rules. Sound Options & Accolade Info in ☰ Menu.\n\nLand on tour stops and see what happens! Collect accolades, band lore, and real-life rewards. Open your All-Access Pass for more (hint: if you're falling behind!)\n\nFirst artist to go Swimmin' wins the tour!",
+                    "ROLL with Click, Spacebar, or Enter.\nClick (or Arrow Keys + Enter) for Choices.\n\nClick spaces / passes to discover rules.\nSound Options & Accolade Info in the Menu.\n\nFull rules will show as you go. See what happens!\nCollect accolades, band lore, and real-life rewards.\nOpen your All-Access Pass for more\n(hint: if you're falling behind!)",
                     "Let's go!",()=>{},"",()=>{}
                 );
                 document.getElementById('event-btn-secondary').style.display='none';
@@ -1798,7 +1894,7 @@
                     <div class="pass-name">${pl.name}</div>
                 </div>
                 <div class="pass-label">Status</div>
-                <div class="pass-tags">${tags||`<span class="pass-independent">INDEPENDENT</span>`}</div>
+                <div class="pass-tags">${tags||`<span class="tag tag-indie">INDIE</span>`}</div>
                 <div class="pass-label">Accolades</div>
                 <div class="pass-accolades">${pl.accolades.join('')||'—'}</div>
                 <div class="pass-stripe"></div>`;
@@ -1826,7 +1922,7 @@
         document.getElementById('exp-avatar').style.borderColor=pl.avatar.color;
         document.getElementById('exp-name').innerText=pl.name;
         document.getElementById('exp-name').style.color=pl.avatar.color;
-        document.getElementById('exp-tags').innerHTML=tags||'<span style="opacity:0.4;font-size:0.8rem;letter-spacing:3px;">INDEPENDENT</span>';
+        document.getElementById('exp-tags').innerHTML=tags||'<span class="tag tag-indie" style="font-size:0.75rem;padding:3px 8px;">INDIE</span>';
         document.getElementById('exp-accolades').innerText=pl.accolades.join('')||'—';
         document.getElementById('exp-stripe').style.background=`linear-gradient(90deg,${pl.avatar.color} 0%,transparent 100%)`;
         const pitchEligible=isCurrent&&!isMoving&&!pl.isSellout&&!pl.isColdPitchSellout&&!pl.usedColdPitch&&pl.pos>2&&pl.pos<=GATEKEEPER_SPACE;
@@ -1844,34 +1940,42 @@
     }
 
     // ══════════════════════════════════════════════
-    // COLD PITCH — lawyer card with fine print
+    // COLD PITCH
     // ══════════════════════════════════════════════
     function triggerColdPitch(){
         collapsePass();
         const p=players[turnIdx];
-        showStatusPopup("🎤 Cold Pitch","","Let's Pitch →",()=>coldPitchStep2(p),"Stay Indie",()=>{document.getElementById('overlay-event').style.display='none';});
         const descEl=document.getElementById('event-desc');
         descEl.innerHTML='';
-        const step1=document.createElement('div');
-        step1.innerHTML=`<div style="margin-bottom:12px;">Go direct to major labels with your tape.<br><br><b style="color:var(--joy-glow);font-size:1.1em;">1 in 3 chance of getting SIGNED (+5 spaces now!)</b></div><div style="margin-top:18px;font-family:'Courier New',monospace;font-size:0.85rem;color:rgba(255,255,255,0.5);"><span id="lawyer-phone" style="display:inline-block;animation:phoneWiggle 1.8s ease-in-out infinite;">📱</span> Hey! It's your lawyer! I suggest you:</div>`;
+
+        const body=document.createElement('div');
+        body.innerHTML=`<div style="margin-bottom:6px;">Pitch your demo tape to major labels.</div>
+<div style="margin-bottom:14px;"><b style="color:var(--joy-glow);">1 in 3 chance of getting SIGNED (+5 spaces now!)</b></div>
+<div style="font-family:'Courier New',monospace;font-size:0.9rem;color:rgba(255,255,255,0.75);margin-bottom:8px;"><span style="display:inline-block;animation:phoneWiggle 1.8s ease-in-out infinite;">📱</span> Hey! It's your lawyer! I suggest...</div>`;
+
         const fpBtn=document.createElement('button');
-        fpBtn.style.cssText='display:block;margin:10px auto 0;padding:8px 18px;background:transparent;border:1px solid rgba(255,255,255,0.3);color:rgba(255,255,255,0.5);font-family:Courier New,monospace;font-size:0.82rem;border-radius:6px;cursor:pointer;transition:all 0.2s;letter-spacing:1px;';
+        fpBtn.style.cssText='display:block;margin:0 auto 0;padding:7px 16px;background:transparent;border:1px solid rgba(255,255,255,0.35);color:rgba(255,255,255,0.6);font-family:Courier New,monospace;font-size:0.8rem;border-radius:6px;cursor:pointer;letter-spacing:1px;transition:all 0.2s;';
         fpBtn.innerText='Read the Fine Print ⬇️';
-        const finePrint=document.createElement('div');
-        finePrint.style.cssText='display:none;margin-top:12px;padding:10px;background:rgba(0,0,0,0.4);border-radius:8px;border:1px solid rgba(255,255,255,0.1);font-family:Courier New,monospace;font-size:0.78rem;color:rgba(255,255,255,0.6);text-align:left;line-height:1.6;';
-        finePrint.innerHTML=`If SIGNED: +5 spaces now. Label takes -1 from every other roll total (minimum roll stays 1). Pitching replaces your roll this turn. Pass the Gatekeeper freely once signed.<br><br>If DECLINED: Rewind -3 immediately.<br><br>One use per game. Cannot use after Gatekeeper.`;
-        fpBtn.onclick=()=>{const open=finePrint.style.display==='block';finePrint.style.display=open?'none':'block';fpBtn.innerText=open?'Read the Fine Print ⬇️':'Hide Fine Print ⬆️';};
-        step1.appendChild(fpBtn);step1.appendChild(finePrint);
-        descEl.appendChild(step1);
-    }
-    function coldPitchStep2(p){
-        const step2=document.createElement('div');
-        step2.innerHTML=`Pitching <b>replaces your roll</b> this turn.<br><br>`;
-        const fp2=document.createElement('div');
-        fp2.style.cssText='margin-top:8px;font-family:Courier New,monospace;font-size:0.78rem;color:rgba(255,255,255,0.4);';
-        fp2.innerHTML=`<span style="cursor:pointer;text-decoration:underline;" onclick="this.parentElement.querySelector('.fp2-body').style.display='block';this.style.display='none';">Didn't read the fine print?</span><div class="fp2-body" style="display:none;margin-top:6px;padding:8px;background:rgba(0,0,0,0.35);border-radius:6px;line-height:1.6;">If SIGNED: +5 spaces, label takes -1 every other roll (min 1), pass Gatekeeper freely. Pitching replaces your roll. If DECLINED: -3. One use per game.</div>`;
-        step2.appendChild(fp2);
-        showStatusPopup("⚠️ Heads Up!","","Let's Pitch",async()=>{
+
+        const fp=document.createElement('div');
+        fp.style.cssText='display:none;margin-top:12px;padding:12px 14px;background:rgba(0,0,0,0.5);border-radius:8px;border:1px solid rgba(255,255,255,0.15);font-family:Courier New,monospace;font-size:0.82rem;text-align:left;line-height:1.9;';
+        fp.innerHTML=`<div style="font-weight:bold;letter-spacing:1px;color:rgba(255,255,255,0.9);margin-bottom:8px;">Fearvices Records: Artist Deal</div>`+
+        `<div style="color:#ff4444;">If DECLINED: -2 NOW</div>`+
+        `<div style="height:10px;"></div>`+
+        `<div style="color:#00ff88;">If SIGNED: +5 NOW</div>`+
+        `<div style="color:#ff4444;">Label takes -1 from every other roll's total.</div>`+
+        `<div style="color:rgba(255,255,255,0.55);font-size:0.75rem;">(Minimum roll stays 1).</div>`+
+        `<div style="color:rgba(255,255,255,0.8);">Pitching replaces your roll this turn.</div>`+
+        `<div>Pass the <span style="color:#00ff88;">Gatekeeper</span> freely once signed.</div>`+
+        `<div style="height:10px;"></div>`+
+        `<div style="color:rgba(255,255,255,0.55);">One use per game.</div>`+
+        `<div style="color:rgba(255,255,255,0.55);">Cannot use after Gatekeeper.</div>`;
+
+        fpBtn.onclick=()=>{const open=fp.style.display==='block';fp.style.display=open?'none':'block';fpBtn.innerText=open?'Read the Fine Print ⬇️':'Hide Fine Print ⬆️';};
+        body.appendChild(fpBtn);body.appendChild(fp);
+        descEl.appendChild(body);
+
+        showStatusPopup("🎤 Cold Pitch","","Let's Pitch →",async()=>{
             p.usedColdPitch=true;
             playSpaceSfx('remedyclip.wav');
             document.getElementById('overlay-event').style.display='none';
@@ -1883,24 +1987,25 @@
                     "LET'S GO",async()=>{
                         document.getElementById('overlay-event').style.display='none';
                         spawnEmoji('📝',true);renderPasses();
-                        await new Promise(r=>setTimeout(r,400));movePlayer(5);
+                        await new Promise(r=>setTimeout(r,400));movePlayer(5,false,turnIdx);
                     },"",()=>{}
                 );
                 document.getElementById('event-btn-secondary').style.display='none';
             } else {
-                showStatusPopup("❌ DECLINED!","Your music sucks. Get back in the studio!",
+                showStatusPopup("❌ DECLINED","-2 spaces. Back to the grind!",
                     "BACK TO THE GRIND",async()=>{
                         document.getElementById('overlay-event').style.display='none';
                         spawnEmoji('💀',true);
-                        await new Promise(r=>setTimeout(r,400));movePlayer(-3);
+                        await new Promise(r=>setTimeout(r,400));movePlayer(-2,false,turnIdx);
                     },"",()=>{}
                 );
                 document.getElementById('event-btn-secondary').style.display='none';
             }
             renderPasses();
-        },"Cancel",()=>{document.getElementById('overlay-event').style.display='none';});
+        },"Stay Indie",()=>{document.getElementById('overlay-event').style.display='none';});
+        /* Re-inject the body into desc since showStatusPopup cleared it */
         document.getElementById('event-desc').innerHTML='';
-        document.getElementById('event-desc').appendChild(step2);
+        document.getElementById('event-desc').appendChild(body);
     }
 
     // ══════════════════════════════════════════════
@@ -1910,11 +2015,12 @@
         const r=rules[i]||{title:boardLayout[i],desc:"The road continues."};
         showSidebar(r.title,(r.emoji?r.emoji+" ":"")+r.desc,getSpaceColor(i));
     }
-    /* updateUI always reflects current turnIdx — call after advancing it in endTurn */
     function updateUI(){
         const p=players[turnIdx];
         document.getElementById('status-text').innerHTML=`<span style="color:${p.avatar.color}">${p.name}'S TURN</span>`;
         document.getElementById('ui-layer-color-wash').style.background=`linear-gradient(90deg,${p.avatar.color} 0%,transparent 35%)`;
+        /* Update roll button color to current player */
+        document.documentElement.style.setProperty('--roll-color',p.avatar.color);
         renderPasses();updatePositions();
     }
 
@@ -1930,19 +2036,24 @@
             if(!target||!el)return;
             const stack=stackMap[p.pos];const stackSize=stack.length;const myStackIdx=stack.indexOf(i);
             const spaceW=target.offsetWidth;const spaceH=target.offsetHeight;
+            const isActive=(i===turnIdx);
+            /* Active player piece is 50% larger */
+            const sizeScale=isActive?1.5:1;
             if(stackSize>1){
-                const scale=0.72;const pieceW=spaceW*scale;const pieceH=spaceH*scale;
+                const scale=0.72*sizeScale;const pieceW=spaceW*scale;const pieceH=spaceH*scale;
                 const offsets=[{x:-spaceW*0.18,y:-spaceH*0.12},{x:spaceW*0.18,y:-spaceH*0.12},{x:0,y:spaceH*0.14}];
                 const off=offsets[myStackIdx]||{x:0,y:0};
                 el.style.left=(target.offsetLeft+(spaceW-pieceW)/2+off.x)+'px';
                 el.style.top=(target.offsetTop+(spaceH-pieceH)/2+off.y)+'px';
                 el.style.width=pieceW+'px';el.style.height=pieceH+'px';
             } else {
-                el.style.left=target.offsetLeft+'px';el.style.top=target.offsetTop+'px';
-                el.style.width=spaceW+'px';el.style.height=spaceH+'px';
+                const pieceW=spaceW*sizeScale;const pieceH=spaceH*sizeScale;
+                el.style.left=(target.offsetLeft-(pieceW-spaceW)/2)+'px';
+                el.style.top=(target.offsetTop-(pieceH-spaceH)/2)+'px';
+                el.style.width=pieceW+'px';el.style.height=pieceH+'px';
             }
-            el.style.zIndex=(i===turnIdx?150:100+myStackIdx);
-            if(i===turnIdx){el.classList.add('active-turn');el.style.setProperty('--p-color',p.avatar.color);}
+            el.style.zIndex=(isActive?150:100+myStackIdx);
+            if(isActive){el.classList.add('active-turn');el.style.setProperty('--p-color',p.avatar.color);}
             else el.classList.remove('active-turn');
         });
     }
@@ -1998,18 +2109,24 @@
         }
         if(p.nightDriveActive){
             showStatusPopup("🌙 NIGHTDRIVE CHECK","Did you keep your eyes closed?",
-                "YES",()=>{p.nightDriveActive=false;checkNextHonor(p);},"NO",()=>{p.nightDriveActive=false;movePlayer(-1,false,turnIdx);});return;
+                "YES - EYES SHUT",()=>{
+                    p.nightDriveActive=false;
+                    /* Don't auto-roll — player presses Roll themselves */
+                    isMoving=false;isRolling=false;
+                    document.getElementById('roll-btn').disabled=false;
+                    document.getElementById('overlay-event').style.display='none';
+                },"NO - PEEKED",()=>{p.nightDriveActive=false;movePlayer(-1,false,turnIdx);});return;
         }
         checkNextHonor(p);
     }
     function checkNextHonor(p){
         if(p.ghostCounter>0){
             showStatusPopup("👻 GHOST CHECK","Did you stay quiet?",
-                "YES",()=>{p.ghostCounter=0;checkNextHonor(p);},"NO",()=>{p.ghostCounter=0;movePlayer(-1);});return;
+                "YES - I WAS SILENT",()=>{p.ghostCounter=0;endTurn();},"NO - I SLIPPED",()=>{p.ghostCounter=0;movePlayer(-1,false,turnIdx);});return;
         }
         if(p.smileActive){
-            showStatusPopup("💀 THE ENDLESS SMILE","Did you smile endlessly?",
-                "HELD IT",()=>{p.smileActive=false;checkNextHonor(p);},"BROKE IT",()=>{p.smileActive=false;endTurn();});return;
+            showStatusPopup("💀 THE ENDLESS SMILE","Did you hold the smile?",
+                "HELD IT",()=>{p.smileActive=false;endTurn();},"BROKE IT",()=>{p.smileActive=false;endTurn();});return;
         }
         performActualRoll();
     }
@@ -2022,6 +2139,7 @@
         document.getElementById('roll-btn').disabled=true;
         const dice=document.getElementById('dice-box');dice.innerText="?";
         await diceGoToCinematic();
+        vuStartRoll();  /* needle resets to -45 and bounces */
         let roll;
         for(let j=0;j<16;j++){
             dice.innerText=Math.floor(Math.random()*6)+1;
@@ -2103,7 +2221,7 @@
                 }
                 playSlide();p.pos+=dir;updatePositions();
                 if(dir>0&&p.pos===GATEKEEPER_SPACE&&!isLast&&!anyLabelDeal&&i<Math.abs(n)-1)break;
-                await new Promise(r=>setTimeout(r,300));
+                await new Promise(r=>setTimeout(r,240));
                 if(p.pos>=59){showWinScreen();return;}
             }
         }
@@ -2220,8 +2338,46 @@
     }
 
     // ══════════════════════════════════════════════
-    // SPACE LOGIC — capturedTurnIdx used everywhere
-    // to prevent cross-assignment bugs
+    // SHARED GAME TIMER — KCStrikerSans countdown, metronome click track,
+    // nevermind button, coinclip at 0. Used by Figment, Dmitri.
+    // onDone(true) = completed, onDone(false) = nevermind/penalty
+    // ══════════════════════════════════════════════
+    function startGameTimer(seconds, timerEl, actionBar, onDone){
+        stopMetronome();
+        let t=seconds;
+        timerEl.style.fontFamily="'KCStrikerSans','Courier New',monospace";
+        timerEl.style.display='block';
+        timerEl.innerText=t;
+        startMetronome();
+        /* Nevermind button */
+        let nmBtn=document.getElementById('timer-nevermind');
+        if(!nmBtn){
+            nmBtn=document.createElement('button');
+            nmBtn.id='timer-nevermind';
+            nmBtn.className='btn-nevermind';
+            nmBtn.innerText='nevermind -- take penalty';
+            actionBar.appendChild(nmBtn);
+        }
+        nmBtn.style.display='block';
+        nmBtn.onclick=()=>{
+            clearInterval(clock);stopMetronome();
+            nmBtn.style.display='none';
+            onDone(false);
+        };
+        const clock=setInterval(()=>{
+            t--;timerEl.innerText=t;
+            if(t<=0){
+                clearInterval(clock);stopMetronome();
+                playSfx('coinclip.wav');
+                nmBtn.style.display='none';
+                onDone(true);
+            }
+        },1000);
+        return clock;
+    }
+
+    // ══════════════════════════════════════════════
+    // SPACE LOGIC
     // ══════════════════════════════════════════════
     function checkSpace(){
         const capturedTurnIdx=turnIdx;
@@ -2240,7 +2396,16 @@
         /* Remedy: blocked if ANY label deal is active */
         if(r.choice==='remedy'&&(p.isSellout||p.isColdPitchSellout)){showSidebar("CONTRACT ACTIVE","Already signed with a major label.",spaceCol);endTurn();return;}
         if(r.choice==='merch'&&p.isInvestor){showSidebar("ALREADY INVESTED","Inventory full.",spaceCol);endTurn();return;}
-        if(r.isAuto){showSidebar(r.title,(r.emoji||"")+" "+(r.desc||"Moving..."),spaceCol);setTimeout(()=>movePlayer(r.shift,false,capturedTurnIdx),1500);return;}
+        if(r.isAuto){
+            /* Plot armor: if this is a detrimental auto-shift (shift < 0), check armor first */
+            if(r.shift<0&&checkPlotArmor(capturedTurnIdx,true)){
+                /* Armor consumed — show sidebar, end turn, skip the shift entirely */
+                showSidebar(r.title,(r.emoji||"")+" Blocked by Plot Armor! No penalty.",spaceCol);
+                endTurn();return;
+            }
+            showSidebar(r.title,(r.emoji||"")+" "+(r.desc||"Moving..."),spaceCol);
+            setTimeout(()=>movePlayer(r.shift,false,capturedTurnIdx),1500);return;
+        }
 
         const modal=document.getElementById('overlay-event');
         const title=document.getElementById('event-title');
@@ -2264,9 +2429,15 @@
         } else if(r.isFigment){
             pBtn.innerText="STEP OUTSIDE (1:00)";sBtn.innerText="STAY INDOORS (-1)";sBtn.style.display='inline-block';
             pBtn.onclick=()=>{
-                pBtn.disabled=true;sBtn.style.display='none';timerUI.style.display='block';
-                let t=60;timerUI.innerText=t;
-                const clock=setInterval(()=>{t--;timerUI.innerText=t;if(t<=0){clearInterval(clock);pBtn.disabled=false;pBtn.innerText="I'M BACK (+2)";pBtn.onclick=async()=>{modal.style.display='none';await new Promise(res=>setTimeout(res,800));movePlayer(2,false,capturedTurnIdx);};}},1000);
+                pBtn.disabled=true;sBtn.style.display='none';
+                startGameTimer(60,timerUI,document.getElementById('action-bar'),(completed)=>{
+                    if(completed){
+                        pBtn.disabled=false;pBtn.innerText="I'M BACK (+2)";
+                        pBtn.onclick=async()=>{modal.style.display='none';await new Promise(res=>setTimeout(res,800));movePlayer(2,false,capturedTurnIdx);};
+                    } else {
+                        modal.style.display='none';movePlayer(-1,false,capturedTurnIdx);
+                    }
+                });
             };
             sBtn.onclick=async()=>{modal.style.display='none';await new Promise(res=>setTimeout(res,800));movePlayer(-1,false,capturedTurnIdx);};
         } else if(r.isFearjoy){
@@ -2281,25 +2452,35 @@
                 },1200);
             };
         } else if(r.isDmitri){
-            pBtn.innerText="BREATHE";sBtn.innerText="SKIP (-2)";sBtn.style.display='inline-block';
+            pBtn.innerText="BREATHE (15s)";sBtn.innerText="SKIP (-2)";sBtn.style.display='inline-block';
             pBtn.onclick=()=>{
-                pBtn.disabled=true;sBtn.style.display='none';timerUI.style.display='block';
-                let t=15;timerUI.innerText=t;
-                const clock=setInterval(()=>{t--;timerUI.innerText=t;if(t<=0){clearInterval(clock);pBtn.disabled=false;pBtn.innerText="BREATHING COMPLETED";pBtn.onclick=async()=>{modal.style.display='none';await new Promise(res=>setTimeout(res,800));p.pos=23;updatePositions();endTurn();};}},1000);
+                pBtn.disabled=true;sBtn.style.display='none';
+                startGameTimer(15,timerUI,document.getElementById('action-bar'),(completed)=>{
+                    if(completed){
+                        pBtn.disabled=false;pBtn.innerText="BREATHING COMPLETED";
+                        pBtn.onclick=async()=>{modal.style.display='none';await new Promise(res=>setTimeout(res,800));p.pos=23;updatePositions();endTurn();};
+                    } else {
+                        modal.style.display='none';movePlayer(-2,false,capturedTurnIdx);
+                    }
+                });
             };
             sBtn.onclick=async()=>{modal.style.display='none';await new Promise(res=>setTimeout(res,800));movePlayer(-2,false,capturedTurnIdx);};
         } else if(r.choice){
             const fadeOutVideo=(vid)=>{if(!vid)return;let vol=vid.volume||1;const fade=setInterval(()=>{if(vol>0.1){vol-=0.1;vid.volume=vol;}else{vid.pause();clearInterval(fade);}},200);};
             if(r.choice==='remedy'){
-                /* Remedy — lawyer card style with fine print */
                 const remedyDesc=document.createElement('div');
-                remedyDesc.innerHTML=`<div id="video-wrapper" style="position:relative;width:100%;margin-bottom:15px;border-radius:8px;overflow:hidden;background:#000;border:1px solid #444;"><div id="close-video" style="position:absolute;top:5px;right:12px;color:white;cursor:pointer;font-size:24px;font-weight:bold;z-index:10;text-shadow:0 0 5px #000;">×</div><video id="remedy-video" style="width:100%;display:block;" autoplay playsinline><source src="trevortrim.mp4" type="video/mp4"></video></div><div style="margin-bottom:10px;">A major label is knocking. Sign for <b style="color:var(--joy-glow);">+6 spaces now!</b></div><div style="font-family:Courier New,monospace;font-size:0.85rem;color:rgba(255,255,255,0.5);margin-top:8px;"><span style="display:inline-block;animation:phoneWiggle 1.8s ease-in-out infinite;">📱</span> Hey, it's your lawyer. I suggest you:</div>`;
+                remedyDesc.innerHTML=`<div id="video-wrapper" style="position:relative;width:100%;margin-bottom:14px;border-radius:8px;overflow:hidden;background:#000;border:1px solid #333;"><div id="close-video" style="position:absolute;top:5px;right:10px;color:white;cursor:pointer;font-size:22px;font-weight:bold;z-index:10;text-shadow:0 0 5px #000;">×</div><video id="remedy-video" style="width:100%;display:block;" autoplay playsinline><source src="trevortrim.mp4?v=24" type="video/mp4"></video></div>
+<div style="margin-bottom:8px;">The cure for your obscurity!<br>A major label likes your sound.<br><b style="color:var(--joy-glow);">Sign for +6 spaces now!</b></div>
+<div style="font-family:'Courier New',monospace;font-size:0.88rem;color:rgba(255,255,255,0.72);margin-top:8px;"><span style="display:inline-block;animation:phoneWiggle 1.8s ease-in-out infinite;">📱</span> Hey, it's your lawyer. I suggest you:</div>`;
                 const fpBtn2=document.createElement('button');
-                fpBtn2.style.cssText='display:block;margin:10px auto 0;padding:8px 18px;background:transparent;border:1px solid rgba(255,255,255,0.3);color:rgba(255,255,255,0.5);font-family:Courier New,monospace;font-size:0.82rem;border-radius:6px;cursor:pointer;transition:all 0.2s;letter-spacing:1px;';
+                fpBtn2.style.cssText='display:block;margin:8px auto 0;padding:7px 16px;background:transparent;border:1px solid rgba(255,255,255,0.3);color:rgba(255,255,255,0.55);font-family:Courier New,monospace;font-size:0.8rem;border-radius:6px;cursor:pointer;letter-spacing:1px;transition:all 0.2s;';
                 fpBtn2.innerText='Read the Fine Print ⬇️';
                 const fp2body=document.createElement('div');
-                fp2body.style.cssText='display:none;margin-top:12px;padding:10px;background:rgba(0,0,0,0.4);border-radius:8px;border:1px solid rgba(255,255,255,0.1);font-family:Courier New,monospace;font-size:0.78rem;color:rgba(255,255,255,0.6);text-align:left;line-height:1.6;';
-                fp2body.innerHTML='Every 6 you roll becomes -2 for the rest of the game.<br><br>Signing makes you a SELLOUT. You will pass the Gatekeeper freely as a signed artist.';
+                fp2body.style.cssText='display:none;margin-top:10px;padding:12px 14px;background:rgba(0,0,0,0.5);border-radius:8px;border:1px solid rgba(255,255,255,0.12);font-family:Courier New,monospace;font-size:0.82rem;text-align:left;line-height:1.9;';
+                fp2body.innerHTML=`<div style="font-weight:bold;letter-spacing:1px;color:rgba(255,255,255,0.9);margin-bottom:8px;">Illuminati Records: Artist Deal</div>`+
+                `<div style="color:#00ff88;">Move +6 now!</div>`+
+                `<div style="color:#ff4444;">Every future 6 you roll will become -2.</div>`+
+                `<div>You may pass the <span style="color:#00ff88;">Gatekeeper</span> freely as a signed artist.</div>`;
                 fpBtn2.onclick=()=>{const open=fp2body.style.display==='block';fp2body.style.display=open?'none':'block';fpBtn2.innerText=open?'Read the Fine Print ⬇️':'Hide Fine Print ⬆️';};
                 remedyDesc.appendChild(fpBtn2);remedyDesc.appendChild(fp2body);
                 desc.innerHTML='';desc.appendChild(remedyDesc);
@@ -2455,39 +2636,56 @@
         const desc=document.getElementById('event-desc');
         const pBtn=document.getElementById('event-btn-primary');
         const sBtn=document.getElementById('event-btn-secondary');
+        const timerUI=document.getElementById('timer-ui');
+        const actionBar=document.getElementById('action-bar');
         const partner=players[partnerIdx];
-        /* Capture turnIdx for callbacks */
         const capturedTurnIdx=turnIdx;
-        overlay.style.display='flex';pBtn.style.display='none';sBtn.style.display='none';
-        let timeLeft=10;
-        const update=()=>{desc.innerHTML=`<div style="font-size:5rem;color:var(--blue-glow);text-shadow:0 0 20px var(--blue-glow);margin-bottom:20px;animation:winPulse 1s infinite alternate;">${timeLeft}</div>EYE CONTACT WITH ${partner.name}...<br><span style="color:#888;font-size:0.8rem;letter-spacing:2px;">DON'T LOOK AWAY</span>`;};
-        update();
-        const clock=setInterval(()=>{
-            timeLeft--;update();
-            if(timeLeft<=0){
-                clearInterval(clock);
+        overlay.style.display='flex';
+        /* Step 1: show partner name, wait for "Start Staring" tap */
+        desc.innerHTML=`<div style="margin-bottom:14px;">Eye contact challenge with<br><b style="color:var(--blue-glow);font-size:1.2em;">${partner.name}</b></div>
+            <div style="font-size:0.9rem;color:rgba(255,255,255,0.6);">Hold 10s of eye contact for <b style="color:var(--joy-glow);">Both +2</b>.<br>Avoid for <b style="color:var(--fear-glow);">Both -1</b>.</div>`;
+        pBtn.style.display='inline-block';pBtn.innerText='START STARING 👁';
+        sBtn.style.display='inline-block';sBtn.innerText='Fear of Intimacy (-1)';
+        /* Fear of intimacy from the pre-timer screen too */
+        sBtn.onclick=async()=>{
+            stopMetronome();
+            const nm=document.getElementById('timer-nevermind');if(nm)nm.style.display='none';
+            isMayaPartner=false;
+            document.querySelectorAll('.player').forEach(el=>{el.classList.remove('swap-target');el.style.pointerEvents='none';});
+            renderPasses();overlay.style.display='none';
+            await new Promise(res=>setTimeout(res,500));
+            movePlayer(-1,false,capturedTurnIdx);
+        };
+        pBtn.onclick=()=>{
+            /* Step 2: start the 10s staring timer */
+            pBtn.style.display='none';sBtn.style.display='none';
+            timerUI.style.fontFamily="'KCStrikerSans','Courier New',monospace";
+            desc.innerHTML=`<div style="color:rgba(255,255,255,0.7);margin-bottom:10px;">EYE CONTACT WITH <b style="color:var(--blue-glow);">${partner.name}</b></div><div style="font-size:0.75rem;color:#888;letter-spacing:2px;">DON'T LOOK AWAY</div>`;
+            startGameTimer(10,timerUI,actionBar,(completed)=>{
+                stopMetronome();
+                timerUI.style.display='none';
+                /* Step 3: outcome buttons */
                 desc.innerHTML=`TIME'S UP.<br><br>Did you both hold eye contact?`;
-                pBtn.style.display='inline-block';pBtn.innerText="YES (BOTH +2)";
+                pBtn.style.display='inline-block';pBtn.innerText="YES -- BOTH +2";
                 pBtn.onclick=()=>{
-                    const curPos=players[capturedTurnIdx].pos;
-                    const partPos=players[partnerIdx].pos;
-                    const curIsTrack=TRACKLIST_INDICES.includes(curPos);
-                    const partIsTrack=TRACKLIST_INDICES.includes(partPos);
                     playSlide();players[capturedTurnIdx].pos=Math.min(59,players[capturedTurnIdx].pos+2);
-                    /* Partner is passively moved */
                     players[partnerIdx].wasPassivelyMoved=true;
                     playSlide();players[partnerIdx].pos=Math.min(59,players[partnerIdx].pos+2);
                     updatePositions();
-                    const landPos=curIsTrack?curPos:(partIsTrack?partPos:curPos);
-                    const landR=rules[landPos];
-                    /* Only play non-maya tracklist sound — maya sound already played */
-                    if(landR&&landR.sound&&!landR.isMaya)playSpaceSfx(landR.sound);
-                    /* Grammy check for BOTH players after move */
-                    checkGrammyForCurrent();
-                    checkPassiveGrammys(players[capturedTurnIdx].name);
+                    checkGrammyForCurrent();checkPassiveGrammys(players[capturedTurnIdx].name);
                     overlay.style.display='none';endTurn();
                 };
-                sBtn.style.display='inline-block';sBtn.innerText="NO (BOTH -1)";
+                if(!completed){
+                    /* nevermind = both -1 */
+                    pBtn.innerText="NO -- BOTH -1";
+                    pBtn.onclick=()=>{
+                        playSlide();players[capturedTurnIdx].pos=Math.max(0,players[capturedTurnIdx].pos-1);
+                        players[partnerIdx].wasPassivelyMoved=true;
+                        playSlide();players[partnerIdx].pos=Math.max(0,players[partnerIdx].pos-1);
+                        updatePositions();overlay.style.display='none';endTurn();
+                    };
+                }
+                sBtn.style.display='inline-block';sBtn.innerText="NO -- BOTH -1";
                 sBtn.onclick=()=>{
                     playSlide();players[capturedTurnIdx].pos=Math.max(0,players[capturedTurnIdx].pos-1);
                     players[partnerIdx].wasPassivelyMoved=true;
@@ -2495,8 +2693,8 @@
                     updatePositions();overlay.style.display='none';endTurn();
                 };
                 resetKbFocus();
-            }
-        },1000);
+            });
+        };
     }
 
     // ══════════════════════════════════════════════
@@ -2580,7 +2778,7 @@
         let statsHtml=`<h2 style="color:${p.avatar.color};animation:winPulse 2s infinite ease-in-out;font-family:'KCStrikerSans','Courier New',monospace;margin:5px 0;--p-color:${p.avatar.color};text-shadow:0 0 20px ${p.avatar.color};">${p.name} WINS!</h2>`;
         statsHtml+=`<div style="text-align:left;margin-top:15px;font-family:monospace;background:rgba(0,0,0,0.4);border-radius:12px;padding:12px;border:1px solid #333;">`;
         players.forEach(pl=>{
-            const supporterLine=pl.hasThrifty?`<div style="font-size:0.7rem;color:var(--mystery-glow);letter-spacing:2px;margin-top:2px;">CODE: PLAYER${pl.merchdiscountPct} -- ${pl.merchdiscountPct}% OFF STORE</div>`:'';
+            const supporterLine=pl.hasThrifty?`<div style="font-size:0.7rem;color:rgba(255,255,255,0.5);letter-spacing:1px;margin-top:2px;">Merch code: <span class="bucket-code" style="font-size:0.85rem;padding:3px 8px;cursor:pointer;" onclick="navigator.clipboard.writeText('PLAYER${pl.merchdiscountPct}').then(()=>{this.innerText='COPIED!';setTimeout(()=>this.innerText='PLAYER${pl.merchdiscountPct}',2000)})">PLAYER${pl.merchdiscountPct}</span> &mdash; ${pl.merchdiscountPct}% off</div>`:'';
             statsHtml+=`<div style="margin-bottom:12px;border-bottom:1px solid #222;display:flex;align-items:center;gap:12px;padding-bottom:10px;">
                 <img src="${pl.avatar.img}" style="width:50px;height:50px;border-radius:50%;background:#000;border:2px solid ${pl.avatar.color};box-shadow:0 0 10px ${pl.avatar.color};">
                 <div style="flex-grow:1;"><b style="color:${pl.avatar.color};font-size:1.1rem;letter-spacing:1px;">${pl.name}</b>${supporterLine}
@@ -2640,16 +2838,13 @@
     function showLoreBackdrop(){document.getElementById('lore-backdrop').style.display='block';}
     function hideLoreBackdrop(){document.getElementById('lore-backdrop').style.display='none';}
     function handleLoreBackdropClick(){
+        /* Clicking outside lore/sidebar ONLY dismisses — never starts a roll */
+        stopActiveLoreVid();
+        closeSidebar();
+        hideLoreBackdrop();
         if(isInLoreDrop){
-            stopActiveLoreVid();
-            closeSidebar();
-            hideLoreBackdrop();
             isInLoreDrop=false;
             if(loreDoneResolver){loreDoneResolver();loreDoneResolver=null;}
-            setTimeout(()=>doRoll(),80);
-        } else {
-            closeSidebar();
-            hideLoreBackdrop();
         }
     }
 
