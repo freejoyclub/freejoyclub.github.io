@@ -11,7 +11,7 @@
 
         :root {
             --wood-dark:#8b7355; --wood-mid:#b39b7d; --tape-white:#fdfdfd;
-            --joy-glow:#00ff88; --fear-glow:#ff4444; --gold:#ffd700;
+            --joy-glow:#28bf2b; --fear-glow:#bd2109; --gold:#ffd700;
             --ui-bg:rgba(0,0,0,0.98); --vinyl:#111111;
             --blue-glow:#00ccff; --teal-glow:#00ddcc;
             --pink-glow:#ff00ff; --mystery-glow:#dd99ff; --pitch-orange:#ff8800;
@@ -171,12 +171,12 @@
             content:''; position:absolute; bottom:0; left:0; right:0; top:0;
             pointer-events:none;
             background:
-                linear-gradient(to right,transparent 13%,rgba(0,0,0,0.35) 13%,rgba(0,0,0,0.35) 14%,transparent 14%),
-                linear-gradient(to right,transparent 27%,rgba(0,0,0,0.35) 27%,rgba(0,0,0,0.35) 28%,transparent 28%),
-                linear-gradient(to right,transparent 41%,rgba(0,0,0,0.4) 41%,rgba(0,0,0,0.4) 42.5%,transparent 42.5%),
-                linear-gradient(to right,transparent 57%,rgba(0,0,0,0.35) 57%,rgba(0,0,0,0.35) 58%,transparent 58%),
-                linear-gradient(to right,transparent 71%,rgba(0,0,0,0.35) 71%,rgba(0,0,0,0.35) 72%,transparent 72%),
-                linear-gradient(to right,transparent 85%,rgba(0,0,0,0.35) 85%,rgba(0,0,0,0.35) 86%,transparent 86%);
+                linear-gradient(to right,transparent 10%,rgba(0,0,0,0.05) 10%,rgba(0,0,0,0.05) 11%,transparent 11%),
+                linear-gradient(to right,transparent 20%,rgba(0,0,0,0.05) 20%,rgba(0,0,0,0.05) 21%,transparent 21%),
+                linear-gradient(to right,transparent 35%,rgba(0,0,0,0.04) 35%,rgba(0,0,0,0.04) 436%,transparent 36%),
+                linear-gradient(to right,transparent 57%,rgba(0,0,0,0.05) 57%,rgba(0,0,0,0.05) 58%,transparent 58%),
+                linear-gradient(to right,transparent 71%,rgba(0,0,0,0.05) 71%,rgba(0,0,0,0.05) 72%,transparent 72%),
+                linear-gradient(to right,transparent 85%,rgba(0,0,0,0.05) 85%,rgba(0,0,0,0.05) 86%,transparent 86%);
         }
         #vu-arc::after { display:none; }
 
@@ -233,8 +233,8 @@
             width:clamp(28px,3.8vw,52px); height:clamp(26px,3.2vw,42px);
             border-radius:6px; background:#1a1a1a; border:1.5px solid #660000;
             cursor:pointer; color:#bb1111; font-family:sans-serif;
-            font-size:clamp(0.42rem,0.7vw,0.65rem); font-weight:bold;
-            letter-spacing:1px; text-transform:uppercase;
+            font-size:clamp(0.38rem,0.6vw,0.58rem); font-weight:bold;
+            letter-spacing:.9px; text-transform:uppercase;
             box-shadow:0 0 6px rgba(160,0,0,0.35);
             transition:all 0.15s ease;
             display:flex; align-items:center; justify-content:center;
@@ -379,7 +379,7 @@
         .pass-stripe   { background:linear-gradient(90deg,var(--p-color,#888) 0%,transparent 100%); opacity:0.45; height:clamp(2px,0.32vw,4px); border-radius:2px; margin-top:clamp(2px,0.3vw,5px); filter:brightness(0.7); }
 
         /* ── PASS EXPANDED ── */
-        #pass-expanded-backdrop { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.65); z-index:3000; align-items:center; justify-content:center; }
+        #pass-expanded-backdrop { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.55); z-index:3000; align-items:center; justify-content:center; }
         #pass-expanded-backdrop.open { display:flex; }
         #pass-expanded-card {
             background:linear-gradient(160deg,#ede8dc 0%,#e2d9c4 55%,#d8ccb0 100%);
@@ -766,7 +766,7 @@
         <div id="pass-expanded-card">
             <span class="exp-close" onclick="collapsePass()">×</span>
             <div style="width:20px;height:9px;background:#888;border-radius:3px 3px 0 0;margin:0 auto 8px;"></div>
-            <div class="pass-all-access" style="text-align:center;margin-bottom:6px;font-size:0.6rem;letter-spacing:3px;color:rgba(255,255,255,0.35);">All-Access Pass</div>
+            <div class="pass-all-access" style="text-align:center;margin-bottom:6px;font-size:0.6rem;letter-spacing:3px;color:rgba(60,60,60,0.55);">All-Access Pass</div>
             <img id="exp-avatar" class="exp-avatar" src="" alt="">
             <div class="exp-name" id="exp-name"></div>
             <div class="exp-section-label">Status</div>
