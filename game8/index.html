@@ -265,13 +265,15 @@
         #roll-btn:disabled { opacity:0.35; animation:none; cursor:not-allowed; }
 
         /* ── DICE SLOT ── */
+        
         #dice-slot-right {
-            width:clamp(46px,6.3vw,84px); height:clamp(46px,6.3vw,84px);
+            width:clamp(52px,7vw,90px); height:clamp(52px,7vw,90px);
             position:relative; flex-shrink:0;
             display:flex; align-items:center; justify-content:center;
+            padding:4px;
         }
         #dice-box {
-            width:clamp(38px,5.5vw,72px); height:clamp(38px,5.5vw,72px);
+            width:clamp(30px,4.2vw,56px); height:clamp(30px,4.2vw,56px);
             background:rgba(0,0,0,0.75); color:white;
             border:2px solid rgba(255,255,255,0.7); border-radius:12px;
             display:flex; align-items:center; justify-content:center;
@@ -534,8 +536,10 @@
 
         /* Rule sidebar — lore peek behaviour handled in JS */
         #rule-sidebar {
-            position:fixed; right:-400px; top:0; bottom:0;
+            
+            position:fixed; right:-400px; top:calc(var(--bar-h) + 8px);
             width:min(260px,78vw);
+            max-height:calc(100dvh - var(--bar-h) - 24px);
             background:linear-gradient(160deg,rgba(8,8,8,0.88) 0%,rgba(28,28,28,0.88) 100%);
             backdrop-filter:blur(8px);
             padding:clamp(14px,2.2vw,26px);
@@ -746,7 +750,7 @@
             </div>
             <div id="setup-step-2" style="display:none;margin-top:16px;">
                 <h2 id="setup-prompt" style="font-size:clamp(0.8rem,2.5vw,1rem);color:#888;">ARTIST 1: DETAILS</h2>
-                <input type="text" id="name-input" placeholder="ARTIST NAME"
+                <input type="text" id="name-input" placeholder="ARTIST NAME" maxlength="15"
                     style="padding:clamp(10px,2vw,20px);width:90%;text-align:center;border-radius:8px;border:3px solid #333;background:#000;color:white;font-size:clamp(1rem,3vw,1.5rem);transition:all 0.3s ease;outline:none;box-sizing:border-box;">
                 <div id="name-error" style="color:var(--fear-glow);font-weight:bold;margin-top:10px;font-size:0.9rem;display:none;">NAME & PIC REQUIRED</div>
                 <div style="margin:16px 0 8px;">
@@ -1686,7 +1690,7 @@
         fpBtn.style.cssText='display:block;margin:10px auto 0;padding:8px 18px;background:transparent;border:1px solid rgba(255,255,255,0.3);color:rgba(255,255,255,0.5);font-family:Courier New,monospace;font-size:0.82rem;border-radius:6px;cursor:pointer;transition:all 0.2s;letter-spacing:1px;';
         fpBtn.innerText='Read the Fine Print ⬇️';
         const finePrint=document.createElement('div');
-        finePrint.style.cssText='display:none;margin-top:12px;padding:10px;background:rgba(0,0,0,0.4);border-radius:8px;border:1px solid rgba(255,255,255,0.1);font-family:Courier New,monospace;font-size:0.78rem;color:rgba(255,255,255,0.6);text-align:left;line-height:1.6;';
+        finePrint.style.cssText='display:none;margin-top:12px;padding:12px;background:rgba(0,0,0,0.45);border-radius:8px;border:1px solid rgba(255,255,255,0.18);font-family:Courier New,monospace;font-size:0.88rem;color:rgba(255,255,255,0.82);text-align:left;line-height:1.7;';
         finePrint.innerHTML=`If SIGNED: +5 spaces now. Label takes -1 from every other roll total (minimum roll stays 1). Pitching replaces your roll this turn. Pass the Gatekeeper freely once signed.<br><br>If DECLINED: Rewind -3 immediately.<br><br>One use per game. Cannot use after Gatekeeper.`;
         fpBtn.onclick=()=>{const open=finePrint.style.display==='block';finePrint.style.display=open?'none':'block';fpBtn.innerText=open?'Read the Fine Print ⬇️':'Hide Fine Print ⬆️';};
         step1.appendChild(fpBtn);step1.appendChild(finePrint);
@@ -2385,17 +2389,25 @@
     // ══════════════════════════════════════════════
     // WIN SCREEN
     // ══════════════════════════════════════════════
-    function showWinScreen(){
+
+        function showWinScreen(){
         const p=players[turnIdx];
         playSpaceSfx('swimclip.wav');
+        const sorted=[...players].sort((a,b)=>b.pos-a.pos);
         let statsHtml=`<h2 style="color:${p.avatar.color};animation:winPulse 2s infinite ease-in-out;font-family:'KCStrikerSans','Courier New',monospace;margin:5px 0;--p-color:${p.avatar.color};text-shadow:0 0 20px ${p.avatar.color};">${p.name} WINS!</h2>`;
         statsHtml+=`<div style="text-align:left;margin-top:15px;font-family:monospace;background:rgba(0,0,0,0.4);border-radius:12px;padding:12px;border:1px solid #333;">`;
-        players.forEach(pl=>{
+        sorted.forEach((pl,rank)=>{
+            const isWinner=(rank===0);
+            const avatarSize=isWinner?68:48;
             const supporterLine=pl.hasThrifty?`<div style="font-size:0.7rem;color:var(--mystery-glow);letter-spacing:2px;margin-top:2px;">CODE: PLAYER${pl.merchdiscountPct} -- ${pl.merchdiscountPct}% OFF STORE</div>`:'';
-            statsHtml+=`<div style="margin-bottom:12px;border-bottom:1px solid #222;display:flex;align-items:center;gap:12px;padding-bottom:10px;">
-                <img src="${pl.avatar.img}" style="width:50px;height:50px;border-radius:50%;background:#000;border:2px solid ${pl.avatar.color};box-shadow:0 0 10px ${pl.avatar.color};">
-                <div style="flex-grow:1;"><b style="color:${pl.avatar.color};font-size:1.1rem;letter-spacing:1px;">${pl.name}</b>${supporterLine}
-                <div style="font-size:1.2rem;margin:2px 0;">${pl.accolades.join('')}</div></div></div>`;
+            statsHtml+=`<div style="margin-bottom:12px;border-bottom:1px solid #222;display:flex;align-items:center;gap:12px;padding-bottom:10px;${isWinner?'background:rgba(255,255,255,0.04);border-radius:8px;padding:10px;':'' }">
+                <img src="${pl.avatar.img}" style="width:${avatarSize}px;height:${avatarSize}px;border-radius:50%;background:#000;border:${isWinner?3:2}px solid ${pl.avatar.color};box-shadow:0 0 ${isWinner?20:10}px ${pl.avatar.color};flex-shrink:0;">
+                <div style="flex-grow:1;">
+                  <div style="display:flex;align-items:center;gap:6px;">${isWinner?'<span>🏆</span>':'<span style="font-size:0.7rem;color:rgba(255,255,255,0.3);font-family:Courier New,monospace;">#'+( rank+1)+'</span>'}
+                  <b style="color:${pl.avatar.color};font-size:${isWinner?'1.2rem':'1rem'};letter-spacing:1px;">${pl.name}</b></div>
+                  ${supporterLine}
+                  <div style="font-size:${isWinner?'1.4rem':'1.1rem'};margin:4px 0;">${pl.accolades.join('')||'—'}</div>
+                </div></div>`;
         });
         statsHtml+=`</div>`;
         const popupEl=document.getElementById('main-popup');
