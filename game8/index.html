@@ -456,6 +456,14 @@
             position:relative; transition:transform 0.18s ease,box-shadow 0.18s ease;
             cursor:help; box-sizing:border-box;
         }
+        /* Centered black outline-glow for all board space text */
+        .space .sp-text, 
+        .space .sp-emoji, 
+        .mystery-q, 
+        .tracklist-space {
+        text-shadow: 0 0 4px rgba(0, 0, 0, .8), 0 0 2px rgba(0, 0, 0, 1);
+        }
+        
         .space:hover { transform:scale(1.08); box-shadow:0 0 14px rgba(255,255,255,0.3); z-index:6; }
         .space:not(.blank):not(.mystery-space):not(.true-blank) { font-family:'KCStrikerSans','Courier New',monospace; }
         .sp-emoji { font-size:var(--space-emoji); margin-bottom:2px; }
