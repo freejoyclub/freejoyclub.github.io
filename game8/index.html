@@ -87,16 +87,21 @@
         }
         
         body::before {
-            content: '';
-            position: fixed;
-            inset: 0;
-            z-index: -1;
-            /* Static Tan/Light Brown Gradient */
-            background: linear-gradient(160deg, #a3835a 0%, #ab8f6c 100%);
-            filter: blur(4px);
-            transform: scale(1.05);
+        content: '';
+        position: fixed;
+        inset: 0;
+        z-index: -1;
+        /* Layer 1 (Top): wood.png at 30% via rgba overlay | Layer 2 (Bottom): Tan Gradient */
+        background: 
+            linear-gradient(rgba(255,255,255,0.7), rgba(255,255,255,0.7)), 
+            url('wood2.png'), 
+            linear-gradient(160deg, #a3835a 0%, #ab8f6c 100%);
+        background-blend-mode: overlay; /* Helps the texture "take on" the color below */
+        background-size: cover;
+        filter: blur(5px); /* Slight blur to keep the board readable */
+        transform: scale(1.05);
         }
-
+        
         /* ── MAIN AREA (board + passes) — ORDER: board first, bar at bottom ── */
         #main-area { flex:1; display:flex; flex-direction:row; min-height:0; overflow:hidden; position:relative; }
 
