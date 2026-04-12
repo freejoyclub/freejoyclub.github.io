@@ -18,10 +18,10 @@
             --roll-color:#00ff88; /* updated each turn to current player color */
             --bar-h:clamp(52px,10vh,110px);
             --space-size:clamp(24px,5.8vw,min(8.5vh,85px));
-            --space-font:clamp(0.28rem,0.75vw,0.75rem);
-            --space-emoji:clamp(0.5rem,1.1vw,1.4rem);
+            --space-font:clamp(0.6rem,1.5vw,1.2rem);
+            --space-emoji:clamp(0.8rem,1.8vw,1.5rem);
             --board-gap:clamp(2px,0.85vw,18px);
-            --board-pad:clamp(4px,0.8vw,24px);
+            --board-pad:clamp(5px,0.8vw,24px);
             --pass-w:clamp(90px,12.5vw,175px);
         }
 
@@ -446,7 +446,8 @@
             transform-origin:center center;
         }
 
-        /* ── SPACES ── */
+        /* ____________________________ 
+                 ── SPACES ── */
         .space {
             width:var(--space-size); height:var(--space-size);
             border-radius:50%; border:1px solid var(--tape-white);
