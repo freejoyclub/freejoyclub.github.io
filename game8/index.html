@@ -10,7 +10,7 @@
         @font-face { font-family:'KCStrikerSans'; src:url('KCStrikerSans.otf') format('opentype'); font-weight:normal; font-style:normal; }
 
         :root {
-            --wood-dark:#8b7355; --wood-mid:#b39b7d; --tape-white:#fdfdfd;
+            --wood-dark:#8f5632; --wood-mid:#b39b7d; --tape-white:#fdfdfd;
             --joy-glow:#28bf2b; --fear-glow:#bd2109; --gold:#ffd700;
             --ui-bg:rgba(0,0,0,0.98); --vinyl:#111111;
             --blue-glow:#00ccff; --teal-glow:#00ddcc;
@@ -457,7 +457,7 @@
                  ── SPACES ── */
         .space {
             width:var(--space-size); height:var(--space-size);
-            border-radius:50%; border:1px solid var(--tape-white);
+            border-radius:50%; border:3px solid var(--tape-white);
             display:flex; flex-direction:column; align-items:center; justify-content:center;
             font-weight:bold; font-size:var(--space-font); line-height:1.1;
             background:rgba(255,255,255,0.05); text-align:center;
@@ -469,10 +469,10 @@
         .space .sp-emoji, 
         .mystery-q, 
         .tracklist-space {
-        text-shadow: 0 0 4px rgba(0, 0, 0, .8), 0 0 2px rgba(0, 0, 0, 1);
+        text-shadow: 0 0 3px rgba(0, 0, 0, .5), 0 0 1px rgba(0, 0, 0, .7);
         }
         
-        .space:hover { transform:scale(1.08); box-shadow:0 0 14px rgba(255,255,255,0.3); z-index:6; }
+        .space:hover { transform:scale(1.06); box-shadow:0 0 14px rgba(255,255,255,0.3); z-index:6; }
         .space:not(.blank):not(.mystery-space):not(.true-blank) { font-family:'KCStrikerSans','Courier New',monospace; }
         .sp-emoji { font-size:var(--space-emoji); margin-bottom:2px; }
         .sp-text  { padding:0 2px; }
@@ -679,8 +679,8 @@
         @media (max-width:900px),(orientation:portrait) {
             :root {
                 --space-size:clamp(22px,7.8vw,70px);
-                --space-font:clamp(0.25rem,1.4vw,0.62rem);
-                --space-emoji:clamp(0.42rem,1.7vw,1rem);
+                --space-font:clamp(0.28rem,1.6vw,0.65rem);
+                --space-emoji:clamp(0.45rem,1.9vw,1.2rem);
                 --board-gap:clamp(2px,1.1vw,9px);
                 --board-pad:clamp(3px,1.1vw,12px);
                 --bar-h:clamp(48px,9vh,78px);
