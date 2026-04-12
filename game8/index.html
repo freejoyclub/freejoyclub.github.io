@@ -2230,13 +2230,16 @@
         checkNextHonor(p);
     }
     function checkNextHonor(p){
+        const _hnIdx=turnIdx;
         if(p.ghostCounter>0){
+            isRolling=true;isMoving=true;
             showStatusPopup("👻 GHOST CHECK","Did you stay quiet?",
-                "YES - I WAS SILENT",()=>{p.ghostCounter=0;endTurn();},"NO - I SLIPPED",()=>{p.ghostCounter=0;movePlayer(-1,false,turnIdx);});return;
+                "YES - I WAS SILENT",()=>{players[_hnIdx].ghostCounter=0;isRolling=false;isMoving=false;document.getElementById('overlay-event').style.display='none';document.getElementById('roll-btn').disabled=false;},"NO - I SLIPPED",()=>{players[_hnIdx].ghostCounter=0;movePlayer(-1,false,_hnIdx);});return;
         }
         if(p.smileActive){
+            isRolling=true;isMoving=true;
             showStatusPopup("💀 THE ENDLESS SMILE","Did you hold the smile?",
-                "HELD IT",()=>{p.smileActive=false;endTurn();},"BROKE IT",()=>{p.smileActive=false;movePlayer(-1,false,turnIdx);});return;
+                "HELD IT",()=>{players[_hnIdx].smileActive=false;isRolling=false;isMoving=false;document.getElementById('overlay-event').style.display='none';document.getElementById('roll-btn').disabled=false;},"BROKE IT",()=>{players[_hnIdx].smileActive=false;movePlayer(-1,false,_hnIdx);});return;
         }
         performActualRoll();
     }
