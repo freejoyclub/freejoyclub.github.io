@@ -691,8 +691,8 @@
         .btn-nevermind:hover { background:rgba(255,68,68,0.12); color:var(--fear-glow); border-color:var(--fear-glow); }
         /* Credits line */
         .credits-line {
-            font-family:'Courier New',monospace; font-size:0.62rem;
-            letter-spacing:2px; color:rgba(255,255,255,0.3);
+            font-family:'Courier New',monospace; font-size:0.69rem;
+            letter-spacing:2px; color:rgba(255,255,255,0.5);
             text-align:center; margin-top:16px; text-transform:uppercase;
         }
         .intro-header { font-size:clamp(1.6rem,5vw,3.5rem); color:var(--gold); animation:introGlow 2s ease-in-out infinite alternate; margin-bottom:16px; font-family:'KCStrikerSans','Courier New',monospace; letter-spacing:4px; }
@@ -1933,7 +1933,7 @@
                     const desc=document.getElementById('event-desc');
                     if(desc&&!desc.querySelector('.credits-line')){
                         const c=document.createElement('div');c.className='credits-line';
-                        c.innerText='Songs / Game / Sound Design by Fearjoy';desc.appendChild(c);
+                            c.innerText = 'Music/Game/Sound Design by Fearjoy\n© 2026 Fearjoy. All rights reserved.';                    
                     }
                 },50);
             },
@@ -1950,7 +1950,7 @@
             const desc=document.getElementById('event-desc');
             if(desc&&!desc.querySelector('.credits-line')){
                 const c=document.createElement('div');c.className='credits-line';
-                c.innerText='Songs / Game / Sound Design by Fearjoy';desc.appendChild(c);
+                    c.innerText = 'Music/Game/Sound Design by Fearjoy\n© 2026 Fearjoy. All rights reserved.';            
             }
             /* Light-dismiss: clicking outside popup closes intro card */
             const ov=document.getElementById('overlay-event');
