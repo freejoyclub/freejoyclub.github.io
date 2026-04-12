@@ -1807,7 +1807,7 @@
             let tx=cx,ty=cy,rot=0,ox=0,oy=0;
             /* Tracklist spaces are scaled 1.15x so arrows are visually farther — pull 25% closer */
             const isTracklist=TRACKLIST_INDICES.includes(i)||i===0;
-            const off=sr.width*(isTracklist?0.41:0.55);
+            const off=sr.width*(isTracklist?0.43:0.55);
             if(dir==='right'){ox=off;rot=0;}
             else if(dir==='left'){ox=-off;rot=180;}
             else if(dir==='down'){oy=off;rot=90;}
