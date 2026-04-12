@@ -1,7 +1,7 @@
 <!DOCTYPE html><html lang="en"><head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Fearjoy - v24</title>
+    <title>Fearjoy - v25</title>
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
@@ -10,18 +10,18 @@
         @font-face { font-family:'KCStrikerSans'; src:url('KCStrikerSans.otf') format('opentype'); font-weight:normal; font-style:normal; }
 
         :root {
-            --wood-dark:#8f5632; --wood-mid:#b39b7d; --tape-white:#fdfdfd;
-            --joy-glow:#28bf2b; --fear-glow:#bd2109; --gold:#ffd700;
+            --wood-dark:#8b7355; --wood-mid:#b39b7d; --tape-white:#fdfdfd;
+            --joy-glow:#00ff88; --fear-glow:#ff4444; --gold:#ffd700;
             --ui-bg:rgba(0,0,0,0.98); --vinyl:#111111;
             --blue-glow:#00ccff; --teal-glow:#00ddcc;
             --pink-glow:#ff00ff; --mystery-glow:#dd99ff; --pitch-orange:#ff8800;
             --roll-color:#00ff88; /* updated each turn to current player color */
             --bar-h:clamp(52px,10vh,110px);
             --space-size:clamp(24px,5.8vw,min(8.5vh,85px));
-            --space-font:clamp(0.6rem,1.5vw,1.2rem);
-            --space-emoji:clamp(0.8rem,1.8vw,1.5rem);
+            --space-font:clamp(0.28rem,0.75vw,0.75rem);
+            --space-emoji:clamp(0.5rem,1.1vw,1.4rem);
             --board-gap:clamp(2px,0.85vw,18px);
-            --board-pad:clamp(5px,0.8vw,24px);
+            --board-pad:clamp(4px,0.8vw,24px);
             --pass-w:clamp(90px,12.5vw,175px);
         }
 
@@ -30,7 +30,7 @@
         @keyframes floatUpSlow   { 0%{transform:translateY(0) scale(1);opacity:1;}100%{transform:translateY(-180px) scale(1.8);opacity:0;} }
         @keyframes introGlow     { from{text-shadow:0 0 10px var(--gold),0 0 20px var(--gold);}to{text-shadow:0 0 20px var(--gold),0 0 40px #fffad1;} }
         @keyframes pieceHover    { 0%{transform:translate(0,0);}33%{transform:translate(3px,-3px);}66%{transform:translate(-2px,1px);}100%{transform:translate(0,0);} }
-        @keyframes turnPulse     { 0%{filter:drop-shadow(0 0 5px var(--p-color));transform:translate(0,0) scale(1);}30%{filter:drop-shadow(0 0 15px var(--p-color));transform:translate(0,-4px) scale(1.1);}100%{filter:drop-shadow(0 0 5px var(--p-color));transform:translate(0,0) scale(1);} }
+        @keyframes turnPulse     { 0%{filter:drop-shadow(0 0 5px var(--p-color));transform:translate(0,0) scale(1);}50%{filter:drop-shadow(0 0 20px var(--p-color));transform:translate(0,-4px) scale(1.15);}100%{filter:drop-shadow(0 0 5px var(--p-color));transform:translate(0,0) scale(1);} }
         @keyframes winPulse      { 0%{transform:scale(1);filter:drop-shadow(0 0 5px var(--p-color));}50%{transform:scale(1.1);filter:drop-shadow(0 0 20px var(--p-color));}100%{transform:scale(1);filter:drop-shadow(0 0 5px var(--p-color));} }
         @keyframes flipping      { 0%{transform:rotateY(0);}100%{transform:rotateY(1800deg);} }
         /* Roll button pulse uses current player color via CSS var */
@@ -50,8 +50,8 @@
         @keyframes menuBloom     { 0%{opacity:0;transform:scale(0.7);}100%{opacity:1;transform:scale(1);} }
         @keyframes mysteryPulse  { 0%,100%{box-shadow:0 0 8px var(--mystery-glow);}50%{box-shadow:0 0 22px var(--mystery-glow),0 0 44px var(--mystery-glow);} }
         @keyframes passNotify    { 0%,100%{box-shadow:0 0 5px var(--pitch-orange);}50%{box-shadow:0 0 20px var(--pitch-orange),0 0 40px var(--pitch-orange);} }
-        @keyframes vinylSpin     { 0%{transform:scale(1.15) rotate(0deg);animation-timing-function:ease-in;}30%{transform:scale(1.15) rotate(540deg);animation-timing-function:linear;}70%{transform:scale(1.15) rotate(1440deg);animation-timing-function:ease-out;}100%{transform:scale(1.15) rotate(1800deg);} }
-        @keyframes vinylWiggle   { 0%,100%{transform:scale(1.15) rotate(0deg);}20%{transform:scale(1.15) rotate(-3.5deg);}50%{transform:scale(1.15) rotate(3deg);}75%{transform:scale(1.15) rotate(-2deg);} }
+        @keyframes vinylSpin     { 0%{transform:scale(1.15) rotate(var(--vinyl-rot,0deg));animation-timing-function:ease-in;}30%{transform:scale(1.15) rotate(calc(var(--vinyl-rot,0deg) + 540deg));animation-timing-function:linear;}70%{transform:scale(1.15) rotate(calc(var(--vinyl-rot,0deg) + 1440deg));animation-timing-function:ease-out;}100%{transform:scale(1.15) rotate(calc(var(--vinyl-rot,0deg) + 1800deg));} }
+        @keyframes vinylWiggle   { 0%,100%{transform:scale(1.15) rotate(var(--vinyl-rot,0deg));}20%{transform:scale(1.15) rotate(calc(var(--vinyl-rot,0deg) - 3.5deg));}50%{transform:scale(1.15) rotate(calc(var(--vinyl-rot,0deg) + 3deg));}75%{transform:scale(1.15) rotate(calc(var(--vinyl-rot,0deg) - 2deg));} }
         @keyframes reelSpin      { from{transform:scale(1.15) rotate(0deg);}to{transform:scale(1.15) rotate(360deg);} }
         @keyframes spaceLand     { 0%{box-shadow:0 0 0px var(--land-color,white);}40%{box-shadow:0 0 30px var(--land-color,white),0 0 60px var(--land-color,white);}100%{box-shadow:0 0 0px var(--land-color,white);} }
         @keyframes diceRiseOut   { 0%{opacity:1;transform:translate(0,0) scale(1);}100%{opacity:0;transform:translate(0,-60px) scale(0.5);} }
@@ -74,34 +74,24 @@
         @keyframes vuBounce      { 0%{transform:rotate(-45deg);}25%{transform:rotate(20deg);}50%{transform:rotate(-30deg);}75%{transform:rotate(35deg);}100%{transform:rotate(-45deg);} }
 
         /* ── PAGE SHELL ── */
+        html,body { margin:0; padding:0; width:100%; height:100%; overflow:hidden; }
         body {
-            background: none; 
-            color: white;
-            font-family: 'Courier New', monospace;
-            display: flex;
-            flex-direction: column;
-            height: 100vh;
-            height: 100dvh;
-            overflow: hidden;
-            position: relative;
+            background:none; animation:woodFade 20s ease-in-out infinite;
+            color:white; font-family:'Courier New',monospace;
+            display:flex; flex-direction:column;
+            height:100vh; height:100dvh; overflow:hidden; position:relative;
         }
-        
         body::before {
-        content: '';
-        position: fixed;
-        inset: 0;
-        z-index: -1;
-        /* Layer 1 (Top): wood.png at 30% via rgba overlay | Layer 2 (Bottom): Tan Gradient */
-        background: 
-            linear-gradient(rgba(255,255,255,0.7), rgba(255,255,255,0.7)), 
-            url('wood4.png'), 
-            linear-gradient(160deg, #a3835a 0%, #ab8f6c 100%);
-        background-blend-mode: overlay; /* Helps the texture "take on" the color below */
-        background-size: cover;
-        filter: blur(5px); /* Slight blur to keep the board readable */
-        transform: scale(1.05);
+            content:''; position:fixed; inset:0; z-index:-1;
+            background:
+                linear-gradient(rgba(255,255,255,0.7),rgba(255,255,255,0.7)),
+                url('wood4.png'),
+                linear-gradient(160deg,#a3835a 0%,#ab8f6c 100%);
+            background-blend-mode:overlay;
+            background-size:cover;
+            filter:blur(5px); transform:scale(1.05);
         }
-        
+
         /* ── MAIN AREA (board + passes) — ORDER: board first, bar at bottom ── */
         #main-area { flex:1; display:flex; flex-direction:row; min-height:0; overflow:hidden; position:relative; }
 
@@ -114,7 +104,7 @@
             border:1px solid rgba(255,255,255,0.1); border-bottom:none;
             width:100%; box-sizing:border-box;
             z-index:20; position:relative; flex-shrink:0;
-            background:linear-gradient(180deg,#111 0%,#0a0a0a 40%,#080808 70%,#0f0f0f 100%);
+            background:linear-gradient(180deg,#111 0%,#0a0a0a 40%,#080808 70%,#060606 100%);
             box-shadow:0 -2px 16px rgba(0,0,0,0.9),inset 0 1px 0 rgba(255,255,255,0.05);
             overflow:visible;
         }
@@ -183,12 +173,12 @@
             content:''; position:absolute; bottom:0; left:0; right:0; top:0;
             pointer-events:none;
             background:
-                linear-gradient(to right,transparent 10%,rgba(0,0,0,0.05) 10%,rgba(0,0,0,0.05) 11%,transparent 11%),
-                linear-gradient(to right,transparent 20%,rgba(0,0,0,0.05) 20%,rgba(0,0,0,0.05) 21%,transparent 21%),
-                linear-gradient(to right,transparent 35%,rgba(0,0,0,0.04) 35%,rgba(0,0,0,0.04) 436%,transparent 36%),
-                linear-gradient(to right,transparent 57%,rgba(0,0,0,0.05) 57%,rgba(0,0,0,0.05) 58%,transparent 58%),
-                linear-gradient(to right,transparent 71%,rgba(0,0,0,0.05) 71%,rgba(0,0,0,0.05) 72%,transparent 72%),
-                linear-gradient(to right,transparent 85%,rgba(0,0,0,0.05) 85%,rgba(0,0,0,0.05) 86%,transparent 86%);
+                linear-gradient(to right,transparent 13%,rgba(0,0,0,0.35) 13%,rgba(0,0,0,0.35) 14%,transparent 14%),
+                linear-gradient(to right,transparent 27%,rgba(0,0,0,0.35) 27%,rgba(0,0,0,0.35) 28%,transparent 28%),
+                linear-gradient(to right,transparent 41%,rgba(0,0,0,0.4) 41%,rgba(0,0,0,0.4) 42.5%,transparent 42.5%),
+                linear-gradient(to right,transparent 57%,rgba(0,0,0,0.35) 57%,rgba(0,0,0,0.35) 58%,transparent 58%),
+                linear-gradient(to right,transparent 71%,rgba(0,0,0,0.35) 71%,rgba(0,0,0,0.35) 72%,transparent 72%),
+                linear-gradient(to right,transparent 85%,rgba(0,0,0,0.35) 85%,rgba(0,0,0,0.35) 86%,transparent 86%);
         }
         #vu-arc::after { display:none; }
 
@@ -245,8 +235,8 @@
             width:clamp(28px,3.8vw,52px); height:clamp(26px,3.2vw,42px);
             border-radius:6px; background:#1a1a1a; border:1.5px solid #660000;
             cursor:pointer; color:#bb1111; font-family:sans-serif;
-            font-size:clamp(0.38rem,0.6vw,0.58rem); font-weight:bold;
-            letter-spacing:.9px; text-transform:uppercase;
+            font-size:clamp(0.42rem,0.7vw,0.65rem); font-weight:bold;
+            letter-spacing:1px; text-transform:uppercase;
             box-shadow:0 0 6px rgba(160,0,0,0.35);
             transition:all 0.15s ease;
             display:flex; align-items:center; justify-content:center;
@@ -391,7 +381,7 @@
         .pass-stripe   { background:linear-gradient(90deg,var(--p-color,#888) 0%,transparent 100%); opacity:0.45; height:clamp(2px,0.32vw,4px); border-radius:2px; margin-top:clamp(2px,0.3vw,5px); filter:brightness(0.7); }
 
         /* ── PASS EXPANDED ── */
-        #pass-expanded-backdrop { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.55); z-index:3000; align-items:center; justify-content:center; }
+        #pass-expanded-backdrop { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.65); z-index:3000; align-items:center; justify-content:center; }
         #pass-expanded-backdrop.open { display:flex; }
         #pass-expanded-card {
             background:linear-gradient(160deg,#ede8dc 0%,#e2d9c4 55%,#d8ccb0 100%);
@@ -458,26 +448,19 @@
             transform-origin:center center;
         }
 
-        /* ____________________________ 
-                 ── SPACES ── */
+        /* ── SPACES ── */
         .space {
             width:var(--space-size); height:var(--space-size);
-            border-radius:50%; border:3px solid var(--tape-white);
+            border-radius:50%; border:1px solid var(--tape-white);
             display:flex; flex-direction:column; align-items:center; justify-content:center;
             font-weight:bold; font-size:var(--space-font); line-height:1.1;
             background:rgba(255,255,255,0.05); text-align:center;
             position:relative; transition:transform 0.18s ease,box-shadow 0.18s ease;
             cursor:help; box-sizing:border-box;
         }
-        /* Centered black outline-glow for all board space text */
-        .space .sp-text, 
-        .space .sp-emoji, 
-        .mystery-q, 
-        .tracklist-space {
-        text-shadow: 0 0 3px rgba(0, 0, 0, .5), 0 0 1px rgba(0, 0, 0, .7);
-        }
-        
         .space:hover { transform:scale(1.06); box-shadow:0 0 14px rgba(255,255,255,0.3); z-index:6; }
+        /* Text shadow for readability on wood background */
+        .space .sp-text,.space .sp-emoji,.mystery-q { text-shadow:0 0 3px rgba(0,0,0,0.5),0 0 1px rgba(0,0,0,0.7); }
         .space:not(.blank):not(.mystery-space):not(.true-blank) { font-family:'KCStrikerSans','Courier New',monospace; }
         .sp-emoji { font-size:var(--space-emoji); margin-bottom:2px; }
         .sp-text  { padding:0 2px; }
@@ -500,7 +483,7 @@
         .tracklist-space {
             background:url('vinyl.png?v=24') center/cover var(--vinyl) !important;
             border:3px double #666 !important; box-shadow:inset 0 0 15px #000;
-            transform:scale(1.15); z-index:5; font-size:var(--space-font) !important; color:white !important;
+            transform:scale(1.15) rotate(var(--vinyl-rot,0deg)); z-index:5; font-size:var(--space-font) !important; color:white !important;
         }
         .tracklist-space:hover { transform:scale(1.22) !important; box-shadow:inset 0 0 15px #000,0 0 14px rgba(255,255,255,0.25) !important; }
         .tracklist-space.vinyl-spinning { animation:vinylSpin 3.2s ease forwards !important; transform-origin:center center !important; }
@@ -511,8 +494,8 @@
             border:3px solid rgba(255,255,255,0.4) !important;
             transform:scale(1.15); z-index:5;
         }
-        .reel-space.reel-spinning { animation:reelSpin 10s linear infinite !important; transform-origin:center center !important; }
-        .win-track  { background:url('reel1.png?v=24') center/cover rgba(0,0,0,0.5) !important; border:4px solid var(--blue-glow) !important; box-shadow:0 0 30px var(--blue-glow); transform:scale(1.2) !important; z-index:10 !important; }
+        .reel-space.reel-spinning { animation:reelSpin 12s linear infinite !important; transform-origin:center center !important; }
+        .win-track  { background:url('reel1.png?v=24') center/cover rgba(0,0,0,0.5) !important; border:4px solid var(--blue-glow) !important; box-shadow:0 0 30px var(--blue-glow); transform:scale(1.4) !important; z-index:10 !important; }
         .joy-space  { border-color:var(--joy-glow)  !important; color:var(--joy-glow)  !important; }
         .fear-space { border-color:var(--fear-glow) !important; color:var(--fear-glow) !important; }
         .hybrid     { border-style:dotted; border-width:3px; border-color:white; }
@@ -632,7 +615,11 @@
             font-weight:900; color:var(--joy-glow);
             margin:16px 0; display:none; line-height:1;
         }
-        .btn-nevermind {
+        /* Action bar — reset flex each time; timers set column, normal modals use default */
+        #action-bar { display:flex; flex-wrap:wrap; justify-content:center; gap:8px; }
+        #action-bar.timer-mode { flex-direction:column; align-items:center; gap:8px; }
+        /* Popup mini mute syncs with master mute */
+        #popup-mute-btn.muted { background:#880000; border-color:#cc0000; color:#000; }
             display:inline-block; margin-top:10px; padding:8px 20px;
             background:transparent; border:1px solid rgba(255,68,68,0.55);
             color:rgba(255,68,68,0.7); font-family:'Courier New',monospace;
@@ -684,8 +671,8 @@
         @media (max-width:900px),(orientation:portrait) {
             :root {
                 --space-size:clamp(22px,7.8vw,70px);
-                --space-font:clamp(0.28rem,1.6vw,0.65rem);
-                --space-emoji:clamp(0.45rem,1.9vw,1.2rem);
+                --space-font:clamp(0.25rem,1.4vw,0.62rem);
+                --space-emoji:clamp(0.42rem,1.7vw,1rem);
                 --board-gap:clamp(2px,1.1vw,9px);
                 --board-pad:clamp(3px,1.1vw,12px);
                 --bar-h:clamp(48px,9vh,78px);
@@ -768,7 +755,6 @@
                 <div class="knob-line"></div><div class="knob-line"></div><div class="knob-line"></div>
             </button>
             <div id="nav-menu">
-                <button class="nav-menu-btn btn-audio" id="audio-btn" onclick="toggleAudio()"><span class="nav-icon" id="audio-icon">🔊</span> SOUND: <span id="audio-status">ON</span></button>
                 <button class="nav-menu-btn btn-tracks" id="tracks-btn" onclick="toggleTracks()"><span class="nav-icon" id="tracks-icon">🎵</span> TRACKS: <span id="tracks-status">ON</span></button>
                 <button class="nav-menu-btn btn-sfx" id="sfx-btn" onclick="toggleSfx()"><span class="nav-icon" id="sfx-icon">🔔</span> SFX: <span id="sfx-status">ON</span></button>
                 <button class="nav-menu-btn btn-accolade-key" onclick="showAccoladeKey();closeNavMenu()"><span class="nav-icon">🔑</span> Accolades Key</button>
@@ -787,7 +773,7 @@
         <div id="pass-expanded-card">
             <span class="exp-close" onclick="collapsePass()">×</span>
             <div style="width:20px;height:9px;background:#888;border-radius:3px 3px 0 0;margin:0 auto 8px;"></div>
-            <div class="pass-all-access" style="text-align:center;margin-bottom:6px;font-size:0.6rem;letter-spacing:3px;color:rgba(60,60,60,0.55);">All-Access Pass</div>
+            <div class="pass-all-access" style="text-align:center;margin-bottom:6px;font-size:0.6rem;letter-spacing:3px;color:rgba(255,255,255,0.35);">All-Access Pass</div>
             <img id="exp-avatar" class="exp-avatar" src="" alt="">
             <div class="exp-name" id="exp-name"></div>
             <div class="exp-section-label">Status</div>
@@ -819,10 +805,19 @@
     <!-- ══ EVENT OVERLAY ══ -->
     <div id="overlay-event" class="overlay">
         <div class="popup" id="main-popup">
+            <!-- Mini controls top-right of every modal -->
+            <div style="position:absolute;top:12px;right:14px;display:flex;gap:6px;z-index:10;">
+                <button onclick="toggleMute()" id="popup-mute-btn" style="background:#1a1a1a;border:1px solid #660000;color:#bb1111;border-radius:5px;font-size:0.55rem;font-weight:bold;letter-spacing:1px;padding:3px 7px;cursor:pointer;text-transform:uppercase;transition:all 0.15s;">MUTE</button>
+                <button onclick="toggleNavMenu()" style="background:#1a1a1a;border:1px solid #444;border-radius:5px;padding:4px 6px;cursor:pointer;display:flex;flex-direction:column;gap:2px;align-items:center;justify-content:center;transition:all 0.15s;">
+                    <div style="width:12px;height:1.5px;background:rgba(255,255,255,0.65);border-radius:1px;"></div>
+                    <div style="width:12px;height:1.5px;background:rgba(255,255,255,0.65);border-radius:1px;"></div>
+                    <div style="width:12px;height:1.5px;background:rgba(255,255,255,0.65);border-radius:1px;"></div>
+                </button>
+            </div>
             <h1 id="event-title"></h1>
             <div id="event-desc" style="color:#ccc;margin-bottom:25px;line-height:1.6;"></div>
             <div id="coin" style="width:140px;height:140px;background:var(--gold);border:8px solid #b8860b;border-radius:50%;margin:25px auto;display:none;align-items:center;justify-content:center;font-size:2.5rem;font-weight:bold;color:#5c4305;transform-style:preserve-3d;">?</div>
-            <div id="timer-ui" style="font-size:clamp(2.5rem,8vw,5rem);font-weight:900;color:var(--joy-glow);margin:20px 0;display:none;"></div>
+            <div id="timer-ui" style="display:none;"></div>
             <div id="action-bar">
                 <button id="event-btn-primary"></button>
                 <button id="event-btn-secondary"></button>
@@ -894,7 +889,7 @@
     let highestDiscountPct=0;
 
     const AVAILABLE_COLORS=[
-        {hex:'#00ccff',name:'Cyan'},{hex:'#ffcc00',name:'Gold'},
+        {hex:'#00ccff',name:'Cyan'},
         {hex:'#ff00ff',name:'Magenta'},{hex:'#00ff88',name:'Mint'},
         {hex:'#ff4444',name:'Red'},{hex:'#ff8800',name:'Orange'},
     ];
@@ -1121,8 +1116,6 @@
     /* Sync all audio UI indicators */
     function syncAudioUI(){
         const muted=masterMuted||!audioEnabled;
-        document.getElementById('audio-status').innerText=audioEnabled?'ON':'OFF';
-        document.getElementById('audio-icon').innerText=audioEnabled?'🔊':'🔇';
         document.getElementById('tracks-status').innerText=tracksEnabled?'ON':'OFF';
         document.getElementById('tracks-icon').innerText=tracksEnabled?'🎵':'🔕';
         document.getElementById('sfx-status').innerText=sfxEnabled?'ON':'OFF';
@@ -1131,6 +1124,12 @@
         if(muteBtn){
             muteBtn.innerText=masterMuted?'UNMUTE':'MUTE';
             muteBtn.classList.toggle('muted',masterMuted);
+        }
+        /* Sync popup mini-mute button */
+        const popupMute=document.getElementById('popup-mute-btn');
+        if(popupMute){
+            popupMute.innerText=masterMuted?'UNMUTE':'MUTE';
+            popupMute.classList.toggle('muted',masterMuted);
         }
         const ctx=getAudioCtx();
         if(muted){
@@ -1850,6 +1849,11 @@
         });
         updateUI();
         document.getElementById('roll-btn').disabled=false;
+        /* Assign random rotation offsets to each vinyl/tracklist space */
+        TRACKLIST_INDICES.forEach(i=>{
+            const s=document.getElementById('s'+i);
+            if(s){const deg=Math.floor(Math.random()*360);s.style.setProperty('--vinyl-rot',deg+'deg');}
+        });
         startVinylWiggles();
         setTimeout(()=>{drawArrows(layoutMode);drawTapePath();updatePositions();},250);
         if(!isRestart)setTimeout(showInstructions,400);
@@ -2112,7 +2116,12 @@
             hideLoreBackdrop();
             isInLoreDrop=false;
             if(loreDoneResolver){loreDoneResolver();loreDoneResolver=null;}
-            /* Fall through to normal roll below */
+            /* isRolling/isMoving were cleared when lore drop started — but
+               isRolling may still be true from the prior performActualRoll.
+               Clear both so the fall-through below can proceed to roll. */
+            isMoving=false;isRolling=false;
+            /* Small delay so movePlayer's endTurn() fires first, advancing turnIdx */
+            await new Promise(r=>setTimeout(r,50));
         }
         /* Hard guard — isRolling blocks re-entry during entire roll+move sequence */
         if(isRolling||isMoving||isSwapping||isMayaPartner)return;
@@ -2363,20 +2372,14 @@
     // nevermind button, coinclip at 0. Used by Figment, Dmitri.
     // onDone(true) = completed, onDone(false) = nevermind/penalty
     // ══════════════════════════════════════════════
-
-        function startGameTimer(seconds, timerEl, actionBar, onDone){
+    function startGameTimer(seconds, timerEl, actionBar, onDone){
         stopMetronome();
         let t=seconds;
-        timerEl.style.fontFamily="'KCStrikerSans','Courier New',monospace";
         timerEl.style.display='block';
         timerEl.innerText=t;
         startMetronome();
-
-        // Center-justify the buttons in the action bar
-        actionBar.style.display='flex';
-        actionBar.style.flexDirection='column';
-        actionBar.style.alignItems='center';
-        actionBar.style.gap='8px';
+        /* Put action bar in column/centered mode for timer */
+        actionBar.classList.add('timer-mode');
 
         /* Nevermind button */
         let nmBtn=document.getElementById('timer-nevermind');
@@ -2389,50 +2392,40 @@
         }
         nmBtn.style.display='block';
 
-        /* Mute button */
-        let muteBtn=document.getElementById('timer-mute');
-        if(!muteBtn){
-            muteBtn=document.createElement('button');
-            muteBtn.id='timer-mute';
-            muteBtn.style.background='none';
-            muteBtn.style.border='none';
-            muteBtn.style.cursor='pointer';
-            muteBtn.style.fontSize='20px';
-            muteBtn.innerText='🔊';
-            muteBtn.onclick=()=>{
-                if(muteBtn.innerText==='🔊'){
-                    muteBtn.innerText='🔇';
-                    stopMetronome();
-                } else {
-                    muteBtn.innerText='🔊';
-                    startMetronome();
-                }
-            };
-            actionBar.appendChild(muteBtn);
+        /* Timer mute button */
+        let tmBtn=document.getElementById('timer-mute');
+        if(!tmBtn){
+            tmBtn=document.createElement('button');
+            tmBtn.id='timer-mute';
+            tmBtn.style.cssText='background:none;border:none;cursor:pointer;font-size:1.3rem;opacity:0.7;transition:opacity 0.2s;';
+            tmBtn.innerText='🔊';
+            actionBar.appendChild(tmBtn);
         }
-        muteBtn.style.display='block';
-        muteBtn.innerText='🔊'; // Reset to sound on for new timer
+        tmBtn.style.display='block';
+        tmBtn.innerText=masterMuted?'🔇':'🔊';
+        tmBtn.onclick=()=>{
+            masterMuted=!masterMuted;
+            if(masterMuted){stopMetronome();tmBtn.innerText='🔇';}
+            else{startMetronome();tmBtn.innerText='🔊';}
+            syncAudioUI();
+        };
 
         const cleanUp=()=>{
             clearInterval(clock);
             stopMetronome();
+            timerEl.style.display='none';
+            timerEl.innerText='';
             nmBtn.style.display='none';
-            muteBtn.style.display='none';
+            tmBtn.style.display='none';
+            /* Restore action bar to normal row layout */
+            actionBar.classList.remove('timer-mode');
         };
 
-        nmBtn.onclick=()=>{
-            cleanUp();
-            onDone(false);
-        };
+        nmBtn.onclick=()=>{cleanUp();onDone(false);};
 
         const clock=setInterval(()=>{
-            t--;
-            timerEl.innerText=t;
-            if(t<=0){
-                cleanUp();
-                playSfx('coinclip.wav');
-                onDone(true);
-            }
+            t--;timerEl.innerText=t;
+            if(t<=0){cleanUp();playSfx('coinclip.wav');onDone(true);}
         },1000);
         return clock;
     }
@@ -2482,7 +2475,14 @@
         coin.style.display='none';
         pBtn.style.display='inline-block';pBtn.disabled=false;
         title.innerText=(r.emoji||"")+" "+r.title;
-        desc.innerText=r.desc||"";pBtn.innerText="CONTINUE";sBtn.style.display='none';timerUI.style.display='none';
+        desc.innerText=r.desc||"";pBtn.innerText="CONTINUE";sBtn.style.display='none';
+        /* Hard-reset timer state on every new modal — clears any mid-count leftovers */
+        timerUI.style.display='none';timerUI.innerText='';
+        const actionBar=document.getElementById('action-bar');
+        actionBar.classList.remove('timer-mode');
+        const nmBtn=document.getElementById('timer-nevermind');if(nmBtn)nmBtn.style.display='none';
+        const tmBtn=document.getElementById('timer-mute');if(tmBtn)tmBtn.style.display='none';
+        stopMetronome();
         modal.style.display='flex';resetKbFocus();
 
         if(r.skipTurns){
@@ -2530,7 +2530,7 @@
             const fadeOutVideo=(vid)=>{if(!vid)return;let vol=vid.volume||1;const fade=setInterval(()=>{if(vol>0.1){vol-=0.1;vid.volume=vol;}else{vid.pause();clearInterval(fade);}},200);};
             if(r.choice==='remedy'){
                 const remedyDesc=document.createElement('div');
-                remedyDesc.innerHTML=`<div id="video-wrapper" style="position:relative;width:80%;margin-bottom:14px;border-radius:8px;overflow:hidden;background:#000;border:1px solid #333;"><div id="close-video" style="position:absolute;top:5px;right:10px;color:white;cursor:pointer;font-size:22px;font-weight:bold;z-index:10;text-shadow:0 0 5px #000;">×</div><video id="remedy-video" style="width:100%;display:block;" autoplay playsinline><source src="trevortrim.mp4?v=24" type="video/mp4"></video></div>
+                remedyDesc.innerHTML=`<div id="video-wrapper" style="position:relative;width:70%;margin:0 auto 14px;border-radius:8px;overflow:hidden;background:#000;border:1px solid #333;"><div id="close-video" style="position:absolute;top:5px;right:10px;color:white;cursor:pointer;font-size:22px;font-weight:bold;z-index:10;text-shadow:0 0 5px #000;">×</div><video id="remedy-video" style="width:100%;display:block;" autoplay playsinline><source src="trevortrim.mp4?v=24" type="video/mp4"></video></div>
 <div style="margin-bottom:8px;">The cure for your obscurity!<br>A major label likes your sound.<br><b style="color:var(--joy-glow);">Sign for +6 spaces now!</b></div>
 <div style="font-family:'Courier New',monospace;font-size:0.88rem;color:rgba(255,255,255,0.72);margin-top:8px;"><span style="display:inline-block;animation:phoneWiggle 1.8s ease-in-out infinite;">📱</span> Hey, it's your lawyer. I suggest you:</div>`;
                 const fpBtn2=document.createElement('button');
@@ -2702,6 +2702,12 @@
         const partner=players[partnerIdx];
         const capturedTurnIdx=turnIdx;
         overlay.style.display='flex';
+        /* Clear any leftover timer state */
+        timerUI.style.display='none';timerUI.innerText='';
+        actionBar.classList.remove('timer-mode');
+        const _nm=document.getElementById('timer-nevermind');if(_nm)_nm.style.display='none';
+        const _tm=document.getElementById('timer-mute');if(_tm)_tm.style.display='none';
+        stopMetronome();
         /* Step 1: show partner name, wait for "Start Staring" tap */
         desc.innerHTML=`<div style="margin-bottom:14px;">Eye contact challenge with<br><b style="color:var(--blue-glow);font-size:1.2em;">${partner.name}</b></div>
             <div style="font-size:0.9rem;color:rgba(255,255,255,0.6);">Hold 10s of eye contact for <b style="color:var(--joy-glow);">Both +2</b>.<br>Avoid for <b style="color:var(--fear-glow);">Both -1</b>.</div>`;
@@ -2821,6 +2827,12 @@
         document.getElementById('event-title').innerText=t;
         document.getElementById('event-desc').innerText=d;
         document.getElementById('coin').style.display='none';
+        /* Clear any leftover timer state */
+        const tu=document.getElementById('timer-ui');if(tu){tu.style.display='none';tu.innerText='';}
+        const ab=document.getElementById('action-bar');if(ab)ab.classList.remove('timer-mode');
+        const nm=document.getElementById('timer-nevermind');if(nm)nm.style.display='none';
+        const tm=document.getElementById('timer-mute');if(tm)tm.style.display='none';
+        stopMetronome();
         const pBtn=document.getElementById('event-btn-primary');
         pBtn.style.display='inline-block';pBtn.innerText=b1;
         pBtn.onclick=async()=>{modal.style.display='none';await new Promise(r=>setTimeout(r,200));c1();};
