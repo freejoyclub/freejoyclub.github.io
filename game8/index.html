@@ -1,7 +1,7 @@
 <!DOCTYPE html><html lang="en"><head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Fearjoy - v26</title>
+    <title>Fearjoy - v27</title>
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
@@ -48,7 +48,19 @@
         @keyframes popupFloat    { 0%{transform:translateY(0) rotateX(0deg) rotateZ(0deg);}25%{transform:translateY(-4px) rotateX(0.4deg) rotateZ(0.2deg);}50%{transform:translateY(-2px) rotateX(-0.3deg) rotateZ(-0.15deg);}75%{transform:translateY(-5px) rotateX(0.2deg) rotateZ(0.1deg);}100%{transform:translateY(0) rotateX(0deg) rotateZ(0deg);} }
         @keyframes popupShine    { 0%{background-position:-300% center;opacity:0;}40%{opacity:1;}60%{opacity:1;}100%{background-position:300% center;opacity:0;} }
         @keyframes menuBloom     { 0%{opacity:0;transform:scale(0.7);}100%{opacity:1;transform:scale(1);} }
-        @keyframes mysteryPulse  { 0%,100%{box-shadow:0 0 8px var(--mystery-glow);}50%{box-shadow:0 0 22px var(--mystery-glow),0 0 44px var(--mystery-glow);} }
+        /* Mystery space — cool multi-color slow loop */
+        @keyframes mysteryPulse  {
+            0%  {box-shadow:0 0 8px #dd99ff,0 0 16px #dd99ff;}
+            20% {box-shadow:0 0 12px #88ddff,0 0 28px #44bbff;}
+            40% {box-shadow:0 0 8px #aa66cc,0 0 18px #882299;}
+            60% {box-shadow:0 0 14px #ff88cc,0 0 30px #dd44aa;}
+            80% {box-shadow:0 0 10px #88ddff,0 0 22px #55ccee;}
+            100%{box-shadow:0 0 8px #dd99ff,0 0 16px #dd99ff;}
+        }
+        /* Space border flicker keyframes */
+        @keyframes joyFlicker    {0%,100%{box-shadow:0 0 6px var(--joy-glow);}50%{box-shadow:0 0 18px var(--joy-glow),0 0 30px var(--joy-glow);}}
+        @keyframes fearFlicker   {0%,100%{box-shadow:0 0 6px var(--fear-glow);}50%{box-shadow:0 0 18px var(--fear-glow),0 0 30px var(--fear-glow);}}
+        @keyframes specialFlicker{0%,100%{box-shadow:0 0 6px rgba(255,255,255,0.7);}50%{box-shadow:0 0 18px rgba(255,255,255,0.9),0 0 30px rgba(255,255,255,0.5);}}
         @keyframes passNotify    { 0%,100%{box-shadow:0 0 5px var(--pitch-orange);}50%{box-shadow:0 0 20px var(--pitch-orange),0 0 40px var(--pitch-orange);} }
         @keyframes vinylSpin     { 0%{transform:scale(1.15) rotate(0deg);animation-timing-function:ease-in;}30%{transform:scale(1.15) rotate(540deg);animation-timing-function:linear;}70%{transform:scale(1.15) rotate(1440deg);animation-timing-function:ease-out;}100%{transform:scale(1.15) rotate(1800deg);} }
         @keyframes vinylWiggle   { 0%,100%{transform:scale(1.15) rotate(0deg);}20%{transform:scale(1.15) rotate(-3.5deg);}50%{transform:scale(1.15) rotate(3deg);}75%{transform:scale(1.15) rotate(-2deg);} }
@@ -73,14 +85,16 @@
         /* VU needle bounce animation during roll */
         @keyframes vuBounce      { 0%{transform:rotate(-45deg);}25%{transform:rotate(20deg);}50%{transform:rotate(-30deg);}75%{transform:rotate(35deg);}100%{transform:rotate(-45deg);} }
 
-        /* Animated warm tan background gradient */
+        /* Animated warm tan background gradient — slow, smooth, more varied */
         @keyframes bgFade {
-            0%   { background:linear-gradient(145deg,#cc8049 0%,#bf7e58 40%,#c98a52 100%); }
-            20%  { background:linear-gradient(165deg,#c4773e 0%,#c8825a 50%,#bf7e58 100%); }
-            40%  { background:linear-gradient(135deg,#bf7e58 0%,#c98a52 45%,#c4773e 100%); }
-            60%  { background:linear-gradient(155deg,#c98a52 0%,#bf7e58 40%,#cc8049 100%); }
-            80%  { background:linear-gradient(125deg,#c4773e 0%,#cc8049 55%,#c98a52 100%); }
-            100% { background:linear-gradient(145deg,#cc8049 0%,#bf7e58 40%,#c98a52 100%); }
+            0%  {background:linear-gradient(145deg,#cc8049 0%,#a86030 35%,#bf7e58 68%,#d4915a 100%);}
+            14% {background:linear-gradient(168deg,#b86a35 0%,#c88055 30%,#c0754a 62%,#bf7e58 100%);}
+            28% {background:linear-gradient(128deg,#bf7e58 0%,#b06535 28%,#c98a52 58%,#c4773e 100%);}
+            42% {background:linear-gradient(152deg,#c98a52 0%,#bf7e58 32%,#b86a35 60%,#cc8049 100%);}
+            57% {background:linear-gradient(138deg,#c4773e 0%,#d4915a 28%,#bf7e58 62%,#a86030 100%);}
+            71% {background:linear-gradient(162deg,#cc8049 0%,#c4773e 36%,#d4915a 68%,#c98a52 100%);}
+            85% {background:linear-gradient(132deg,#b86a35 0%,#bf7e58 30%,#cc8049 62%,#c4773e 100%);}
+            100%{background:linear-gradient(145deg,#cc8049 0%,#a86030 35%,#bf7e58 68%,#d4915a 100%);}
         }
 
         /* ── PAGE SHELL ── */
@@ -94,13 +108,13 @@
         /* Farthest-back layer: animated tan gradient */
         body::before {
             content:''; position:fixed; inset:0; z-index:-2;
-            animation:bgFade 28s ease-in-out infinite;
-            background:linear-gradient(145deg,#cc8049 0%,#bf7e58 40%,#c98a52 100%);
+            animation:bgFade 55s ease-in-out infinite;
+            background:linear-gradient(145deg,#cc8049 0%,#a86030 35%,#bf7e58 70%,#d4915a 100%);
         }
-        /* Vignette layer, just above bg */
+        /* Vignette layer, just above bg — darker */
         body::after {
             content:''; position:fixed; inset:0; z-index:-1; pointer-events:none;
-            background:radial-gradient(ellipse 85% 80% at 50% 50%,transparent 40%,rgba(0,0,0,0.35) 100%);
+            background:radial-gradient(ellipse 80% 75% at 50% 50%,transparent 30%,rgba(0,0,0,0.55) 100%);
         }
 
         /* ── MAIN AREA (board + passes) — ORDER: board first, bar at bottom ── */
@@ -304,7 +318,7 @@
         .dice-reappear   { animation:diceReappear  0.35s ease-out forwards !important; }
         .dice-cinematic  {
             position:fixed !important; top:50% !important; left:50% !important;
-            transform:translate3d(-50%,-50%,0) scale(2.2) !important;
+            transform:translate3d(-50%,-50%,0) scale(3.5) !important;
             z-index:5000; opacity:0.90; box-shadow:0 0 50px rgba(255,255,255,0.4);
             transition:none !important; cursor:default !important;
         }
@@ -416,12 +430,12 @@
         .tag-indie     { background:#2a2a2a; color:rgba(255,255,255,0.85); }
         #pitch-btn {
             display:none; width:100%; margin-top:14px; padding:10px;
-            background:transparent; border:2px solid var(--pitch-orange);
-            color:var(--pitch-orange); font-family:'Courier New',monospace; font-weight:bold;
+            background:var(--pitch-orange); border:2px solid var(--pitch-orange);
+            color:black; font-family:'Courier New',monospace; font-weight:bold;
             font-size:0.85rem; letter-spacing:2px; text-transform:uppercase;
             border-radius:8px; cursor:pointer; transition:all 0.25s ease;
         }
-        #pitch-btn:hover { background:var(--pitch-orange); color:black; box-shadow:0 0 16px var(--pitch-orange); transform:translateY(-2px); }
+        #pitch-btn:hover { background:#ff9f22; border-color:#ff9f22; color:black; box-shadow:0 0 16px var(--pitch-orange); transform:translateY(-2px); }
 
         /* ── BOARD SCROLL — fully transparent, no color overlay ── */
         #board-scroll {
@@ -471,34 +485,47 @@
         }
         .space:hover { transform:scale(1.06); box-shadow:0 0 14px rgba(255,255,255,0.3); z-index:6; }
         /* Text shadow for readability on wood background */
-        .space .sp-text,.space .sp-emoji,.mystery-q { text-shadow:0 0 3px rgba(0,0,0,0.5),0 0 1px rgba(0,0,0,0.7); }
+        .space .sp-text,.space .sp-emoji,.mystery-q { text-shadow:0 0 3px rgba(0,0,0,0.4),0 0 1px rgba(0,0,0,0.7); }
         .space:not(.blank):not(.mystery-space):not(.true-blank) { font-family:'KCStrikerSans','Courier New',monospace; }
         .sp-emoji { font-size:var(--space-emoji); margin-bottom:2px; }
         .sp-text  { padding:0 2px; }
-        .mystery-space {
-            border-style:dashed !important; background:none !important;
-            cursor:help; font-family:'Courier New',monospace !important;
-            opacity:0.88; transform:scale(0.8);
-            animation:mysteryPulse 3s ease-in-out infinite;
-            border-color:var(--mystery-glow) !important; color:var(--mystery-glow) !important;
-            border-width:2px !important;
+        /* Dark radial backdrop for all named spaces */
+        .space:not(.true-blank):not(.mystery-space):not(.reel-space) {
+            background:radial-gradient(ellipse at center,rgba(30,30,30,0.3) 0%,rgba(0,0,0,0.6) 100%) !important;
         }
-        .mystery-space:hover { transform:scale(0.9) !important; box-shadow:0 0 18px var(--mystery-glow); }
-        .mystery-q { font-size:clamp(0.85rem,1.6vw,1.5rem); font-weight:bold; opacity:0.9; }
-        .true-blank {
-            opacity:0.65; transform:scale(0.78);
-            border-style:dashed !important; border-color:rgba(255,255,255,0.5) !important;
-            background:none !important; cursor:default; font-family:'Courier New',monospace !important;
-        }
-        .true-blank:hover { transform:scale(0.82) !important; box-shadow:none; }
+        .mystery-space { background:radial-gradient(ellipse at center,rgba(20,0,30,0.3) 0%,rgba(0,0,0,0.6) 100%) !important; }
+        .true-blank { background:none !important; }
+        /* Special space font boost */
+        .space:not(.blank):not(.mystery-space):not(.true-blank) { font-size:calc(var(--space-font) * 1.2); }
+        .mystery-q { font-size:calc(clamp(0.85rem,1.6vw,1.5rem) * 1.1); font-weight:bold; opacity:0.9; }
         .tracklist-space {
             background:url('vinyl.png?v=24') center/cover var(--vinyl) !important;
             border:3px double #666 !important; box-shadow:inset 0 0 15px #000;
-            transform:scale(1.15); z-index:5; font-size:var(--space-font) !important; color:white !important;
+            transform:scale(1.15); z-index:5; font-size:calc(var(--space-font)*1.2) !important; color:white !important;
         }
         .tracklist-space:hover { transform:scale(1.22) !important; box-shadow:inset 0 0 15px #000,0 0 14px rgba(255,255,255,0.25) !important; }
         .tracklist-space.vinyl-spinning { animation:vinylSpin 3.2s ease forwards !important; transform-origin:center center !important; }
         .tracklist-space.vinyl-wiggle   { animation:vinylWiggle 0.9s ease-in-out !important; transform-origin:center center !important; }
+        /* Joy/Fear white text + glow border */
+        .joy-space  { border-color:var(--joy-glow) !important; color:white !important; animation:joyFlicker 2.5s ease-in-out infinite; }
+        .fear-space { border-color:var(--fear-glow) !important; color:white !important; animation:fearFlicker 2.8s ease-in-out infinite; }
+        /* Regular special spaces — white glow border */
+        .space:not(.joy-space):not(.fear-space):not(.tracklist-space):not(.mystery-space):not(.true-blank):not(.reel-space):not(.hybrid) {
+            border-color:rgba(255,255,255,0.8) !important;
+            animation:specialFlicker 3s ease-in-out infinite;
+        }
+        .hybrid { border-style:dotted; border-width:3px; border-color:white; animation:specialFlicker 3.2s ease-in-out infinite; }
+        /* Mystery space */
+        .mystery-space {
+            border-style:dashed !important;
+            cursor:help; font-family:'Courier New',monospace !important;
+            opacity:0.88; transform:scale(0.8);
+            border-color:var(--mystery-glow) !important; color:var(--mystery-glow) !important;
+            border-width:2px !important;
+        }
+        .mystery-space:hover { transform:scale(0.9) !important; }
+        /* Per-space mystery animation speed set via --mystery-speed inline */
+        .mystery-space { animation:mysteryPulse var(--mystery-speed,4s) ease-in-out infinite; }
         /* Reel spaces (0 and 59) */
         .reel-space {
             border:3px solid rgba(255,255,255,0.4) !important;
@@ -506,33 +533,25 @@
             background:rgba(0,0,0,0.5) !important;
             overflow:hidden; position:relative;
         }
-        /* Spinning reel image lives in ::before — text stays still */
         .reel-space::before {
             content:''; position:absolute; inset:0;
             background:url('reel1.png?v=24') center/cover no-repeat;
-            border-radius:50%;
-            transition:none;
+            border-radius:50%; transition:none;
         }
         .reel-space.reel-spinning::before {
             animation:reelSpin 12s linear infinite !important;
             transform-origin:center center !important;
         }
-        /* Swimmin / win-track overrides */
         .win-track {
             border:4px solid var(--blue-glow) !important;
             box-shadow:0 0 30px var(--blue-glow);
             transform:scale(1.2) !important; z-index:10 !important;
             background:rgba(0,0,0,0.5) !important;
         }
-        .win-track::before {
-            background:url('reel1.png?v=24') center/cover no-repeat;
-        }
-        /* Text inside reel spaces sits above the spinning ::before */
-        .reel-space .sp-text,
-        .reel-space .sp-emoji { position:relative; z-index:1; }
-        .joy-space  { border-color:var(--joy-glow)  !important; color:var(--joy-glow)  !important; }
-        .fear-space { border-color:var(--fear-glow) !important; color:var(--fear-glow) !important; }
-        .hybrid     { border-style:dotted; border-width:3px; border-color:white; }
+        .win-track::before { background:url('reel1.png?v=24') center/cover no-repeat; }
+        /* win-track reel spins 10% slower than space 0 */
+        .win-track.reel-spinning::before { animation:reelSpin 13.2s linear infinite !important; }
+        .reel-space .sp-text,.reel-space .sp-emoji { position:relative; z-index:1; }
         .space-land { animation:spaceLand 1.2s ease-out forwards; }
 
         /* ── PLAYER PIECES ── */
@@ -547,13 +566,13 @@
             filter:drop-shadow(0 0 6px white) drop-shadow(0 0 12px white) !important;
             pointer-events:auto !important; cursor:crosshair !important;
         }
-        .floating-emoji      { position:absolute; font-size:4rem; animation:floatUp 1.2s cubic-bezier(0.2,0.8,0.2,1) forwards; pointer-events:none; z-index:6000; }
-        .floating-emoji-slow { position:absolute; font-size:4.5rem; animation:floatUpSlow 2.2s cubic-bezier(0.2,0.8,0.2,1) forwards; pointer-events:none; z-index:6000; }
+        .floating-emoji      { position:absolute; font-size:6.4rem; animation:floatUp 1.2s cubic-bezier(0.2,0.8,0.2,1) forwards; pointer-events:none; z-index:6000; }
+        .floating-emoji-slow { position:absolute; font-size:7.2rem; animation:floatUpSlow 2.2s cubic-bezier(0.2,0.8,0.2,1) forwards; pointer-events:none; z-index:6000; }
 
         /* ── POPUPS & OVERLAYS ── */
         .overlay { position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:2000; display:none; align-items:center; justify-content:center; padding:clamp(10px,3vw,20px); box-sizing:border-box; }
         .popup {
-            background:linear-gradient(160deg,rgba(8,8,8,0.92) 0%,rgba(28,28,28,0.92) 100%);
+            background:linear-gradient(160deg,rgba(8,8,8,0.80) 0%,rgba(28,28,28,0.80) 100%);
             backdrop-filter:blur(12px);
             position:relative; overflow:hidden;
             padding:clamp(16px,3vw,45px); border-radius:30px;
@@ -570,12 +589,12 @@
             background-size:300% 100%;
             animation:popupShine 5s ease-in-out infinite;
         }
-        .popup h1 { font-family:'KCStrikerSans','Courier New',monospace; font-size:clamp(1.2rem,4vw,2rem); margin:0 0 12px; position:relative; }
-        #event-desc { font-size:clamp(1rem,2.2vw,1.35rem) !important; position:relative; }
+        .popup h1 { font-family:'KCStrikerSans','Courier New',monospace; font-size:clamp(1.44rem,4.8vw,2.4rem); margin:0 0 12px; position:relative; color:#fff; letter-spacing:-0.01em; }
+        #event-desc { font-size:clamp(1.2rem,2.6vw,1.62rem) !important; position:relative; color:rgba(255,255,255,0.97) !important; letter-spacing:-0.01em; }
         #event-btn-primary, #event-btn-secondary {
             font-family:'KCStrikerSans','Courier New',monospace;
             padding:clamp(11px,1.7vh,18px) clamp(18px,3.2vw,40px);
-            font-size:clamp(1rem,2.1vw,1.3rem);
+            font-size:clamp(1.2rem,2.5vw,1.56rem);
             font-weight:bold; cursor:pointer; border-radius:8px; border:none;
             transition:all 0.25s cubic-bezier(0.175,0.885,0.32,1.275);
             outline:2px solid transparent; outline-offset:3px; position:relative;
@@ -603,7 +622,7 @@
             width:min(260px,78vw);
             max-height:calc(100dvh - var(--bar-h) - 24px);
             height:auto;
-            background:linear-gradient(160deg,rgba(8,8,8,0.92) 0%,rgba(28,28,28,0.92) 100%);
+            background:linear-gradient(160deg,rgba(8,8,8,0.80) 0%,rgba(28,28,28,0.80) 100%);
             backdrop-filter:blur(8px);
             padding:clamp(14px,2.2vw,26px);
             border-radius:20px 0 0 20px; border:2px solid var(--joy-glow); border-right:none;
@@ -654,6 +673,7 @@
         #action-bar.timer-mode { flex-direction:column; align-items:center; gap:8px; }
         /* Popup mini mute syncs with master mute */
         #popup-mute-btn.muted { background:#880000; border-color:#cc0000; color:#000; }
+        .btn-nevermind {
             display:inline-block; margin-top:10px; padding:8px 20px;
             background:transparent; border:1px solid rgba(255,68,68,0.55);
             color:rgba(255,68,68,0.7); font-family:'Courier New',monospace;
@@ -840,10 +860,7 @@
     <!-- ══ EVENT OVERLAY ══ -->
     <div id="overlay-event" class="overlay">
         <div class="popup" id="main-popup">
-            <!-- Mini mute in top-right of every modal — true master mute -->
-            <div style="position:absolute;top:12px;right:14px;z-index:10;">
-                <button onclick="toggleMute()" id="popup-mute-btn" style="background:#1a1a1a;border:1px solid #660000;color:#bb1111;border-radius:5px;font-size:0.55rem;font-weight:bold;letter-spacing:1px;padding:3px 9px;cursor:pointer;text-transform:uppercase;transition:all 0.15s;">MUTE</button>
-            </div>
+            <!-- popup-mute-btn injected by checkSpace only -->
             <h1 id="event-title"></h1>
             <div id="event-desc" style="color:#ccc;margin-bottom:25px;line-height:1.6;"></div>
             <div id="coin" style="width:140px;height:140px;background:var(--gold);border:8px solid #b8860b;border-radius:50%;margin:25px auto;display:none;align-items:center;justify-content:center;font-size:2.5rem;font-weight:bold;color:#5c4305;transform-style:preserve-3d;">?</div>
@@ -968,7 +985,7 @@
         39:{title:"FEARJOY",emoji:"☯️",isFearjoy:true,desc:"FEAR? JOY? Fate decides.",sound:"coin.wav"},
         42:{title:"ENCORE",emoji:"👏",shift:3,isAuto:true,desc:"Encore! Three more songs! Move forward 3.",sound:"coinclip.wav"},
         44:{title:"VOID",emoji:"🌀",shift:-3,isAuto:true,isTrack:true,desc:"Lost in the Void. Rewind 3.",sound:"voidclip.wav"},
-        47:{title:"THE ENDLESS SMILE",emoji:"💀",isSmile:true,isTrack:true,desc:"Remain smiling until your next turn. Break it for a penalty.",sound:"smileclip.wav"},
+        47:{title:"THE ENDLESS SMILE",emoji:"💀",isSmile:true,isTrack:true,desc:"Remain smiling until your next turn. Break it = Rewind 1.",sound:"smileclip.wav"},
         48:{title:"GATEKEEPER",emoji:"🚪",isGate:true,desc:"Industry Gatekeeper. Stop here unless you're in last place, or you've signed with a major label."},
         52:{title:"FEARJOY",emoji:"☯️",isFearjoy:true,desc:"Flip for destiny.",sound:"coin.wav"},
         53:{title:"VAN BREAKS DOWN",emoji:"🛠",skipTurns:1,desc:"Van breaks! Skip a turn."},
@@ -1157,9 +1174,10 @@
         }
         /* Sync popup mini-mute button */
         const popupMute=document.getElementById('popup-mute-btn');
-        if(popupMute){
+        if(popupMute&&popupMute.style.display!=='none'){
             popupMute.innerText=masterMuted?'MUTED':'MUTE';
-            popupMute.classList.toggle('muted',masterMuted);
+            popupMute.style.background=masterMuted?'#880000':'#1a1a1a';
+            popupMute.style.color=masterMuted?'#ff4444':'#bb1111';
         }
         const ctx=getAudioCtx();
         if(muted){
@@ -1266,6 +1284,7 @@
         'spookyclip1.wav','dmitriclip.wav','swimclip.wav','doorclip.wav',
         'nightclip.wav','happensclip.wav','ghostclip.wav','mayaclip.wav',
         'tellusclip.wav','voidclip.wav','smileclip.wav','mistakeclip.wav',
+        '1up.wav','coinflip.wav','crashclip.wav','gateexec.wav',
         'slide1.wav','slide2.wav','slide3.wav','slide4.wav',
         'dice1.wav','dice2.wav','dice3.wav','dice4.wav','dicedone.wav','coin.wav',
     ];
@@ -1381,7 +1400,9 @@
         const base=document.createElementNS('http://www.w3.org/2000/svg','path');
         base.setAttribute('d',d);base.setAttribute('fill','none');
         base.setAttribute('stroke','rgba(130,90,40,0.35)');
-        base.setAttribute('stroke-width','8');
+        /* Responsive stroke-width based on screen size */
+        const tapeW=Math.max(4,Math.min(12,window.innerWidth*0.006)).toFixed(1);
+        base.setAttribute('stroke-width',tapeW);
         base.setAttribute('stroke-linecap','round');base.setAttribute('stroke-linejoin','round');
         base.setAttribute('filter','url(#tapeBlur)');svg.appendChild(base);
 
@@ -1807,7 +1828,7 @@
             let tx=cx,ty=cy,rot=0,ox=0,oy=0;
             /* Tracklist spaces are scaled 1.15x so arrows are visually farther — pull 25% closer */
             const isTracklist=TRACKLIST_INDICES.includes(i)||i===0;
-            const off=sr.width*(isTracklist?0.43:0.55);
+            const off=sr.width*(isTracklist?0.486:0.57);
             if(dir==='right'){ox=off;rot=0;}
             else if(dir==='left'){ox=-off;rot=180;}
             else if(dir==='down'){oy=off;rot=90;}
@@ -1848,6 +1869,8 @@
             if(name==="blank"){
                 if(mysterySpaces.has(i)){
                     s.classList.add('mystery-space');
+                    const _spd=(3.2+Math.random()*3.3).toFixed(2)+'s';
+                    s.style.setProperty('--mystery-speed',_spd);
                     s.innerHTML=`<span class="mystery-q">?</span>`;
                     s.onclick=()=>handleMysteryClick(i);
                 } else {s.classList.add('true-blank');}
@@ -1921,6 +1944,13 @@
                 const c=document.createElement('div');c.className='credits-line';
                 c.innerText='Songs / Game / Sound Design by Fearjoy';desc.appendChild(c);
             }
+            /* Light-dismiss: clicking outside popup closes intro card */
+            const ov=document.getElementById('overlay-event');
+            const pu=document.getElementById('main-popup');
+            function introLightDismiss(e){
+                if(!pu.contains(e.target)){ov.style.display='none';ov.removeEventListener('click',introLightDismiss);}
+            }
+            ov.addEventListener('click',introLightDismiss);
         },80);
     }
 
@@ -2203,7 +2233,7 @@
         }
         if(p.smileActive){
             showStatusPopup("💀 THE ENDLESS SMILE","Did you hold the smile?",
-                "HELD IT",()=>{p.smileActive=false;endTurn();},"BROKE IT",()=>{p.smileActive=false;endTurn();});return;
+                "HELD IT",()=>{p.smileActive=false;endTurn();},"BROKE IT",()=>{p.smileActive=false;movePlayer(-1,false,turnIdx);});return;
         }
         performActualRoll();
     }
@@ -2297,7 +2327,8 @@
                     break;
                 }
                 playSlide();p.pos+=dir;updatePositions();
-                if(dir>0&&p.pos===GATEKEEPER_SPACE&&!isLast&&!anyLabelDeal&&i<Math.abs(n)-1)break;
+                if(dir>0&&p.pos===GATEKEEPER_SPACE&&!isLast&&!anyLabelDeal&&i<Math.abs(n)-1){playSfx('gateexec.wav');break;}
+                if(dir>0&&p.pos===GATEKEEPER_SPACE&&(isLast||anyLabelDeal)&&i===0)playSfx('gateexec.wav');
                 await new Promise(r=>setTimeout(r,240));
                 if(p.pos>=59){showWinScreen();return;}
             }
@@ -2350,18 +2381,34 @@
                     else{bucketVid.addEventListener('loadedmetadata',setCap,{once:true});}
                 });
             } else {
-                /* Image / discount — linger 40s */
+                /* Image / discount — 80s linger, no dismiss while hovering, auto-peek only */
+                const _isMerch=item&&(item.type==='link'||item.type==='download');
+                const _lingerMs=_isMerch?80000:40000;
                 await new Promise(res=>{
                     loreDoneResolver=res;
-                    const t=setTimeout(res,40000);
                     const sb=document.getElementById('rule-sidebar');
+                    let _hovered=false;
+                    let _timer=null;
+                    function _startTimer(){
+                        _timer=setTimeout(()=>{
+                            if(!_hovered){loreDoneResolver=null;res();}
+                            else{_startTimer();} /* re-check when hover clears */
+                        },_lingerMs);
+                    }
+                    _startTimer();
+                    if(_isMerch){
+                        sb.addEventListener('mouseenter',()=>{_hovered=true;},{once:false,passive:true});
+                        sb.addEventListener('mouseleave',()=>{_hovered=false;},{once:false,passive:true});
+                    }
                     const origClose=sb.onclick;
                     sb.onclick=(e)=>{
-                        clearTimeout(t);loreDoneResolver=null;
+                        clearTimeout(_timer);loreDoneResolver=null;
                         stopActiveLoreVid();
                         sb.onclick=origClose;if(origClose)origClose(e);res();
                     };
                 });
+                /* Merch lore: only auto-dismiss to PEEK, not fully close */
+                if(_isMerch){lorePeekSidebar();endTurn();return;}
             }
 
             isInLoreDrop=false;loreDoneResolver=null;
@@ -2439,22 +2486,21 @@
         }
         nmBtn.style.display='block';
 
-        /* Timer mute button */
+        /* Timer mute button — only mutes metronome click-track, not master */
         let tmBtn=document.getElementById('timer-mute');
         if(!tmBtn){
             tmBtn=document.createElement('button');
             tmBtn.id='timer-mute';
-            tmBtn.style.cssText='background:none;border:none;cursor:pointer;font-size:1.3rem;opacity:0.7;transition:opacity 0.2s;';
-            tmBtn.innerText='🔊';
+            tmBtn.style.cssText='background:rgba(0,0,0,0.4);border:1px solid rgba(255,255,255,0.25);color:rgba(255,255,255,0.7);border-radius:6px;padding:5px 14px;cursor:pointer;font-size:0.75rem;letter-spacing:1px;transition:all 0.2s;margin-top:4px;';
             actionBar.appendChild(tmBtn);
         }
+        let _clickMuted=false;
         tmBtn.style.display='block';
-        tmBtn.innerText=masterMuted?'🔇':'🔊';
+        tmBtn.innerText='🔇 mute click track';
         tmBtn.onclick=()=>{
-            masterMuted=!masterMuted;
-            if(masterMuted){stopMetronome();tmBtn.innerText='🔇';}
-            else{startMetronome();tmBtn.innerText='🔊';}
-            syncAudioUI();
+            _clickMuted=!_clickMuted;
+            if(_clickMuted){stopMetronome();tmBtn.innerText='🔊 unmute click track';tmBtn.style.borderColor='rgba(255,68,68,0.6)';tmBtn.style.color='rgba(255,100,100,0.9)';}
+            else{startMetronome();tmBtn.innerText='🔇 mute click track';tmBtn.style.borderColor='rgba(255,255,255,0.25)';tmBtn.style.color='rgba(255,255,255,0.7)';}
         };
 
         const cleanUp=()=>{
@@ -2498,12 +2544,11 @@
         if(r.choice==='remedy'&&(p.isSellout||p.isColdPitchSellout)){showSidebar("CONTRACT ACTIVE","Already signed with a major label.",spaceCol);endTurn();return;}
         if(r.choice==='merch'&&p.isInvestor){showSidebar("ALREADY INVESTED","Inventory full.",spaceCol);endTurn();return;}
         if(r.isAuto){
-            /* Plot armor: if this is a detrimental auto-shift (shift < 0), check armor first */
             if(r.shift<0&&checkPlotArmor(capturedTurnIdx,true)){
-                /* Armor consumed — show sidebar, end turn, skip the shift entirely */
                 showSidebar(r.title,(r.emoji||"")+" Blocked by Plot Armor! No penalty.",spaceCol);
                 endTurn();return;
             }
+            if(p.pos===23)playSfx('1up.wav');
             showSidebar(r.title,(r.emoji||"")+" "+(r.desc||"Moving..."),spaceCol);
             setTimeout(()=>movePlayer(r.shift,false,capturedTurnIdx),1500);return;
         }
@@ -2530,9 +2575,22 @@
         const nmBtn=document.getElementById('timer-nevermind');if(nmBtn)nmBtn.style.display='none';
         const tmBtn=document.getElementById('timer-mute');if(tmBtn)tmBtn.style.display='none';
         stopMetronome();
+        /* Inject mute button bottom-right for space popups only */
+        let pmb=document.getElementById('popup-mute-btn');
+        if(!pmb){
+            pmb=document.createElement('button');pmb.id='popup-mute-btn';
+            pmb.onclick=()=>toggleMute();
+            pmb.style.cssText='position:absolute;bottom:14px;right:14px;z-index:10;background:#1a1a1a;border:1px solid #660000;color:#bb1111;border-radius:5px;font-size:0.55rem;font-weight:bold;letter-spacing:1px;padding:3px 9px;cursor:pointer;text-transform:uppercase;transition:all 0.15s;';
+            document.getElementById('main-popup').appendChild(pmb);
+        }
+        pmb.style.display='block';
+        pmb.innerText=masterMuted?'MUTED':'MUTE';
+        pmb.style.background=masterMuted?'#880000':'#1a1a1a';
+        pmb.style.color=masterMuted?'#ff4444':'#bb1111';
         modal.style.display='flex';resetKbFocus();
 
         if(r.skipTurns){
+            playSfx('crashclip.wav');
             p.skipCount=r.skipTurns;pBtn.onclick=()=>{modal.style.display='none';endTurn();};
         } else if(r.isFigment){
             pBtn.innerText="STEP OUTSIDE (1:00)";sBtn.innerText="STAY INDOORS (-1)";sBtn.style.display='inline-block';
@@ -2551,6 +2609,7 @@
         } else if(r.isFearjoy){
             pBtn.innerText="FLIP COIN";
             pBtn.onclick=()=>{
+                playSfx('coinflip.wav');
                 pBtn.style.display='none';coin.innerText="?";coin.style.display='flex';coin.classList.add('flipping');
                 setTimeout(()=>{
                     const win=Math.random()>0.5;
@@ -2566,7 +2625,7 @@
                 startGameTimer(15,timerUI,document.getElementById('action-bar'),(completed)=>{
                     if(completed){
                         pBtn.disabled=false;pBtn.innerText="BREATHING COMPLETED";
-                        pBtn.onclick=async()=>{modal.style.display='none';await new Promise(res=>setTimeout(res,800));p.pos=23;updatePositions();endTurn();};
+                        pBtn.onclick=async()=>{modal.style.display='none';playSfx('1up.wav');await new Promise(res=>setTimeout(res,800));p.pos=23;updatePositions();endTurn();};
                     } else {
                         modal.style.display='none';movePlayer(-2,false,capturedTurnIdx);
                     }
@@ -2670,6 +2729,12 @@
                 pBtn.innerText="CONTINUE";pBtn.onclick=()=>{modal.style.display='none';endTurn();};
             }
         } else if(r.isOpeningAct){
+            /* Plot armor prevents backward movement from Opening Act */
+            if(checkPlotArmor(capturedTurnIdx,true)){
+                modal.style.display='none';
+                showSidebar("🛡️ PLOT ARMOR","Shield blocked Opening Act penalty!",'var(--mystery-glow)');
+                endTurn();return;
+            }
             let maxPos=Math.max(...players.map(pl=>pl.pos));let isLead=(p.pos===maxPos);
             if(isLead){
                 pBtn.innerText="ACCEPT FATE (-2)";
@@ -2697,7 +2762,7 @@
         } else if(r.isGhost){
             p.ghostCounter=1;pBtn.innerText="I WILL BE SILENT";pBtn.onclick=()=>{modal.style.display='none';endTurn();};
         } else if(r.isSmile){
-            /* smileclip plays via r.sound above */
+            desc.innerText="Hold that smile until your next turn. If you break it, Rewind 1 space.";
             p.smileActive=true;pBtn.innerText="I WILL SMILE";pBtn.onclick=()=>{modal.style.display='none';endTurn();};
         } else if(r.isNightDrive){
             p.nightDriveActive=true;pBtn.innerText="EYES CLOSED";pBtn.onclick=()=>{modal.style.display='none';endTurn();};
@@ -2719,6 +2784,7 @@
         } else if(r.isLostRecording){
             pBtn.innerText="ROLL TO REWIND";
             pBtn.onclick=async()=>{
+                playSfx('coinflip.wav');
                 pBtn.style.display='none';
                 coin.style.display='flex';
                 coin.style.cssText='width:130px;height:130px;background:rgba(0,0,0,0.75);border:3px solid rgba(255,255,255,0.7);border-radius:12px;margin:20px auto;display:flex;align-items:center;justify-content:center;font-size:2.5rem;font-weight:bold;color:white;transform-style:preserve-3d;font-family:KCStrikerSans,Courier New,monospace;';
@@ -2869,6 +2935,8 @@
     // ══════════════════════════════════════════════
     function showStatusPopup(t,d,b1,c1,b2,c2){
         const fb=document.getElementById('maya-fear-btn');if(fb)fb.remove();
+        /* Hide space-popup mute btn on non-space popups */
+        const _pmb=document.getElementById('popup-mute-btn');if(_pmb)_pmb.style.display='none';
         const modal=document.getElementById('overlay-event'),popupEl=document.getElementById('main-popup');
         popupEl.style.borderColor='#444';popupEl.style.boxShadow='none';
         document.getElementById('event-title').innerText=t;
@@ -2896,15 +2964,22 @@
         const p=players[turnIdx];
         playSpaceSfx('swimclip.wav');
         let statsHtml=`<h2 style="color:${p.avatar.color};animation:winPulse 2s infinite ease-in-out;font-family:'KCStrikerSans','Courier New',monospace;margin:5px 0;--p-color:${p.avatar.color};text-shadow:0 0 20px ${p.avatar.color};">${p.name} WINS!</h2>`;
-        statsHtml+=`<div style="text-align:left;margin-top:15px;font-family:monospace;background:rgba(0,0,0,0.4);border-radius:12px;padding:12px;border:1px solid #333;">`;
+        statsHtml+=`<div style="text-align:left;margin-top:15px;font-family:monospace;background:rgba(0,0,0,0.4);border-radius:12px;padding:12px;border:1px solid #333;"><div style="text-align:right;margin-bottom:8px;"><span onclick="showAccoladeKey()" style="cursor:pointer;font-size:0.7rem;letter-spacing:1px;color:rgba(255,255,255,0.4);border:1px solid rgba(255,255,255,0.2);border-radius:4px;padding:2px 7px;font-family:Courier New,monospace;text-transform:uppercase;transition:all 0.2s;" onmouseover="this.style.color='white';this.style.borderColor='rgba(255,255,255,0.6)'" onmouseout="this.style.color='rgba(255,255,255,0.4)';this.style.borderColor='rgba(255,255,255,0.2)'">? key</span></div>`;
         players.forEach(pl=>{
             const supporterLine=pl.hasThrifty?`<div style="font-size:0.7rem;color:rgba(255,255,255,0.5);letter-spacing:1px;margin-top:2px;">Merch code: <span class="bucket-code" style="font-size:0.85rem;padding:3px 8px;cursor:pointer;" onclick="navigator.clipboard.writeText('PLAYER${pl.merchdiscountPct}').then(()=>{this.innerText='COPIED!';setTimeout(()=>this.innerText='PLAYER${pl.merchdiscountPct}',2000)})">PLAYER${pl.merchdiscountPct}</span> &mdash; ${pl.merchdiscountPct}% off</div>`:'';
+            const statusTags=[(pl.isInvestor?'<span style="background:var(--teal-glow);color:black;padding:1px 6px;border-radius:3px;font-size:0.65rem;font-weight:bold;letter-spacing:0.5px;margin-right:4px;">INVESTOR</span>':''),
+                (pl.isSellout||pl.isColdPitchSellout?'<span style="background:var(--fear-glow);color:white;padding:1px 6px;border-radius:3px;font-size:0.65rem;font-weight:bold;letter-spacing:0.5px;margin-right:4px;">SELLOUT</span>':''),
+                (pl.usedColdPitch?'<span style="background:var(--pitch-orange);color:black;padding:1px 6px;border-radius:3px;font-size:0.65rem;font-weight:bold;letter-spacing:0.5px;margin-right:4px;">PITCHED</span>':''),
+                (pl.hasThrifty?'<span style="background:var(--mystery-glow);color:black;padding:1px 6px;border-radius:3px;font-size:0.65rem;font-weight:bold;letter-spacing:0.5px;margin-right:4px;">THRIFTY</span>':''),
+                (!pl.isSellout&&!pl.isColdPitchSellout&&!pl.isInvestor&&!pl.usedColdPitch?'<span style="background:#2a2a2a;color:rgba(255,255,255,0.85);padding:1px 6px;border-radius:3px;font-size:0.65rem;font-weight:bold;letter-spacing:0.5px;margin-right:4px;">INDIE</span>':'')
+            ].join('');
             statsHtml+=`<div style="margin-bottom:12px;border-bottom:1px solid #222;display:flex;align-items:center;gap:12px;padding-bottom:10px;">
                 <img src="${pl.avatar.img}" style="width:50px;height:50px;border-radius:50%;background:#000;border:2px solid ${pl.avatar.color};box-shadow:0 0 10px ${pl.avatar.color};">
                 <div style="flex-grow:1;"><b style="color:${pl.avatar.color};font-size:1.1rem;letter-spacing:1px;">${pl.name}</b>${supporterLine}
+                <div style="margin:3px 0;">${statusTags}</div>
                 <div style="font-size:1.2rem;margin:2px 0;">${pl.accolades.join('')}</div></div></div>`;
         });
-        statsHtml+=`</div>`;
+        statsHtml+=`</div></div>`;
         const popupEl=document.getElementById('main-popup');
         popupEl.style.borderColor=p.avatar.color;popupEl.style.boxShadow=`0 0 80px ${p.avatar.color}`;
         document.getElementById('event-title').innerText="The tour is over. Go Swimmin!";
@@ -2973,12 +3048,31 @@
     // ACCOLADES KEY
     // ══════════════════════════════════════════════
     function showAccoladeKey(){
-        showStatusPopup(
-            "🔑 Accolades Key",
-            "🏆 Grammy Won\n📝 Label Contract Signed\n👕 Merch Sold (Investor)\n💊 Label Debt Paid (Remedy)\n🎫 Merch Discount Unlocked\n🛡️ Plot Armor (next bad luck blocked)\n📼 Lost Recording survived",
-            "Got it!",()=>{},"",()=>{}
-        );
-        document.getElementById('event-btn-secondary').style.display='none';
+        const ol=document.createElement('div');
+        ol.id='accolade-key-overlay';
+        ol.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:9000;display:flex;align-items:center;justify-content:center;padding:16px;box-sizing:border-box;';
+        const box=document.createElement('div');
+        box.style.cssText='background:linear-gradient(160deg,rgba(14,14,14,0.95),rgba(30,30,30,0.95));border:1px solid #444;border-radius:18px;padding:24px 28px;max-width:min(440px,90vw);max-height:85vh;overflow-y:auto;font-family:Courier New,monospace;color:white;';
+        box.innerHTML=`<h3 style="font-family:KCStrikerSans,Courier New,monospace;font-size:1.3rem;letter-spacing:2px;margin:0 0 16px;color:#ffd700;">🔑 Accolades & Status Key</h3>
+<div style="font-size:0.8rem;letter-spacing:1px;color:rgba(255,255,255,0.45);text-transform:uppercase;margin-bottom:8px;">Accolades</div>
+<div style="line-height:2.2;font-size:0.92rem;margin-bottom:16px;">
+<div>🏆 Grammy Won</div><div>📝 Label Contract Signed</div><div>👕 Merch Sold (Investor perk)</div>
+<div>💊 Label Debt Paid (Remedy)</div><div>🎫 Merch Discount Unlocked</div>
+<div>🛡️ Plot Armor — next bad outcome blocked</div><div>📼 Lost Recording survived</div>
+</div>
+<div style="font-size:0.8rem;letter-spacing:1px;color:rgba(255,255,255,0.45);text-transform:uppercase;margin-bottom:10px;">Status</div>
+<div style="display:flex;flex-direction:column;gap:7px;font-size:0.88rem;">
+<div style="display:flex;align-items:center;gap:10px;"><span style="background:#2a2a2a;color:rgba(255,255,255,0.85);padding:2px 8px;border-radius:3px;font-size:0.75rem;font-weight:bold;letter-spacing:0.5px;">INDIE</span><span style="color:rgba(255,255,255,0.75);">Independent artist — no label deal</span></div>
+<div style="display:flex;align-items:center;gap:10px;"><span style="background:var(--fear-glow);color:white;padding:2px 8px;border-radius:3px;font-size:0.75rem;font-weight:bold;letter-spacing:0.5px;">SELLOUT</span><span style="color:rgba(255,255,255,0.75);">Signed with a major label</span></div>
+<div style="display:flex;align-items:center;gap:10px;"><span style="background:var(--teal-glow);color:black;padding:2px 8px;border-radius:3px;font-size:0.75rem;font-weight:bold;letter-spacing:0.5px;">INVESTOR</span><span style="color:rgba(255,255,255,0.75);">Invested in merch — low rolls pay off</span></div>
+<div style="display:flex;align-items:center;gap:10px;"><span style="background:var(--mystery-glow);color:black;padding:2px 8px;border-radius:3px;font-size:0.75rem;font-weight:bold;letter-spacing:0.5px;">THRIFTY</span><span style="color:rgba(255,255,255,0.75);">Unlocked a merch discount code</span></div>
+<div style="display:flex;align-items:center;gap:10px;"><span style="background:var(--pitch-orange);color:black;padding:2px 8px;border-radius:3px;font-size:0.75rem;font-weight:bold;letter-spacing:0.5px;">PITCHED</span><span style="color:rgba(255,255,255,0.75);">Used Cold Pitch — label takes a cut</span></div>
+</div>
+<button onclick="document.getElementById('accolade-key-overlay').remove()" style="margin-top:20px;width:100%;padding:10px;background:transparent;border:1px solid #555;color:rgba(255,255,255,0.7);border-radius:8px;font-family:Courier New,monospace;font-size:0.85rem;letter-spacing:2px;cursor:pointer;text-transform:uppercase;transition:all 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.08)'" onmouseout="this.style.background='transparent'">GOT IT</button>`;
+        ol.appendChild(box);
+        /* Light-dismiss */
+        ol.onclick=(e)=>{if(e.target===ol)ol.remove();};
+        document.body.appendChild(ol);
     }
 
     // ══════════════════════════════════════════════
