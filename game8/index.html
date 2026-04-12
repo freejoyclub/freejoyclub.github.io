@@ -499,9 +499,13 @@
         .space:not(.blank):not(.mystery-space):not(.true-blank) { font-size:calc(var(--space-font) * 1.2); }
         .mystery-q { font-size:calc(clamp(0.85rem,1.6vw,1.5rem) * 1.1); font-weight:bold; opacity:0.9; }
         .tracklist-space {
-            background:url('vinyl.png?v=24') center/cover var(--vinyl) !important;
-            border:3px double #666 !important; box-shadow:inset 0 0 15px #000;
-            transform:scale(1.15); z-index:5; font-size:calc(var(--space-font)*1.2) !important; color:white !important;
+        background: url('vinyl.png?v=24') center/cover no-repeat !important;
+        border: 3px double #666 !important;
+        box-shadow: inset 0 0 15px #000;
+        transform: scale(1.15);
+        z-index: 5;
+        font-size: calc(var(--space-font)*1.2) !important;
+        color: white !important;
         }
         .tracklist-space:hover { transform:scale(1.22) !important; box-shadow:inset 0 0 15px #000,0 0 14px rgba(255,255,255,0.25) !important; }
         .tracklist-space.vinyl-spinning { animation:vinylSpin 3.2s ease forwards !important; transform-origin:center center !important; }
