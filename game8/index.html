@@ -195,11 +195,12 @@
         /* ── NAV KNOB + MUTE — fixed above all, flex row, prefer shrink ── */
         #nav-knob {
             position:fixed;
-            right:clamp(6px,2vw,24px);
-            bottom:calc(var(--bar-h)/2 - clamp(13px,1.6vw,21px));
+            right:clamp(12px,3vw,33px);
+            bottom:0;
+            height:var(--bar-h);
             z-index:999999;
             display:flex; align-items:center; gap:clamp(3px,0.5vw,6px);
-            flex-shrink:2; transform:translateY(50%);
+            flex-shrink:2;
         }
         #nav-knob-btn {
             width:clamp(28px,3.5vw,46px); height:clamp(26px,3.2vw,42px);
