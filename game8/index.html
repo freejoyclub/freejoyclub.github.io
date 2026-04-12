@@ -87,14 +87,9 @@
 
         /* Animated warm tan background gradient — slow, smooth, more varied */
         @keyframes bgFade {
-            0%  {background:linear-gradient(145deg,#cc8049 0%,#a86030 35%,#bf7e58 68%,#d4915a 100%);}
-            14% {background:linear-gradient(168deg,#b86a35 0%,#c88055 30%,#c0754a 62%,#bf7e58 100%);}
-            28% {background:linear-gradient(128deg,#bf7e58 0%,#b06535 28%,#c98a52 58%,#c4773e 100%);}
-            42% {background:linear-gradient(152deg,#c98a52 0%,#bf7e58 32%,#b86a35 60%,#cc8049 100%);}
-            57% {background:linear-gradient(138deg,#c4773e 0%,#d4915a 28%,#bf7e58 62%,#a86030 100%);}
-            71% {background:linear-gradient(162deg,#cc8049 0%,#c4773e 36%,#d4915a 68%,#c98a52 100%);}
-            85% {background:linear-gradient(132deg,#b86a35 0%,#bf7e58 30%,#cc8049 62%,#c4773e 100%);}
-            100%{background:linear-gradient(145deg,#cc8049 0%,#a86030 35%,#bf7e58 68%,#d4915a 100%);}
+            0%   { background-position: 0% 50%; }
+            50%  { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
         }
 
         /* ── PAGE SHELL ── */
@@ -107,9 +102,13 @@
         }
         /* Farthest-back layer: animated tan gradient */
         body::before {
-            content:''; position:fixed; inset:0; z-index:-2;
-            animation:bgFade 55s ease-in-out infinite;
-            background:linear-gradient(145deg,#cc8049 0%,#a86030 35%,#bf7e58 70%,#d4915a 100%);
+            content: '';
+            position: fixed;
+            inset: 0;
+            z-index: -2;
+            background: linear-gradient(145deg, #cc8049, #a86030, #bf7e58, #d4915a, #b86a35, #c88055);
+            background-size: 400% 400%; /* Required for the smooth slide */
+            animation: bgFade 20s ease-in-out infinite;
         }
         /* Vignette layer, just above bg — darker */
         body::after {
