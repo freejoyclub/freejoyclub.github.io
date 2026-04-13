@@ -162,6 +162,8 @@
         .nav-cluster {
             position: fixed;
             bottom: 40px;
+            left: 50%; /* Move left edge to screen center */
+            transform: translateX(-50%); /* Shift back by 50% of its own width */
             display: flex;
             gap: 0;
             background: rgba(0, 0, 0, 0.2);
@@ -171,6 +173,7 @@
             padding: 5px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.5);
             z-index: 10;
+            white-space: nowrap; /* Keeps items from wrapping on small screens */
         }
 
         .nav-cluster a {
