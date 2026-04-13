@@ -1,14 +1,13 @@
 <!DOCTYPE html><html lang="en"><head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Fearjoy - v27</title>
+    <title>Fearjoy - v28</title>
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
     <style>
         * { -webkit-tap-highlight-color:transparent; -webkit-touch-callout:none; outline:none; }
         @font-face { font-family:'KCStrikerSans'; src:url('KCStrikerSans.otf') format('opentype'); font-weight:normal; font-style:normal; }
-
 
         :root {
             --wood-dark:#8b7355; --wood-mid:#b39b7d; --tape-white:#fdfdfd;
@@ -25,7 +24,6 @@
             --board-pad:clamp(4px,0.8vw,24px);
             --pass-w:clamp(90px,12.5vw,175px);
         }
-
 
         @keyframes woodFade      { 0%,100%{background-color:var(--wood-dark);}50%{background-color:var(--wood-mid);} }
         @keyframes floatUp       { 0%{transform:translateY(0) scale(1);opacity:1;}100%{transform:translateY(-150px) scale(1.5);opacity:0;} }
@@ -87,14 +85,20 @@
         /* VU needle bounce animation during roll */
         @keyframes vuBounce      { 0%{transform:rotate(-45deg);}25%{transform:rotate(20deg);}50%{transform:rotate(-30deg);}75%{transform:rotate(35deg);}100%{transform:rotate(-45deg);} }
 
-
         /* Animated warm tan background gradient — slow, smooth, more varied */
         @keyframes bgFade {
             0%   { background-position: 0% 50%; }
             50%  { background-position: 100% 50%; }
             100% { background-position: 0% 50%; }
         }
-
+            14% {background:linear-gradient(168deg,#b86a35 0%,#c88055 30%,#c0754a 62%,#bf7e58 100%);}
+            28% {background:linear-gradient(128deg,#bf7e58 0%,#b06535 28%,#c98a52 58%,#c4773e 100%);}
+            42% {background:linear-gradient(152deg,#c98a52 0%,#bf7e58 32%,#b86a35 60%,#cc8049 100%);}
+            57% {background:linear-gradient(138deg,#c4773e 0%,#d4915a 28%,#bf7e58 62%,#a86030 100%);}
+            71% {background:linear-gradient(162deg,#cc8049 0%,#c4773e 36%,#d4915a 68%,#c98a52 100%);}
+            85% {background:linear-gradient(132deg,#b86a35 0%,#bf7e58 30%,#cc8049 62%,#c4773e 100%);}
+            100%{background:linear-gradient(145deg,#cc8049 0%,#a86030 35%,#bf7e58 68%,#d4915a 100%);}
+        }
 
         /* ── PAGE SHELL ── */
         html,body { margin:0; padding:0; width:100%; height:100%; overflow:hidden; }
@@ -106,13 +110,9 @@
         }
         /* Farthest-back layer: animated tan gradient */
         body::before {
-            content: '';
-            position: fixed;
-            inset: 0;
-            z-index: -2;
-            background: linear-gradient(145deg, #cc8049, #a86030, #bf7e58, #d4915a, #b86a35, #c88055);
-            background-size: 400% 400%; /* Required for the smooth slide */
-            animation: bgFade 20s ease-in-out infinite;
+            content:''; position:fixed; inset:0; z-index:-2;
+            animation:bgFade 55s ease-in-out infinite;
+            background:linear-gradient(145deg,#cc8049 0%,#a86030 35%,#bf7e58 70%,#d4915a 100%);
         }
         /* Vignette layer, just above bg — darker */
         body::after {
@@ -120,10 +120,8 @@
             background:radial-gradient(ellipse 80% 75% at 50% 50%,transparent 30%,rgba(0,0,0,0.55) 100%);
         }
 
-
         /* ── MAIN AREA (board + passes) — ORDER: board first, bar at bottom ── */
         #main-area { flex:1; display:flex; flex-direction:row; min-height:0; overflow:hidden; position:relative; }
-
 
         /* ── BOTTOM UI BAR — opaque near-black 1176 rack compressor ── */
         #ui-layer {
@@ -171,7 +169,6 @@
             text-shadow:0 0 8px currentColor; flex-shrink:1;
         }
 
-
         #vu-meter {
             display:flex; flex-direction:column; align-items:center; justify-content:center;
             width:clamp(44px,5.75vw,76px); flex-shrink:2;
@@ -211,7 +208,6 @@
                 linear-gradient(to right,transparent 85%,rgba(0,0,0,0.05) 85%,rgba(0,0,0,0.05) 86%,transparent 86%);
         }
         #vu-arc::after { display:none; }
-
 
         /* ── NAV KNOB + MUTE — fixed above all, flex row, prefer shrink ── */
         #nav-knob {
@@ -281,7 +277,6 @@
             box-shadow:inset 0 2px 4px rgba(0,0,0,0.6),0 0 14px rgba(220,0,0,0.45);
         }
 
-
         /* ── ROLL BUTTON — uses current player color via --roll-color ── */
         #roll-btn {
             background:rgba(0,0,0,0.65); color:var(--roll-color);
@@ -302,7 +297,6 @@
         #roll-btn:hover::after { opacity:1; animation:shimmer 0.6s ease forwards; }
         #roll-btn:active { animation:rollBtnPress 0.2s ease forwards !important; }
         #roll-btn:disabled { opacity:0.35; animation:none; cursor:not-allowed; }
-
 
         /* ── DICE SLOT — smaller, prefer shrink ── */
         #dice-slot-right {
@@ -336,7 +330,6 @@
         .dice-contract { animation:contractFlash 0.6s infinite alternate !important; }
         .flipping      { animation:flipping 1.2s cubic-bezier(0.45,0.05,0.55,0.95); transform-style:preserve-3d; }
 
-
         /* ── PASS SIDEBAR ── */
         #pass-sidebar {
             z-index:2; width:var(--pass-w); flex-shrink:0;
@@ -359,7 +352,6 @@
             flex-shrink:0; margin-bottom:4px;
             font-family:'KCStrikerSans','Courier New',monospace; font-weight:bold;
         }
-
 
         /* Pass card — paper feel, slow 3D float */
         .access-pass {
@@ -416,7 +408,6 @@
         .tag-thrifty   { background:var(--mystery-glow); color:black; }
         .pass-stripe   { background:linear-gradient(90deg,var(--p-color,#888) 0%,transparent 100%); opacity:0.45; height:clamp(2px,0.32vw,4px); border-radius:2px; margin-top:clamp(2px,0.3vw,5px); filter:brightness(0.7); }
 
-
         /* ── PASS EXPANDED ── */
         #pass-expanded-backdrop { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.65); z-index:3000; align-items:center; justify-content:center; }
         #pass-expanded-backdrop.open { display:flex; }
@@ -448,7 +439,6 @@
             border-radius:8px; cursor:pointer; transition:all 0.25s ease;
         }
         #pitch-btn:hover { background:#ff9f22; border-color:#ff9f22; color:black; box-shadow:0 0 16px var(--pitch-orange); transform:translateY(-2px); }
-
 
         /* ── BOARD SCROLL — fully transparent, no color overlay ── */
         #board-scroll {
@@ -486,7 +476,6 @@
             transform-origin:center center;
         }
 
-
         /* ── SPACES ── */
         .space {
             width:var(--space-size); height:var(--space-size);
@@ -499,33 +488,28 @@
         }
         .space:hover { transform:scale(1.06); box-shadow:0 0 14px rgba(255,255,255,0.3); z-index:6; }
         /* Text shadow for readability on wood background */
-        .space .sp-text,.space .sp-emoji,.mystery-q { text-shadow:0 0 3px rgba(0,0,0,0.4),0 0 1px rgba(0,0,0,0.7); }
+        .space .sp-text,.space .sp-emoji,.mystery-q { text-shadow:0 0 3px rgba(0,0,0,0.5),0 0 1px rgba(0,0,0,0.7); }
         .space:not(.blank):not(.mystery-space):not(.true-blank) { font-family:'KCStrikerSans','Courier New',monospace; }
         .sp-emoji { font-size:var(--space-emoji); margin-bottom:2px; }
         .sp-text  { padding:0 2px; }
-        /* Dark radial backdrop for all named Special (non-tracklist, non-reel) spaces */
-        .space:not(.true-blank):not(.mystery-space):not(.reel-space):not(.tracklist-space) {
-        background:radial-gradient(ellipse at center,rgba(200,180,169,0.1) 10%,rgba(69,50,40,0.3) 100%) !important;
+        /* Dark radial backdrop for all named spaces */
+        .space:not(.true-blank):not(.mystery-space):not(.reel-space) {
+            background:radial-gradient(ellipse at center,rgba(200,180,169,0.1) 10%,rgba(69,50,40,0.3) 100%) !important;
         }
         .mystery-space { background:radial-gradient(ellipse at center,rgba(20,0,30,0.3) 0%,rgba(0,0,0,0.6) 100%) !important; }
         .true-blank { 
             background: none !important; 
-            border: 1px dashed rgba(200,180,169,0.6) !important; /* Custom border */
-            transform: scale(0.7); /* Custom size adjustment */
+            border: 1px dashed rgba(200,180,169,0.6) !important;
+            transform: scale(0.7);
         }
-                
         /* Special space font boost */
         .space:not(.blank):not(.mystery-space):not(.true-blank) { font-size:calc(var(--space-font) * 1.2); }
         .mystery-q { font-size:calc(clamp(0.85rem,1.6vw,1.5rem) * 1.1); font-weight:bold; opacity:0.9; }
         .tracklist-space {
             background: url('vinyl.png?v=24') center/115% no-repeat !important;
-            border: 3px double #666 !important;
-            box-shadow: inset 0 0 15px #000;
-            transform: scale(1.15);
-            z-index: 5;
-            font-size: calc(var(--space-font)*1.2) !important;
-            color: white !important;
-            }
+            border:3px double #666 !important; box-shadow:inset 0 0 15px #000;
+            transform:scale(1.15); z-index:5; font-size:calc(var(--space-font)*1.2) !important; color:white !important;
+        }
         .tracklist-space:hover { transform:scale(1.22) !important; box-shadow:inset 0 0 15px #000,0 0 14px rgba(255,255,255,0.25) !important; }
         .tracklist-space.vinyl-spinning { animation:vinylSpin 3.2s ease forwards !important; transform-origin:center center !important; }
         .tracklist-space.vinyl-wiggle   { animation:vinylWiggle 0.9s ease-in-out !important; transform-origin:center center !important; }
@@ -577,7 +561,6 @@
         .reel-space .sp-text,.reel-space .sp-emoji { position:relative; z-index:1; }
         .space-land { animation:spaceLand 1.2s ease-out forwards; }
 
-
         /* ── PLAYER PIECES ── */
         .player {
             position:absolute; z-index:100;
@@ -592,7 +575,6 @@
         }
         .floating-emoji      { position:absolute; font-size:6.4rem; animation:floatUp 1.2s cubic-bezier(0.2,0.8,0.2,1) forwards; pointer-events:none; z-index:6000; }
         .floating-emoji-slow { position:absolute; font-size:7.2rem; animation:floatUpSlow 2.2s cubic-bezier(0.2,0.8,0.2,1) forwards; pointer-events:none; z-index:6000; }
-
 
         /* ── POPUPS & OVERLAYS ── */
         .overlay { position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:2000; display:none; align-items:center; justify-content:center; padding:clamp(10px,3vw,20px); box-sizing:border-box; }
@@ -639,7 +621,6 @@
             transition:all 0.25s ease; margin-top:10px; display:inline-block;
         }
         .btn-fear:hover { background:rgba(255,68,68,0.15); transform:translateY(-2px); box-shadow:0 0 16px var(--fear-glow); }
-
 
         /* Rule sidebar — PERMANENT: always content-adaptive, never full-height */
         #rule-sidebar {
@@ -709,12 +690,11 @@
         .btn-nevermind:hover { background:rgba(255,68,68,0.12); color:var(--fear-glow); border-color:var(--fear-glow); }
         /* Credits line */
         .credits-line {
-            font-family:'Courier New',monospace; font-size:0.69rem;
+            font-family:'Courier New',monospace; font-size:0.83rem;
             letter-spacing:2px; color:rgba(255,255,255,0.5);
-            text-align:center; margin-top:16px; text-transform:uppercase;
+            text-align:center; margin-top:16px; text-transform:uppercase; white-space:pre-line;
         }
         .intro-header { font-size:clamp(1.6rem,5vw,3.5rem); color:var(--gold); animation:introGlow 2s ease-in-out infinite alternate; margin-bottom:16px; font-family:'KCStrikerSans','Courier New',monospace; letter-spacing:4px; }
-
 
         /* ── SETUP ── */
         .setup-btn-large  { padding:clamp(10px,2vh,20px) clamp(20px,4vw,45px); font-size:clamp(1.4rem,4vw,2.5rem); font-weight:bold; background:transparent; color:white; border:2px solid white; border-radius:12px; cursor:pointer; transition:all 0.2s ease; }
@@ -747,7 +727,6 @@
         #selection-reminder.visible { display:block; animation:reminderSlide 0.35s cubic-bezier(0.175,0.885,0.32,1.275) forwards; }
         #selection-reminder-text  { font-family:'Courier New',monospace; font-size:0.78rem; line-height:1.5; color:rgba(255,255,255,0.85); }
         #selection-reminder-title { font-family:'KCStrikerSans','Courier New',monospace; font-size:0.9rem; letter-spacing:2px; color:white; margin-bottom:6px; text-transform:uppercase; }
-
 
         /* ── RESPONSIVE ── */
         @media (max-width:900px),(orientation:portrait) {
@@ -797,7 +776,6 @@
 </head>
 <body>
 
-
     <!-- ══ MAIN AREA (board top, bar bottom) ══ -->
     <div id="main-area">
         <div id="pass-sidebar"><div id="lineup-label">Lineup</div></div>
@@ -809,7 +787,6 @@
         </div>
     </div>
 
-
     <!-- ══ PERSISTENT PRELOAD BAR (above roll bar, hidden once done) ══ -->
     <div id="game-preload-bar" style="display:none;width:100%;background:#111;border-top:1px solid #333;padding:4px 0;flex-shrink:0;z-index:25;position:relative;">
         <div style="width:90%;max-width:400px;margin:0 auto;">
@@ -819,7 +796,6 @@
             <div id="game-preload-label" style="font-size:0.52rem;letter-spacing:2px;color:rgba(255,255,255,0.3);text-transform:uppercase;font-family:'Courier New',monospace;text-align:center;">Loading...</div>
         </div>
     </div>
-
 
     <!-- ══ BOTTOM UI BAR ══ -->
     <div id="ui-layer">
@@ -847,20 +823,19 @@
                 <button class="nav-menu-btn btn-newband" onclick="confirmHardReset();closeNavMenu()"><span class="nav-icon">💀</span> New Band</button>
                 <button class="nav-menu-btn btn-fullscreen" id="fullscreen-btn" onclick="toggleFullscreen()"><span class="nav-icon">⛶</span> <span id="fullscreen-label">Fullscreen</span></button>
                 <button class="nav-menu-btn btn-home"    onclick="window.open('https://freejoy.club','_blank')"><span class="nav-icon">🏠</span> Home</button>
-                <button class="nav-menu-btn btn-store"   onclick="window.open('https://freejoy.club/store','_blank')"><span class="nav-icon">👕</span> Store</button>
+                <button class="nav-menu-btn btn-store"   onclick="window.open('https://freejoy.club','_blank')"><span class="nav-icon">👕</span> Store</button>
                 <button class="nav-menu-btn btn-album"   onclick="window.open('https://freejoy.club','_blank')"><span class="nav-icon">▶️</span> Play the Album</button>
-                <div style="font-family:'Courier New',monospace;font-size:0.55rem;letter-spacing:1.5px;color:rgba(255,255,255,0.25);text-align:center;padding:6px 4px 2px;text-transform:uppercase;">© 2026 Fearjoy. All Rights Reserved.</div>
+                <div style="font-family:'Courier New',monospace;font-size:0.55rem;letter-spacing:1.5px;color:rgba(255,255,255,0.25);text-align:center;padding:6px 4px 2px;text-transform:uppercase;">© 2026. Music/Game/Sound Design by Fearjoy</div>
             </div>
         </div>
     </div>
-
 
     <!-- ══ PASS EXPANDED ══ -->
     <div id="pass-expanded-backdrop" onclick="collapsePass(event)">
         <div id="pass-expanded-card">
             <span class="exp-close" onclick="collapsePass()">×</span>
             <div style="width:20px;height:9px;background:#888;border-radius:3px 3px 0 0;margin:0 auto 8px;"></div>
-            <div class="pass-all-access" style="text-align:center;margin-bottom:6px;font-size:0.6rem;letter-spacing:3px;color:rgba(255,255,255,0.35);">All-Access Pass</div>
+            <div class="pass-all-access" style="text-align:center;margin-bottom:6px;font-size:0.6rem;letter-spacing:3px;color:rgba(0,0,0,0.5);">All-Access Pass</div>
             <img id="exp-avatar" class="exp-avatar" src="" alt="">
             <div class="exp-name" id="exp-name"></div>
             <div class="exp-section-label">Status</div>
@@ -871,7 +846,6 @@
             <button id="pitch-btn" onclick="triggerColdPitch()">🎤 Pitch to Labels</button>
         </div>
     </div>
-
 
     <!-- ══ RULE SIDEBAR ══ -->
     <!-- Lore backdrop — click outside sidebar to dismiss -->
@@ -884,13 +858,11 @@
         <div id="side-bucket"></div>
     </div>
 
-
     <!-- ══ SELECTION REMINDER ══ -->
     <div id="selection-reminder" onclick="dismissReminder()">
         <div id="selection-reminder-title">👆 SELECT AN ARTIST</div>
         <div id="selection-reminder-text">Tap another Artist's face on the board, or their Pass card.</div>
     </div>
-
 
     <!-- ══ EVENT OVERLAY ══ -->
     <div id="overlay-event" class="overlay">
@@ -906,7 +878,6 @@
             </div>
         </div>
     </div>
-
 
     <!-- ══ SETUP OVERLAY ══ -->
     <div id="overlay-setup" class="overlay" style="display:flex">
@@ -948,7 +919,6 @@
         </div>
     </div>
 
-
     <script>
     // ══════════════════════════════════════════════════════
     // BUCKET
@@ -972,14 +942,12 @@
     ];
     let highestDiscountPct=0;
 
-
     const AVAILABLE_COLORS=[
         {hex:'#00ccff',name:'Cyan'},
         {hex:'#ff00ff',name:'Magenta'},{hex:'#00ff88',name:'Mint'},
         {hex:'#ff4444',name:'Red'},{hex:'#ff8800',name:'Orange'},
     ];
     const DEFAULT_COLORS=['#00ccff','#00ff88','#ff00ff'];
-
 
     const boardLayout=[
         "START","blank","blank","blank","DAYSPRING","blank","FEARJOY","blank","FIGMENT","JOY",
@@ -995,7 +963,6 @@
     const GATEKEEPER_SPACE=48;
     const BLANK_INDICES=boardLayout.reduce((arr,n,i)=>{if(n==="blank")arr.push(i);return arr;},[]);
     let mysterySpaces=new Set();
-
 
     const rules={
         0:{title:"START",emoji:"▶️",desc:"Play the tape."},
@@ -1034,7 +1001,6 @@
         59:{title:"SWIMMIN'",emoji:"🌊",desc:"The tour is a success. Go Swimmin!"}
     };
 
-
     // ══════════════════════════════════════════════
     // GAME STATE
     // ══════════════════════════════════════════════
@@ -1053,7 +1019,6 @@
     let reelSpinning=false; /* true once first movement begins */
     let metronomeInterval=null; /* click-track for timers */
 
-
     // ══════════════════════════════════════════════
     // AUDIO — +6dB master, coin +3dB net, soft limiter
     // tracksEnabled: controls TRACKLIST space sounds
@@ -1068,7 +1033,6 @@
     /* Active tracklist sound — crossfaded out when a new one starts */
     let activeTrackSrc=null,activeTrackGain=null;
 
-
     function getAudioCtx(){
         if(!audioCtx){
             audioCtx=new(window.AudioContext||window.webkitAudioContext)();
@@ -1082,7 +1046,6 @@
         return audioCtx;
     }
 
-
     /* Generic SFX — only plays if sfxEnabled and not masterMuted */
     function playSfx(url,volume=1){
         if(masterMuted||!audioEnabled||!sfxEnabled)return;
@@ -1094,7 +1057,6 @@
             activeSources.add(src);src.onended=()=>activeSources.delete(src);src.start();
         }).catch(()=>{});
     }
-
 
     /* Tracklist sound — crossfades out previous tracklist sound over 1s */
     function playTrackSfx(url){
@@ -1124,7 +1086,6 @@
         }).catch(()=>{});
     }
 
-
     /* Determine if a sound url is a tracklist sound */
     const TRACKLIST_SOUNDS=new Set([
         'dayclip.wav','figclip.wav','remedyclip.wav','dmitriclip.wav',
@@ -1133,13 +1094,11 @@
         'doorclip.wav','mistakeclip.wav'
     ]);
 
-
     /* playSpaceSfx — route to track or sfx */
     function playSpaceSfx(url){
         if(TRACKLIST_SOUNDS.has(url))playTrackSfx(url);
         else playSfx(url);
     }
-
 
     function playCoinSfx(){playSfx('coin.wav',0.707);}
     function playSlide(){
@@ -1153,7 +1112,6 @@
             });
         }
     }
-
 
     /* Metronome click track — MetronomeUp beat 1, Metronome x3 beats 2-4, repeats each second */
     let _metroBeat=0;
@@ -1172,7 +1130,6 @@
         _metroBeat=0;
     }
 
-
     function playDiceRoll(){
         if(masterMuted||!audioEnabled||!sfxEnabled)return;
         const n=Math.floor(Math.random()*4)+1;
@@ -1186,7 +1143,6 @@
         }).catch(()=>{});
     }
 
-
     function playDiceDone(){
         const ctx=getAudioCtx();
         diceRollSources.forEach(src=>{
@@ -1195,7 +1151,6 @@
         diceRollSources.clear();
         setTimeout(()=>playSfx('dicedone.wav'),80);
     }
-
 
     function playRemedyPunishment(){
         if(masterMuted||!audioEnabled||!sfxEnabled)return;
@@ -1211,7 +1166,6 @@
             },2000);
         }).catch(()=>{});
     }
-
 
     /* Sync all audio UI indicators */
     function syncAudioUI(){
@@ -1242,7 +1196,6 @@
         }
     }
 
-
     function toggleMute(){
         masterMuted=!masterMuted;
         /* Mute/unmute any active lore video */
@@ -1269,7 +1222,6 @@
     }
     function toggleSfx(){sfxEnabled=!sfxEnabled;syncAudioUI();}
 
-
     /* Lore video audio fades — also crossfade with active track */
     function fadeVideoAudioIn(vid){
         if(!vid)return;
@@ -1293,7 +1245,6 @@
         if(activeLoreVid){fadeVideoAudioOut(activeLoreVid,true);activeLoreVid=null;}
     }
 
-
     // ══════════════════════════════════════════════
     // VU METER
     // ══════════════════════════════════════════════
@@ -1316,7 +1267,6 @@
         needle.style.transform=`rotate(${deg}deg)`;
     }
 
-
     // ══════════════════════════════════════════════
     // FULLSCREEN
     // ══════════════════════════════════════════════
@@ -1333,7 +1283,6 @@
         document.getElementById('fullscreen-label').innerText=document.fullscreenElement?'Exit Fullscreen':'Fullscreen';
     });
 
-
     // ══════════════════════════════════════════════
     // PRELOADING
     // ══════════════════════════════════════════════
@@ -1347,7 +1296,6 @@
         'dice1.wav','dice2.wav','dice3.wav','dice4.wav','dicedone.wav','coin.wav',
     ];
     const VIDEO_FILES=['trevortrim.mp4'];
-
 
     function startPreload(){
         const wrap=document.getElementById('preload-bar-wrap');
@@ -1389,7 +1337,6 @@
         });
     }
 
-
     // ══════════════════════════════════════════════
     // VINYL WIGGLE
     // ══════════════════════════════════════════════
@@ -1406,7 +1353,6 @@
         }
         setTimeout(wiggleRandom,3000+Math.random()*4000);
     }
-
 
     // ══════════════════════════════════════════════
     // TAPE PATH SVG — wider, smoother, curved corners
@@ -1428,7 +1374,6 @@
         });
         if(pts.length<2)return;
 
-
         /* Build a smooth Catmull-Rom inspired path — wider curves, curved corners */
         let d=`M${pts[0].x},${pts[0].y}`;
         for(let i=1;i<pts.length;i++){
@@ -1445,7 +1390,6 @@
             d+=` C${cp1x.toFixed(1)},${cp1y.toFixed(1)} ${cp2x.toFixed(1)},${cp2y.toFixed(1)} ${c.x.toFixed(1)},${c.y.toFixed(1)}`;
         }
 
-
         svg.innerHTML='';
         const filt=document.createElementNS('http://www.w3.org/2000/svg','filter');
         filt.setAttribute('id','tapeBlur');
@@ -1459,7 +1403,6 @@
         disp.setAttribute('xChannelSelector','R');disp.setAttribute('yChannelSelector','G');
         filt.appendChild(fe);filt.appendChild(disp);svg.appendChild(filt);
 
-
         /* Wide base tape with variable-width effect via two paths */
         const base=document.createElementNS('http://www.w3.org/2000/svg','path');
         base.setAttribute('d',d);base.setAttribute('fill','none');
@@ -1470,7 +1413,6 @@
         base.setAttribute('stroke-linecap','round');base.setAttribute('stroke-linejoin','round');
         base.setAttribute('filter','url(#tapeBlur)');svg.appendChild(base);
 
-
         /* Inner highlight for tape depth */
         const inner=document.createElementNS('http://www.w3.org/2000/svg','path');
         inner.setAttribute('d',d);inner.setAttribute('fill','none');
@@ -1478,7 +1420,6 @@
         inner.setAttribute('stroke-width','3');
         inner.setAttribute('stroke-linecap','round');inner.setAttribute('stroke-linejoin','round');
         svg.appendChild(inner);
-
 
         /* Shine sweep — slower, random-feeling, less frequent */
         const shine=document.createElementNS('http://www.w3.org/2000/svg','path');
@@ -1492,7 +1433,6 @@
         shine.setAttribute('style','animation:tapeShine 11s cubic-bezier(0.4,0,0.6,1) infinite;animation-delay:-3s;');
         shine.setAttribute('filter','url(#tapeBlur)');svg.appendChild(shine);
     }
-
 
     // ══════════════════════════════════════════════
     // KEYBOARD
@@ -1517,14 +1457,12 @@
     });
     function resetKbFocus(){kbFocusIdx=0;document.querySelectorAll('.btn-kb-focus').forEach(b=>b.classList.remove('btn-kb-focus'));}
 
-
     // ══════════════════════════════════════════════
     // NAV + RESTART
     // ══════════════════════════════════════════════
     function toggleNavMenu(){document.getElementById('nav-menu').classList.toggle('open');}
     function closeNavMenu(){document.getElementById('nav-menu').classList.remove('open');}
     document.addEventListener('click',e=>{if(!document.getElementById('nav-knob').contains(e.target))closeNavMenu();});
-
 
     function confirmHardReset(){
         showStatusPopup("NEW BAND?","This will erase everything and start fresh.",
@@ -1558,7 +1496,6 @@
         );
     }
 
-
     // ══════════════════════════════════════════════
     // SELECTION REMINDER
     // ══════════════════════════════════════════════
@@ -1573,7 +1510,6 @@
         if(reminderTimer){clearTimeout(reminderTimer);reminderTimer=null;}
         if(reminderDismissTimer){clearTimeout(reminderDismissTimer);reminderDismissTimer=null;}
     }
-
 
     // ══════════════════════════════════════════════
     // HELPERS
@@ -1632,7 +1568,6 @@
         else{updatePositions();drawTapePath();}
     },350));
 
-
     // ══════════════════════════════════════════════
     // MYSTERY SPACE ASSIGNMENT
     // ══════════════════════════════════════════════
@@ -1655,7 +1590,6 @@
         });
     }
 
-
     // ══════════════════════════════════════════════
     // BUCKET — guaranteed one per game, no repeat, 40s image linger
     // ══════════════════════════════════════════════
@@ -1677,7 +1611,6 @@
         return item;
     }
 
-
     function renderBucketItem(item,container,playerIdx){
         container.innerHTML='';if(!item)return;
         if(item.type==='image'){
@@ -1691,8 +1624,18 @@
             vid.setAttribute('playsinline','');
             container.appendChild(vid);
             activeLoreVid=vid;
+            const _tryPlay=()=>{if(vid.paused&&!vid.ended)vid.play().catch(()=>{});};
             vid.play().then(()=>fadeVideoAudioIn(vid)).catch(()=>{vid.muted=true;vid.play().catch(()=>{});});
-            vid.addEventListener('ended',()=>{fadeVideoAudioOut(vid,true);if(activeLoreVid===vid)activeLoreVid=null;},{once:true});
+            /* Mobile buffering fix: nudge playback on orientation change and periodic check */
+            const _vidNudge=setInterval(()=>{if(vid&&!vid.paused&&!vid.ended){}else if(vid&&!vid.ended)_tryPlay();},2000);
+            const _orientFn=()=>{if(vid&&!vid.ended&&vid.paused){vid.load();vid.play().catch(()=>{});}};
+            window.addEventListener('orientationchange',_orientFn);
+            screen.orientation&&screen.orientation.addEventListener('change',_orientFn);
+            vid.addEventListener('ended',()=>{
+                clearInterval(_vidNudge);
+                window.removeEventListener('orientationchange',_orientFn);
+                fadeVideoAudioOut(vid,true);if(activeLoreVid===vid)activeLoreVid=null;
+            },{once:true});
         } else if(item.type==='link'||item.type==='download'){
             const card=document.createElement('div');card.className='bucket-link-card';
             const lbl=document.createElement('div');lbl.className='bucket-link-label';
@@ -1727,13 +1670,12 @@
                 };card.appendChild(codeEl);
             }
             if(item.url){
-                const btn=document.createElement('a');btn.className='bucket-btn';btn.href=item.url;btn.target='_blank';
+                const btn=document.createElement('a');btn.className='bucket-btn';btn.href=(item.url||'https://freejoy.club/store').replace('freejoy.club','freejoy.club/store').replace('/store/store','/store');btn.target='_blank';
                 btn.innerText=item.type==='download'?'DOWNLOAD':'STORE';card.appendChild(btn);
             }
             container.appendChild(card);
         }
     }
-
 
     // ══════════════════════════════════════════════
     // SETUP
@@ -1815,7 +1757,6 @@
         }
     }
 
-
     // ══════════════════════════════════════════════
     // ADAPTIVE BOARD LAYOUT
     // landscape: 10 cols × 6 rows (boustrophedon, rows bottom-to-top)
@@ -1823,13 +1764,11 @@
     // Arrows are board-level overlays, not space children — won't spin with vinyl
     // ══════════════════════════════════════════════
 
-
     /* Detect layout from viewport dimensions */
     function detectLayout(){
         return (window.innerWidth > window.innerHeight && window.innerWidth >= 600)
             ? 'landscape' : 'portrait';
     }
-
 
     /* Pre-compute the next-direction for each space index in a given layout.
        Returns an array of 'right'|'left'|'up'|'down' per space (null for last space). */
@@ -1851,7 +1790,6 @@
         return dirs;
     }
 
-
     /* Map space index → [gridRow, gridCol] (1-based) for a given layout.
        Landscape: rows numbered bottom-up (row 1 at top of grid = visual bottom row).
        Portrait: cols numbered left-to-right. Both use boustrophedon snake. */
@@ -1869,7 +1807,6 @@
         }
     }
 
-
     /* Place all spaces according to current layoutMode */
     function applyLayout(mode){
         const COLS=mode==='landscape'?10:6;
@@ -1884,7 +1821,6 @@
             s.style.gridRow=r;s.style.gridColumn=c;
         });
     }
-
 
     /* Draw decoupled arrows on #board-outer after layout is applied */
     function drawArrows(mode){
@@ -1919,7 +1855,6 @@
         }
     }
 
-
     /* Full layout refresh — call on init and resize */
     function refreshLayout(){
         const newMode=detectLayout();
@@ -1932,7 +1867,6 @@
             updatePositions();
         },50);
     }
-
 
     // ══════════════════════════════════════════════
     // BOARD INIT
@@ -1995,7 +1929,6 @@
         if(!isRestart)setTimeout(showInstructions,400);
     }
 
-
     // ══════════════════════════════════════════════
     // INSTRUCTIONS
     // ══════════════════════════════════════════════
@@ -2009,8 +1942,7 @@
                     const desc=document.getElementById('event-desc');
                     if(desc&&!desc.querySelector('.credits-line')){
                         const c=document.createElement('div');c.className='credits-line';
-                            c.innerText = 'Music/Game/Sound Design by Fearjoy\n© 2026 Fearjoy. All rights reserved.';
-                            desc.appendChild(c); // This puts it on the screen
+                        c.innerText='© 2026. Music/Game/Sound Design by Fearjoy';desc.appendChild(c);
                     }
                 },50);
             },
@@ -2020,6 +1952,8 @@
                     "Let's go!",()=>{},"",()=>{}
                 );
                 document.getElementById('event-btn-secondary').style.display='none';
+                /* 20% smaller text for How to Play card */
+                setTimeout(()=>{const d=document.getElementById('event-desc');if(d)d.style.fontSize='clamp(0.96rem,2.1vw,1.3rem)';},30);
             }
         );
         /* Inject credits into the first popup immediately */
@@ -2027,8 +1961,7 @@
             const desc=document.getElementById('event-desc');
             if(desc&&!desc.querySelector('.credits-line')){
                 const c=document.createElement('div');c.className='credits-line';
-                    c.innerText = 'Music/Game/Sound Design by Fearjoy\n© 2026 Fearjoy. All rights reserved.';
-                    desc.appendChild(c); // This puts it on the screen
+                c.innerText='© 2026. Music/Game/Sound Design by Fearjoy';desc.appendChild(c);
             }
             /* Light-dismiss: clicking outside popup closes intro card */
             const ov=document.getElementById('overlay-event');
@@ -2040,22 +1973,20 @@
         },80);
     }
 
-
     // ══════════════════════════════════════════════
     // MYSTERY CLICK
     // ══════════════════════════════════════════════
     function handleMysteryClick(i){
+        /* Show space info — not a lore bucket (that only triggers on landing) */
         document.getElementById('rule-sidebar').classList.add('mystery-sidebar');
-        showSidebar('Mystery Lore Drop','','var(--mystery-glow)',`Space ${i}`);
+        showSidebar('? Mystery Space','Land here to discover a lore drop or surprise reward.','var(--mystery-glow)');
     }
-
 
     // ══════════════════════════════════════════════
     // PASSES
     // Pitch bubble only after space 30 (halfway), current player only
     // ══════════════════════════════════════════════
     const FLOAT_CLASSES=['pass-float-a','pass-float-b','pass-float-c'];
-
 
     function renderPasses(){
         const sidebar=document.getElementById('pass-sidebar');
@@ -2099,7 +2030,6 @@
         });
     }
 
-
     function expandPass(idx){
         expandedPassIdx=idx;
         const pl=players[idx];const isCurrent=(idx===turnIdx);
@@ -2131,7 +2061,6 @@
         expandedPassIdx=null;
     }
 
-
     // ══════════════════════════════════════════════
     // COLD PITCH
     // ══════════════════════════════════════════════
@@ -2141,20 +2070,17 @@
         const descEl=document.getElementById('event-desc');
         descEl.innerHTML='';
 
-
         const body=document.createElement('div');
         body.innerHTML=`<div style="margin-bottom:6px;">Pitch your demo tape to major labels.</div>
 <div style="margin-bottom:14px;"><b style="color:var(--joy-glow);">1 in 3 chance of getting SIGNED (+5 spaces now!)</b></div>
 <div style="font-family:'Courier New',monospace;font-size:0.9rem;color:rgba(255,255,255,0.75);margin-bottom:8px;"><span style="display:inline-block;animation:phoneWiggle 1.8s ease-in-out infinite;">📱</span> Hey! It's your lawyer! I suggest...</div>`;
 
-
         const fpBtn=document.createElement('button');
         fpBtn.style.cssText='display:block;margin:0 auto 0;padding:7px 16px;background:transparent;border:1px solid rgba(255,255,255,0.35);color:rgba(255,255,255,0.6);font-family:Courier New,monospace;font-size:0.8rem;border-radius:6px;cursor:pointer;letter-spacing:1px;transition:all 0.2s;';
         fpBtn.innerText='Read the Fine Print ⬇️';
 
-
         const fp=document.createElement('div');
-        fp.style.cssText='display:none;margin-top:12px;padding:12px 14px;background:rgba(0,0,0,0.5);border-radius:8px;border:1px solid rgba(255,255,255,0.15);font-family:Courier New,monospace;font-size:0.82rem;text-align:left;line-height:1.9;';
+        fp.style.cssText='display:none;margin-top:12px;padding:12px 14px;background:rgba(0,0,0,0.5);border-radius:8px;border:1px solid rgba(255,255,255,0.15);font-family:Courier New,monospace;font-size:0.98rem;text-align:left;line-height:1.9;';
         fp.innerHTML=`<div style="font-weight:bold;letter-spacing:1px;color:rgba(255,255,255,0.9);margin-bottom:8px;">Fearvices Records: Artist Deal</div>`+
         `<div style="color:#ff4444;">If DECLINED: -2 NOW</div>`+
         `<div style="height:10px;"></div>`+
@@ -2167,25 +2093,25 @@
         `<div style="color:rgba(255,255,255,0.55);">One use per game.</div>`+
         `<div style="color:rgba(255,255,255,0.55);">Cannot use after Gatekeeper.</div>`;
 
-
         fpBtn.onclick=()=>{const open=fp.style.display==='block';fp.style.display=open?'none':'block';fpBtn.innerText=open?'Read the Fine Print ⬇️':'Hide Fine Print ⬆️';};
         body.appendChild(fpBtn);body.appendChild(fp);
         descEl.appendChild(body);
 
-
+        isRolling=true;isMoving=true;
+        const _cpIdx=turnIdx;
         showStatusPopup("🎤 Cold Pitch","","Let's Pitch →",async()=>{
-            p.usedColdPitch=true;
+            players[_cpIdx].usedColdPitch=true;
             playSpaceSfx('remedyclip.wav');
             document.getElementById('overlay-event').style.display='none';
             const accepted=Math.random()<(1/3);
             await new Promise(r=>setTimeout(r,400));
             if(accepted){
-                p.isColdPitchSellout=true;p.coldPitchRollCount=0;p.accolades.push('📝');
+                players[_cpIdx].isColdPitchSellout=true;players[_cpIdx].coldPitchRollCount=0;players[_cpIdx].accolades.push('📝');
                 showStatusPopup("✅ SIGNED!","Label deal locked in. They cut every other roll.",
                     "LET'S GO",async()=>{
                         document.getElementById('overlay-event').style.display='none';
                         spawnEmoji('📝',true);renderPasses();
-                        await new Promise(r=>setTimeout(r,400));movePlayer(5,false,turnIdx);
+                        await new Promise(r=>setTimeout(r,400));movePlayer(5,false,_cpIdx);
                     },"",()=>{}
                 );
                 document.getElementById('event-btn-secondary').style.display='none';
@@ -2194,18 +2120,17 @@
                     "BACK TO THE GRIND",async()=>{
                         document.getElementById('overlay-event').style.display='none';
                         spawnEmoji('💀',true);
-                        await new Promise(r=>setTimeout(r,400));movePlayer(-2,false,turnIdx);
+                        await new Promise(r=>setTimeout(r,400));movePlayer(-2,false,_cpIdx);
                     },"",()=>{}
                 );
                 document.getElementById('event-btn-secondary').style.display='none';
             }
             renderPasses();
-        },"Stay Indie",()=>{document.getElementById('overlay-event').style.display='none';});
+        },"Stay Indie",()=>{isMoving=false;isRolling=false;document.getElementById('overlay-event').style.display='none';endTurn();});
         /* Re-inject the body into desc since showStatusPopup cleared it */
         document.getElementById('event-desc').innerHTML='';
         document.getElementById('event-desc').appendChild(body);
     }
-
 
     // ══════════════════════════════════════════════
     // UI UPDATE
@@ -2222,7 +2147,6 @@
         document.documentElement.style.setProperty('--roll-color',p.avatar.color);
         renderPasses();updatePositions();
     }
-
 
     // ══════════════════════════════════════════════
     // UPDATE POSITIONS
@@ -2258,7 +2182,6 @@
         });
     }
 
-
     // ══════════════════════════════════════════════
     // DICE TELEPORT
     // ══════════════════════════════════════════════
@@ -2278,7 +2201,6 @@
         d.style.animation='diceGlow 3s ease-in-out infinite';
     }
 
-
     // ══════════════════════════════════════════════
     // ROLL FLOW
     // Roll is ALWAYS available. If lore is showing, doRoll resolves the lore
@@ -2289,16 +2211,11 @@
         /* If in lore drop: dismiss it and immediately roll for the current player */
         if(isInLoreDrop){
             stopActiveLoreVid();
-            closeSidebar();
+            closeSidebar(); /* also clears lore-peek state */
             hideLoreBackdrop();
-            isInLoreDrop=false;
+            isInLoreDrop=false;isMoving=false;isRolling=false;
             if(loreDoneResolver){loreDoneResolver();loreDoneResolver=null;}
-            /* isRolling/isMoving were cleared when lore drop started — but
-               isRolling may still be true from the prior performActualRoll.
-               Clear both so the fall-through below can proceed to roll. */
-            isMoving=false;isRolling=false;
-            /* Small delay so movePlayer's endTurn() fires first, advancing turnIdx */
-            await new Promise(r=>setTimeout(r,50));
+            await new Promise(r=>setTimeout(r,80));
         }
         /* Hard guard — isRolling blocks re-entry during entire roll+move sequence */
         if(isRolling||isMoving||isSwapping||isMayaPartner)return;
@@ -2307,22 +2224,25 @@
         const p=players[turnIdx];
         if(p.grammyNominator){
             const nom=p.grammyNominator;p.grammyNominator=null;
-            showStatusPopup("🏆 NOMINATED!",`${nom} nominated you for a Grammy!`,"I HUMBLY ACCEPT",()=>doRoll(),"",()=>{});
+            isRolling=true;isMoving=true;
+            showStatusPopup("🏆 NOMINATED!",`${nom} nominated you for a Grammy!`,"I HUMBLY ACCEPT",()=>{isRolling=false;isMoving=false;doRoll();},"",()=>{});
             document.getElementById('event-btn-secondary').style.display='none';return;
         }
         if(p.skipCount>0){
             p.skipCount--;
+            isRolling=true;isMoving=true;
             showStatusPopup("🛠 BUMMER","Van is still in the shop. Turn skipped.","BUMMER",()=>endTurn(),"DARN",()=>endTurn());return;
         }
         if(p.nightDriveActive){
+            isRolling=true;isMoving=true;
+            const _ndIdx=turnIdx;
             showStatusPopup("🌙 NIGHTDRIVE CHECK","Did you keep your eyes closed?",
                 "YES - EYES SHUT",()=>{
-                    p.nightDriveActive=false;
-                    /* Don't auto-roll — player presses Roll themselves */
+                    players[_ndIdx].nightDriveActive=false;
                     isMoving=false;isRolling=false;
                     document.getElementById('roll-btn').disabled=false;
                     document.getElementById('overlay-event').style.display='none';
-                },"NO - PEEKED",()=>{p.nightDriveActive=false;movePlayer(-1,false,turnIdx);});return;
+                },"NO - PEEKED",()=>{players[_ndIdx].nightDriveActive=false;movePlayer(-1,false,_ndIdx);});return;
         }
         checkNextHonor(p);
     }
@@ -2331,16 +2251,15 @@
         if(p.ghostCounter>0){
             isRolling=true;isMoving=true;
             showStatusPopup("👻 GHOST CHECK","Did you stay quiet?",
-                "YES - I WAS SILENT",()=>{players[_hnIdx].ghostCounter=0;isRolling=false;isMoving=false;document.getElementById('overlay-event').style.display='none';document.getElementById('roll-btn').disabled=false;},"NO - I SLIPPED",()=>{players[_hnIdx].ghostCounter=0;movePlayer(-1,false,_hnIdx);});return;
+                "YES - I WAS SILENT",()=>{players[_hnIdx].ghostCounter=0;endTurn();},"NO - I SLIPPED",()=>{players[_hnIdx].ghostCounter=0;movePlayer(-1,false,_hnIdx);});return;
         }
         if(p.smileActive){
             isRolling=true;isMoving=true;
             showStatusPopup("💀 THE ENDLESS SMILE","Did you hold the smile?",
-                "HELD IT",()=>{players[_hnIdx].smileActive=false;isRolling=false;isMoving=false;document.getElementById('overlay-event').style.display='none';document.getElementById('roll-btn').disabled=false;},"BROKE IT",()=>{players[_hnIdx].smileActive=false;movePlayer(-1,false,_hnIdx);});return;
+                "HELD IT",()=>{players[_hnIdx].smileActive=false;endTurn();},"BROKE IT",()=>{players[_hnIdx].smileActive=false;movePlayer(-1,false,_hnIdx);});return;
         }
         performActualRoll();
     }
-
 
     async function performActualRoll(){
         const capturedTurnIdx=turnIdx;
@@ -2362,7 +2281,6 @@
         vuRollAnimation(roll);
         playDiceDone();
         await new Promise(r=>setTimeout(r,750));
-
 
         /* Investor — teal dice */
         if(p.isInvestor&&(roll===1||roll===2)){
@@ -2404,13 +2322,11 @@
         movePlayer(roll,false,capturedTurnIdx);
     }
 
-
     function spawnEmoji(char,slow=false){
         const e=document.createElement('div');e.className=slow?'floating-emoji-slow':'floating-emoji';
         e.innerText=char;e.style.left="50%";e.style.top="50%";document.body.appendChild(e);
         setTimeout(()=>e.remove(),slow?2400:1200);
     }
-
 
     // ══════════════════════════════════════════════
     // MOVEMENT — capturedIdx prevents cross-assignment
@@ -2425,7 +2341,6 @@
         const lastPlaceIdxList=getLastPlaceIdx();
         const isLast=lastPlaceIdxList.includes(idx);
         const anyLabelDeal=p.isSellout||p.isColdPitchSellout;
-
 
         for(let i=0;i<Math.abs(n);i++){
             if(p.pos+dir>=0&&p.pos+dir<boardLayout.length){
@@ -2445,11 +2360,9 @@
         flashSpaceLanding(p.pos);
         if(TRACKLIST_INDICES.includes(p.pos))triggerVinylSpin(p.pos);
 
-
         /* ── MYSTERY LORE DROP ── */
         if(mysterySpaces.has(p.pos)){
             await new Promise(r=>setTimeout(r,750));
-
 
             /* Small chance to award Plot Armor instead of regular lore */
             let item;
@@ -2464,22 +2377,18 @@
                 lorePeekSidebar();endTurn();return;
             }
 
-
             item=getRandomBucketItem(idx);
             renderBucketItem(item,document.getElementById('side-bucket'),idx);
             document.getElementById('rule-sidebar').classList.add('mystery-sidebar');
             showSidebar('Mystery Lore Drop','','var(--mystery-glow)',`Space ${p.pos}`);
 
-
             /* Show backdrop so clicking outside dismisses */
             showLoreBackdrop();
-
 
             /* Roll is now available — unlock before waiting */
             isMoving=false;
             document.getElementById('roll-btn').disabled=false;
             isInLoreDrop=true;
-
 
             const bucketVid=document.getElementById('side-bucket').querySelector('video');
             if(bucketVid){
@@ -2495,56 +2404,42 @@
                     else{bucketVid.addEventListener('loadedmetadata',setCap,{once:true});}
                 });
             } else {
-                /* Image / discount — 80s linger, no dismiss while hovering, auto-peek only */
+                /* Image / merch — 40s linger (merch=20s), then auto-peek. Roll always dismisses. */
                 const _isMerch=item&&(item.type==='link'||item.type==='download');
-                const _lingerMs=_isMerch?80000:40000;
+                const _lingerMs=_isMerch?20000:40000;
                 await new Promise(res=>{
                     loreDoneResolver=res;
+                    const _t=setTimeout(()=>{loreDoneResolver=null;res();},_lingerMs);
                     const sb=document.getElementById('rule-sidebar');
-                    let _hovered=false;
-                    let _timer=null;
-                    function _startTimer(){
-                        _timer=setTimeout(()=>{
-                            if(!_hovered){loreDoneResolver=null;res();}
-                            else{_startTimer();} /* re-check when hover clears */
-                        },_lingerMs);
-                    }
-                    _startTimer();
-                    if(_isMerch){
-                        sb.addEventListener('mouseenter',()=>{_hovered=true;},{once:false,passive:true});
-                        sb.addEventListener('mouseleave',()=>{_hovered=false;},{once:false,passive:true});
-                    }
                     const origClose=sb.onclick;
                     sb.onclick=(e)=>{
-                        clearTimeout(_timer);loreDoneResolver=null;
-                        stopActiveLoreVid();
-                        sb.onclick=origClose;if(origClose)origClose(e);res();
+                        clearTimeout(_t);loreDoneResolver=null;
+                        stopActiveLoreVid();sb.onclick=origClose;if(origClose)origClose(e);res();
                     };
                 });
-                /* Merch lore: only auto-dismiss to PEEK, not fully close */
-                if(_isMerch){lorePeekSidebar();endTurn();return;}
+                /* Merch: peek (stays visible as tab) until next action; image: fully close */
+                if(_isMerch){
+                    isInLoreDrop=false;loreDoneResolver=null;isMoving=false;isRolling=false;
+                    hideLoreBackdrop();lorePeekSidebar();endTurn();return;
+                }
             }
 
-
             isInLoreDrop=false;loreDoneResolver=null;
+            isMoving=false;isRolling=false;
             hideLoreBackdrop();
-            /* Peek sidebar off-screen so it lingers tappably */
             lorePeekSidebar();
             endTurn();return;
         }
 
-
         await new Promise(r=>setTimeout(r,750));
         checkSpace();
     }
-
 
     function movePlayerDirect(playerIdx,targetPos){
         playSlide();
         players[playerIdx].pos=Math.max(0,Math.min(59,targetPos));
         updatePositions();
     }
-
 
     // ══════════════════════════════════════════════
     // LORE PEEK — slide sidebar almost off right, tab lingers
@@ -2579,7 +2474,6 @@
         if(sidebarTimer)clearTimeout(sidebarTimer);
     }
 
-
     // ══════════════════════════════════════════════
     // SHARED GAME TIMER — KCStrikerSans countdown, metronome click track,
     // nevermind button, coinclip at 0. Used by Figment, Dmitri.
@@ -2594,7 +2488,6 @@
         /* Put action bar in column/centered mode for timer */
         actionBar.classList.add('timer-mode');
 
-
         /* Nevermind button */
         let nmBtn=document.getElementById('timer-nevermind');
         if(!nmBtn){
@@ -2605,7 +2498,6 @@
             actionBar.appendChild(nmBtn);
         }
         nmBtn.style.display='block';
-
 
         /* Timer mute button — only mutes metronome click-track, not master */
         let tmBtn=document.getElementById('timer-mute');
@@ -2624,7 +2516,6 @@
             else{startMetronome();tmBtn.innerText='🔇 mute click track';tmBtn.style.borderColor='rgba(255,255,255,0.25)';tmBtn.style.color='rgba(255,255,255,0.7)';}
         };
 
-
         const cleanUp=()=>{
             clearInterval(clock);
             stopMetronome();
@@ -2636,9 +2527,7 @@
             actionBar.classList.remove('timer-mode');
         };
 
-
         nmBtn.onclick=()=>{cleanUp();onDone(false);};
-
 
         const clock=setInterval(()=>{
             t--;timerEl.innerText=t;
@@ -2646,7 +2535,6 @@
         },1000);
         return clock;
     }
-
 
     // ══════════════════════════════════════════════
     // SPACE LOGIC
@@ -2677,7 +2565,6 @@
             showSidebar(r.title,(r.emoji||"")+" "+(r.desc||"Moving..."),spaceCol);
             setTimeout(()=>movePlayer(r.shift,false,capturedTurnIdx),1500);return;
         }
-
 
         const modal=document.getElementById('overlay-event');
         const title=document.getElementById('event-title');
@@ -2715,9 +2602,14 @@
         pmb.style.color=masterMuted?'#ff4444':'#bb1111';
         modal.style.display='flex';resetKbFocus();
 
-
         if(r.skipTurns){
             playSfx('crashclip.wav');
+            /* Plot armor: skip the skip! */
+            if(checkPlotArmor(capturedTurnIdx,true)){
+                modal.style.display='none';
+                showSidebar("🛡️ PLOT ARMOR","Van held together! Turn saved.",'var(--mystery-glow)');
+                endTurn();return;
+            }
             p.skipCount=r.skipTurns;pBtn.onclick=()=>{modal.style.display='none';endTurn();};
         } else if(r.isFigment){
             pBtn.innerText="STEP OUTSIDE (1:00)";sBtn.innerText="STAY INDOORS (-1)";sBtn.style.display='inline-block';
@@ -2742,7 +2634,13 @@
                     const win=Math.random()>0.5;
                     coin.innerText=win?"JOY":"FEAR";coin.classList.remove('flipping');
                     if(win)playSfx('coinclip.wav');else playSfx('spookyclip1.wav');
-                    setTimeout(async()=>{modal.style.display='none';coin.style.display='none';await new Promise(res=>setTimeout(res,800));movePlayer(win?1:-1,false,capturedTurnIdx);},1200);
+                    setTimeout(async()=>{
+                        modal.style.display='none';coin.style.display='none';
+                        await new Promise(res=>setTimeout(res,800));
+                        /* Plot armor absorbs FEAR result — player stays, no rewind */
+                        if(!win&&checkPlotArmor(capturedTurnIdx,true)){endTurn();return;}
+                        movePlayer(win?1:-1,false,capturedTurnIdx);
+                    },1200);
                 },1200);
             };
         } else if(r.isDmitri){
@@ -2770,7 +2668,7 @@
                 fpBtn2.style.cssText='display:block;margin:8px auto 0;padding:7px 16px;background:transparent;border:1px solid rgba(255,255,255,0.3);color:rgba(255,255,255,0.55);font-family:Courier New,monospace;font-size:0.8rem;border-radius:6px;cursor:pointer;letter-spacing:1px;transition:all 0.2s;';
                 fpBtn2.innerText='Read the Fine Print ⬇️';
                 const fp2body=document.createElement('div');
-                fp2body.style.cssText='display:none;margin-top:10px;padding:12px 14px;background:rgba(0,0,0,0.5);border-radius:8px;border:1px solid rgba(255,255,255,0.12);font-family:Courier New,monospace;font-size:0.82rem;text-align:left;line-height:1.9;';
+                fp2body.style.cssText='display:none;margin-top:10px;padding:12px 14px;background:rgba(0,0,0,0.5);border-radius:8px;border:1px solid rgba(255,255,255,0.12);font-family:Courier New,monospace;font-size:0.98rem;text-align:left;line-height:1.9;';
                 fp2body.innerHTML=`<div style="font-weight:bold;letter-spacing:1px;color:rgba(255,255,255,0.9);margin-bottom:8px;">Illuminati Records: Artist Deal</div>`+
                 `<div style="color:#00ff88;">Move +6 now!</div>`+
                 `<div style="color:#ff4444;">Every future 6 you roll will become -2.</div>`+
@@ -2781,13 +2679,14 @@
                 setTimeout(()=>{
                     const cv=document.getElementById('close-video');const vid=document.getElementById('remedy-video');
                     if(cv)cv.onclick=(e)=>{e.stopPropagation();fadeOutVideo(vid);document.getElementById('video-wrapper').style.display='none';};
-                    if(vid)vid.play().catch(()=>{});
+                    if(vid){vid.play().catch(()=>{});/* mobile buffer fix */const _rnudge=setInterval(()=>{if(vid&&!vid.paused){}else if(vid&&!vid.ended)vid.play().catch(()=>{});},2000);vid.addEventListener('ended',()=>clearInterval(_rnudge),{once:true});}
                     setTimeout(()=>playSfx('remedyclip.wav'),150);
                 },50);
             }
             pBtn.innerText=r.choice==='remedy'?"SIGN CONTRACT (+6)":"INVEST IN MERCH (-4)";
             sBtn.style.display='inline-block';sBtn.innerText="PASS";
             pBtn.onclick=async()=>{
+                isMoving=true;isRolling=true;
                 fadeOutVideo(document.getElementById('remedy-video'));
                 modal.style.display='none';
                 await new Promise(res=>setTimeout(res,800));
@@ -2798,7 +2697,7 @@
                     playCoinSfx();p.isInvestor=true;movePlayer(-4,false,capturedTurnIdx);
                 }
             };
-            sBtn.onclick=()=>{fadeOutVideo(document.getElementById('remedy-video'));modal.style.display='none';endTurn();};
+            sBtn.onclick=()=>{isMoving=true;isRolling=true;fadeOutVideo(document.getElementById('remedy-video'));modal.style.display='none';endTurn();};
         } else if(r.isGrammy){
             let maxPos=Math.max(...players.map(pl=>pl.pos));
             let leaders=players.filter(pl=>pl.pos===maxPos&&pl!==p);
@@ -2836,7 +2735,7 @@
                     scheduleReminder(r.isMaya?"Tap an Artist's face or Pass to start the eye contact challenge.":"Tap an Artist's face or Pass to swap places.");
                 };
                 desc.innerHTML=r.isMaya
-                    ?`MAYA'S EYE CONTACT CHALLENGE.<br><br>Hold eye contact for 10s for <b>Both +2</b>. Avoid for <b>Both -1</b>.<br><br><span style="color:rgba(255,255,255,0.5);font-size:0.85em;">(Or "Fear of Intimacy" below to skip and move back 1.)</span>`
+                    ?`Click another player to start a staring contest.<br><br>Hold eye contact for 10s for <b>Both +2</b>. Avoid for <b>Both -1</b>.<br><br><span style="color:rgba(255,255,255,0.5);font-size:0.85em;">(Or "Fear of Intimacy" below to skip and move back 1.)</span>`
                     :"TELLUS: THE GREAT SWAP.<br><br>Select an Artist's face or Pass card to swap places.";
                 if(r.isMaya){
                     const fearBtn=document.createElement('button');
@@ -2856,9 +2755,11 @@
                 pBtn.innerText="CONTINUE";pBtn.onclick=()=>{modal.style.display='none';endTurn();};
             }
         } else if(r.isOpeningAct){
-            /* Plot armor prevents backward movement from Opening Act */
+            /* Plot armor only blocks THIS occurrence — consumed here, future landings work normally */
             if(checkPlotArmor(capturedTurnIdx,true)){
                 modal.style.display='none';
+                /* Ensure wasPassivelyMoved is clear so next visit to this space fires normally */
+                players[capturedTurnIdx].wasPassivelyMoved=false;
                 showSidebar("🛡️ PLOT ARMOR","Shield blocked Opening Act penalty!",'var(--mystery-glow)');
                 endTurn();return;
             }
@@ -2909,6 +2810,12 @@
                 if(turnIdx===capturedTurnIdx)performActualRoll();
             };
         } else if(r.isLostRecording){
+            /* Plot armor: eat the lost recording penalty entirely — no re-roll */
+            if(checkPlotArmor(capturedTurnIdx,true)){
+                modal.style.display='none';
+                showSidebar("🛡️ PLOT ARMOR","Shield absorbed the Lost Recording!",'var(--mystery-glow)');
+                endTurn();return;
+            }
             pBtn.innerText="ROLL TO REWIND";
             pBtn.onclick=async()=>{
                 playSfx('coinflip.wav');
@@ -2926,7 +2833,6 @@
             };
         } else {pBtn.onclick=()=>{modal.style.display='none';endTurn();};}
     }
-
 
     // ══════════════════════════════════════════════
     // MAYA TIMER — Grammy check for both players after move
@@ -3005,7 +2911,6 @@
         };
     }
 
-
     // ══════════════════════════════════════════════
     // PLAYER CLICK
     // ══════════════════════════════════════════════
@@ -3034,7 +2939,6 @@
         }
     }
 
-
     // ══════════════════════════════════════════════
     // SIDEBAR
     // ══════════════════════════════════════════════
@@ -3059,7 +2963,6 @@
         sb.style.right='';sb.style.transition='';
         if(sidebarTimer)clearTimeout(sidebarTimer);
     }
-
 
     // ══════════════════════════════════════════════
     // STATUS POPUP
@@ -3087,7 +2990,6 @@
         else sBtn.style.display='none';
         modal.style.display='flex';resetKbFocus();
     }
-
 
     // ══════════════════════════════════════════════
     // WIN SCREEN
@@ -3120,13 +3022,13 @@
         const linkStack=`
             <div style="display:flex;flex-direction:column;gap:10px;align-items:center;margin-top:20px;">
                 <a href="https://freejoy.club" target="_blank" class="win-link-btn win-cta" style="--btn-color:var(--joy-glow);color:var(--joy-glow);font-size:1.1rem;padding:14px 28px;">▶ PLAY THE ALBUM</a>
-                <a href="https://freejoy.club" target="_blank" class="win-link-btn" style="--btn-color:#ff00ff;color:#ff00ff;">${storeLbl}</a>
+                <a href="https://freejoy.club/store" target="_blank" class="win-link-btn" style="--btn-color:#ff00ff;color:#ff00ff;">${storeLbl}</a>
                 <a href="https://freejoy.club" target="_blank" class="win-link-btn" style="--btn-color:#ffffff;color:#ffffff;">HOME</a>
                 <div style="display:flex;gap:10px;width:min(400px,90%);margin-top:5px;">
                     <button id="hard-reset-win" class="win-link-btn" style="--btn-color:var(--fear-glow);color:var(--fear-glow);flex:1;cursor:pointer;">NEW BAND</button>
                     <button id="soft-reset-win" class="win-link-btn" style="--btn-color:#ffa500;color:#ffa500;flex:1;cursor:pointer;">ANOTHER TOUR</button>
                 </div>
-                <div style="font-family:'Courier New',monospace;font-size:0.5rem;letter-spacing:1.5px;color:rgba(255,255,255,0.4);text-align:center;margin-top:14px;text-transform:uppercase;">© 2026 Fearjoy. Music/Game/Sound Design by Fearjoy.</div>
+                <div style="font-family:'Courier New',monospace;font-size:0.6rem;letter-spacing:2px;color:rgba(255,255,255,0.25);text-align:center;margin-top:14px;text-transform:uppercase;">© 2026. Music/Game/Sound Design by Fearjoy</div>
             </div>
             <style>
                 .win-link-btn{text-decoration:none;font-family:'Courier New',monospace;font-weight:900;font-size:clamp(0.75rem,1.8vw,0.9rem);padding:10px 20px;border:1px solid var(--btn-color);border-radius:12px;width:min(320px,80%);background:transparent;text-align:center;transition:all 0.3s cubic-bezier(0.175,0.885,0.32,1.275);letter-spacing:1.5px;text-transform:uppercase;display:block;}
@@ -3140,7 +3042,6 @@
         document.getElementById('soft-reset-win').onclick=()=>{document.getElementById('overlay-event').style.display='none';confirmSoftRestart();};
         document.getElementById('overlay-event').style.display='flex';
     }
-
 
     // ══════════════════════════════════════════════
     // END TURN
@@ -3177,7 +3078,6 @@
         }
     }
 
-
     // ══════════════════════════════════════════════
     // ACCOLADES KEY
     // ══════════════════════════════════════════════
@@ -3209,7 +3109,6 @@
         document.body.appendChild(ol);
     }
 
-
     // ══════════════════════════════════════════════
     // PLOT ARMOR — mystery space special event
     // ══════════════════════════════════════════════
@@ -3224,7 +3123,6 @@
         renderPasses();
         return true;
     }
-
 
     /* Call before any detrimental move — returns true if blocked by armor */
     function checkPlotArmor(playerIdx,isDetrimental=true){
@@ -3241,13 +3139,11 @@
         return true; /* blocked */
     }
 
-
     // ══════════════════════════════════════════════
     // INIT AUDIO UI on first load
     // ══════════════════════════════════════════════
     /* Deferred so DOM is ready */
     setTimeout(syncAudioUI,100);
-
 
     </script>
 </body>
