@@ -1,317 +1,290 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Freejoy Club</title>
-  <style>
-    @font-face {
-      font-family: 'GoldenTrail';
-      src: url('https://raw.githubusercontent.com/freejoyclub/freejoyclub.github.io/main/GoldenTrail-KC.otf') format('opentype');
-      font-weight: normal;
-      font-style: normal;
-    }
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Freejoy Club</title>
+    <style>
+        /* Font Definitions */
+        @font-face {
+            font-family: 'KCOraleSans';
+            src: url('/KCOraleSans.otf') format('opentype');
+        }
+        @font-face {
+            font-family: 'StrikerSans';
+            src: url('/StrikerSans.otf') format('opentype');
+        }
 
-    @font-face {
-      font-family: 'KCOraleSans';
-      src: url('https://raw.githubusercontent.com/freejoyclub/freejoyclub.github.io/main/KCOraleSans.otf') format('opentype');
-      font-weight: normal;
-      font-style: normal;
-    }
+        :root {
+            --glow-color: rgba(255, 255, 255, 0.7);
+        }
 
-    html, body {
-      margin: 0;
-      padding: 0;
-      font-family: 'GoldenTrail', sans-serif;
-      height: 100%;
-      overflow-x: hidden;
-    }
+        html, body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            min-height: 100vh;
+            color: #000;
+            text-align: center;
+            overflow-x: hidden;
+        }
 
-    .gradient-layer {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      z-index: -2;
-      transition: opacity 2s ease;
-      background: linear-gradient(to bottom, #111, #222);
-    }
+        /* Darkened Warm Sweeping Gradient */
+        body {
+            background: linear-gradient(45deg, #8b443a, #5c2a22, #7a4a31, #3d1a1a);
+            background-size: 400% 400%;
+            animation: sweep 20s ease infinite;
+        }
 
-    #background1 {
-      opacity: 1;
-    }
+        @keyframes sweep {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
 
-    #background2 {
-      opacity: 0;
-    }
+        /* Content Container */
+        .content {
+            position: relative;
+            z-index: 1;
+            padding: 60px 20px 150px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            box-sizing: border-box;
+        }
 
-    .content {
-      position: relative;
-      z-index: 1;
-      padding: 30px 8px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      min-height: 100vh;
-      box-sizing: border-box;
-      color: silver;
-      text-align: center;
-    }
+        /* Typography & Glow */
+        @keyframes flicker {
+            0%, 100% { text-shadow: 0 0 8px var(--glow-color), 0 0 15px var(--glow-color); opacity: 1; }
+            33% { text-shadow: 0 0 12px var(--glow-color), 0 0 22px var(--glow-color); opacity: 0.9; }
+            66% { text-shadow: 0 0 5px var(--glow-color); opacity: 1; }
+        }
 
-    h1 {
-      font-family: 'GoldenTrail', sans-serif;
-      font-size: 4.2rem;
-      font-weight: normal;
-      background: linear-gradient(to bottom, silver, #ffffff);
-      -webkit-background-clip: text;
-      color: transparent;
-      text-shadow: 2px 2px 2px rgba(50, 50, 50, 0.5), -2px -2px -7px rgba(50, 50, 50, 0.5);
-      margin: 0;
-      transform: rotate(-2deg);
-      transform-origin: center;
-      letter-spacing: 2px;
-      animation: wave 5s ease-in-out infinite;
-    }
+        h1 {
+            font-family: 'KCOraleSans', sans-serif;
+            font-size: 4rem;
+            margin: 0;
+            animation: flicker 4s infinite;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+        }
 
-    @keyframes wave {
-      0% {
-        text-shadow: 0 0 10px rgba(255, 255, 255, 0.2), 
-                     0 0 15px rgba(255, 255, 255, 0.3), 
-                     0 0 20px rgba(255, 255, 255, 0.4), 
-                     0 0 30px rgba(255, 255, 255, 0.5);
-      }
-      25% {
-        text-shadow: 0 0 10px rgba(255, 255, 255, 0.3), 
-                     0 0 20px rgba(255, 255, 255, 0.4), 
-                     0 0 30px rgba(255, 255, 255, 0.5), 
-                     0 0 50px rgba(255, 255, 255, 0.7);
-      }
-      50% {
-        text-shadow: 0 0 15px rgba(255, 255, 255, 0.4), 
-                     0 0 25px rgba(255, 255, 255, 0.5), 
-                     0 0 35px rgba(255, 255, 255, 0.6), 
-                     0 0 55px rgba(255, 255, 255, 0.8);
-      }
-      75% {
-        text-shadow: 0 0 20px rgba(255, 255, 255, 0.5), 
-                     0 0 30px rgba(255, 255, 255, 0.6), 
-                     0 0 40px rgba(255, 255, 255, 0.7), 
-                     0 0 60px rgba(255, 255, 255, 0.9);
-      }
-      100% {
-        text-shadow: 0 0 10px rgba(255, 255, 255, 0.3), 
-                     0 0 15px rgba(255, 255, 255, 0.4), 
-                     0 0 25px rgba(255, 255, 255, 0.5), 
-                     0 0 40px rgba(255, 255, 255, 0.6);
-      }
-    }
+        .floating-text {
+            font-family: 'StrikerSans', sans-serif;
+            font-size: 1.2rem;
+            margin: 20px 0 40px 0;
+            text-shadow: 0 0 10px var(--glow-color);
+            letter-spacing: 1px;
+            line-height: 1.6;
+        }
 
-    .floating-text {
-      font-family: 'KCOraleSans', sans-serif;
-      font-size: 2.35rem;
-      margin: 30px 60px;
-      animation: float 3s ease-in-out infinite;
-      line-height: 1.6;
-    }
+        /* Button Styling */
+        .button-stack {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            align-items: center;
+            margin-top: 2rem;
+        }
 
-    @keyframes float {
-      0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(-10px); }
-    }
+        .btn {
+            font-family: 'StrikerSans', sans-serif;
+            text-decoration: none;
+            color: #000;
+            border: 1.5px solid #000;
+            padding: 14px 20px;
+            border-radius: 50px;
+            width: 260px;
+            background: transparent;
+            box-shadow: 0 0 8px var(--glow-color);
+            transition: all 0.3s ease;
+            display: block;
+            cursor: pointer;
+            font-size: 1rem;
+        }
 
-    .postbox-button {
-      display: inline-block;
-      margin-top: 2.4rem;
-      padding: 18px 30px;
-      background-color: black;
-      color: white;
-      font-size: 2.64em;
-      font-weight: bold;
-      text-align: center;
-      border-radius: 18px;
-      border: none;
-      text-decoration: none;
-      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-      transition: transform 0.2s, background-color 0.2s;
-      cursor: pointer;
-      letter-spacing: 2px;
-      font-family: 'KCOraleSans', sans-serif;
-    }
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 0 18px var(--glow-color);
+            background: rgba(255, 255, 255, 0.05);
+        }
 
-    .postbox-button:hover {
-      background-color: #333333;
-      transform: scale(1.1);
-    }
+        /* Form Styling */
+        form {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 2rem;
+            background: rgba(0, 0, 0, 0.15);
+            padding: 20px;
+            border-radius: 25px;
+            backdrop-filter: blur(5px);
+        }
 
-    .postbox-button:active {
-      transform: scale(0.95);
-    }
+        form input, form textarea {
+            font-family: 'StrikerSans', sans-serif;
+            padding: 12px;
+            border-radius: 15px;
+            border: 1px solid #000;
+            margin-bottom: 10px;
+            width: 240px;
+            background: rgba(255, 255, 255, 0.8);
+        }
 
-    form {
-      display: none;
-      flex-direction: column;
-      align-items: center;
-      margin-top: 2.4rem;
-    }
+        .success-message {
+            display: none;
+            font-family: 'StrikerSans', sans-serif;
+            color: #fff;
+            margin-top: 1rem;
+            text-shadow: 0 0 10px green;
+        }
 
-    form label {
-      margin-bottom: 12px;
-      color: white;
-      font-size: 1.2em;
-      letter-spacing: 1px;
-    }
+        /* Logo Animation */
+        .logo-group {
+            display: flex;
+            justify-content: center;
+            gap: 24px;
+            margin: 40px 0;
+        }
 
-    form input[type="email"],
-    form textarea {
-      padding: 12px;
-      border: 1px solid #ccc;
-      border-radius: 5px;
-      font-size: 1.2rem;
-      margin-bottom: 12px;
-      width: 280px;
-      letter-spacing: 1px;
-    }
+        .floating-logo {
+            width: 60px;
+            height: 60px;
+            transition: transform 0.3s ease;
+        }
+        
+        .floating-logo:hover {
+            transform: scale(1.1) rotate(5deg);
+        }
 
-    form button {
-      padding: 12px 24px;
-      border: none;
-      border-radius: 5px;
-      background-color: black;
-      color: white;
-      font-size: 1.2rem;
-      cursor: pointer;
-      letter-spacing: 2px;
-    }
+        /* Nav Cluster */
+        .nav-cluster {
+            position: fixed;
+            bottom: 40px;
+            display: flex;
+            gap: 0;
+            background: rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 100px;
+            padding: 5px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            z-index: 10;
+        }
 
-    .success-message {
-      display: none;
-      color: lightgreen;
-      margin-top: 1.2rem;
-      font-size: 1.8em;
-      font-family: 'KCOraleSans', sans-serif;
-    }
+        .nav-cluster a {
+            font-family: 'StrikerSans', sans-serif;
+            text-decoration: none;
+            color: #fff;
+            padding: 10px 18px;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            transition: color 0.3s;
+        }
 
-    @keyframes floatUpDown {
-      0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(-5px); }
-    }
+        .nav-cluster a:hover {
+            color: #ffecd2;
+            text-shadow: 0 0 10px var(--glow-color);
+        }
 
-    .floating-logo {
-      animation: floatUpDown 4s ease-in-out infinite;
-    }
-  </style>
+        .nav-divider {
+            width: 1px;
+            height: 15px;
+            background: rgba(255, 255, 255, 0.2);
+            align-self: center;
+        }
+    </style>
 </head>
 <body>
-  <div id="background1" class="gradient-layer"></div>
-  <div id="background2" class="gradient-layer"></div>
 
 <div class="content">
-  <h1>We're Fearjoy</h1>
+    <h1>We're Fearjoy</h1>
 
-  <p class="floating-text">
-  Our debut album is on the way.<br>
-  Here's a preview:
-</p>
+    <p class="floating-text">
+        Our debut album is on the way.<br>
+        Here's a preview:
+    </p>
 
-  <iframe 
-    src="https://samply.app/embed/347SJuDJQmYf8BWVJWvf" 
-    frameborder="20"
-    allowtransparency="true"
-    style="width: 80%; height: 130px; border-radius: 25px; border: 20px solid rgba(255, 255, 255, 0.12)"
-  ></iframe>
+    <iframe 
+        src="https://samply.app/embed/347SJuDJQmYf8BWVJWvf" 
+        frameborder="0"
+        allowtransparency="true"
+        style="width: 80%; max-width: 500px; height: 130px; border-radius: 25px; border: 10px solid rgba(255, 255, 255, 0.12); box-shadow: 0 0 20px rgba(0,0,0,0.3);"
+    ></iframe>
 
-  <!-- social logos as a group -->
-  <div style="display: flex; justify-content: center; gap: 24px; margin: 32px 0;">
-    <a href="https://www.instagram.com/fearjoymusic" target="_blank">
-      <img src="images/instagram-logo.png" alt="Instagram" class="floating-logo" style="width: 70px; height: 70px;">
-    </a>
-    <a href="https://www.twitch.tv/fearjoymusic" target="_blank">
-      <img src="images/twitch-logo2.png" alt="Twitch" class="floating-logo" style="width: 70px; height: 70px;">
-    </a>
-  </div>
-<div style="display: flex; flex-direction: column; align-items: center; gap: 1.6rem; margin-top: 1.4rem;">
-  <a href="mailto:grant@freejoy.club" class="postbox-button">Reach Us</a>
-  <button class="postbox-button" id="mailingListButton">Send Me the Album</button>
+    <div class="logo-group">
+        <a href="https://www.instagram.com/fearjoymusic" target="_blank">
+            <img src="images/instagram-logo.png" alt="Instagram" class="floating-logo">
+        </a>
+        <a href="https://www.twitch.tv/fearjoymusic" target="_blank">
+            <img src="images/twitch-logo2.png" alt="Twitch" class="floating-logo">
+        </a>
+    </div>
+
+    <div class="button-stack">
+        <a href="mailto:grant@freejoy.club" class="btn">Reach Us</a>
+        <button class="btn" id="mailingListButton">Send Me the Album</button>
+        <a href="/store" class="btn">Store</a>
+        <a href="/game" class="btn">The Game</a>
+    </div>
+
+    <form id="emailForm">
+        <input type="email" id="email" name="email" required placeholder="Your email" />
+        <textarea name="message" id="message" placeholder="A quick note..." required></textarea>
+        <button type="submit" class="btn" style="width: 100%">Send</button>
+    </form>
+    
+    <p class="success-message" id="successMessage">Thanks for subscribing! We'll send it over.</p>
 </div>
-</p>
-  <form id="emailForm">
-    <label for="email">Your email:</label>
-    <input type="email" id="email" name="email" required placeholder="Enter your email" />
-    <label for="message">Your message:</label>
-    <textarea name="message" id="message" placeholder="Your message" required></textarea>
-    <button type="submit">Send</button>
-  </form>
-  <p class="success-message" id="successMessage">Thanks for subscribing! We'll send you the album!</p>
-  <!-- New buttons at the bottom -->
-  <div style="margin-top: 60px; display: flex; justify-content: center; gap: 24px; flex-wrap: wrap;">
-    <a href="https://freejoy.club/breathe" class="postbox-button">Breathe</a>
-    <a href="https://freejoy.club/move" class="postbox-button">Move</a>
-  </div>
+
+<div class="nav-cluster">
+    <a href="https://freejoy.club">Home</a>
+    <div class="nav-divider"></div>
+    <a href="/breathe">Breathe</a>
+    <div class="nav-divider"></div>
+    <a href="/move">Move</a>
+    <div class="nav-divider"></div>
+    <a href="/game">Game</a>
+    <div class="nav-divider"></div>
+    <a href="/store">Store</a>
 </div>
-  <script>
+
+<script>
     const mailingListButton = document.getElementById('mailingListButton');
     const emailForm = document.getElementById('emailForm');
     const successMessage = document.getElementById('successMessage');
 
     mailingListButton.addEventListener('click', () => {
-      emailForm.style.display = 'flex';
+        emailForm.style.display = 'flex';
+        emailForm.scrollIntoView({ behavior: 'smooth' });
     });
 
     emailForm.addEventListener('submit', async (event) => {
-      event.preventDefault();
-      const formData = new FormData(emailForm);
+        event.preventDefault();
+        const formData = new FormData(emailForm);
 
-      try {
-        const response = await fetch('https://formspree.io/f/mpwwljpd', {
-          method: 'POST',
-          headers: { Accept: 'application/json' },
-          body: formData,
-        });
+        try {
+            const response = await fetch('https://formspree.io/f/mpwwljpd', {
+                method: 'POST',
+                headers: { Accept: 'application/json' },
+                body: formData,
+            });
 
-        if (response.ok) {
-          successMessage.style.display = 'block';
-          emailForm.reset();
-          emailForm.style.display = 'none';
-          setTimeout(() => successMessage.style.display = 'none', 3000);
-        } else {
-          alert('There was a problem submitting the form. Please try again.');
+            if (response.ok) {
+                successMessage.style.display = 'block';
+                emailForm.reset();
+                emailForm.style.display = 'none';
+                setTimeout(() => successMessage.style.display = 'none', 3000);
+            } else {
+                alert('Problem submitting. Try again?');
+            }
+        } catch (error) {
+            alert('Submission error. Try again?');
         }
-      } catch (error) {
-        alert('There was an error submitting the form. Please try again.');
-      }
     });
+</script>
 
-    // Smooth gradient fade logic
-    const bg1 = document.getElementById('background1');
-    const bg2 = document.getElementById('background2');
-    let toggle = true;
-
-    function generateCoolGradient() {
-      const hues = [180, 200, 220, 240, 260];
-      const h1 = hues[Math.floor(Math.random() * hues.length)];
-      const h2 = hues[Math.floor(Math.random() * hues.length)];
-      const s1 = Math.floor(Math.random() * 10) + 45;
-      const s2 = Math.floor(Math.random() * 10) + 45;
-      const l1 = Math.floor(Math.random() * 10) + 30;
-      const l2 = Math.floor(Math.random() * 10) + 30;
-      const dir = ['to right', 'to left', 'to top', 'to bottom', '45deg', '135deg'][Math.floor(Math.random() * 6)];
-
-      return `linear-gradient(${dir}, hsl(${h1}, ${s1}%, ${l1}%), hsl(${h2}, ${s2}%, ${l2}%))`;
-    }
-
-    function fadeToNewGradient() {
-      const next = toggle ? bg2 : bg1;
-      const current = toggle ? bg1 : bg2;
-      next.style.background = generateCoolGradient();
-      next.style.opacity = '1';
-      current.style.opacity = '0';
-      toggle = !toggle;
-    }
-
-    setInterval(fadeToNewGradient, 3000);
-    fadeToNewGradient(); // initial call
-  </script>
 </body>
 </html>
