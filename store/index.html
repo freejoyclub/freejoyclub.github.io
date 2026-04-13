@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FEARJOY | STORE</title>
+    <style>
+        /* Font placeholders - Ensure .otf files are in the same directory */
+        @font-face {
+            font-family: 'KCTripSerif';
+            src: url('KCTripSerif.otf') format('opentype');
+        }
+        @font-face {
+            font-family: 'StrikerSans';
+            src: url('StrikerSans.otf') format('opentype');
+        }
+
+        :root {
+            --glow-color: rgba(255, 255, 255, 0.8);
+        }
+
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            min-height: 100vh;
+            overflow-x: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: #000;
+            text-align: center;
+        }
+
+        /* Warm Gradient Background Animation */
+        body {
+            background: linear-gradient(45deg, #ff9a9e, #fad0c4, #ffecd2, #fcb69f);
+            background-size: 400% 400%;
+            animation: sweep 15s ease infinite;
+        }
+
+        @keyframes sweep {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* Flickering Glow Effect */
+        @keyframes flicker {
+            0%, 100% { text-shadow: 0 0 10px var(--glow-color), 0 0 20px var(--glow-color); opacity: 1; }
+            50% { text-shadow: 0 0 15px var(--glow-color), 0 0 25px var(--glow-color); opacity: 0.95; }
+            70% { text-shadow: 0 0 8px var(--glow-color); opacity: 1; }
+        }
+
+        .container {
+            padding: 60px 20px 120px 20px;
+            max-width: 600px;
+            width: 100%;
+        }
+
+        h1 {
+            font-family: 'KCTripSerif', serif;
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            animation: flicker 3s infinite;
+            letter-spacing: 2px;
+        }
+
+        .description {
+            font-family: 'StrikerSans', sans-serif;
+            font-size: 1.2rem;
+            margin-bottom: 3rem;
+            text-shadow: 0 0 10px var(--glow-color);
+        }
+
+        .section-title {
+            font-family: 'KCTripSerif', serif;
+            font-size: 1.8rem;
+            margin-top: 2rem;
+            margin-bottom: 1.5rem;
+            animation: flicker 4s infinite alternate;
+        }
+
+        /* Pill Buttons */
+        .button-stack {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .btn {
+            font-family: 'StrikerSans', sans-serif;
+            text-decoration: none;
+            color: #000;
+            border: 2px solid #000;
+            padding: 12px 40px;
+            border-radius: 50px;
+            width: 250px;
+            transition: transform 0.2s, box-shadow 0.2s;
+            background: transparent;
+            box-shadow: 0 0 10px var(--glow-color);
+            display: block;
+        }
+
+        .btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 20px var(--glow-color);
+        }
+
+        /* Footer Nav */
+        nav {
+            position: fixed;
+            bottom: 30px;
+            display: flex;
+            gap: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(5px);
+            padding: 10px 20px;
+            border-radius: 30px;
+        }
+
+        nav a {
+            font-family: 'StrikerSans', sans-serif;
+            text-decoration: none;
+            color: #000;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            text-shadow: 0 0 5px var(--glow-color);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>FEARJOY - STORE</h1>
+        <p class="description">Debut Album [EXTRAHUMAN] out [05/22/2026]</p>
+
+        <h2 class="section-title">$TORE (support the homies):</h2>
+        <div class="button-stack">
+            <a href="/store" class="btn">Shirts</a>
+            <a href="/store" class="btn">Pre-order Vinyl</a>
+            <a href="/store" class="btn">Pre-order Album (digital)</a>
+            <a href="/store" class="btn">Game Pieces / Unique</a>
+            <a href="/store" class="btn">Posters</a>
+        </div>
+
+        <h2 class="section-title">FREE (enjoy!)</h2>
+        <div class="button-stack">
+            <a href="/store" class="btn">Playtest: The Game (Web)</a>
+            <a href="/store" class="btn">Pre-save (Streaming)</a>
+        </div>
+    </div>
+
+    <nav>
+        <a href="https://freejoy.club">Home</a>
+        <a href="/breathe">Breathe</a>
+        <a href="/move">Move</a>
+        <a href="/game">Game</a>
+    </nav>
+
+</body>
+</html>
