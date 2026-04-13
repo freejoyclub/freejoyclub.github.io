@@ -5,10 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>FEARJOY | STORE</title>
     <style>
-        /* Font placeholders - Ensure .otf files are in the same directory */
+        /* Font Paths - Using Absolute Root Paths */
         @font-face {
-            font-family: 'KCTripSerif';
-            src: url('/KCTripSerif.otf') format('opentype');
+            font-family: 'KCOraleSans';
+            src: url('/KCOraleSans.otf') format('opentype');
         }
         @font-face {
             font-family: 'StrikerSans';
@@ -16,7 +16,7 @@
         }
 
         :root {
-            --glow-color: rgba(255, 255, 255, 0.8);
+            --glow-color: rgba(255, 255, 255, 0.7);
         }
 
         body, html {
@@ -24,7 +24,6 @@
             padding: 0;
             width: 100%;
             min-height: 100vh;
-            overflow-x: hidden;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -32,11 +31,11 @@
             text-align: center;
         }
 
-        /* Warm Gradient Background Animation */
+        /* Darkened Warm Gradient */
         body {
-            background: linear-gradient(45deg, #ff9a9e, #fad0c4, #ffecd2, #fcb69f);
+            background: linear-gradient(45deg, #8b443a, #5c2a22, #7a4a31, #3d1a1a);
             background-size: 400% 400%;
-            animation: sweep 15s ease infinite;
+            animation: sweep 20s ease infinite;
         }
 
         @keyframes sweep {
@@ -45,47 +44,48 @@
             100% { background-position: 0% 50%; }
         }
 
-        /* Flickering Glow Effect */
         @keyframes flicker {
-            0%, 100% { text-shadow: 0 0 10px var(--glow-color), 0 0 20px var(--glow-color); opacity: 1; }
-            50% { text-shadow: 0 0 15px var(--glow-color), 0 0 25px var(--glow-color); opacity: 0.95; }
-            70% { text-shadow: 0 0 8px var(--glow-color); opacity: 1; }
+            0%, 100% { text-shadow: 0 0 8px var(--glow-color), 0 0 15px var(--glow-color); opacity: 1; }
+            33% { text-shadow: 0 0 12px var(--glow-color), 0 0 22px var(--glow-color); opacity: 0.9; }
+            66% { text-shadow: 0 0 5px var(--glow-color); opacity: 1; }
         }
 
         .container {
-            padding: 60px 20px 120px 20px;
+            padding: 60px 20px 150px 20px;
             max-width: 600px;
             width: 100%;
         }
 
         h1 {
-            font-family: 'KCTripSerif', serif;
-            font-size: 2.5rem;
-            margin-bottom: 1rem;
-            animation: flicker 3s infinite;
-            letter-spacing: 2px;
+            font-family: 'KCOraleSans', sans-serif;
+            font-size: 3rem;
+            margin-bottom: 0.5rem;
+            animation: flicker 4s infinite;
+            letter-spacing: 4px;
+            text-transform: uppercase;
         }
 
         .description {
             font-family: 'StrikerSans', sans-serif;
-            font-size: 1.2rem;
-            margin-bottom: 3rem;
+            font-size: 1.1rem;
+            margin-bottom: 4rem;
             text-shadow: 0 0 10px var(--glow-color);
+            letter-spacing: 1px;
         }
 
         .section-title {
-            font-family: 'KCTripSerif', serif;
-            font-size: 1.8rem;
-            margin-top: 2rem;
+            font-family: 'KCOraleSans', sans-serif;
+            font-size: 1.4rem;
+            margin-top: 3rem;
             margin-bottom: 1.5rem;
-            animation: flicker 4s infinite alternate;
+            animation: flicker 5s infinite alternate;
+            letter-spacing: 2px;
         }
 
-        /* Pill Buttons */
         .button-stack {
             display: flex;
             flex-direction: column;
-            gap: 15px;
+            gap: 12px;
             align-items: center;
         }
 
@@ -93,41 +93,57 @@
             font-family: 'StrikerSans', sans-serif;
             text-decoration: none;
             color: #000;
-            border: 2px solid #000;
-            padding: 12px 40px;
+            border: 1.5px solid #000;
+            padding: 14px 20px;
             border-radius: 50px;
-            width: 250px;
-            transition: transform 0.2s, box-shadow 0.2s;
+            width: 260px;
             background: transparent;
-            box-shadow: 0 0 10px var(--glow-color);
+            box-shadow: 0 0 8px var(--glow-color);
+            transition: all 0.3s ease;
             display: block;
         }
 
         .btn:hover {
-            transform: scale(1.05);
-            box-shadow: 0 0 20px var(--glow-color);
+            transform: translateY(-2px);
+            box-shadow: 0 0 18px var(--glow-color);
+            background: rgba(255, 255, 255, 0.05);
         }
 
-        /* Footer Nav */
-        nav {
+        /* Stylized Navigation Cluster */
+        .nav-cluster {
             position: fixed;
-            bottom: 30px;
+            bottom: 40px;
             display: flex;
-            gap: 20px;
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(5px);
-            padding: 10px 20px;
-            border-radius: 30px;
+            gap: 0;
+            background: rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 100px;
+            padding: 5px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
         }
 
-        nav a {
+        .nav-cluster a {
             font-family: 'StrikerSans', sans-serif;
             text-decoration: none;
-            color: #000;
-            font-size: 0.9rem;
+            color: #fff;
+            padding: 10px 20px;
+            font-size: 0.75rem;
             text-transform: uppercase;
-            letter-spacing: 1px;
-            text-shadow: 0 0 5px var(--glow-color);
+            letter-spacing: 2px;
+            transition: color 0.3s;
+        }
+
+        .nav-cluster a:hover {
+            color: #ffecd2;
+            text-shadow: 0 0 10px var(--glow-color);
+        }
+
+        .nav-divider {
+            width: 1px;
+            height: 15px;
+            background: rgba(255, 255, 255, 0.2);
+            align-self: center;
         }
     </style>
 </head>
@@ -135,7 +151,7 @@
 
     <div class="container">
         <h1>FEARJOY - STORE</h1>
-        <p class="description">Debut Album [EXTRAHUMAN] out [05/22/2026]</p>
+        <p class="description">Debut Album [ ] out [ / /2026]</p>
 
         <h2 class="section-title">$TORE (support the homies):</h2>
         <div class="button-stack">
@@ -153,12 +169,15 @@
         </div>
     </div>
 
-    <nav>
+    <div class="nav-cluster">
         <a href="https://freejoy.club">Home</a>
+        <div class="nav-divider"></div>
         <a href="/breathe">Breathe</a>
+        <div class="nav-divider"></div>
         <a href="/move">Move</a>
+        <div class="nav-divider"></div>
         <a href="/game">Game</a>
-    </nav>
+    </div>
 
 </body>
 </html>
