@@ -12,7 +12,7 @@
         }
         @font-face {
             font-family: 'StrikerSans';
-            src: url('/KCStrikerSans.otf') format('opentype');
+            src: url('/StrikerSans.otf') format('opentype');
         }
 
         :root {
@@ -42,11 +42,19 @@
             100% { background-position: 0% 50%; }
         }
 
-        /* Content Container */
+        /* Float Animation on all axes */
+        @keyframes subtleFloat {
+            0% { transform: translate(0, 0) rotate(0deg); }
+            25% { transform: translate(2px, -4px) rotate(0.5deg); }
+            50% { transform: translate(-1px, -2px) rotate(-0.5deg); }
+            75% { transform: translate(-3px, 1px) rotate(0.3deg); }
+            100% { transform: translate(0, 0) rotate(0deg); }
+        }
+
         .content {
             position: relative;
             z-index: 1;
-            padding: 60px 20px 150px 20px;
+            padding: 60px 20px 180px 20px;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -63,27 +71,28 @@
 
         h1 {
             font-family: 'KCOraleSans', sans-serif;
-            font-size: 4rem;
+            font-size: 4.2rem;
             margin: 0;
-            animation: flicker 4s infinite;
+            animation: flicker 4s infinite, subtleFloat 6s ease-in-out infinite;
             letter-spacing: 4px;
             text-transform: uppercase;
         }
 
         .floating-text {
             font-family: 'StrikerSans', sans-serif;
-            font-size: 1.2rem;
+            font-size: 1.3rem;
             margin: 20px 0 40px 0;
             text-shadow: 0 0 10px var(--glow-color);
             letter-spacing: 1px;
             line-height: 1.6;
+            animation: subtleFloat 8s ease-in-out infinite reverse;
         }
 
         /* Button Styling */
         .button-stack {
             display: flex;
             flex-direction: column;
-            gap: 12px;
+            gap: 15px;
             align-items: center;
             margin-top: 2rem;
         }
@@ -93,21 +102,25 @@
             text-decoration: none;
             color: #000;
             border: 1.5px solid #000;
-            padding: 14px 20px;
+            padding: 16px 20px;
             border-radius: 50px;
-            width: 260px;
+            width: 280px; /* Fixed width for uniform size */
             background: transparent;
-            box-shadow: 0 0 8px var(--glow-color);
+            box-shadow: 0 0 10px var(--glow-color);
             transition: all 0.3s ease;
-            display: block;
+            display: flex;
+            justify-content: center;
+            align-items: center;
             cursor: pointer;
-            font-size: 1rem;
+            font-size: 1.2rem; /* Slightly larger text */
+            animation: subtleFloat 7s ease-in-out infinite;
+            box-sizing: border-box;
         }
 
         .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 0 18px var(--glow-color);
-            background: rgba(255, 255, 255, 0.05);
+            transform: translateY(-5px) scale(1.02);
+            box-shadow: 0 0 22px var(--glow-color);
+            background: rgba(255, 255, 255, 0.1);
         }
 
         /* Form Styling */
@@ -117,9 +130,10 @@
             align-items: center;
             margin-top: 2rem;
             background: rgba(0, 0, 0, 0.15);
-            padding: 20px;
-            border-radius: 25px;
-            backdrop-filter: blur(5px);
+            padding: 25px;
+            border-radius: 30px;
+            backdrop-filter: blur(8px);
+            animation: subtleFloat 10s ease-in-out infinite;
         }
 
         form input, form textarea {
@@ -128,8 +142,9 @@
             border-radius: 15px;
             border: 1px solid #000;
             margin-bottom: 10px;
-            width: 240px;
+            width: 250px;
             background: rgba(255, 255, 255, 0.8);
+            font-size: 1rem;
         }
 
         .success-message {
@@ -138,9 +153,9 @@
             color: #fff;
             margin-top: 1rem;
             text-shadow: 0 0 10px green;
+            font-size: 1.2rem;
         }
 
-        /* Logo Animation */
         .logo-group {
             display: flex;
             justify-content: center;
@@ -152,51 +167,65 @@
             width: 60px;
             height: 60px;
             transition: transform 0.3s ease;
+            animation: subtleFloat 5s ease-in-out infinite alternate;
         }
         
         .floating-logo:hover {
-            transform: scale(1.1) rotate(5deg);
+            transform: scale(1.2) rotate(10deg);
         }
 
-        /* Nav Cluster */
+        /* Nav Cluster centered */
         .nav-cluster {
             position: fixed;
             bottom: 40px;
-            left: 50%; /* Move left edge to screen center */
-            transform: translateX(-50%); /* Shift back by 50% of its own width */
+            left: 50%;
+            transform: translateX(-50%);
             display: flex;
-            gap: 0;
-            background: rgba(0, 0, 0, 0.2);
-            backdrop-filter: blur(8px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
             border-radius: 100px;
-            padding: 5px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-            z-index: 10;
-            white-space: nowrap; /* Keeps items from wrapping on small screens */
+            padding: 8px 15px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.6);
+            z-index: 100;
+            white-space: nowrap;
         }
 
         .nav-cluster a {
             font-family: 'StrikerSans', sans-serif;
             text-decoration: none;
             color: #fff;
-            padding: 10px 18px;
-            font-size: 0.75rem;
+            padding: 8px 12px;
+            font-size: 0.8rem;
             text-transform: uppercase;
-            letter-spacing: 2px;
-            transition: color 0.3s;
+            letter-spacing: 1.5px;
+            transition: all 0.3s;
         }
 
         .nav-cluster a:hover {
             color: #ffecd2;
-            text-shadow: 0 0 10px var(--glow-color);
+            text-shadow: 0 0 12px var(--glow-color);
+            transform: scale(1.1);
         }
 
         .nav-divider {
             width: 1px;
-            height: 15px;
+            height: 14px;
             background: rgba(255, 255, 255, 0.2);
             align-self: center;
+            margin: 0 4px;
+        }
+
+        @media (max-width: 600px) {
+            .nav-cluster {
+                padding: 6px 10px;
+                width: 90%;
+                justify-content: center;
+            }
+            .nav-cluster a {
+                font-size: 0.65rem;
+                padding: 8px 6px;
+            }
         }
     </style>
 </head>
@@ -214,7 +243,7 @@
         src="https://samply.app/embed/347SJuDJQmYf8BWVJWvf" 
         frameborder="0"
         allowtransparency="true"
-        style="width: 80%; max-width: 500px; height: 130px; border-radius: 25px; border: 10px solid rgba(255, 255, 255, 0.12); box-shadow: 0 0 20px rgba(0,0,0,0.3);"
+        style="width: 85%; max-width: 500px; height: 130px; border-radius: 25px; border: 10px solid rgba(255, 255, 255, 0.12); box-shadow: 0 0 25px rgba(0,0,0,0.4); animation: subtleFloat 9s ease-in-out infinite;"
     ></iframe>
 
     <div class="logo-group">
@@ -236,7 +265,7 @@
     <form id="emailForm">
         <input type="email" id="email" name="email" required placeholder="Your email" />
         <textarea name="message" id="message" placeholder="A quick note..." required></textarea>
-        <button type="submit" class="btn" style="width: 100%">Send</button>
+        <button type="submit" class="btn" style="width: 100%; animation: none;">Send</button>
     </form>
     
     <p class="success-message" id="successMessage">Thanks for subscribing! We'll send it over.</p>
@@ -245,13 +274,15 @@
 <div class="nav-cluster">
     <a href="https://freejoy.club">Home</a>
     <div class="nav-divider"></div>
-    <a href="/breathe">Breathe</a>
+    <a href="https://freejoy.club">Stream</a>
     <div class="nav-divider"></div>
-    <a href="/move">Move</a>
+    <a href="/store">Store</a>
     <div class="nav-divider"></div>
     <a href="/game">Game</a>
     <div class="nav-divider"></div>
-    <a href="/store">Store</a>
+    <a href="/breathe">Breathe</a>
+    <div class="nav-divider"></div>
+    <a href="/move">Move</a>
 </div>
 
 <script>
@@ -279,7 +310,7 @@
                 successMessage.style.display = 'block';
                 emailForm.reset();
                 emailForm.style.display = 'none';
-                setTimeout(() => successMessage.style.display = 'none', 3000);
+                setTimeout(() => successMessage.style.display = 'none', 4000);
             } else {
                 alert('Problem submitting. Try again?');
             }
