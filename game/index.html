@@ -2122,25 +2122,23 @@
         const body=document.createElement('div');
         body.innerHTML=`<div style="margin-bottom:6px;">Pitch your demo tape to major labels.</div>
 <div style="margin-bottom:14px;"><b style="color:var(--joy-glow);">1 in 3 chance of getting SIGNED (+5 spaces now!)</b></div>
-<div style="font-family:'Courier New',monospace;font-size:0.9rem;color:rgba(255,255,255,0.75);margin-bottom:8px;"><span style="display:inline-block;animation:phoneWiggle 1.8s ease-in-out infinite;">📱</span> Hey! It's your lawyer! I suggest...</div>`;
+<div style="font-family:'Courier New',monospace;font-size:0.9rem;color:rgba(255,255,255,0.85);margin-bottom:8px;"><span style="display:inline-block;animation:phoneWiggle 1.8s ease-in-out infinite;">📱</span> Hey! It's your lawyer! I suggest...</div>`;
 
         const fpBtn=document.createElement('button');
-        fpBtn.style.cssText='display:block;margin:0 auto 0;padding:7px 16px;background:transparent;border:1px solid rgba(255,255,255,0.35);color:rgba(255,255,255,0.6);font-family:Courier New,monospace;font-size:0.8rem;border-radius:6px;cursor:pointer;letter-spacing:1px;transition:all 0.2s;';
+        fpBtn.style.cssText='display:block;margin:0 auto 0;padding:7px 16px;background:transparent;border:1px solid rgba(255,255,255,0.65);color:rgba(255,255,255,0.7);font-family:Courier New,monospace;font-size:0.9rem;border-radius:6px;cursor:pointer;letter-spacing:1px;transition:all 0.2s;';
         fpBtn.innerText='Read the Fine Print ⬇️';
 
         const fp=document.createElement('div');
         fp.style.cssText='display:none;margin-top:12px;padding:12px 14px;background:rgba(0,0,0,0.5);border-radius:8px;border:1px solid rgba(255,255,255,0.15);font-family:Courier New,monospace;font-size:0.98rem;text-align:left;line-height:1.9;';
-        fp.innerHTML=`<div style="font-weight:bold;letter-spacing:1px;color:rgba(255,255,255,0.9);margin-bottom:8px;">Fearvices Records: Artist Deal</div>`+
+        fp.innerHTML=`<div style="font-weight:bold;letter-spacing:1px;color:rgba(255,255,255,0.9);margin-bottom:8px;">FearVices Records: Artist Deal</div>`+
         `<div style="color:#ff4444;">If DECLINED: -2 NOW</div>`+
         `<div style="height:10px;"></div>`+
         `<div style="color:#00ff88;">If SIGNED: +5 NOW</div>`+
-        `<div style="color:#ff4444;">Label takes -1 from every other roll's total.</div>`+
-        `<div style="color:rgba(255,255,255,0.55);font-size:0.75rem;">(Minimum roll stays 1).</div>`+
-        `<div style="color:rgba(255,255,255,0.8);">Pitching replaces your roll this turn.</div>`+
+        `<div style="color:#ff4444;">Label takes -1 from half of future rolls.</div>`+
         `<div>Pass the <span style="color:#00ff88;">Gatekeeper</span> freely once signed.</div>`+
         `<div style="height:10px;"></div>`+
-        `<div style="color:rgba(255,255,255,0.55);">One use per game.</div>`+
-        `<div style="color:rgba(255,255,255,0.55);">Cannot use after Gatekeeper.</div>`;
+        `<div style="color:rgba(255,255,255,0.8);">Pitching replaces your roll this turn.</div>`+
+        `<div style="color:rgba(255,255,255,0.55);">One use per game; unavailable after Gatekeeper.</div>`+
 
         fpBtn.onclick=()=>{const open=fp.style.display==='block';fp.style.display=open?'none':'block';fpBtn.innerText=open?'Read the Fine Print ⬇️':'Hide Fine Print ⬆️';};
         body.appendChild(fpBtn);body.appendChild(fp);
