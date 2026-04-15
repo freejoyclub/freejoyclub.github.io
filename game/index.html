@@ -1,11 +1,10 @@
 <!DOCTYPE html><html lang="en"><head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Fearjoy: the Game (v28.6)</title>
+    <title>Fearjoy: the Game (v29)</title>
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
-    <link rel="icon" type="image/png" href="favicon.png">
     <style>
         * { -webkit-tap-highlight-color:transparent; -webkit-touch-callout:none; outline:none; }
         @font-face { font-family:'KCStrikerSans'; src:url('KCStrikerSans.otf') format('opentype'); font-weight:normal; font-style:normal; }
@@ -31,7 +30,7 @@
         @keyframes floatUpSlow   { 0%{transform:translateY(0) scale(1);opacity:1;}100%{transform:translateY(-180px) scale(1.8);opacity:0;} }
         @keyframes introGlow     { from{text-shadow:0 0 10px var(--gold),0 0 20px var(--gold);}to{text-shadow:0 0 20px var(--gold),0 0 40px #fffad1;} }
         @keyframes pieceHover    { 0%{transform:translate(0,0);}33%{transform:translate(3px,-3px);}66%{transform:translate(-2px,1px);}100%{transform:translate(0,0);} }
-        @keyframes turnPulse     { 0%{filter:drop-shadow(0 0 8px var(--p-color));transform:translate(0,0) scale(1);}50%{filter:drop-shadow(0 0 28px var(--p-color));transform:translate(0,-4px) scale(1.15);}100%{filter:drop-shadow(0 0 8px var(--p-color));transform:translate(0,0) scale(1);} }
+        @keyframes turnPulse     { 0%{filter:drop-shadow(0 0 5px var(--p-color));transform:translate(0,0) scale(1);}50%{filter:drop-shadow(0 0 20px var(--p-color));transform:translate(0,-4px) scale(1.15);}100%{filter:drop-shadow(0 0 5px var(--p-color));transform:translate(0,0) scale(1);} }
         @keyframes winPulse      { 0%{transform:scale(1);filter:drop-shadow(0 0 5px var(--p-color));}50%{transform:scale(1.1);filter:drop-shadow(0 0 20px var(--p-color));}100%{transform:scale(1);filter:drop-shadow(0 0 5px var(--p-color));} }
         @keyframes flipping      { 0%{transform:rotateY(0);}100%{transform:rotateY(1800deg);} }
         /* Roll button pulse uses current player color via CSS var */
@@ -121,6 +120,15 @@
             background:radial-gradient(ellipse 80% 75% at 50% 50%,transparent 30%,rgba(0,0,0,0.55) 100%);
         }
 
+
+        /* ── SCREEN BORDER GLOW — current player color ── */
+        #screen-glow {
+            position:fixed; inset:0; z-index:19; pointer-events:none;
+            box-shadow:inset 0 0 0 5px var(--roll-color,#00ff88),
+                       inset 0 0 60px rgba(0,0,0,0);
+            border-radius:0;
+            transition:box-shadow 0.6s ease;
+        }
         /* ── MAIN AREA (board + passes) — ORDER: board first, bar at bottom ── */
         #main-area { flex:1; display:flex; flex-direction:row; min-height:0; overflow:hidden; position:relative; }
 
@@ -494,7 +502,7 @@
         .sp-emoji { font-size:var(--space-emoji); margin-bottom:2px; }
         .sp-text  { padding:0 2px; }
         /* Dark radial backdrop for all named spaces */
-        .space:not(.true-blank):not(.mystery-space):not(.reel-space):not(.tracklist-space):not(.win-track) {
+        .space:not(.true-blank):not(.mystery-space):not(.reel-space) {
             background:radial-gradient(ellipse at center,rgba(200,180,169,0.1) 10%,rgba(69,50,40,0.3) 100%) !important;
         }
         .mystery-space { background:radial-gradient(ellipse at center,rgba(20,0,30,0.3) 0%,rgba(0,0,0,0.6) 100%) !important; }
@@ -523,6 +531,29 @@
             animation:specialFlicker 3s ease-in-out infinite;
         }
         .hybrid { border-style:dotted; border-width:3px; border-color:white; animation:specialFlicker 3.2s ease-in-out infinite; }
+        /* ── FEARJOY SPACE — rotating split glow ── */
+        .hybrid {
+            position:relative;
+            overflow:visible;
+        }
+        .hybrid::after {
+            content:'';
+            position:absolute;
+            inset:-6px;
+            border-radius:50%;
+            z-index:-1;
+            background:conic-gradient(
+                var(--joy-glow) 0deg,
+                var(--joy-glow) 150deg,
+                var(--fear-glow) 210deg,
+                var(--fear-glow) 360deg
+            );
+            filter:blur(8px);
+            opacity:0.75;
+            animation:fearjoyRotate 4s linear infinite;
+        }
+        @keyframes fearjoyRotate { from{transform:rotate(0deg);} to{transform:rotate(360deg);} }
+
         /* Mystery space */
         .mystery-space {
             border-style:dashed !important;
@@ -561,6 +592,18 @@
         .win-track.reel-spinning::before { animation:reelSpin 13.2s linear infinite !important; }
         .reel-space .sp-text,.reel-space .sp-emoji { position:relative; z-index:1; }
         .space-land { animation:spaceLand 1.2s ease-out forwards; }
+        /* ── SPACE-SPECIFIC GLOW COLORS ── */
+        #s55 { --space-glow:#ff5522; animation:lostTapeFlicker 2.6s ease-in-out infinite; }
+        @keyframes lostTapeFlicker { 0%,100%{box-shadow:0 0 6px #ff5522;} 50%{box-shadow:0 0 18px #ff5522,0 0 30px #ff3300;} }
+        #s30 { --space-glow:var(--gold); animation:grammyFlicker 2.4s ease-in-out infinite; }
+        @keyframes grammyFlicker { 0%,100%{box-shadow:0 0 6px var(--gold);} 50%{box-shadow:0 0 18px var(--gold),0 0 30px #ffee88;} }
+        #s20 { --space-glow:#3399ff; animation:investFlicker 2.7s ease-in-out infinite; }
+        @keyframes investFlicker { 0%,100%{box-shadow:0 0 6px #3399ff;} 50%{box-shadow:0 0 18px #3399ff,0 0 30px #66aaff;} }
+        #s42 { --space-glow:#88ffaa; animation:encoreFlicker 2.3s ease-in-out infinite; }
+        @keyframes encoreFlicker { 0%,100%{box-shadow:0 0 6px #88ffaa;} 50%{box-shadow:0 0 18px #88ffaa,0 0 30px #aaffcc;} }
+        #s12, #s53 { --space-glow:#776655; animation:vanFlicker 2.9s ease-in-out infinite; }
+        @keyframes vanFlicker { 0%,100%{box-shadow:0 0 5px #776655;} 50%{box-shadow:0 0 14px #776655,0 0 22px #554433;} }
+
 
         /* ── PLAYER PIECES ── */
         .player {
@@ -826,7 +869,7 @@
                 <button class="nav-menu-btn btn-home"    onclick="window.open('https://freejoy.club','_blank')"><span class="nav-icon">🏠</span> Home</button>
                 <button class="nav-menu-btn btn-store"   onclick="window.open('https://freejoy.club','_blank')"><span class="nav-icon">👕</span> Store</button>
                 <button class="nav-menu-btn btn-album"   onclick="window.open('https://freejoy.club','_blank')"><span class="nav-icon">▶️</span> Play the Album</button>
-                <div style="font-family:'Courier New',monospace;font-size:0.55rem;letter-spacing:1.5px;color:rgba(255,255,255,0.25);text-align:center;padding:6px 4px 2px;text-transform:uppercase;">© 2026. Music/Game/Sound Design by Fearjoy</div>
+                <div style="font-family:'Courier New',monospace;font-size:0.55rem;letter-spacing:1.5px;color:rgba(255,255,255,0.25);text-align:center;padding:6px 4px 2px;text-transform:uppercase;">Songs / Game / Sound Design by Fearjoy</div>
             </div>
         </div>
     </div>
@@ -836,7 +879,7 @@
         <div id="pass-expanded-card">
             <span class="exp-close" onclick="collapsePass()">×</span>
             <div style="width:20px;height:9px;background:#888;border-radius:3px 3px 0 0;margin:0 auto 8px;"></div>
-            <div class="pass-all-access" style="text-align:center;margin-bottom:6px;font-size:0.6rem;letter-spacing:3px;color:rgba(0,0,0,0.5);">All-Access Pass</div>
+            <div class="pass-all-access" style="text-align:center;margin-bottom:6px;font-size:0.6rem;letter-spacing:3px;color:rgba(255,255,255,0.35);">All-Access Pass</div>
             <img id="exp-avatar" class="exp-avatar" src="" alt="">
             <div class="exp-name" id="exp-name"></div>
             <div class="exp-section-label">Status</div>
@@ -919,6 +962,8 @@
             </div>
         </div>
     </div>
+
+    <div id="screen-glow"></div>
 
     <script>
     // ══════════════════════════════════════════════════════
@@ -1943,7 +1988,7 @@
                     const desc=document.getElementById('event-desc');
                     if(desc&&!desc.querySelector('.credits-line')){
                         const c=document.createElement('div');c.className='credits-line';
-                        c.innerText='© 2026. Music/Game/Sound Design by Fearjoy';desc.appendChild(c);
+                        c.innerText='Songs / Game / Sound Design by Fearjoy';desc.appendChild(c);
                     }
                 },50);
             },
@@ -1962,7 +2007,7 @@
             const desc=document.getElementById('event-desc');
             if(desc&&!desc.querySelector('.credits-line')){
                 const c=document.createElement('div');c.className='credits-line';
-                c.innerText='© 2026. Music/Game/Sound Design by Fearjoy';desc.appendChild(c);
+                c.innerText='Songs / Game / Sound Design by Fearjoy';desc.appendChild(c);
             }
             /* Light-dismiss: clicking outside popup closes intro card */
             const ov=document.getElementById('overlay-event');
@@ -2082,11 +2127,12 @@
 
         const fp=document.createElement('div');
         fp.style.cssText='display:none;margin-top:12px;padding:12px 14px;background:rgba(0,0,0,0.5);border-radius:8px;border:1px solid rgba(255,255,255,0.15);font-family:Courier New,monospace;font-size:0.98rem;text-align:left;line-height:1.9;';
-        fp.innerHTML=`<div style="font-weight:bold;letter-spacing:1.05px;color:rgba(255,255,255,0.9);margin-bottom:8px;">FearVices Records: Artist Deal</div>`+
+        fp.innerHTML=`<div style="font-weight:bold;letter-spacing:1px;color:rgba(255,255,255,0.9);margin-bottom:8px;">Fearvices Records: Artist Deal</div>`+
         `<div style="color:#ff4444;">If DECLINED: -2 NOW</div>`+
         `<div style="height:10px;"></div>`+
         `<div style="color:#00ff88;">If SIGNED: +5 NOW</div>`+
-        `<div style="color:#ff4444;">Label takes -1 from half of future rolls.</div>`+
+        `<div style="color:#ff4444;">Label takes -1 from every other roll's total.</div>`+
+        `<div style="color:rgba(255,255,255,0.55);font-size:0.75rem;">(Minimum roll stays 1).</div>`+
         `<div style="color:rgba(255,255,255,0.8);">Pitching replaces your roll this turn.</div>`+
         `<div>Pass the <span style="color:#00ff88;">Gatekeeper</span> freely once signed.</div>`+
         `<div style="height:10px;"></div>`+
@@ -2145,6 +2191,12 @@
         document.getElementById('ui-layer-color-wash').style.background=`linear-gradient(90deg,${p.avatar.color} 0%,transparent 35%)`;
         /* Update roll button color to current player */
         document.documentElement.style.setProperty('--roll-color',p.avatar.color);
+        /* Screen border glow */
+        const sg=document.getElementById('screen-glow');
+        if(sg){
+            const col=p.avatar.color;
+            sg.style.boxShadow=`inset 0 0 0 2px ${col}55, inset 0 0 60px ${col}22`;
+        }
         renderPasses();updatePositions();
     }
 
@@ -2239,9 +2291,10 @@
             showStatusPopup("🌙 NIGHTDRIVE CHECK","Did you keep your eyes closed?",
                 "YES - EYES SHUT",()=>{
                     players[_ndIdx].nightDriveActive=false;
-                    isMoving=false;isRolling=false;
-                    document.getElementById('roll-btn').disabled=false;
+                    isRolling=false;isMoving=false;
                     document.getElementById('overlay-event').style.display='none';
+                    document.getElementById('roll-btn').disabled=false;
+                    performActualRoll();
                 },"NO - PEEKED",()=>{players[_ndIdx].nightDriveActive=false;movePlayer(-1,false,_ndIdx);});return;
         }
         checkNextHonor(p);
@@ -2251,12 +2304,25 @@
         if(p.ghostCounter>0){
             isRolling=true;isMoving=true;
             showStatusPopup("👻 GHOST CHECK","Did you stay quiet?",
-                "YES - I WAS SILENT",()=>{players[_hnIdx].ghostCounter=0;endTurn();},"NO - I SLIPPED",()=>{players[_hnIdx].ghostCounter=0;movePlayer(-1,false,_hnIdx);});return;
+                "YES - I WAS SILENT",()=>{
+                    players[_hnIdx].ghostCounter=0;
+                    isRolling=false;isMoving=false;
+                    document.getElementById('overlay-event').style.display='none';
+                    document.getElementById('roll-btn').disabled=false;
+                    /* Proceed directly to roll — same turn continues */
+                    performActualRoll();
+                },"NO - I SLIPPED",()=>{players[_hnIdx].ghostCounter=0;movePlayer(-1,false,_hnIdx);});return;
         }
         if(p.smileActive){
             isRolling=true;isMoving=true;
             showStatusPopup("💀 THE ENDLESS SMILE","Did you hold the smile?",
-                "HELD IT",()=>{players[_hnIdx].smileActive=false;endTurn();},"BROKE IT",()=>{players[_hnIdx].smileActive=false;movePlayer(-1,false,_hnIdx);});return;
+                "HELD IT",()=>{
+                    players[_hnIdx].smileActive=false;
+                    isRolling=false;isMoving=false;
+                    document.getElementById('overlay-event').style.display='none';
+                    document.getElementById('roll-btn').disabled=false;
+                    performActualRoll();
+                },"BROKE IT",()=>{players[_hnIdx].smileActive=false;movePlayer(-1,false,_hnIdx);});return;
         }
         performActualRoll();
     }
@@ -3028,7 +3094,7 @@
                     <button id="hard-reset-win" class="win-link-btn" style="--btn-color:var(--fear-glow);color:var(--fear-glow);flex:1;cursor:pointer;">NEW BAND</button>
                     <button id="soft-reset-win" class="win-link-btn" style="--btn-color:#ffa500;color:#ffa500;flex:1;cursor:pointer;">ANOTHER TOUR</button>
                 </div>
-                <div style="font-family:'Courier New',monospace;font-size:0.6rem;letter-spacing:2px;color:rgba(255,255,255,0.25);text-align:center;margin-top:14px;text-transform:uppercase;">© 2026. Music/Game/Sound Design by Fearjoy</div>
+                <div style="font-family:'Courier New',monospace;font-size:0.6rem;letter-spacing:2px;color:rgba(255,255,255,0.25);text-align:center;margin-top:14px;text-transform:uppercase;">Songs / Game / Sound Design by Fearjoy</div>
             </div>
             <style>
                 .win-link-btn{text-decoration:none;font-family:'Courier New',monospace;font-weight:900;font-size:clamp(0.75rem,1.8vw,0.9rem);padding:10px 20px;border:1px solid var(--btn-color);border-radius:12px;width:min(320px,80%);background:transparent;text-align:center;transition:all 0.3s cubic-bezier(0.175,0.885,0.32,1.275);letter-spacing:1.5px;text-transform:uppercase;display:block;}
