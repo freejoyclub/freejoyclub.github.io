@@ -598,7 +598,7 @@
         #s55 { --space-glow:#ff5522; animation:lostTapeFlicker 2.6s ease-in-out infinite; }
         @keyframes lostTapeFlicker { 0%,100%{box-shadow:0 0 6px #ff5522;} 50%{box-shadow:0 0 18px #ff5522,0 0 30px #ff3300;} }
         #s30 { --space-glow:var(--gold); animation:grammyFlicker 2.4s ease-in-out infinite; }
-        @keyframes grammyFlicker { 0%,100%{box-shadow:0 0 6px var(--gold);} 50%{box-shadow:0 0 18px var(--gold),0 0 30px #ffee88;} }
+        @keyframes grammyFlicker { 0%,100%{box-shadow:0 0 8px var(--gold);} 50%{box-shadow:0 0 22px var(--gold),0 0 30px #f7ca60;} }
         #s20 { --space-glow:#3399ff; animation:investFlicker 2.7s ease-in-out infinite; }
         @keyframes investFlicker { 0%,100%{box-shadow:0 0 6px #3399ff;} 50%{box-shadow:0 0 18px #3399ff,0 0 30px #66aaff;} }
         #s42 { --space-glow:#88ffaa; animation:encoreFlicker 2.3s ease-in-out infinite; }
@@ -737,8 +737,8 @@
         .btn-nevermind:hover { background:rgba(255,68,68,0.12); color:var(--fear-glow); border-color:var(--fear-glow); }
         /* Credits line */
         .credits-line {
-            font-family:'Courier New',monospace; font-size:0.83rem;
-            letter-spacing:2px; color:rgba(255,255,255,0.5);
+            font-family:'Courier New',monospace; font-size:0.85rem;
+            letter-spacing:1.5px; color:rgba(255,255,255,0.7);
             text-align:center; margin-top:16px; text-transform:uppercase; white-space:pre-line;
         }
         .intro-header { font-size:clamp(1.6rem,5vw,3.5rem); color:var(--gold); animation:introGlow 2s ease-in-out infinite alternate; margin-bottom:16px; font-family:'KCStrikerSans','Courier New',monospace; letter-spacing:4px; }
@@ -937,8 +937,9 @@
                     <button class="setup-btn-large" onclick="setPlayerCount(2)">2</button>
                     <button class="setup-btn-large" onclick="setPlayerCount(3)">3</button>
                 </div>
-                    <div style="font-family:'Courier New',monospace;font-size:0.65rem;letter-spacing:1.5px;color:rgba(255,255,255,0.25);text-align:center;padding:6px 4px 2px;text-transform:uppercase;">
-                    Best with friends & on browser.<br>
+                    <div style="font-family:'Courier New',monospace;font-size:0.75rem;letter-spacing:1.2px;color:rgba(255,255,255,0.65);text-align:center;padding:8px 7px 4px;text-transform:uppercase;">
+                    Made by Fearjoy<br>
+                    Best with friends & on desktop<br>
                     (try 2+ artists, even if solo)<br>
                     Enjoy the tour!
                 </div>
