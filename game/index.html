@@ -264,10 +264,11 @@
         .btn-accolade-key:hover { border-color:var(--gold);    color:var(--gold);      box-shadow:0 0 12px var(--gold); }
         .btn-restart:hover    { border-color:#ff4500;           color:#ff4500;          box-shadow:0 0 12px #ff4500; }
         .btn-newband:hover    { border-color:var(--fear-glow);  color:var(--fear-glow); box-shadow:0 0 12px var(--fear-glow); }
-        .btn-fullscreen:hover { border-color:var(--blue-glow);  color:var(--blue-glow); box-shadow:0 0 12px var(--blue-glow); }
         .btn-home:hover       { border-color:var(--tape-white); box-shadow:0 0 12px rgba(255,255,255,0.4); }
         .btn-store:hover      { border-color:var(--pink-glow);  color:var(--pink-glow); box-shadow:0 0 12px var(--pink-glow); }
         .btn-album:hover      { border-color:var(--joy-glow);   color:var(--joy-glow);  box-shadow:0 0 12px var(--joy-glow); }
+        .btn-fullscreen:hover { border-color:var(--blue-glow);  color:var(--blue-glow); box-shadow:0 0 12px var(--blue-glow); }
+
         /* Mute button */
         #mute-btn {
             width:clamp(28px,3.8vw,52px); height:clamp(26px,3.2vw,42px);
@@ -2361,7 +2362,7 @@
         /* Remedy sellout — red dice */
         if(p.isSellout&&roll===6){
             dice.classList.add('dice-red');spawnEmoji('💊',true);
-            showSidebar("CONTRACT DEBT","Label takes a cut! 6 becomes -2.","var(--fear-glow)");
+            showSidebar("CONTRACT DEBT","Label takes a cut! 6 becomes -2. Should've stayed indie...","var(--fear-glow)");
             playRemedyPunishment();
             await new Promise(r=>setTimeout(r,800));
             p.pillsTaken++;p.accolades.push('💊');roll=-2;dice.innerText=roll;
