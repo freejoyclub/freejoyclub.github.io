@@ -92,14 +92,6 @@
             50%  { background-position: 100% 50%; }
             100% { background-position: 0% 50%; }
         }
-            14% {background:linear-gradient(168deg,#b86a35 0%,#c88055 30%,#c0754a 62%,#bf7e58 100%);}
-            28% {background:linear-gradient(128deg,#bf7e58 0%,#b06535 28%,#c98a52 58%,#c4773e 100%);}
-            42% {background:linear-gradient(152deg,#c98a52 0%,#bf7e58 32%,#b86a35 60%,#cc8049 100%);}
-            57% {background:linear-gradient(138deg,#c4773e 0%,#d4915a 28%,#bf7e58 62%,#a86030 100%);}
-            71% {background:linear-gradient(162deg,#cc8049 0%,#c4773e 36%,#d4915a 68%,#c98a52 100%);}
-            85% {background:linear-gradient(132deg,#b86a35 0%,#bf7e58 30%,#cc8049 62%,#c4773e 100%);}
-            100%{background:linear-gradient(145deg,#cc8049 0%,#a86030 35%,#bf7e58 68%,#d4915a 100%);}
-        }
 
         /* ── PAGE SHELL ── */
         html,body { margin:0; padding:0; width:100%; height:100%; overflow:hidden; }
@@ -258,7 +250,6 @@
         }
         .nav-menu-btn:hover { background:rgba(255,255,255,0.07); transform:translateX(-4px); }
         .nav-icon { font-size:1.2rem; }
-        .btn-audio:hover      { border-color:var(--gold);      color:var(--gold);      box-shadow:0 0 12px var(--gold); }
         .btn-tracks:hover     { border-color:var(--joy-glow);  color:var(--joy-glow);  box-shadow:0 0 12px var(--joy-glow); }
         .btn-sfx:hover        { border-color:var(--blue-glow); color:var(--blue-glow); box-shadow:0 0 12px var(--blue-glow); }
         .btn-accolade-key:hover { border-color:var(--gold);    color:var(--gold);      box-shadow:0 0 12px var(--gold); }
@@ -325,6 +316,7 @@
             font-family:'KCStrikerSans','Courier New',monospace;
             transition:opacity 0.35s ease; position:absolute;
             animation:diceGlow 3s ease-in-out infinite; cursor:pointer;
+            will-change:transform,opacity;
         }
         .dice-rise-out   { animation:diceRiseOut   0.35s ease-in  forwards !important; }
         .dice-fall-in    { animation:diceFallIn    0.4s  ease-out forwards !important; }
@@ -373,8 +365,9 @@
             box-shadow:0 2px 12px rgba(0,0,0,0.4),inset 0 1px 0 rgba(255,255,255,0.6),inset 0 -1px 0 rgba(0,0,0,0.1);
             position:relative; transform-style:preserve-3d;
             transition:border-color 0.4s,box-shadow 0.4s,transform 0.25s;
-            cursor:pointer;
+            cursor:pointer; will-change:transform;
         }
+        
         .pass-float-a { animation:passFloatA 6s ease-in-out infinite; }
         .pass-float-b { animation:passFloatB 7s ease-in-out infinite; animation-delay:-2.3s; }
         .pass-float-c { animation:passFloatC 5.5s ease-in-out infinite; animation-delay:-3.8s; }
@@ -497,8 +490,8 @@
             position:relative; transition:transform 0.18s ease,box-shadow 0.18s ease;
             cursor:help; box-sizing:border-box;
         }
-        .space:hover { transform:scale(1.06); box-shadow:0 0 14px rgba(255,255,255,0.3); z-index:6; }
-        /* Text shadow for readability on wood background */
+        .space:hover { transform:scale(1.06); box-shadow:0 0 14px rgba(255,255,255,0.3); z-index:6; will-change:transform; }
+            /* Text shadow for readability on wood background */
         .space .sp-text,.space .sp-emoji,.mystery-q { text-shadow:0 0 3px rgba(0,0,0,0.5),0 0 1px rgba(0,0,0,0.7); }
         .space:not(.blank):not(.mystery-space):not(.true-blank) { font-family:'KCStrikerSans','Courier New',monospace; }
         .sp-emoji { font-size:var(--space-emoji); margin-bottom:2px; }
@@ -610,9 +603,10 @@
         /* ── PLAYER PIECES ── */
         .player {
             position:absolute; z-index:100;
-            transition:all 0.7s cubic-bezier(0.18,0.89,0.32,1.28);
+            transition:top 0.7s cubic-bezier(0.18,0.89,0.32,1.28),left 0.7s cubic-bezier(0.18,0.89,0.32,1.28),width 0.7s cubic-bezier(0.18,0.89,0.32,1.28),height 0.7s cubic-bezier(0.18,0.89,0.32,1.28);
             background-size:contain; background-repeat:no-repeat; background-position:center bottom;
             pointer-events:none; animation:pieceHover 4s infinite ease-in-out;
+            will-change:top,left,width,height;
         }
         .active-turn { animation:turnPulse 1.5s infinite ease-in-out; }
         .swap-target {
@@ -671,7 +665,7 @@
 
         /* Rule sidebar — PERMANENT: always content-adaptive, never full-height */
         #rule-sidebar {
-            position:fixed; right:-400px;
+            position:fixed; right:-400px; will-change:right;
             top:calc(var(--bar-h) + 8px);
             width:min(260px,78vw);
             max-height:calc(100dvh - var(--bar-h) - 24px);
