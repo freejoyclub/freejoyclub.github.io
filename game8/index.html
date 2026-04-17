@@ -2614,8 +2614,6 @@
         /* Prevent same space firing twice in one turn — blocks loops */
         if(spacesTriggeredThisTurn.has(p.pos)){endTurn();return;}
         spacesTriggeredThisTurn.add(p.pos);
-        const r=rules[p.pos];
-        if(!r){endTurn();return;}
         const spaceCol=getSpaceColor(p.pos);
         const popupEl=document.getElementById('main-popup');
         popupEl.style.borderColor=spaceCol;popupEl.style.boxShadow=`0 0 30px ${spaceCol}`;
