@@ -1047,6 +1047,7 @@
     // ══════════════════════════════════════════════
     let players=[],turnIdx=0,isMoving=false,isRolling=false,totalP=0,currentSetupP=0;
     let spacesTriggeredThisTurn=new Set(); /* prevents same space firing twice in one turn */
+    let spaceOffsets=[]; /* perpendicular nudge per space, generated once per session */
     let selectedAvatar=null,selectedColor=null;
     let isSwapping=false,isMayaPartner=false;
     let sidebarTimer=null,expandedPassIdx=null;
@@ -1529,7 +1530,9 @@
                 /* Stop reel spinning until movement resumes */
                 reelSpinning=false;
                 [0,59].forEach(idx=>{const s=document.getElementById('s'+idx);if(s)s.classList.remove('reel-spinning');});
+                
                 assignMysterySpaces();
+                spaceOffsets=[];
                 spacesTriggeredThisTurn=new Set();
                 turnIdx=0;isMoving=false;isRolling=false;isSwapping=false;isInLoreDrop=false;loreDoneResolver=null;
                 stopMetronome();stopActiveLoreVid();
@@ -1938,6 +1941,37 @@
         }
     }
 
+    
+        function generateSpaceOffsets(){
+        spaceOffsets=[];
+        for(let i=0;i<60;i++){
+            if(i===0||i===59){spaceOffsets.push(0);continue;}
+            /* Vary magnitude per space — some nudge more, some less */
+            const mag=(Math.random()*12-6)*(0.5+Math.random()*0.8);
+            spaceOffsets.push(parseFloat(mag.toFixed(1)));
+        }
+    }
+
+    function applySpaceOffsets(mode){
+        if(!spaceOffsets.length)generateSpaceOffsets();
+        const dirs=computeNextDirs(mode);
+        boardLayout.forEach((_,i)=>{
+            const s=document.getElementById('s'+i);
+            if(!s)return;
+            if(i===0||i===59){s.style.position='';s.style.left='';s.style.top='';return;}
+            const mag=spaceOffsets[i];
+            /* Use the space's own travel direction — perpendicular means:
+               travelling right/left → nudge in Y; travelling up/down → nudge in X */
+            const dir=dirs[i]||(i>0?dirs[i-1]:null)||'right';
+            let ox=0,oy=0;
+            if(dir==='right'||dir==='left'){oy=mag;}
+            else{ox=mag;}
+            s.style.position='relative';
+            s.style.left=ox+'px';
+            s.style.top=oy+'px';
+        });
+    }
+
     /* Full layout refresh — call on init and resize */
     function refreshLayout(){
         const newMode=detectLayout();
@@ -1945,11 +1979,13 @@
         layoutMode=newMode;
         applyLayout(layoutMode);
         setTimeout(()=>{
+            applySpaceOffsets(layoutMode);
             drawArrows(layoutMode);
             drawTapePath();
             updatePositions();
         },50);
     }
+        
 
     // ══════════════════════════════════════════════
     // BOARD INIT
@@ -1997,8 +2033,10 @@
             }
             board.appendChild(s);
         });
-        /* Apply grid placement */
+        
+            /* Apply grid placement */
         applyLayout(layoutMode);
+        applySpaceOffsets(layoutMode);
         players.forEach((p,i)=>{
             const el=document.createElement('div');el.id='p'+i;el.className='player';
             el.style.backgroundImage=`url('${p.avatar.img}')`;
