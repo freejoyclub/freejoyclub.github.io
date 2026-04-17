@@ -2302,19 +2302,16 @@
     // Modal popups (isMoving=true, not in lore) block roll normally.
     // ══════════════════════════════════════════════
     async function doRoll(){
-        /* If in lore drop: dismiss it and immediately roll for the current player */
+        
+        /* If a lore sidecard is lingering, dismiss it silently before rolling */
         if(isInLoreDrop){
-            stopActiveLoreVid();
-            closeSidebar(); /* also clears lore-peek state */
-            hideLoreBackdrop();
-            isInLoreDrop=false;isMoving=false;isRolling=false;
-            if(loreDoneResolver){loreDoneResolver();loreDoneResolver=null;}
-            await new Promise(r=>setTimeout(r,80));
+            isInLoreDrop=false;loreDoneResolver=null;
         }
-        /* Hard guard — isRolling blocks re-entry during entire roll+move sequence */
-        if(isRolling||isMoving||isSwapping||isMayaPartner)return;
         stopActiveLoreVid();
         closeSidebar();
+        
+        /* Hard guard — isRolling blocks re-entry during entire roll+move sequence */
+        if(isRolling||isMoving||isSwapping||isMayaPartner)return;
         const p=players[turnIdx];
         if(p.grammyNominator){
             const nom=p.grammyNominator;p.grammyNominator=null;
@@ -2483,11 +2480,10 @@
                 /* Show armor award as sidebar */
                 document.getElementById('rule-sidebar').classList.add('mystery-sidebar');
                 showSidebar('🛡️ Plot Armor!',`${p.name} is protected from the next bad outcome!`,'var(--mystery-glow)',`Space ${p.pos}`);
-                isMoving=false;document.getElementById('roll-btn').disabled=false;
-                isInLoreDrop=true;showLoreBackdrop();
-                await new Promise(res=>{loreDoneResolver=res;setTimeout(res,6000);});
-                isInLoreDrop=false;loreDoneResolver=null;hideLoreBackdrop();
-                lorePeekSidebar();endTurn();return;
+                hideLoreBackdrop();
+                lorePeekSidebar();
+                isMoving=false;isRolling=false;
+                endTurn();return;
             }
 
             item=getRandomBucketItem(idx);
@@ -2521,24 +2517,21 @@
                 else{bucketVid.addEventListener('loadedmetadata',setCap,{once:true});}
                 return;
             } else {
-                /* Image lore — 40s linger, soft-dismissable. Roll or next action always dismisses. */
-                await new Promise(res=>{
-                    loreDoneResolver=res;
-                    const _t=setTimeout(()=>{loreDoneResolver=null;res();},40000);
-                    const sb=document.getElementById('rule-sidebar');
-                    const origClose=sb.onclick;
-                    sb.onclick=(e)=>{
-                        clearTimeout(_t);loreDoneResolver=null;
-                        stopActiveLoreVid();sb.onclick=origClose;if(origClose)origClose(e);res();
-                    };
-                });
+                /* Image lore — 40s auto-dismiss, sidecard lingers independently. Turn hands off immediately. */
+                const _t=setTimeout(()=>lorePeekSidebar(),40000);
+                const sb=document.getElementById('rule-sidebar');
+                const origClose=sb.onclick;
+                sb.onclick=(e)=>{
+                    clearTimeout(_t);
+                    stopActiveLoreVid();sb.onclick=origClose;if(origClose)origClose(e);
+                };
             }
 
             isInLoreDrop=false;loreDoneResolver=null;
             hideLoreBackdrop();
             lorePeekSidebar();
             isMoving=false;isRolling=false;
-            endTurn();return;
+            endTurn();return; 
         }
 
         await new Promise(r=>setTimeout(r,750));
