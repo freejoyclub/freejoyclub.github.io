@@ -63,9 +63,8 @@
         @keyframes fearFlicker   {0%,100%{box-shadow:0 0 6px var(--fear-glow);}50%{box-shadow:0 0 18px var(--fear-glow),0 0 30px var(--fear-glow);}}
         @keyframes specialFlicker{0%,100%{box-shadow:0 0 6px rgba(255,255,255,0.7);}50%{box-shadow:0 0 18px rgba(255,255,255,0.9),0 0 30px rgba(255,255,255,0.5);}}
         @keyframes passNotify    { 0%,100%{box-shadow:0 0 5px var(--pitch-orange);}50%{box-shadow:0 0 20px var(--pitch-orange),0 0 40px var(--pitch-orange);} }
-        @keyframes vinylSpin     { 0%{transform:scale(1.15) rotate(0deg);animation-timing-function:ease-in;}30%{transform:scale(1.15) rotate(540deg);animation-timing-function:linear;}70%{transform:scale(1.15) rotate(1440deg);animation-timing-function:ease-out;}100%{transform:scale(1.15) rotate(1800deg);} }
-        @keyframes vinylWiggle   { 0%,100%{transform:scale(1.15) rotate(0deg);}20%{transform:scale(1.15) rotate(-3.5deg);}50%{transform:scale(1.15) rotate(3deg);}75%{transform:scale(1.15) rotate(-2deg);} }
-        @keyframes reelSpin      { from{transform:rotate(0deg);}to{transform:rotate(360deg);} }
+        @keyframes vinylSpin     { 0%{transform:var(--space-translate,translate(0,0)) scale(1.15) rotate(0deg);animation-timing-function:ease-in;}30%{transform:var(--space-translate,translate(0,0)) scale(1.15) rotate(540deg);animation-timing-function:linear;}70%{transform:var(--space-translate,translate(0,0)) scale(1.15) rotate(1440deg);animation-timing-function:ease-out;}100%{transform:var(--space-translate,translate(0,0)) scale(1.15) rotate(1800deg);} }
+        @keyframes vinylWiggle   { 0%,100%{transform:var(--space-translate,translate(0,0)) scale(1.15) rotate(0deg);}20%{transform:var(--space-translate,translate(0,0)) scale(1.15) rotate(-3.5deg);}50%{transform:var(--space-translate,translate(0,0)) scale(1.15) rotate(3deg);}75%{transform:var(--space-translate,translate(0,0)) scale(1.15) rotate(-2deg);} }
         @keyframes spaceLand     { 0%{box-shadow:0 0 0px var(--land-color,white);}40%{box-shadow:0 0 30px var(--land-color,white),0 0 60px var(--land-color,white);}100%{box-shadow:0 0 0px var(--land-color,white);} }
         @keyframes diceRiseOut   { 0%{opacity:1;transform:translate(0,0) scale(1);}100%{opacity:0;transform:translate(0,-60px) scale(0.5);} }
         @keyframes diceFallIn    { 0%{opacity:0;transform:translate(0,-80px) scale(0.4);}100%{opacity:1;transform:translate(0,0) scale(1);} }
@@ -1199,7 +1198,7 @@
         if(masterMuted||!audioEnabled||!sfxEnabled)return;
         const ctx=getAudioCtx();if(ctx.state==='suspended')ctx.resume();
         fetch('remedyclip.wav').then(r=>r.arrayBuffer()).then(buf=>ctx.decodeAudioData(buf)).then(decoded=>{
-            const gainNode=ctx.createGain();gainNode.gain.value=1;gainNode.connect(masterGain);
+            const gainNode=ctx.createGain();gainNode.gain.value=.8;gainNode.connect(masterGain);
             const src=ctx.createBufferSource();src.buffer=decoded;src.connect(gainNode);
             activeSources.add(src);src.onended=()=>activeSources.delete(src);src.start();
             setTimeout(()=>{
@@ -1449,7 +1448,7 @@
         /* Wide base tape with variable-width effect via two paths */
         const base=document.createElementNS('http://www.w3.org/2000/svg','path');
         base.setAttribute('d',d);base.setAttribute('fill','none');
-        base.setAttribute('stroke','rgba(130,90,40,0.35)');
+        base.setAttribute('stroke','rgba(80,45,10,0.7)');
         /* Responsive stroke-width based on screen size */
         const tapeW=Math.max(4,Math.min(12,window.innerWidth*0.006)).toFixed(1);
         base.setAttribute('stroke-width',tapeW);
@@ -1459,7 +1458,7 @@
         /* Inner highlight for tape depth */
         const inner=document.createElementNS('http://www.w3.org/2000/svg','path');
         inner.setAttribute('d',d);inner.setAttribute('fill','none');
-        inner.setAttribute('stroke','rgba(180,130,70,0.18)');
+        inner.setAttribute('stroke','rgba(60,30,5,0.35)');
         inner.setAttribute('stroke-width','3');
         inner.setAttribute('stroke-linecap','round');inner.setAttribute('stroke-linejoin','round');
         svg.appendChild(inner);
@@ -1966,6 +1965,7 @@
             let ox=0,oy=0;
             if(dir==='right'||dir==='left'){oy=mag;}
             else{ox=mag;}
+            s.style.setProperty('--space-translate',`translate(${ox}px,${oy}px)`);
             const baseScale=s.classList.contains('tracklist-space')?'scale(1.15) ':
                             s.classList.contains('win-track')?'scale(1.2) ':'';
             s.style.transform=`${baseScale}translate(${ox}px,${oy}px)`;
@@ -2807,7 +2807,7 @@
                         vid.load();
                         vid.play().then(()=>{
                             /* Unmute after successful play — user gesture already captured */
-                            vid.muted=false;vid.volume=0.5;
+                            vid.muted=false;vid.volume=0.8;
                         }).catch(()=>{vid.muted=true;vid.play().catch(()=>{});});
                         const _rnudge=setInterval(()=>{if(vid&&!vid.paused){}else if(vid&&!vid.ended){vid.load();vid.play().catch(()=>{});}},2000);
                         vid.addEventListener('ended',()=>clearInterval(_rnudge),{once:true});
