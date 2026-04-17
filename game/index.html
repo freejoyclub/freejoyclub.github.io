@@ -1958,17 +1958,15 @@
         boardLayout.forEach((_,i)=>{
             const s=document.getElementById('s'+i);
             if(!s)return;
-            if(i===0||i===59){s.style.position='';s.style.left='';s.style.top='';return;}
+            if(i===0||i===59){s.style.transform='';return;}
             const mag=spaceOffsets[i];
-            /* Use the space's own travel direction — perpendicular means:
-               travelling right/left → nudge in Y; travelling up/down → nudge in X */
             const dir=dirs[i]||(i>0?dirs[i-1]:null)||'right';
             let ox=0,oy=0;
             if(dir==='right'||dir==='left'){oy=mag;}
             else{ox=mag;}
-            s.style.position='relative';
-            s.style.left=ox+'px';
-            s.style.top=oy+'px';
+            const baseScale=s.classList.contains('tracklist-space')?'scale(1.15) ':
+                            s.classList.contains('win-track')?'scale(1.2) ':'';
+            s.style.transform=`${baseScale}translate(${ox}px,${oy}px)`;
         });
     }
 
