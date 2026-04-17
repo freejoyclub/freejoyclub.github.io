@@ -2613,6 +2613,7 @@
         /* Prevent same space firing twice in one turn — blocks loops */
         if(spacesTriggeredThisTurn.has(p.pos)){endTurn();return;}
         spacesTriggeredThisTurn.add(p.pos);
+        const popupEl=document.getElementById('main-popup');
         const spaceCol=getSpaceColor(p.pos);
         popupEl.style.borderColor=spaceCol;popupEl.style.boxShadow=`0 0 30px ${spaceCol}`;
         if(r.sound&&r.choice!=='remedy')playSpaceSfx(r.sound);
