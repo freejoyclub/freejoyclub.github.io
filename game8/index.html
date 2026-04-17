@@ -86,10 +86,9 @@
         @keyframes vuBounce      { 0%{transform:rotate(-45deg);}25%{transform:rotate(20deg);}50%{transform:rotate(-30deg);}75%{transform:rotate(35deg);}100%{transform:rotate(-45deg);} }
 
         /* Animated warm tan background gradient — slow, smooth, more varied */
-        @keyframes bgFade {
-            0%   { background-position: 0% 50%; }
-            50%  { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
+        @keyframes bgRotate {
+            from { transform:translate(-50%,-50%) rotate(0deg); }
+            to   { transform:translate(-50%,-50%) rotate(360deg); }
         }
 
         /* ── PAGE SHELL ── */
@@ -100,11 +99,15 @@
             display:flex; flex-direction:column;
             height:100vh; height:100dvh; overflow:hidden; position:relative;
         }
-        /* Farthest-back layer: animated tan gradient */
+        /* Farthest-back layer: slow rotating gradient — GPU transform only, no repaint */
         body::before {
-            content:''; position:fixed; inset:0; z-index:-2;
-            animation:bgFade 20s ease-in-out infinite;
-            background:linear-gradient(145deg,#cc8049 0%,#a86030 35%,#bf7e58 70%,#d4915a 100%);
+            content:''; position:fixed;
+            width:300vmax; height:300vmax;
+            top:50%; left:50%;
+            z-index:-2; pointer-events:none;
+            background:linear-gradient(0deg,#a85c2a 0%,#bf7840 25%,#b86535 50%,#cc8a50 75%,#a85c2a 100%);
+            animation:bgRotate 60s linear infinite;
+            will-change:transform;
         }
         /* Vignette layer, just above bg — darker */
         body::after {
@@ -514,6 +517,7 @@
             transform:scale(1.15); z-index:5; font-size:calc(var(--space-font)*1.2) !important; color:white !important;
         }
         .tracklist-space:hover { transform:scale(1.22) !important; box-shadow:inset 0 0 15px #000,0 0 14px rgba(255,255,255,0.25) !important; }
+        .win-track:hover { transform:scale(1.05) !important; box-shadow:0 0 14px var(--blue-glow) !important; }
         .tracklist-space.vinyl-spinning { animation:vinylSpin 3.2s ease forwards !important; transform-origin:center center !important; }
         .tracklist-space.vinyl-wiggle   { animation:vinylWiggle 1.2s ease-in-out !important; transform-origin:center center !important; }
         /* Joy/Fear white text + glow border */
@@ -2031,7 +2035,7 @@
                 );
                 document.getElementById('event-btn-secondary').style.display='none';
                 /* 20% smaller text for How to Play card */
-                setTimeout(()=>{const d=document.getElementById('event-desc');if(d)d.style.fontSize='clamp(0.96rem,2.1vw,1.3rem)';},30);
+                setTimeout(()=>{const d=document.getElementById('event-desc');if(d)d.style.fontSize='clamp(0.8rem,1.7vw,1rem)';},30);
             }
         );
         /* Inject credits into the first popup immediately */
@@ -2891,6 +2895,8 @@
             /* Plot armor: eat the lost recording penalty entirely — no re-roll */
             if(checkPlotArmor(capturedTurnIdx,true)){
                 modal.style.display='none';
+                players[capturedTurnIdx].accolades.push('📼');
+                renderPasses();
                 showSidebar("🛡️ PLOT ARMOR","Shield absorbed the Lost Recording!",'var(--mystery-glow)');
                 endTurn();return;
             }
@@ -3135,7 +3141,9 @@
         document.getElementById('event-btn-secondary').style.display='none';
         document.getElementById('hard-reset-win').onclick=()=>location.reload();
         document.getElementById('soft-reset-win').onclick=()=>{document.getElementById('overlay-event').style.display='none';confirmSoftRestart();};
-        document.getElementById('overlay-event').style.display='flex';
+        const _winOverlay=document.getElementById('overlay-event');
+        _winOverlay.style.display='flex';
+        _winOverlay.onclick=(e)=>{e.stopPropagation();};
     }
 
     // ══════════════════════════════════════════════
