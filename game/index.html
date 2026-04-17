@@ -1,7 +1,7 @@
 <!DOCTYPE html><html lang="en"><head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Fearjoy: the Game (v30)</title>
+    <title>Fearjoy: the Game (v29)</title>
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
@@ -92,6 +92,14 @@
             50%  { background-position: 100% 50%; }
             100% { background-position: 0% 50%; }
         }
+            14% {background:linear-gradient(168deg,#b86a35 0%,#c88055 30%,#c0754a 62%,#bf7e58 100%);}
+            28% {background:linear-gradient(128deg,#bf7e58 0%,#b06535 28%,#c98a52 58%,#c4773e 100%);}
+            42% {background:linear-gradient(152deg,#c98a52 0%,#bf7e58 32%,#b86a35 60%,#cc8049 100%);}
+            57% {background:linear-gradient(138deg,#c4773e 0%,#d4915a 28%,#bf7e58 62%,#a86030 100%);}
+            71% {background:linear-gradient(162deg,#cc8049 0%,#c4773e 36%,#d4915a 68%,#c98a52 100%);}
+            85% {background:linear-gradient(132deg,#b86a35 0%,#bf7e58 30%,#cc8049 62%,#c4773e 100%);}
+            100%{background:linear-gradient(145deg,#cc8049 0%,#a86030 35%,#bf7e58 68%,#d4915a 100%);}
+        }
 
         /* ── PAGE SHELL ── */
         html,body { margin:0; padding:0; width:100%; height:100%; overflow:hidden; }
@@ -112,6 +120,7 @@
             content:''; position:fixed; inset:0; z-index:-1; pointer-events:none;
             background:radial-gradient(ellipse 80% 75% at 50% 50%,transparent 30%,rgba(0,0,0,0.8) 100%);
         }
+
 
         /* ── SCREEN BORDER GLOW — current player color ── */
         #screen-glow {
@@ -249,6 +258,7 @@
         }
         .nav-menu-btn:hover { background:rgba(255,255,255,0.07); transform:translateX(-4px); }
         .nav-icon { font-size:1.2rem; }
+        .btn-audio:hover      { border-color:var(--gold);      color:var(--gold);      box-shadow:0 0 12px var(--gold); }
         .btn-tracks:hover     { border-color:var(--joy-glow);  color:var(--joy-glow);  box-shadow:0 0 12px var(--joy-glow); }
         .btn-sfx:hover        { border-color:var(--blue-glow); color:var(--blue-glow); box-shadow:0 0 12px var(--blue-glow); }
         .btn-accolade-key:hover { border-color:var(--gold);    color:var(--gold);      box-shadow:0 0 12px var(--gold); }
@@ -306,7 +316,6 @@
             display:flex; align-items:center; justify-content:center;
             padding:3px;
         }
-        /* SPEED LAW: will-change added for GPU compositing of cinematic animation */
         #dice-box {
             width:clamp(28px,4vw,54px); height:clamp(28px,4vw,54px);
             background:rgba(0,0,0,0.75); color:white;
@@ -316,7 +325,6 @@
             font-family:'KCStrikerSans','Courier New',monospace;
             transition:opacity 0.35s ease; position:absolute;
             animation:diceGlow 3s ease-in-out infinite; cursor:pointer;
-            will-change:transform,opacity;
         }
         .dice-rise-out   { animation:diceRiseOut   0.35s ease-in  forwards !important; }
         .dice-fall-in    { animation:diceFallIn    0.4s  ease-out forwards !important; }
@@ -357,7 +365,6 @@
         }
 
         /* Pass card — paper feel, slow 3D float */
-        /* SPEED LAW: will-change:transform added for GPU compositing of float animations */
         .access-pass {
             width:clamp(74px,10.5vw,152px);
             background:linear-gradient(160deg,#ede8dc 0%,#e2d9c4 55%,#d8ccb0 100%);
@@ -366,7 +373,7 @@
             box-shadow:0 2px 12px rgba(0,0,0,0.4),inset 0 1px 0 rgba(255,255,255,0.6),inset 0 -1px 0 rgba(0,0,0,0.1);
             position:relative; transform-style:preserve-3d;
             transition:border-color 0.4s,box-shadow 0.4s,transform 0.25s;
-            cursor:pointer; will-change:transform;
+            cursor:pointer;
         }
         .pass-float-a { animation:passFloatA 6s ease-in-out infinite; }
         .pass-float-b { animation:passFloatB 7s ease-in-out infinite; animation-delay:-2.3s; }
@@ -490,8 +497,7 @@
             position:relative; transition:transform 0.18s ease,box-shadow 0.18s ease;
             cursor:help; box-sizing:border-box;
         }
-        /* SPEED LAW: will-change:transform scoped to hover state only — avoids promoting all 60 spaces at once */
-        .space:hover { transform:scale(1.06); box-shadow:0 0 14px rgba(255,255,255,0.3); z-index:6; will-change:transform; }
+        .space:hover { transform:scale(1.06); box-shadow:0 0 14px rgba(255,255,255,0.3); z-index:6; }
         /* Text shadow for readability on wood background */
         .space .sp-text,.space .sp-emoji,.mystery-q { text-shadow:0 0 3px rgba(0,0,0,0.5),0 0 1px rgba(0,0,0,0.7); }
         .space:not(.blank):not(.mystery-space):not(.true-blank) { font-family:'KCStrikerSans','Courier New',monospace; }
@@ -502,8 +508,8 @@
             background:radial-gradient(ellipse at center,rgba(200,180,169,0.1) 10%,rgba(69,50,40,0.3) 100%) !important;
         }
         .mystery-space { background:radial-gradient(ellipse at center,rgba(20,0,30,0.3) 0%,rgba(0,0,0,0.6) 100%) !important; }
-        .true-blank {
-            background: none !important;
+        .true-blank { 
+            background: none !important; 
             border: 1px dashed rgba(200,180,169,0.6) !important;
             transform: scale(0.7);
         }
@@ -600,15 +606,13 @@
         #s12, #s53 { --space-glow:#776655; animation:vanFlicker 2.9s ease-in-out infinite; }
         @keyframes vanFlicker { 0%,100%{box-shadow:0 0 5px #de5b33;} 50%{box-shadow:0 0 14px #de5b33,0 0 22px #7d3b1a;} }
 
+
         /* ── PLAYER PIECES ── */
-        /* SPEED LAW: transition:all → explicit 4-property list (prevents tracking all animatable props).
-           will-change:top,left,width,height hints GPU to composite movement ahead of time. */
         .player {
             position:absolute; z-index:100;
-            transition:top 0.7s cubic-bezier(0.18,0.89,0.32,1.28),left 0.7s cubic-bezier(0.18,0.89,0.32,1.28),width 0.7s cubic-bezier(0.18,0.89,0.32,1.28),height 0.7s cubic-bezier(0.18,0.89,0.32,1.28);
+            transition:all 0.7s cubic-bezier(0.18,0.89,0.32,1.28);
             background-size:contain; background-repeat:no-repeat; background-position:center bottom;
             pointer-events:none; animation:pieceHover 4s infinite ease-in-out;
-            will-change:top,left,width,height;
         }
         .active-turn { animation:turnPulse 1.5s infinite ease-in-out; }
         .swap-target {
@@ -620,7 +624,7 @@
 
         /* ── POPUPS & OVERLAYS ── */
         .overlay { position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:2000; display:none; align-items:center; justify-content:center; padding:clamp(10px,3vw,20px); box-sizing:border-box; }
-        /* Central Modal / Action Middle Popup Card - dark gray - for choices */
+        /* ----Central Modal / Action Middle Popup Card - dark gray - for choices */
         .popup {
             background:linear-gradient(160deg,rgba(8,8,8,0.60) 0%,rgba(45,45,45,0.60) 100%);
             backdrop-filter:blur(10px);
@@ -666,9 +670,8 @@
         .btn-fear:hover { background:rgba(255,68,68,0.15); transform:translateY(-2px); box-shadow:0 0 16px var(--fear-glow); }
 
         /* Rule sidebar — PERMANENT: always content-adaptive, never full-height */
-        /* SPEED LAW: will-change:right added for GPU compositing of slide transition */
         #rule-sidebar {
-            position:fixed; right:-400px; will-change:right;
+            position:fixed; right:-400px;
             top:calc(var(--bar-h) + 8px);
             width:min(260px,78vw);
             max-height:calc(100dvh - var(--bar-h) - 24px);
@@ -711,6 +714,7 @@
         .bucket-btn { display:inline-block; text-decoration:none; background:var(--mystery-glow); color:black; font-weight:bold; font-size:0.85rem; letter-spacing:1px; text-transform:uppercase; padding:10px 20px; border-radius:8px; border:none; cursor:pointer; transition:all 0.25s ease; margin-top:6px; }
         .bucket-btn:hover { transform:translateY(-2px); box-shadow:0 0 16px var(--mystery-glow); }
         #coin { font-family:'KCStrikerSans','Courier New',monospace; }
+        #coin.lost-tape-dice { border-radius:12px !important; background:rgba(0,0,0,0.75) !important; border:3px solid rgba(255,255,255,0.7) !important; color:white !important; }
         /* Timer display — KCStrikerSans, large */
         #timer-ui {
             font-family:'KCStrikerSans','Courier New',monospace;
@@ -2218,7 +2222,7 @@
             const stack=stackMap[p.pos];const stackSize=stack.length;const myStackIdx=stack.indexOf(i);
             const spaceW=target.offsetWidth;const spaceH=target.offsetHeight;
             const isActive=(i===turnIdx);
-            /* Active player piece is 20% larger */
+            /* Active player piece is 20% larger (was 50%, reduced per feedback) */
             const sizeScale=isActive?1.2:1;
             if(stackSize>1){
                 const scale=0.72*sizeScale;const pieceW=spaceW*scale;const pieceH=spaceH*scale;
@@ -2407,6 +2411,7 @@
         /* Use capturedIdx if provided (from performActualRoll), else current turnIdx */
         const idx=(capturedIdx!==undefined)?capturedIdx:turnIdx;
         const p=players[idx];
+        /* Re-verify idx is still the right turn — safety check */
         const dir=n>0?1:-1;
         const lastPlaceIdxList=getLastPlaceIdx();
         const isLast=lastPlaceIdxList.includes(idx);
@@ -2749,7 +2754,7 @@
                 setTimeout(()=>{
                     const cv=document.getElementById('close-video');const vid=document.getElementById('remedy-video');
                     if(cv)cv.onclick=(e)=>{e.stopPropagation();fadeOutVideo(vid);document.getElementById('video-wrapper').style.display='none';};
-                    if(vid){vid.play().catch(()=>{});const _rnudge=setInterval(()=>{if(vid&&!vid.paused){}else if(vid&&!vid.ended)vid.play().catch(()=>{});},2000);vid.addEventListener('ended',()=>clearInterval(_rnudge),{once:true});}
+                    if(vid){vid.play().catch(()=>{});/* mobile buffer fix */const _rnudge=setInterval(()=>{if(vid&&!vid.paused){}else if(vid&&!vid.ended)vid.play().catch(()=>{});},2000);vid.addEventListener('ended',()=>clearInterval(_rnudge),{once:true});}
                     setTimeout(()=>playSfx('remedyclip.wav'),150);
                 },50);
             }
@@ -2825,9 +2830,10 @@
                 pBtn.innerText="CONTINUE";pBtn.onclick=()=>{modal.style.display='none';endTurn();};
             }
         } else if(r.isOpeningAct){
-            /* Plot armor only blocks THIS occurrence */
+            /* Plot armor only blocks THIS occurrence — consumed here, future landings work normally */
             if(checkPlotArmor(capturedTurnIdx,true)){
                 modal.style.display='none';
+                /* Ensure wasPassivelyMoved is clear so next visit to this space fires normally */
                 players[capturedTurnIdx].wasPassivelyMoved=false;
                 showSidebar("🛡️ PLOT ARMOR","Shield blocked Opening Act penalty!",'var(--mystery-glow)');
                 endTurn();return;
@@ -2879,7 +2885,7 @@
                 if(turnIdx===capturedTurnIdx)performActualRoll();
             };
         } else if(r.isLostRecording){
-            /* Plot armor: eat the lost recording penalty entirely */
+            /* Plot armor: eat the lost recording penalty entirely — no re-roll */
             if(checkPlotArmor(capturedTurnIdx,true)){
                 modal.style.display='none';
                 showSidebar("🛡️ PLOT ARMOR","Shield absorbed the Lost Recording!",'var(--mystery-glow)');
@@ -3077,91 +3083,143 @@
                 (!pl.isSellout&&!pl.isColdPitchSellout&&!pl.isInvestor&&!pl.usedColdPitch?'<span style="background:#2a2a2a;color:rgba(255,255,255,0.85);padding:1px 6px;border-radius:3px;font-size:0.65rem;font-weight:bold;letter-spacing:0.5px;margin-right:4px;">INDIE</span>':'')
             ].join('');
             statsHtml+=`<div style="margin-bottom:12px;border-bottom:1px solid #222;display:flex;align-items:center;gap:12px;padding-bottom:10px;">
-                <img src="${pl.avatar.img}" style="width:50px;height:50px;border-radius:50%;background:#000;border:2px solid ${pl.avatar.color};box-shadow:0 0 10px ${pl.avatar.color};"> <div style="flex-grow:1;"><b style="color:${pl.avatar.color};font-size:1.1rem;letter-spacing:1px;">${pl.name}</b>${supporterLine} <div style="margin:3px 0;">${statusTags}</div> <div style="font-size:1.2rem;margin:2px 0;">${pl.accolades.join('')}</div></div></div>; }); statsHtml+=</div></div>; const popupEl=document.getElementById('main-popup'); popupEl.style.borderColor=p.avatar.color;popupEl.style.boxShadow=0 0 80px ${p.avatar.color}; document.getElementById('event-title').innerText="The tour is over. Go Swimmin!"; document.getElementById('event-desc').innerHTML=statsHtml; const storeLbl=highestDiscountPct>0?STORE (${highestDiscountPct}% OFF):'STORE'; const linkStack= <div style="display:flex;flex-direction:column;gap:10px;align-items:center;margin-top:20px;"> <a href="https://freejoy.club" target="_blank" class="win-link-btn win-cta" style="--btn-color:var(--joy-glow);color:var(--joy-glow);font-size:1.1rem;padding:14px 28px;">▶ PLAY THE ALBUM</a> <a href="https://freejoy.club/store" target="_blank" class="win-link-btn" style="--btn-color:#ff00ff;color:#ff00ff;">${storeLbl}</a> <a href="https://freejoy.club" target="_blank" class="win-link-btn" style="--btn-color:#ffffff;color:#ffffff;">HOME</a> <div style="display:flex;gap:10px;width:min(400px,90%);margin-top:5px;"> <button id="hard-reset-win" class="win-link-btn" style="--btn-color:var(--fear-glow);color:var(--fear-glow);flex:1;cursor:pointer;">NEW BAND</button> <button id="soft-reset-win" class="win-link-btn" style="--btn-color:#ffa500;color:#ffa500;flex:1;cursor:pointer;">ANOTHER TOUR</button> </div> <div style="font-family:'Courier New',monospace;font-size:0.6rem;letter-spacing:2px;color:rgba(255,255,255,0.25);text-align:center;margin-top:14px;text-transform:uppercase;">© 2026. Music/Game/Sound Design by Fearjoy</div> </div> <style> .win-link-btn{text-decoration:none;font-family:'Courier New',monospace;font-weight:900;font-size:clamp(0.75rem,1.8vw,0.9rem);padding:10px 20px;border:1px solid var(--btn-color);border-radius:12px;width:min(320px,80%);background:transparent;text-align:center;transition:all 0.3s cubic-bezier(0.175,0.885,0.32,1.275);letter-spacing:1.5px;text-transform:uppercase;display:block;} .win-cta{border-width:2px;animation:rollPulse 2s ease-in-out infinite;} .win-link-btn:hover{background:var(--btn-color)!important;color:black!important;box-shadow:0 0 20px var(--btn-color);transform:scale(1.05) translateY(-2px);} </style>`; document.getElementById('event-desc').innerHTML+=linkStack; document.getElementById('event-btn-primary').style.display='none'; document.getElementById('event-btn-secondary').style.display='none'; document.getElementById('hard-reset-win').onclick=()=>location.reload(); document.getElementById('soft-reset-win').onclick=()=>{document.getElementById('overlay-event').style.display='none';confirmSoftRestart();}; document.getElementById('overlay-event').style.display='flex'; }
-// ══════════════════════════════════════════════
-// END TURN
-// ══════════════════════════════════════════════
-function endTurn(){
-    dismissReminder();
-    const fb=document.getElementById('maya-fear-btn');if(fb)fb.remove();
-    isSwapping=false;isMayaPartner=false;
-    document.querySelectorAll('.player').forEach(el=>{el.classList.remove('swap-target');el.style.pointerEvents='none';});
-    turnIdx=(turnIdx+1)%players.length;
-    globalTurnCount++;
-    isMoving=false;isRolling=false;  /* clear both guards */
-    isInLoreDrop=false;loreDoneResolver=null;
-    document.getElementById('roll-btn').disabled=false;
-    /* Update status text immediately so new player's name shows without delay */
-    const nextP=players[turnIdx];
-    document.getElementById('status-text').innerHTML=`<span style="color:${nextP.avatar.color}">${nextP.name}'S TURN</span>`;
-    document.getElementById('ui-layer-color-wash').style.background=`linear-gradient(90deg,${nextP.avatar.color} 0%,transparent 35%)`;
-    updateUI();
-}
-// ══════════════════════════════════════════════
-// LORE BACKDROP — click outside sidebar to dismiss lore
-// ══════════════════════════════════════════════
-function showLoreBackdrop(){document.getElementById('lore-backdrop').style.display='block';}
-function hideLoreBackdrop(){document.getElementById('lore-backdrop').style.display='none';}
-function handleLoreBackdropClick(){
-    /* Clicking outside lore/sidebar ONLY dismisses — never starts a roll */
-    stopActiveLoreVid();
-    closeSidebar();
-    hideLoreBackdrop();
-    if(isInLoreDrop){
-        isInLoreDrop=false;
-        if(loreDoneResolver){loreDoneResolver();loreDoneResolver=null;}
+                <img src="${pl.avatar.img}" style="width:50px;height:50px;border-radius:50%;background:#000;border:2px solid ${pl.avatar.color};box-shadow:0 0 10px ${pl.avatar.color};">
+                <div style="flex-grow:1;"><b style="color:${pl.avatar.color};font-size:1.1rem;letter-spacing:1px;">${pl.name}</b>${supporterLine}
+                <div style="margin:3px 0;">${statusTags}</div>
+                <div style="font-size:1.2rem;margin:2px 0;">${pl.accolades.join('')}</div></div></div>`;
+        });
+        statsHtml+=`</div></div>`;
+        const popupEl=document.getElementById('main-popup');
+        popupEl.style.borderColor=p.avatar.color;popupEl.style.boxShadow=`0 0 80px ${p.avatar.color}`;
+        document.getElementById('event-title').innerText="The tour is over. Go Swimmin!";
+        document.getElementById('event-desc').innerHTML=statsHtml;
+        const storeLbl=highestDiscountPct>0?`STORE (${highestDiscountPct}% OFF)`:'STORE';
+        const linkStack=`
+            <div style="display:flex;flex-direction:column;gap:10px;align-items:center;margin-top:20px;">
+                <a href="https://freejoy.club" target="_blank" class="win-link-btn win-cta" style="--btn-color:var(--joy-glow);color:var(--joy-glow);font-size:1.1rem;padding:14px 28px;">▶ PLAY THE ALBUM</a>
+                <a href="https://freejoy.club/store" target="_blank" class="win-link-btn" style="--btn-color:#ff00ff;color:#ff00ff;">${storeLbl}</a>
+                <a href="https://freejoy.club" target="_blank" class="win-link-btn" style="--btn-color:#ffffff;color:#ffffff;">HOME</a>
+                <div style="display:flex;gap:10px;width:min(400px,90%);margin-top:5px;">
+                    <button id="hard-reset-win" class="win-link-btn" style="--btn-color:var(--fear-glow);color:var(--fear-glow);flex:1;cursor:pointer;">NEW BAND</button>
+                    <button id="soft-reset-win" class="win-link-btn" style="--btn-color:#ffa500;color:#ffa500;flex:1;cursor:pointer;">ANOTHER TOUR</button>
+                </div>
+                <div style="font-family:'Courier New',monospace;font-size:0.6rem;letter-spacing:2px;color:rgba(255,255,255,0.25);text-align:center;margin-top:14px;text-transform:uppercase;">© 2026. Music/Game/Sound Design by Fearjoy</div>
+            </div>
+            <style>
+                .win-link-btn{text-decoration:none;font-family:'Courier New',monospace;font-weight:900;font-size:clamp(0.75rem,1.8vw,0.9rem);padding:10px 20px;border:1px solid var(--btn-color);border-radius:12px;width:min(320px,80%);background:transparent;text-align:center;transition:all 0.3s cubic-bezier(0.175,0.885,0.32,1.275);letter-spacing:1.5px;text-transform:uppercase;display:block;}
+                .win-cta{border-width:2px;animation:rollPulse 2s ease-in-out infinite;}
+                .win-link-btn:hover{background:var(--btn-color)!important;color:black!important;box-shadow:0 0 20px var(--btn-color);transform:scale(1.05) translateY(-2px);}
+            </style>`;
+        document.getElementById('event-desc').innerHTML+=linkStack;
+        document.getElementById('event-btn-primary').style.display='none';
+        document.getElementById('event-btn-secondary').style.display='none';
+        document.getElementById('hard-reset-win').onclick=()=>location.reload();
+        document.getElementById('soft-reset-win').onclick=()=>{document.getElementById('overlay-event').style.display='none';confirmSoftRestart();};
+        document.getElementById('overlay-event').style.display='flex';
     }
-}
 
-// ══════════════════════════════════════════════
-// ACCOLADES KEY
-// ══════════════════════════════════════════════
-function showAccoladeKey(){
-    const ol=document.createElement('div');
-    ol.id='accolade-key-overlay';
-    ol.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:9000;display:flex;align-items:center;justify-content:center;padding:16px;box-sizing:border-box;';
-    const box=document.createElement('div');
-    box.style.cssText='background:linear-gradient(160deg,rgba(14,14,14,0.95),rgba(30,30,30,0.95));border:1px solid #444;border-radius:18px;padding:24px 28px;max-width:min(440px,90vw);max-height:85vh;overflow-y:auto;font-family:Courier New,monospace;color:white;';
-    box.innerHTML=`<h3 style="font-family:KCStrikerSans,Courier New,monospace;font-size:1.3rem;letter-spacing:2px;margin:0 0 16px;color:#ffd700;">🔑 Accolades & Status Key</h3>
-<div style="font-size:0.8rem;letter-spacing:1px;color:rgba(255,255,255,0.45);text-transform:uppercase;margin-bottom:8px;">Accolades</div> <div style="line-height:2.2;font-size:0.92rem;margin-bottom:16px;"> <div>🏆 Grammy Won</div><div>📝 Label Contract Signed</div><div>👕 Merch Sold (Investor perk)</div> <div>💊 Label Debt Paid (Remedy)</div><div>🎫 Merch Discount Unlocked</div> <div>🛡️ Plot Armor — next bad outcome blocked</div><div>📼 Lost Recording survived</div> </div> <div style="font-size:0.8rem;letter-spacing:1px;color:rgba(255,255,255,0.45);text-transform:uppercase;margin-bottom:10px;">Status</div> <div style="display:flex;flex-direction:column;gap:7px;font-size:0.88rem;"> <div style="display:flex;align-items:center;gap:10px;"><span style="background:#2a2a2a;color:rgba(255,255,255,0.85);padding:2px 8px;border-radius:3px;font-size:0.75rem;font-weight:bold;letter-spacing:0.5px;">INDIE</span><span style="color:rgba(255,255,255,0.75);">Independent artist — no label deal</span></div> <div style="display:flex;align-items:center;gap:10px;"><span style="background:var(--fear-glow);color:white;padding:2px 8px;border-radius:3px;font-size:0.75rem;font-weight:bold;letter-spacing:0.5px;">SELLOUT</span><span style="color:rgba(255,255,255,0.75);">Signed with a major label</span></div> <div style="display:flex;align-items:center;gap:10px;"><span style="background:var(--teal-glow);color:black;padding:2px 8px;border-radius:3px;font-size:0.75rem;font-weight:bold;letter-spacing:0.5px;">INVESTOR</span><span style="color:rgba(255,255,255,0.75);">Invested in merch — low rolls pay off</span></div> <div style="display:flex;align-items:center;gap:10px;"><span style="background:var(--mystery-glow);color:black;padding:2px 8px;border-radius:3px;font-size:0.75rem;font-weight:bold;letter-spacing:0.5px;">THRIFTY</span><span style="color:rgba(255,255,255,0.75);">Unlocked a merch discount code</span></div> <div style="display:flex;align-items:center;gap:10px;"><span style="background:var(--pitch-orange);color:black;padding:2px 8px;border-radius:3px;font-size:0.75rem;font-weight:bold;letter-spacing:0.5px;">PITCHED</span><span style="color:rgba(255,255,255,0.75);">Used Cold Pitch — label takes a cut</span></div> </div> <button onclick="document.getElementById('accolade-key-overlay').remove()" style="margin-top:20px;width:100%;padding:10px;background:transparent;border:1px solid #555;color:rgba(255,255,255,0.7);border-radius:8px;font-family:Courier New,monospace;font-size:0.85rem;letter-spacing:2px;cursor:pointer;text-transform:uppercase;transition:all 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.08)'" onmouseout="this.style.background='transparent'">GOT IT</button>`; ol.appendChild(box); /* Light-dismiss */ ol.onclick=(e)=>{if(e.target===ol)ol.remove();}; document.body.appendChild(ol); }
-// ══════════════════════════════════════════════
-// PLOT ARMOR — mystery space special event
-// ══════════════════════════════════════════════
-/* Try to give plot armor from a mystery space landing — 1-in-6 chance,
-   once per player per game, only if they don't already have it */
-function tryAwardPlotArmor(playerIdx){
-    const p=players[playerIdx];
-    if(p.hasPlotArmor)return false;
-    if(Math.random()>1/6)return false;
-    p.hasPlotArmor=true;
-    p.accolades.push('🛡️');
-    renderPasses();
-    return true;
-}
+    // ══════════════════════════════════════════════
+    // END TURN
+    // ══════════════════════════════════════════════
+    function endTurn(){
+        dismissReminder();
+        const fb=document.getElementById('maya-fear-btn');if(fb)fb.remove();
+        isSwapping=false;isMayaPartner=false;
+        document.querySelectorAll('.player').forEach(el=>{el.classList.remove('swap-target');el.style.pointerEvents='none';});
+        turnIdx=(turnIdx+1)%players.length;
+        globalTurnCount++;
+        isMoving=false;isRolling=false;  /* clear both guards */
+        isInLoreDrop=false;loreDoneResolver=null;
+        document.getElementById('roll-btn').disabled=false;
+        /* Update status text immediately so new player's name shows without delay */
+        const nextP=players[turnIdx];
+        document.getElementById('status-text').innerHTML=`<span style="color:${nextP.avatar.color}">${nextP.name}'S TURN</span>`;
+        document.getElementById('ui-layer-color-wash').style.background=`linear-gradient(90deg,${nextP.avatar.color} 0%,transparent 35%)`;
+        updateUI();
+    }
+    // ══════════════════════════════════════════════
+    // LORE BACKDROP — click outside sidebar to dismiss lore
+    // ══════════════════════════════════════════════
+    function showLoreBackdrop(){document.getElementById('lore-backdrop').style.display='block';}
+    function hideLoreBackdrop(){document.getElementById('lore-backdrop').style.display='none';}
+    function handleLoreBackdropClick(){
+        /* Clicking outside lore/sidebar ONLY dismisses — never starts a roll */
+        stopActiveLoreVid();
+        closeSidebar();
+        hideLoreBackdrop();
+        if(isInLoreDrop){
+            isInLoreDrop=false;
+            if(loreDoneResolver){loreDoneResolver();loreDoneResolver=null;}
+        }
+    }
 
-/* Call before any detrimental move — returns true if blocked by armor */
-function checkPlotArmor(playerIdx,isDetrimental=true){
-    if(!isDetrimental)return false;
-    const p=players[playerIdx];
-    if(!p.hasPlotArmor)return false;
-    p.hasPlotArmor=false; /* armor consumed */
-    /* Flash shield emoji */
-    const e=document.createElement('div');e.className='floating-emoji-slow';
-    e.innerText='🛡️';e.style.left='50%';e.style.top='50%';document.body.appendChild(e);
-    setTimeout(()=>e.remove(),2400);
-    showSidebar('🛡️ PLOT ARMOR!','Shield absorbed the hit. Lucky!','var(--mystery-glow)');
-    renderPasses();
-    return true; /* blocked */
-}
+    // ══════════════════════════════════════════════
+    // ACCOLADES KEY
+    // ══════════════════════════════════════════════
+    function showAccoladeKey(){
+        const ol=document.createElement('div');
+        ol.id='accolade-key-overlay';
+        ol.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:9000;display:flex;align-items:center;justify-content:center;padding:16px;box-sizing:border-box;';
+        const box=document.createElement('div');
+        box.style.cssText='background:linear-gradient(160deg,rgba(14,14,14,0.95),rgba(30,30,30,0.95));border:1px solid #444;border-radius:18px;padding:24px 28px;max-width:min(440px,90vw);max-height:85vh;overflow-y:auto;font-family:Courier New,monospace;color:white;';
+        box.innerHTML=`<h3 style="font-family:KCStrikerSans,Courier New,monospace;font-size:1.3rem;letter-spacing:2px;margin:0 0 16px;color:#ffd700;">🔑 Accolades & Status Key</h3>
+<div style="font-size:0.8rem;letter-spacing:1px;color:rgba(255,255,255,0.45);text-transform:uppercase;margin-bottom:8px;">Accolades</div>
+<div style="line-height:2.2;font-size:0.92rem;margin-bottom:16px;">
+<div>🏆 Grammy Won</div><div>📝 Label Contract Signed</div><div>👕 Merch Sold (Investor perk)</div>
+<div>💊 Label Debt Paid (Remedy)</div><div>🎫 Merch Discount Unlocked</div>
+<div>🛡️ Plot Armor — next bad outcome blocked</div><div>📼 Lost Recording survived</div>
+</div>
+<div style="font-size:0.8rem;letter-spacing:1px;color:rgba(255,255,255,0.45);text-transform:uppercase;margin-bottom:10px;">Status</div>
+<div style="display:flex;flex-direction:column;gap:7px;font-size:0.88rem;">
+<div style="display:flex;align-items:center;gap:10px;"><span style="background:#2a2a2a;color:rgba(255,255,255,0.85);padding:2px 8px;border-radius:3px;font-size:0.75rem;font-weight:bold;letter-spacing:0.5px;">INDIE</span><span style="color:rgba(255,255,255,0.75);">Independent artist — no label deal</span></div>
+<div style="display:flex;align-items:center;gap:10px;"><span style="background:var(--fear-glow);color:white;padding:2px 8px;border-radius:3px;font-size:0.75rem;font-weight:bold;letter-spacing:0.5px;">SELLOUT</span><span style="color:rgba(255,255,255,0.75);">Signed with a major label</span></div>
+<div style="display:flex;align-items:center;gap:10px;"><span style="background:var(--teal-glow);color:black;padding:2px 8px;border-radius:3px;font-size:0.75rem;font-weight:bold;letter-spacing:0.5px;">INVESTOR</span><span style="color:rgba(255,255,255,0.75);">Invested in merch — low rolls pay off</span></div>
+<div style="display:flex;align-items:center;gap:10px;"><span style="background:var(--mystery-glow);color:black;padding:2px 8px;border-radius:3px;font-size:0.75rem;font-weight:bold;letter-spacing:0.5px;">THRIFTY</span><span style="color:rgba(255,255,255,0.75);">Unlocked a merch discount code</span></div>
+<div style="display:flex;align-items:center;gap:10px;"><span style="background:var(--pitch-orange);color:black;padding:2px 8px;border-radius:3px;font-size:0.75rem;font-weight:bold;letter-spacing:0.5px;">PITCHED</span><span style="color:rgba(255,255,255,0.75);">Used Cold Pitch — label takes a cut</span></div>
+</div>
+<button onclick="document.getElementById('accolade-key-overlay').remove()" style="margin-top:20px;width:100%;padding:10px;background:transparent;border:1px solid #555;color:rgba(255,255,255,0.7);border-radius:8px;font-family:Courier New,monospace;font-size:0.85rem;letter-spacing:2px;cursor:pointer;text-transform:uppercase;transition:all 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.08)'" onmouseout="this.style.background='transparent'">GOT IT</button>`;
+        ol.appendChild(box);
+        /* Light-dismiss */
+        ol.onclick=(e)=>{if(e.target===ol)ol.remove();};
+        document.body.appendChild(ol);
+    }
 
-// ══════════════════════════════════════════════
-// INIT AUDIO UI on first load
-// ══════════════════════════════════════════════
-/* Deferred so DOM is ready */
-setTimeout(syncAudioUI,100);
+    // ══════════════════════════════════════════════
+    // PLOT ARMOR — mystery space special event
+    // ══════════════════════════════════════════════
+    /* Try to give plot armor from a mystery space landing — 1-in-6 chance,
+       once per player per game, only if they don't already have it */
+    function tryAwardPlotArmor(playerIdx){
+        const p=players[playerIdx];
+        if(p.hasPlotArmor)return false;
+        if(Math.random()>1/6)return false;
+        p.hasPlotArmor=true;
+        p.accolades.push('🛡️');
+        renderPasses();
+        return true;
+    }
 
-</script>
-</body> 
-</html> 
-</parameter>
+    /* Call before any detrimental move — returns true if blocked by armor */
+    function checkPlotArmor(playerIdx,isDetrimental=true){
+        if(!isDetrimental)return false;
+        const p=players[playerIdx];
+        if(!p.hasPlotArmor)return false;
+        p.hasPlotArmor=false; /* armor consumed */
+        /* Flash shield emoji */
+        const e=document.createElement('div');e.className='floating-emoji-slow';
+        e.innerText='🛡️';e.style.left='50%';e.style.top='50%';document.body.appendChild(e);
+        setTimeout(()=>e.remove(),2400);
+        showSidebar('🛡️ PLOT ARMOR!','Shield absorbed the hit. Lucky!','var(--mystery-glow)');
+        renderPasses();
+        return true; /* blocked */
+    }
 
+    // ══════════════════════════════════════════════
+    // INIT AUDIO UI on first load
+    // ══════════════════════════════════════════════
+    /* Deferred so DOM is ready */
+    setTimeout(syncAudioUI,100);
+
+    </script>
+</body>
+</html>
