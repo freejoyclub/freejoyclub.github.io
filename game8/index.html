@@ -1,7 +1,7 @@
 <!DOCTYPE html><html lang="en"><head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Fearjoy: the Game (v30)</title>
+    <title>Fearjoy: the Game (v31)</title>
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
@@ -80,8 +80,7 @@
         @keyframes phoneWiggle   { 0%,100%{transform:rotate(0deg);}20%{transform:rotate(-15deg);}40%{transform:rotate(15deg);}60%{transform:rotate(-10deg);}80%{transform:rotate(10deg);} }
         /* Tape shine — slow, soft, allowed to bleed beyond stroke */
         @keyframes tapeShine     { 0%{stroke-dashoffset:5000;opacity:0;}8%{opacity:0.6;}85%{opacity:0.45;}100%{stroke-dashoffset:-5000;opacity:0;} }
-        @keyframes lorePeekOut   { 0%{right:10px;}100%{right:calc(-100% + 18px);} }
-        @keyframes lorePeekIn    { 0%{right:calc(-100% + 18px);}100%{right:10px;} }
+
         @keyframes barShine      { 0%{background-position:-400% center;}100%{background-position:400% center;} }
         /* VU needle bounce animation during roll */
         @keyframes vuBounce      { 0%{transform:rotate(-45deg);}25%{transform:rotate(20deg);}50%{transform:rotate(-30deg);}75%{transform:rotate(35deg);}100%{transform:rotate(-45deg);} }
@@ -678,20 +677,7 @@
             display:flex; flex-direction:column; overflow-y:auto;
         }
         #rule-sidebar.active { right:0; }
-        /* Peek tab — visible when sidebar is peeked off-screen */
-        #lore-peek-tab {
-            position:absolute; left:-28px; top:50%; transform:translateY(-50%);
-            width:28px; height:60px;
-            background:rgba(221,153,255,0.25);
-            border:2px solid var(--mystery-glow); border-right:none;
-            border-radius:10px 0 0 10px;
-            display:flex; align-items:center; justify-content:center;
-            font-size:0.9rem; cursor:pointer; color:var(--mystery-glow);
-            box-shadow:0 0 12px var(--mystery-glow);
-            opacity:0; transition:opacity 0.3s ease;
-            pointer-events:none;
-        }
-        #rule-sidebar.lore-peek #lore-peek-tab { opacity:1; pointer-events:auto; }
+        
         #rule-sidebar.mystery-sidebar { font-size:0.88em; width:min(240px,72vw); }
         #side-sub   { font-size:0.75rem; letter-spacing:2px; color:rgba(255,255,255,0.4); text-transform:uppercase; margin-bottom:6px; font-family:'Courier New',monospace; }
         #side-title { font-family:'KCStrikerSans','Courier New',monospace; margin:0 0 8px; font-size:clamp(1rem,2.5vw,1.5rem); }
@@ -891,7 +877,6 @@
     <!-- Lore backdrop — click outside sidebar to dismiss -->
     <div id="lore-backdrop" onclick="handleLoreBackdropClick()" style="display:none;position:fixed;inset:0;z-index:199;"></div>
     <div id="rule-sidebar" onclick="handleSidebarClick(event)">
-        <div id="lore-peek-tab" onclick="lorePeekToggle(event)">◀</div>
         <div id="side-sub"></div>
         <h3 id="side-title" style="margin:0 0 8px;"></h3>
         <p  id="side-desc"  style="line-height:1.6;margin:0;"></p>
@@ -1002,11 +987,12 @@
     const boardLayout=[
         "START","blank","blank","blank","DAYSPRING","blank","FEARJOY","blank","FIGMENT","JOY",
         "THE REMEDY","FEAR","VAN BREAKS DOWN","JOY","blank","DMITRI","blank","FEARJOY","NIGHTDRIVE","JOY",
-        "INVEST IN MERCH","FEAR","blank","5TH DIMENSION","blank","IT HAPPENS","blank","GHOST 2","MAYA","blank",
-        "WIN A GRAMMY","blank","FEAR","OPENING ACT","blank","JOY","blank","TELLUS","blank","FEARJOY",
+        "INVEST IN MERCH","FEAR","blank","5TH DIMENSION","blank","IT HAPPENS","blank","GHOST 2","MAYA","JOY",
+        "WIN A GRAMMY","blank","blank","OPENING ACT","blank","FEAR","blank","TELLUS","FEARJOY","blank",
         "blank","blank","ENCORE","blank","VOID","blank","blank","THE ENDLESS SMILE","GATEKEEPER","blank",
-        "blank","blank","FEARJOY","VAN BREAKS DOWN","blank","LOST RECORDING","blank","FEARJOY","blank","SWIMMIN"
+        "blank","FEARJOY","blank","VAN BREAKS DOWN","blank","LOST RECORDING","blank","FEARJOY","blank","SWIMMIN"
     ];
+    
     const DISPLAY_NAMES={"VAN BREAKS DOWN":"VAN BREAKS","WIN A GRAMMY":"GRAMMY","5TH DIMENSION":"5D","OPENING ACT":"OPENER","LOST RECORDING":"LOST TAPE"};
     const TRACKLIST_INDICES=[4,8,10,15,18,25,27,28,37,44,47]; /* Maya (28) added — it IS tracklist */
     const GRAMMY_SPACE=30;
@@ -1034,17 +1020,17 @@
         25:{title:"IT HAPPENS",emoji:"🔔",isItHappens:true,isTrack:true,desc:"Suddenly, instantly, take an extra turn!",sound:"happensclip.wav"},
         27:{title:"GHOST 2",emoji:"👻",isGhost:true,isTrack:true,desc:"Paralyzed in fear: Stay silent for one turn. Make a sound = Rewind 1.",sound:"ghostclip.wav"},
         28:{title:"MAYA",emoji:"👁️",isMaya:true,isTrack:true,desc:"Hold 10s of eye contact for Both +2, or avoid for -1.",sound:"mayaclip.wav"},
+        29:{title:"JOY",emoji:"😄",shift:1,isAuto:true,desc:"PUREJOY! Forward 1.",sound:"coinclip.wav"},
         30:{title:"WIN A GRAMMY",emoji:"🏆",isGrammy:true,desc:"Grammy Won! Switch places with the leader! (If leader, Forward 1)",sound:"coinclip.wav"},
-        32:{title:"FEAR",emoji:"😱",shift:-1,isAuto:true,desc:"Fear of failure! Rewind 1.",sound:"spookyclip1.wav"},
         33:{title:"OPENING ACT",emoji:"🎤",isOpeningAct:true,desc:"Slide 2 spaces behind the leader. If leader, Rewind 2."},
-        35:{title:"JOY",emoji:"😄",shift:1,isAuto:true,desc:"EARJOY! Forward 1.",sound:"coinclip.wav"},
+        35:{title:"FEAR",emoji:"😱",shift:-1,isAuto:true,desc:"Fear of failure! Rewind 1.",sound:"spookyclip1.wav"},
         37:{title:"TELLUS",emoji:"📣",isTellus:true,isTrack:true,desc:"Swap positions with any artist.",sound:"tellusclip.wav"},
-        39:{title:"FEARJOY",emoji:"☯️",isFearjoy:true,desc:"FEAR? JOY? Fate decides.",sound:"coin.wav"},
+        38:{title:"FEARJOY",emoji:"☯️",isFearjoy:true,desc:"FEAR? JOY? Fate decides.",sound:"coin.wav"},
         42:{title:"ENCORE",emoji:"👏",shift:3,isAuto:true,desc:"Encore! Three more songs! Move forward 3.",sound:"coinclip.wav"},
         44:{title:"VOID",emoji:"🌀",shift:-3,isAuto:true,isTrack:true,desc:"Lost in the Void. Rewind 3.",sound:"voidclip.wav"},
         47:{title:"THE ENDLESS SMILE",emoji:"💀",isSmile:true,isTrack:true,desc:"Remain smiling until your next turn. Break it = Rewind 1.",sound:"smileclip.wav"},
         48:{title:"GATEKEEPER",emoji:"🚪",isGate:true,desc:"Industry Gatekeeper. Stop here unless you're in last place, or you've signed with a major label."},
-        52:{title:"FEARJOY",emoji:"☯️",isFearjoy:true,desc:"Flip for destiny.",sound:"coin.wav"},
+        51:{title:"FEARJOY",emoji:"☯️",isFearjoy:true,desc:"Flip for destiny.",sound:"coin.wav"},
         53:{title:"VAN BREAKS DOWN",emoji:"🛠",skipTurns:1,desc:"Van breaks! Skip a turn."},
         55:{title:"LOST RECORDING",emoji:"📼",isLostRecording:true,desc:"Tape erased! Roll and rewind that amount.",sound:"mistakeclip.wav"},
         57:{title:"FEARJOY",emoji:"☯️",isFearjoy:true,desc:"FEAR or JOY: JOY = +1, FEAR = -1.",sound:"coin.wav"},
@@ -1055,6 +1041,7 @@
     // GAME STATE
     // ══════════════════════════════════════════════
     let players=[],turnIdx=0,isMoving=false,isRolling=false,totalP=0,currentSetupP=0;
+    let spacesTriggeredThisTurn=new Set(); /* prevents same space firing twice in one turn */
     let selectedAvatar=null,selectedColor=null;
     let isSwapping=false,isMayaPartner=false;
     let sidebarTimer=null,expandedPassIdx=null;
@@ -1538,6 +1525,7 @@
                 reelSpinning=false;
                 [0,59].forEach(idx=>{const s=document.getElementById('s'+idx);if(s)s.classList.remove('reel-spinning');});
                 assignMysterySpaces();
+                spacesTriggeredThisTurn=new Set();
                 turnIdx=0;isMoving=false;isRolling=false;isSwapping=false;isInLoreDrop=false;loreDoneResolver=null;
                 stopMetronome();stopActiveLoreVid();
                 updateUI();updatePositions();
@@ -2366,9 +2354,11 @@
         performActualRoll();
     }
 
-    async function performActualRoll(){
+
+        async function performActualRoll(){
         const capturedTurnIdx=turnIdx;
         const p=players[capturedTurnIdx];
+        spacesTriggeredThisTurn=new Set(); /* fresh slate each roll */
         /* Set both guards — isRolling stays true until endTurn */
         isRolling=true;isMoving=true;
         document.getElementById('roll-btn').disabled=true;
@@ -2447,7 +2437,6 @@
         const isLast=lastPlaceIdxList.includes(idx);
         const anyLabelDeal=p.isSellout||p.isColdPitchSellout;
 
-        let _passedGate=false;
         for(let i=0;i<Math.abs(n);i++){
             if(p.pos+dir>=0&&p.pos+dir<boardLayout.length){
                 /* Plot armor blocks backward movement */
@@ -2458,13 +2447,12 @@
                 playSlide();p.pos+=dir;updatePositions();
                 /* Stop non-exempt players at Gatekeeper */
                 if(dir>0&&p.pos===GATEKEEPER_SPACE&&!isLast&&!anyLabelDeal&&i<Math.abs(n)-1){break;}
-                /* Track if we moved past Gatekeeper */
-                if(dir>0&&p.pos>GATEKEEPER_SPACE)_passedGate=true;
+                /* Fire gateexec the exact moment a player steps from 48 to 49 */
+                if(dir>0&&p.pos===GATEKEEPER_SPACE+1)playSfx('gateexec.wav');
                 await new Promise(r=>setTimeout(r,240));
                 if(p.pos>=59){showWinScreen();return;}
             }
         }
-        if(_passedGate)playSfx('gateexec.wav');
         
         if(skipSpaceCheck){updatePositions();return;}
         flashSpaceLanding(p.pos);
@@ -2481,7 +2469,6 @@
                 document.getElementById('rule-sidebar').classList.add('mystery-sidebar');
                 showSidebar('🛡️ Plot Armor!',`${p.name} is protected from the next bad outcome!`,'var(--mystery-glow)',`Space ${p.pos}`);
                 hideLoreBackdrop();
-                lorePeekSidebar();
                 isMoving=false;isRolling=false;
                 endTurn();return;
             }
@@ -2503,7 +2490,7 @@
             if(bucketVid){
                 /* Unlock turn immediately — video plays in sidebar independently */
                 isInLoreDrop=false;loreDoneResolver=null;
-                hideLoreBackdrop();lorePeekSidebar();
+                hideLoreBackdrop();
                 isMoving=false;isRolling=false;
                 endTurn();
                 /* Video cleans itself up when done or dismissed */
@@ -2517,21 +2504,18 @@
                 else{bucketVid.addEventListener('loadedmetadata',setCap,{once:true});}
                 return;
             } else {
-                /* Image lore — 40s auto-dismiss, sidecard lingers independently. Turn hands off immediately. */
-                const _t=setTimeout(()=>lorePeekSidebar(),40000);
+                /* Image lore — 40s auto-dismiss via sidebarTimer in showSidebar. Turn hands off immediately. */
                 const sb=document.getElementById('rule-sidebar');
                 const origClose=sb.onclick;
                 sb.onclick=(e)=>{
-                    clearTimeout(_t);
                     stopActiveLoreVid();sb.onclick=origClose;if(origClose)origClose(e);
                 };
             }
 
             isInLoreDrop=false;loreDoneResolver=null;
             hideLoreBackdrop();
-            lorePeekSidebar();
             isMoving=false;isRolling=false;
-            endTurn();return; 
+            endTurn();return;
         }
 
         await new Promise(r=>setTimeout(r,750));
@@ -2544,34 +2528,9 @@
         updatePositions();
     }
 
-    // ══════════════════════════════════════════════
-    // LORE PEEK — slide sidebar almost off right, tab lingers
-    // ══════════════════════════════════════════════
-    function lorePeekSidebar(){
-        const sb=document.getElementById('rule-sidebar');
-        if(!sb.classList.contains('active'))return;
-        sb.classList.add('lore-peek');
-        /* Animate right to almost off-screen */
-        const w=sb.offsetWidth;
-        sb.style.transition='right 0.6s cubic-bezier(0.4,0,0.2,1)';
-        sb.style.right=`-${w-18}px`;
-    }
-    function lorePeekToggle(e){
-        e.stopPropagation();
-        const sb=document.getElementById('rule-sidebar');
-        const w=sb.offsetWidth;
-        if(sb.style.right===`-${w-18}px`||sb.style.right===`-${w-18}px`){
-            /* Pull back out */
-            sb.style.right='0';
-        } else {
-            sb.style.right=`-${w-18}px`;
-        }
-    }
     function handleSidebarClick(e){
-        /* Don't trigger close if clicking peek tab */
-        if(e.target.id==='lore-peek-tab')return;
         const sb=document.getElementById('rule-sidebar');
-        sb.classList.remove('active','mystery-sidebar','lore-peek');
+        sb.classList.remove('active','mystery-sidebar');
         sb.style.right='';sb.style.transition='';
         stopActiveLoreVid();
         if(sidebarTimer)clearTimeout(sidebarTimer);
@@ -2650,6 +2609,11 @@
             p.wasPassivelyMoved=false;
             endTurn();return;
         }
+        const r=rules[p.pos];
+        if(!r){endTurn();return;}
+        /* Prevent same space firing twice in one turn — blocks loops */
+        if(spacesTriggeredThisTurn.has(p.pos)){endTurn();return;}
+        spacesTriggeredThisTurn.add(p.pos);
         const r=rules[p.pos];
         if(!r){endTurn();return;}
         const spaceCol=getSpaceColor(p.pos);
@@ -3063,8 +3027,7 @@
     function showSidebar(title,desc,color='#ffffff',subtext=''){
         if(sidebarTimer)clearTimeout(sidebarTimer);
         const sb=document.getElementById('rule-sidebar');
-        /* Reset any lore-peek positioning */
-        sb.style.right='';sb.style.transition='';sb.classList.remove('lore-peek');
+        sb.style.right='';sb.style.transition='';
         sb.style.borderColor=color;sb.style.boxShadow=`-10px 0 40px ${color}`;
         document.getElementById('side-sub').innerText=subtext;
         document.getElementById('side-title').innerText=title;
@@ -3077,7 +3040,7 @@
     function closeSidebar(){
         stopActiveLoreVid();
         const sb=document.getElementById('rule-sidebar');
-        sb.classList.remove('active','mystery-sidebar','lore-peek');
+        sb.classList.remove('active','mystery-sidebar');
         sb.style.right='';sb.style.transition='';
         if(sidebarTimer)clearTimeout(sidebarTimer);
     }
@@ -3169,6 +3132,7 @@
     // ══════════════════════════════════════════════
     function endTurn(){
         dismissReminder();
+        spacesTriggeredThisTurn=new Set();
         const fb=document.getElementById('maya-fear-btn');if(fb)fb.remove();
         isSwapping=false;isMayaPartner=false;
         document.querySelectorAll('.player').forEach(el=>{el.classList.remove('swap-target');el.style.pointerEvents='none';});
