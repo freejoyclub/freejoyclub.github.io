@@ -2671,8 +2671,11 @@
         if(spacesTriggeredThisTurn.has(p.pos)){endTurn();return;}
         spacesTriggeredThisTurn.add(p.pos);
         const popupEl=document.getElementById('main-popup');
+        const modal=document.getElementById('overlay-event');
+        modal.onclick=(e)=>{e.stopPropagation();};
         const spaceCol=getSpaceColor(p.pos);
         popupEl.style.borderColor=spaceCol;popupEl.style.boxShadow=`0 0 30px ${spaceCol}`;
+        
         if(r.sound&&r.choice!=='remedy')playSpaceSfx(r.sound);
         /* Remedy: blocked if ANY label deal is active */
         if(r.choice==='remedy'&&(p.isSellout||p.isColdPitchSellout)){showSidebar("CONTRACT ACTIVE","Already signed with a major label.",spaceCol);endTurn();return;}
@@ -3117,7 +3120,9 @@
         /* Hide space-popup mute btn on non-space popups */
         const _pmb=document.getElementById('popup-mute-btn');if(_pmb)_pmb.style.display='none';
         const modal=document.getElementById('overlay-event'),popupEl=document.getElementById('main-popup');
+        modal.onclick=(e)=>{e.stopPropagation();};
         popupEl.style.borderColor='#444';popupEl.style.boxShadow='none';
+    
         document.getElementById('event-title').innerText=t;
         document.getElementById('event-desc').innerText=d;
         document.getElementById('coin').style.display='none';
