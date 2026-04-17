@@ -46,7 +46,7 @@
         @keyframes passFloatA    { 0%{transform:rotate(-2deg) rotateX(1deg) translateY(0);}33%{transform:rotate(-1.5deg) rotateX(-0.5deg) translateY(-3px);}66%{transform:rotate(-2.5deg) rotateX(0.8deg) translateY(-1px);}100%{transform:rotate(-2deg) rotateX(1deg) translateY(0);} }
         @keyframes passFloatB    { 0%{transform:rotate(1.5deg) rotateX(-0.5deg) translateY(0);}33%{transform:rotate(2deg) rotateX(1deg) translateY(-4px);}66%{transform:rotate(1deg) rotateX(-0.8deg) translateY(-2px);}100%{transform:rotate(1.5deg) rotateX(-0.5deg) translateY(0);} }
         @keyframes passFloatC    { 0%{transform:rotate(-1deg) rotateX(0.5deg) translateY(0);}33%{transform:rotate(-0.5deg) rotateX(-1deg) translateY(-3px);}66%{transform:rotate(-1.5deg) rotateX(0.3deg) translateY(-1px);}100%{transform:rotate(-1deg) rotateX(0.5deg) translateY(0);} }
-        @keyframes popupFloat    { 0%{transform:translateY(0) rotateX(0deg) rotateZ(0deg);}25%{transform:translateY(-4px) rotateX(0.4deg) rotateZ(0.2deg);}50%{transform:translateY(-2px) rotateX(-0.3deg) rotateZ(-0.15deg);}75%{transform:translateY(-5px) rotateX(0.2deg) rotateZ(0.1deg);}100%{transform:translateY(0) rotateX(0deg) rotateZ(0deg);} }
+        @keyframes popupFloat    { 0%{transform:translateY(0);}25%{transform:translateY(-4px);}50%{transform:translateY(-2px);}75%{transform:translateY(-5px);}100%{transform:translateY(0);} }
         @keyframes popupShine    { 0%{background-position:-300% center;opacity:0;}40%{opacity:1;}60%{opacity:1;}100%{background-position:300% center;opacity:0;} }
         @keyframes menuBloom     { 0%{opacity:0;transform:scale(0.7);}100%{opacity:1;transform:scale(1);} }
         /* Mystery space — cool multi-color slow loop */
@@ -518,14 +518,15 @@
         .tracklist-space.vinyl-spinning { animation:vinylSpin 3.2s ease forwards !important; transform-origin:center center !important; }
         .tracklist-space.vinyl-wiggle   { animation:vinylWiggle 1.2s ease-in-out !important; transform-origin:center center !important; }
         /* Joy/Fear white text + glow border */
-        .joy-space  { border-color:var(--joy-glow) !important; color:white !important; animation:joyFlicker 2.5s ease-in-out infinite; }
-        .fear-space { border-color:var(--fear-glow) !important; color:white !important; animation:fearFlicker 2.8s ease-in-out infinite; }
-        /* Regular special spaces — white glow border */
+      .joy-space  { border-color:var(--joy-glow) !important; color:white !important; animation:joyFlicker 2.5s ease-in-out infinite; will-change:box-shadow; }
+        .fear-space { border-color:var(--fear-glow) !important; color:white !important; animation:fearFlicker 2.8s ease-in-out infinite; will-change:box-shadow; }
+         /* Regular special spaces — white glow border */
         .space:not(.joy-space):not(.fear-space):not(.tracklist-space):not(.mystery-space):not(.true-blank):not(.reel-space):not(.hybrid) {
             border-color:rgba(255,255,255,0.8) !important;
             animation:specialFlicker 3s ease-in-out infinite;
+            will-change:box-shadow;
         }
-        .hybrid { border-style:dotted; border-width:3px; border-color:white; animation:specialFlicker 3.2s ease-in-out infinite; }
+        .hybrid { border-style:dotted; border-width:3px; border-color:white; animation:specialFlicker 3.2s ease-in-out infinite; will-change:box-shadow; }
         /* ── FEARJOY SPACE — rotating split glow ── */
         .hybrid {
             position:relative;
@@ -559,8 +560,7 @@
         }
         .mystery-space:hover { transform:scale(0.9) !important; }
         /* Per-space mystery animation speed set via --mystery-speed inline */
-        .mystery-space { animation:mysteryPulse var(--mystery-speed,4s) ease-in-out infinite; }
-        /* Reel spaces (0 and 59) */
+        .mystery-space { animation:mysteryPulse var(--mystery-speed,4s) ease-in-out infinite; will-change:box-shadow; }
         .reel-space {
             border:3px solid rgba(255,255,255,0.4) !important;
             transform:scale(1.15); z-index:5;
@@ -588,15 +588,15 @@
         .reel-space .sp-text,.reel-space .sp-emoji { position:relative; z-index:1; }
         .space-land { animation:spaceLand 1.2s ease-out forwards; }
         /* ── SPACE-SPECIFIC GLOW COLORS ── */
-        #s55 { --space-glow:#ff5522; animation:lostTapeFlicker 2.6s ease-in-out infinite; }
+        #s55 { --space-glow:#ff5522; animation:lostTapeFlicker 2.6s ease-in-out infinite; will-change:box-shadow; }
         @keyframes lostTapeFlicker { 0%,100%{box-shadow:0 0 6px #ff5522;} 50%{box-shadow:0 0 18px #ff5522,0 0 30px #ff3300;} }
-        #s30 { --space-glow:var(--gold); animation:grammyFlicker 2.4s ease-in-out infinite; }
+        #s30 { --space-glow:var(--gold); animation:grammyFlicker 2.4s ease-in-out infinite; will-change:box-shadow; }
         @keyframes grammyFlicker { 0%,100%{box-shadow:0 0 8px var(--gold);} 50%{box-shadow:0 0 22px var(--gold),0 0 30px #f7ca60;} }
-        #s20 { --space-glow:#3399ff; animation:investFlicker 2.7s ease-in-out infinite; }
+        #s20 { --space-glow:#3399ff; animation:investFlicker 2.7s ease-in-out infinite; will-change:box-shadow; }
         @keyframes investFlicker { 0%,100%{box-shadow:0 0 6px #3399ff;} 50%{box-shadow:0 0 18px #3399ff,0 0 30px #66aaff;} }
-        #s42 { --space-glow:#88ffaa; animation:encoreFlicker 2.3s ease-in-out infinite; }
+        #s42 { --space-glow:#88ffaa; animation:encoreFlicker 2.3s ease-in-out infinite; will-change:box-shadow; }
         @keyframes encoreFlicker { 0%,100%{box-shadow:0 0 6px #88ffaa;} 50%{box-shadow:0 0 18px #88ffaa,0 0 30px #aaffcc;} }
-        #s12, #s53 { --space-glow:#776655; animation:vanFlicker 2.9s ease-in-out infinite; }
+        #s12, #s53 { --space-glow:#776655; animation:vanFlicker 2.9s ease-in-out infinite; will-change:box-shadow; }
         @keyframes vanFlicker { 0%,100%{box-shadow:0 0 5px #de5b33;} 50%{box-shadow:0 0 14px #de5b33,0 0 22px #7d3b1a;} }
 
 
@@ -670,8 +670,7 @@
             width:min(260px,78vw);
             max-height:calc(100dvh - var(--bar-h) - 24px);
             height:auto;
-            background:linear-gradient(160deg,rgba(8,8,8,0.80) 0%,rgba(28,28,28,0.80) 100%);
-            backdrop-filter:blur(8px);
+            background:linear-gradient(160deg,rgba(6,6,6,0.97) 0%,rgba(22,22,22,0.97) 100%);
             padding:clamp(14px,2.2vw,26px);
             border-radius:20px 0 0 20px; border:2px solid var(--joy-glow); border-right:none;
             transition:right 0.55s cubic-bezier(0.175,0.885,0.32,1.275);
@@ -1977,7 +1976,7 @@
             if(name==="blank"){
                 if(mysterySpaces.has(i)){
                     s.classList.add('mystery-space');
-                    const _spd=(3.2+Math.random()*3.3).toFixed(2)+'s';
+                    const _spd=(5.5+Math.random()*3.5).toFixed(2)+'s';
                     s.style.setProperty('--mystery-speed',_spd);
                     s.innerHTML=`<span class="mystery-q">?</span>`;
                     s.onclick=()=>handleMysteryClick(i);
