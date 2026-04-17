@@ -579,6 +579,9 @@
             animation:reelSpin 12s linear infinite !important;
             transform-origin:center center !important;
         }
+        /* Ramp up spin speed on start and win spaces */
+        #s0.reel-spinning::before { animation:reelSpin 6s linear infinite !important; }
+        .win-track.reel-spinning::before { animation:reelSpin 5s linear infinite !important; }
         .win-track {
             border:4px solid var(--blue-glow) !important;
             box-shadow:0 0 30px var(--blue-glow);
@@ -1145,14 +1148,17 @@
     function playCoinSfx(){playSfx('coin.wav',0.707);}
     function playSlide(){
         const n=Math.floor(Math.random()*4)+1;playSfx(`slide${n}.wav`);
-        /* Start reel spinning on first movement */
-        if(!reelSpinning){
-            reelSpinning=true;
-            [0,59].forEach(idx=>{
-                const s=document.getElementById('s'+idx);
-                if(s)s.classList.add('reel-spinning');
-            });
-        }
+        startReelSpin();
+    }
+
+    function startReelSpin(){
+        if(reelSpinning)return;
+        reelSpinning=true;
+        [0,59].forEach(idx=>{
+            const s=document.getElementById('s'+idx);
+            if(!s)return;
+            s.classList.add('reel-spinning');
+        });
     }
 
     /* Metronome click track — MetronomeUp beat 1, Metronome x3 beats 2-4, repeats each second */
