@@ -876,7 +876,7 @@
         <div id="pass-expanded-card">
             <span class="exp-close" onclick="collapsePass()">×</span>
             <div style="width:20px;height:9px;background:#888;border-radius:3px 3px 0 0;margin:0 auto 8px;"></div>
-            <div class="pass-all-access" style="text-align:center;margin-bottom:6px;font-size:0.6rem;letter-spacing:3px;color:rgba(255,255,255,0.35);">All-Access Pass</div>
+            <div class="pass-all-access" style="text-align:center;margin-bottom:6px;font-size:0.8rem;letter-spacing:4px;color:rgba(0,0,0,0.65);">All-Access Pass</div>
             <img id="exp-avatar" class="exp-avatar" src="" alt="">
             <div class="exp-name" id="exp-name"></div>
             <div class="exp-section-label">Status</div>
@@ -1688,44 +1688,84 @@
                 fadeVideoAudioOut(vid,true);if(activeLoreVid===vid)activeLoreVid=null;
             },{once:true});
         } else if(item.type==='link'||item.type==='download'){
-            const card=document.createElement('div');card.className='bucket-link-card';
-            const lbl=document.createElement('div');lbl.className='bucket-link-label';
-            /* Merch discount header */
-            lbl.innerHTML=`Merch Discount <span style="color:var(--joy-glow);font-size:0.85em;">(+2 spaces!)</span>`;
-            card.appendChild(lbl);
-            if(item.code){
-                const pct=parseInt(item.code.replace(/\D/g,''))||20;
-                const pctLine=document.createElement('div');
-                pctLine.style.cssText='font-size:0.82rem;color:rgba(255,255,255,0.7);margin-bottom:8px;';
-                pctLine.innerText=`${pct}% off Fearjoy merch — in real life!`;
-                card.appendChild(pctLine);
-            }
-            if(item.isMax){const max=document.createElement('div');max.style.cssText='font-size:0.7rem;color:rgba(255,255,255,0.5);letter-spacing:1px;margin-bottom:6px;';max.innerText='(Max discount — best we offer!)';card.appendChild(max);}
-            if(item.code){
-                const hint=document.createElement('div');hint.className='bucket-code-hint';hint.innerText=`Copy code for +2 spaces`;card.appendChild(hint);
-                const codeEl=document.createElement('div');codeEl.className='bucket-code';codeEl.innerText=item.code;
-                codeEl.onclick=e=>{
-                    e.stopPropagation();
-                    navigator.clipboard.writeText(item.code).then(()=>{const orig=codeEl.innerText;codeEl.innerText='COPIED!';setTimeout(()=>codeEl.innerText=orig,2000);}).catch(()=>{});
-                    if(playerIdx!==undefined&&players[playerIdx]&&!players[playerIdx].hasThrifty){
-                        const pct=parseInt(item.code.replace(/\D/g,''))||20;
-                        players[playerIdx].hasThrifty=true;players[playerIdx].merchdiscountPct=pct;
-                        players[playerIdx].accolades.push('🎫');
-                        if(pct>highestDiscountPct)highestDiscountPct=pct;
-                        /* +2 spaces reward */
-                        const pidx=playerIdx;
-                        players[pidx].pos=Math.min(59,players[pidx].pos+2);
-                        updatePositions();flashSpaceLanding(players[pidx].pos);
-                        renderPasses();
-                    }
-                };card.appendChild(codeEl);
-            }
-            if(item.url){
-                const btn=document.createElement('a');btn.className='bucket-btn';btn.href=(item.url||'https://freejoy.club/store').replace('freejoy.club','freejoy.club/store').replace('/store/store','/store');btn.target='_blank';
-                btn.innerText=item.type==='download'?'DOWNLOAD':'STORE';card.appendChild(btn);
-            }
-            container.appendChild(card);
+            /* Merch drops are handled as a central modal — not a sidecard */
+            showMerchModal(item,playerIdx);
         }
+    }
+        // ══════════════════════════════════════════════
+    // MERCH MODAL — central popup for discount drops
+    // ══════════════════════════════════════════════
+    function showMerchModal(item,playerIdx){
+        const pct=parseInt((item.code||'').replace(/\D/g,''))||20;
+        const isMax=!!item.isMax;
+        const modal=document.getElementById('overlay-event');
+        const popupEl=document.getElementById('main-popup');
+        const _pmb=document.getElementById('popup-mute-btn');if(_pmb)_pmb.style.display='none';
+        popupEl.style.borderColor='var(--mystery-glow)';
+        popupEl.style.boxShadow=`0 0 30px var(--mystery-glow)`;
+        document.getElementById('event-title').innerText='🎫 Merch Discount Drop!';
+        const tu=document.getElementById('timer-ui');if(tu){tu.style.display='none';tu.innerText='';}
+        const ab=document.getElementById('action-bar');if(ab)ab.classList.remove('timer-mode');
+        const nm=document.getElementById('timer-nevermind');if(nm)nm.style.display='none';
+        const tm=document.getElementById('timer-mute');if(tm)tm.style.display='none';
+        stopMetronome();
+        const desc=document.getElementById('event-desc');
+        desc.innerHTML='';
+        const body=document.createElement('div');
+        body.style.cssText='text-align:center;';
+        body.innerHTML=`<div style="font-size:clamp(1rem,2.2vw,1.3rem);margin-bottom:6px;">${pct}% off Fearjoy merch — in real life!</div>`+
+            (isMax?`<div style="font-size:0.78rem;color:rgba(255,255,255,0.5);letter-spacing:1px;margin-bottom:10px;">(Max discount — best we offer!)</div>`:'<div style="height:6px;"></div>')+
+            `<div style="font-size:0.78rem;letter-spacing:1.5px;color:rgba(255,255,255,0.45);text-transform:uppercase;margin-bottom:6px;">Tap to copy — then claim +2 spaces</div>`;
+        const codeEl=document.createElement('div');
+        codeEl.className='bucket-code';
+        codeEl.innerText=item.code||'';
+        codeEl.style.cssText+='display:inline-block;margin:0 auto 14px;cursor:pointer;';
+        codeEl.onclick=()=>{
+            navigator.clipboard.writeText(item.code).then(()=>{
+                const orig=codeEl.innerText;codeEl.innerText='COPIED!';
+                setTimeout(()=>codeEl.innerText=orig,2000);
+            }).catch(()=>{});
+            if(playerIdx!==undefined&&players[playerIdx]&&!players[playerIdx].hasThrifty){
+                const p=players[playerIdx];
+                p.hasThrifty=true;p.merchdiscountPct=pct;p.accolades.push('🎫');
+                if(pct>highestDiscountPct)highestDiscountPct=pct;
+                p.pos=Math.min(59,p.pos+2);
+                updatePositions();flashSpaceLanding(p.pos);renderPasses();
+            }
+        };
+        body.appendChild(codeEl);
+        if(item.url){
+            const storeBtn=document.createElement('a');
+            storeBtn.href=(item.url||'https://freejoy.club/store').replace('freejoy.club','freejoy.club/store').replace('/store/store','/store');
+            storeBtn.target='_blank';
+            storeBtn.className='bucket-btn';
+            storeBtn.style.cssText='display:inline-block;margin:0 auto 14px;';
+            storeBtn.innerText='STORE';
+            body.appendChild(storeBtn);
+        }
+        desc.appendChild(body);
+        const coin=document.getElementById('coin');coin.style.display='none';
+        const pBtn=document.getElementById('event-btn-primary');
+        const sBtn=document.getElementById('event-btn-secondary');
+        pBtn.style.display='inline-block';
+        pBtn.style.background='var(--mystery-glow)';pBtn.style.color='black';
+        pBtn.innerText='NICE — COPIED!';
+        pBtn.onclick=()=>{
+            navigator.clipboard.writeText(item.code).catch(()=>{});
+            if(playerIdx!==undefined&&players[playerIdx]&&!players[playerIdx].hasThrifty){
+                const p=players[playerIdx];
+                p.hasThrifty=true;p.merchdiscountPct=pct;p.accolades.push('🎫');
+                if(pct>highestDiscountPct)highestDiscountPct=pct;
+                p.pos=Math.min(59,p.pos+2);
+                updatePositions();flashSpaceLanding(p.pos);renderPasses();
+            }
+            pBtn.style.background='';pBtn.style.color='';
+            modal.style.display='none';
+        };
+        sBtn.style.display='inline-block';
+        sBtn.innerText='Wow, nice try';
+        sBtn.onclick=()=>{sBtn.style.display='none';pBtn.style.background='';pBtn.style.color='';modal.style.display='none';};
+        modal.style.display='flex';resetKbFocus();
     }
 
     // ══════════════════════════════════════════════
@@ -2411,6 +2451,7 @@
         const isLast=lastPlaceIdxList.includes(idx);
         const anyLabelDeal=p.isSellout||p.isColdPitchSellout;
 
+        let _passedGate=false;
         for(let i=0;i<Math.abs(n);i++){
             if(p.pos+dir>=0&&p.pos+dir<boardLayout.length){
                 /* Plot armor blocks backward movement */
@@ -2419,12 +2460,16 @@
                     break;
                 }
                 playSlide();p.pos+=dir;updatePositions();
-                if(dir>0&&p.pos===GATEKEEPER_SPACE&&!isLast&&!anyLabelDeal&&i<Math.abs(n)-1){playSfx('gateexec.wav');break;}
-                if(dir>0&&p.pos===GATEKEEPER_SPACE&&(isLast||anyLabelDeal)&&i===0)playSfx('gateexec.wav');
+                /* Stop non-exempt players at Gatekeeper */
+                if(dir>0&&p.pos===GATEKEEPER_SPACE&&!isLast&&!anyLabelDeal&&i<Math.abs(n)-1){break;}
+                /* Track if we moved past Gatekeeper */
+                if(dir>0&&p.pos>GATEKEEPER_SPACE)_passedGate=true;
                 await new Promise(r=>setTimeout(r,240));
                 if(p.pos>=59){showWinScreen();return;}
             }
         }
+        if(_passedGate)playSfx('gateexec.wav');
+        
         if(skipSpaceCheck){updatePositions();return;}
         flashSpaceLanding(p.pos);
         if(TRACKLIST_INDICES.includes(p.pos))triggerVinylSpin(p.pos);
@@ -2461,24 +2506,26 @@
 
             const bucketVid=document.getElementById('side-bucket').querySelector('video');
             if(bucketVid){
-                await new Promise(res=>{
-                    loreDoneResolver=res;
-                    const onEnd=()=>{fadeVideoAudioOut(bucketVid,true);if(activeLoreVid===bucketVid)activeLoreVid=null;res();};
-                    bucketVid.addEventListener('ended',onEnd,{once:true});
-                    const setCap=()=>{
-                        const cap=Math.min((bucketVid.duration||30)*1000,90000);
-                        setTimeout(()=>{bucketVid.removeEventListener('ended',onEnd);fadeVideoAudioOut(bucketVid,true);if(activeLoreVid===bucketVid)activeLoreVid=null;res();},cap);
-                    };
-                    if(bucketVid.readyState>=1){setCap();}
-                    else{bucketVid.addEventListener('loadedmetadata',setCap,{once:true});}
-                });
+                /* Unlock turn immediately — video plays in sidebar independently */
+                isInLoreDrop=false;loreDoneResolver=null;
+                hideLoreBackdrop();lorePeekSidebar();
+                isMoving=false;isRolling=false;
+                endTurn();
+                /* Video cleans itself up when done or dismissed */
+                const onEnd=()=>{fadeVideoAudioOut(bucketVid,true);if(activeLoreVid===bucketVid)activeLoreVid=null;};
+                bucketVid.addEventListener('ended',onEnd,{once:true});
+                const setCap=()=>{
+                    const cap=Math.min((bucketVid.duration||30)*1000,90000);
+                    setTimeout(()=>{bucketVid.removeEventListener('ended',onEnd);fadeVideoAudioOut(bucketVid,true);if(activeLoreVid===bucketVid)activeLoreVid=null;},cap);
+                };
+                if(bucketVid.readyState>=1){setCap();}
+                else{bucketVid.addEventListener('loadedmetadata',setCap,{once:true});}
+                return;
             } else {
-                /* Image / merch — 40s linger (merch=20s), then auto-peek. Roll always dismisses. */
-                const _isMerch=item&&(item.type==='link'||item.type==='download');
-                const _lingerMs=_isMerch?20000:40000;
+                /* Image lore — 40s linger, soft-dismissable. Roll or next action always dismisses. */
                 await new Promise(res=>{
                     loreDoneResolver=res;
-                    const _t=setTimeout(()=>{loreDoneResolver=null;res();},_lingerMs);
+                    const _t=setTimeout(()=>{loreDoneResolver=null;res();},40000);
                     const sb=document.getElementById('rule-sidebar');
                     const origClose=sb.onclick;
                     sb.onclick=(e)=>{
@@ -2486,17 +2533,12 @@
                         stopActiveLoreVid();sb.onclick=origClose;if(origClose)origClose(e);res();
                     };
                 });
-                /* Merch: peek (stays visible as tab) until next action; image: fully close */
-                if(_isMerch){
-                    isInLoreDrop=false;loreDoneResolver=null;isMoving=false;isRolling=false;
-                    hideLoreBackdrop();lorePeekSidebar();endTurn();return;
-                }
             }
 
             isInLoreDrop=false;loreDoneResolver=null;
-            isMoving=false;isRolling=false;
             hideLoreBackdrop();
             lorePeekSidebar();
+            isMoving=false;isRolling=false;
             endTurn();return;
         }
 
@@ -2990,17 +3032,32 @@
             document.querySelectorAll('.player').forEach(el=>{el.classList.remove('swap-target');el.style.pointerEvents='none';});
             const p=players[turnIdx],target=players[idx];
             const oldPos=p.pos;
-            if(checkPlotArmor(idx,true)){
+            const targetArmorBlocked=target.hasPlotArmor;
+            if(targetArmorBlocked){
+                /* Active player moves to target's spot; armored target stays put */
+                target.hasPlotArmor=false;target.accolades[target.accolades.lastIndexOf('🛡️')]&&target.accolades.splice(target.accolades.lastIndexOf('🛡️'),1);
                 playSlide();p.pos=target.pos;
+                updatePositions();renderPasses();
+                if(p.pos===GRAMMY_SPACE)awardSwapGrammy(turnIdx);
+                checkPassiveGrammys(p.name);
+                /* Show armor sidecard 1s later, then hand off turn */
+                setTimeout(()=>{
+                    const e=document.createElement('div');e.className='floating-emoji-slow';
+                    e.innerText='🛡️';e.style.left='50%';e.style.top='50%';document.body.appendChild(e);
+                    setTimeout(()=>e.remove(),2400);
+                    showPlotArmorSidecard(idx);
+                    renderPasses();
+                    setTimeout(()=>endTurn(),1000);
+                },1000);
             } else {
-                /* Mark target as passively moved */
+                /* Normal swap */
                 target.wasPassivelyMoved=true;
                 playSlide();p.pos=target.pos;
                 playSlide();target.pos=oldPos;
                 if(target.pos===GRAMMY_SPACE)awardSwapGrammy(idx);
+                if(p.pos===GRAMMY_SPACE)awardSwapGrammy(turnIdx);
+                checkPassiveGrammys(p.name);updatePositions();renderPasses();endTurn();
             }
-            if(p.pos===GRAMMY_SPACE)awardSwapGrammy(turnIdx);
-            checkPassiveGrammys(p.name);updatePositions();renderPasses();endTurn();
         } else if(isMayaPartner){
             dismissReminder();isMayaPartner=false;
             document.querySelectorAll('.player').forEach(el=>{el.classList.remove('swap-target');el.style.pointerEvents='none';});
@@ -3067,8 +3124,9 @@
         const p=players[turnIdx];
         playSpaceSfx('swimclip.wav');
         let statsHtml=`<h2 style="color:${p.avatar.color};animation:winPulse 2s infinite ease-in-out;font-family:'KCStrikerSans','Courier New',monospace;margin:5px 0;--p-color:${p.avatar.color};text-shadow:0 0 20px ${p.avatar.color};">${p.name} WINS!</h2>`;
-        statsHtml+=`<div style="text-align:left;margin-top:15px;font-family:monospace;background:rgba(0,0,0,0.4);border-radius:12px;padding:12px;border:1px solid #333;"><div style="text-align:right;margin-bottom:8px;"><span onclick="showAccoladeKey()" style="cursor:pointer;font-size:0.7rem;letter-spacing:1px;color:rgba(255,255,255,0.4);border:1px solid rgba(255,255,255,0.2);border-radius:4px;padding:2px 7px;font-family:Courier New,monospace;text-transform:uppercase;transition:all 0.2s;" onmouseover="this.style.color='white';this.style.borderColor='rgba(255,255,255,0.6)'" onmouseout="this.style.color='rgba(255,255,255,0.4)';this.style.borderColor='rgba(255,255,255,0.2)'">? key</span></div>`;
-        players.forEach(pl=>{
+        statsHtml+=`<div style="text-align:left;margin-top:15px;font-family:monospace;background:rgba(0,0,0,0.4);border-radius:12px;padding:12px;border:1px solid #333;">`;
+        const sortedPlayers=[...players].sort((a,b)=>b.pos-a.pos);
+        sortedPlayers.forEach((pl,sortIdx)=>{
             const supporterLine=pl.hasThrifty?`<div style="font-size:0.7rem;color:rgba(255,255,255,0.5);letter-spacing:1px;margin-top:2px;">Merch code: <span class="bucket-code" style="font-size:0.85rem;padding:3px 8px;cursor:pointer;" onclick="navigator.clipboard.writeText('PLAYER${pl.merchdiscountPct}').then(()=>{this.innerText='COPIED!';setTimeout(()=>this.innerText='PLAYER${pl.merchdiscountPct}',2000)})">PLAYER${pl.merchdiscountPct}</span> &mdash; ${pl.merchdiscountPct}% off</div>`:'';
             const statusTags=[(pl.isInvestor?'<span style="background:var(--teal-glow);color:black;padding:1px 6px;border-radius:3px;font-size:0.65rem;font-weight:bold;letter-spacing:0.5px;margin-right:4px;">INVESTOR</span>':''),
                 (pl.isSellout||pl.isColdPitchSellout?'<span style="background:var(--fear-glow);color:white;padding:1px 6px;border-radius:3px;font-size:0.65rem;font-weight:bold;letter-spacing:0.5px;margin-right:4px;">SELLOUT</span>':''),
@@ -3076,13 +3134,15 @@
                 (pl.hasThrifty?'<span style="background:var(--mystery-glow);color:black;padding:1px 6px;border-radius:3px;font-size:0.65rem;font-weight:bold;letter-spacing:0.5px;margin-right:4px;">THRIFTY</span>':''),
                 (!pl.isSellout&&!pl.isColdPitchSellout&&!pl.isInvestor&&!pl.usedColdPitch?'<span style="background:#2a2a2a;color:rgba(255,255,255,0.85);padding:1px 6px;border-radius:3px;font-size:0.65rem;font-weight:bold;letter-spacing:0.5px;margin-right:4px;">INDIE</span>':'')
             ].join('');
-            statsHtml+=`<div style="margin-bottom:12px;border-bottom:1px solid #222;display:flex;align-items:center;gap:12px;padding-bottom:10px;">
-                <img src="${pl.avatar.img}" style="width:50px;height:50px;border-radius:50%;background:#000;border:2px solid ${pl.avatar.color};box-shadow:0 0 10px ${pl.avatar.color};">
-                <div style="flex-grow:1;"><b style="color:${pl.avatar.color};font-size:1.1rem;letter-spacing:1px;">${pl.name}</b>${supporterLine}
+            
+            const _isWinner=sortIdx===0;
+            statsHtml+=`<div style="margin-bottom:${_isWinner?'16':'10'}px;border-bottom:1px solid #333;display:flex;align-items:center;gap:12px;padding-bottom:${_isWinner?'14':'8'}px;${_isWinner?'background:rgba(255,255,255,0.04);border-radius:10px;padding:10px;':''}">
+                <img src="${pl.avatar.img}" style="width:${_isWinner?'60':'44'}px;height:${_isWinner?'60':'44'}px;border-radius:50%;background:#000;border:${_isWinner?'3':'2'}px solid ${pl.avatar.color};box-shadow:0 0 ${_isWinner?'18':'8'}px ${pl.avatar.color};">
+                <div style="flex-grow:1;"><b style="color:${pl.avatar.color};font-size:${_isWinner?'1.25':'1.0'}rem;letter-spacing:1px;">${pl.name}</b>${supporterLine}
                 <div style="margin:3px 0;">${statusTags}</div>
-                <div style="font-size:1.2rem;margin:2px 0;">${pl.accolades.join('')}</div></div></div>`;
+                <div style="font-size:1.2rem;margin:2px 0;">${pl.accolades.join('')}${_isWinner?` <span onclick="showAccoladeKey()" style="cursor:pointer;opacity:0.55;font-size:0.7rem;letter-spacing:0;background:rgba(0,0,0,0.18);border-radius:50%;width:15px;height:15px;display:inline-flex;align-items:center;justify-content:center;vertical-align:middle;font-family:sans-serif;transition:opacity 0.2s;" onmouseover="this.style.opacity='0.9'" onmouseout="this.style.opacity='0.55'" title="Accolades key">?</span>`:''}</div></div></div>`;
         });
-        statsHtml+=`</div></div>`;
+        statsHtml+=`</div>`;
         const popupEl=document.getElementById('main-popup');
         popupEl.style.borderColor=p.avatar.color;popupEl.style.boxShadow=`0 0 80px ${p.avatar.color}`;
         document.getElementById('event-title').innerText="The tour is over. Go Swimmin!";
@@ -3193,6 +3253,16 @@
         return true;
     }
 
+    /* Show plot armor sidecard with player name in their color */
+    function showPlotArmorSidecard(playerIdx){
+        const p=players[playerIdx];
+        showSidebar(
+            `${p.name}'s Plot Armor`,
+            `Penalty blocked! Lucky — the armor absorbed the hit.`,
+            p.avatar.color
+        );
+    }
+
     /* Call before any detrimental move — returns true if blocked by armor */
     function checkPlotArmor(playerIdx,isDetrimental=true){
         if(!isDetrimental)return false;
@@ -3203,7 +3273,7 @@
         const e=document.createElement('div');e.className='floating-emoji-slow';
         e.innerText='🛡️';e.style.left='50%';e.style.top='50%';document.body.appendChild(e);
         setTimeout(()=>e.remove(),2400);
-        showSidebar('🛡️ PLOT ARMOR!','Shield absorbed the hit. Lucky!','var(--mystery-glow)');
+        showPlotArmorSidecard(playerIdx);
         renderPasses();
         return true; /* blocked */
     }
