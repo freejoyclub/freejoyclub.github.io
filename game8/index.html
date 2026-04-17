@@ -2071,10 +2071,12 @@
         sidebar.querySelectorAll('.access-pass').forEach(c=>c.remove());
         players.forEach((pl,i)=>{
             const isCurrent=(i===turnIdx);
-            const tags=(pl.isInvestor?`<span class="tag tag-investor">INVESTOR</span>`:'')
+            const tags=(!pl.isSellout&&!pl.isColdPitchSellout?`<span class="tag tag-indie">INDIE</span>`:'')
                 +(pl.isSellout||pl.isColdPitchSellout?`<span class="tag tag-sellout">SELLOUT</span>`:'')
+                +(pl.isInvestor?`<span class="tag tag-investor">INVESTOR</span>`:'')
                 +(pl.usedColdPitch?`<span class="tag tag-pitched">PITCHED</span>`:'')
                 +(pl.hasThrifty?`<span class="tag tag-thrifty">THRIFTY</span>`:'');
+            
             const notify=isCurrent&&pl.pos===GATEKEEPER_SPACE&&!pl.hasSeenGatekeeperHint&&!pl.isSellout&&!pl.isColdPitchSellout&&!pl.usedColdPitch;
             const selectable=(isSwapping||isMayaPartner)&&i!==turnIdx;
             /* Pitch bubble: show on current player's pass once ANY player hits pos>=30 */
@@ -2086,7 +2088,9 @@
                 +(isCurrent?' pass-active':'')+(notify?' pass-notify':'')+(selectable?' pass-selectable':'');
             card.style.setProperty('--p-color',pl.avatar.color);
             card.id='pass-'+i;
+            
             card.innerHTML=`
+                ${pl.hasPlotArmor?`<div style="position:absolute;top:5px;left:6px;font-size:1.3rem;line-height:1;z-index:2;">🛡️</div>`:''}
                 <div class="pass-clip"></div>
                 <div class="pass-all-access">All-Access Pass</div>
                 <div class="pass-header">
@@ -2094,7 +2098,7 @@
                     <div class="pass-name">${pl.name}</div>
                 </div>
                 <div class="pass-label">Status</div>
-                <div class="pass-tags">${tags||`<span class="tag tag-indie">INDIE</span>`}</div>
+                <div class="pass-tags">${tags}</div>
                 <div class="pass-label">Accolades</div>
                 <div class="pass-accolades">${pl.accolades.join('')||'—'}</div>
                 <div class="pass-stripe"></div>`;
@@ -2112,17 +2116,27 @@
         expandedPassIdx=idx;
         const pl=players[idx];const isCurrent=(idx===turnIdx);
         if(pl.pitchBubbleShown===false&&pl.pos>=30)pl.pitchBubbleShown=true;
-        const tags=(pl.isInvestor?`<span class="tag tag-investor" style="font-size:0.75rem;padding:3px 8px;">INVESTOR</span>`:'')
+        const tags=(!pl.isSellout&&!pl.isColdPitchSellout?`<span class="tag tag-indie" style="font-size:0.75rem;padding:3px 8px;">INDIE</span>`:'')
             +(pl.isSellout||pl.isColdPitchSellout?`<span class="tag tag-sellout" style="font-size:0.75rem;padding:3px 8px;">SELLOUT</span>`:'')
+            +(pl.isInvestor?`<span class="tag tag-investor" style="font-size:0.75rem;padding:3px 8px;">INVESTOR</span>`:'')
             +(pl.usedColdPitch?`<span class="tag tag-pitched" style="font-size:0.75rem;padding:3px 8px;">PITCHED</span>`:'')
             +(pl.hasThrifty?`<span class="tag tag-thrifty" style="font-size:0.75rem;padding:3px 8px;">THRIFTY</span>`:'');
+        
         const card=document.getElementById('pass-expanded-card');
         card.style.setProperty('--exp-color',pl.avatar.color);
+        const expShield=document.getElementById('exp-shield-badge');
+        if(expShield)expShield.remove();
+        if(pl.hasPlotArmor){
+            const sb=document.createElement('div');sb.id='exp-shield-badge';
+            sb.style.cssText='font-size:2rem;text-align:center;margin-bottom:6px;';
+            sb.innerText='🛡️';
+            document.getElementById('pass-expanded-card').insertBefore(sb,document.getElementById('exp-avatar'));
+        }
         document.getElementById('exp-avatar').src=pl.avatar.img;
         document.getElementById('exp-avatar').style.borderColor=pl.avatar.color;
         document.getElementById('exp-name').innerText=pl.name;
         document.getElementById('exp-name').style.color=pl.avatar.color;
-        document.getElementById('exp-tags').innerHTML=tags||'<span class="tag tag-indie" style="font-size:0.75rem;padding:3px 8px;">INDIE</span>';
+        document.getElementById('exp-tags').innerHTML=tags;
         document.getElementById('exp-accolades').innerText=pl.accolades.join('')||'—';
         document.getElementById('exp-stripe').style.background=`linear-gradient(90deg,${pl.avatar.color} 0%,transparent 100%)`;
         const pitchEligible=isCurrent&&!isMoving&&!pl.isSellout&&!pl.isColdPitchSellout&&!pl.usedColdPitch&&pl.pos>2&&pl.pos<=GATEKEEPER_SPACE;
@@ -3201,7 +3215,6 @@
         if(p.hasPlotArmor)return false;
         if(Math.random()>1/6)return false;
         p.hasPlotArmor=true;
-        p.accolades.push('🛡️');
         renderPasses();
         return true;
     }
@@ -3222,6 +3235,7 @@
         const p=players[playerIdx];
         if(!p.hasPlotArmor)return false;
         p.hasPlotArmor=false; /* armor consumed */
+        p.accolades.push('🛡️');
         /* Flash shield emoji */
         const e=document.createElement('div');e.className='floating-emoji-slow';
         e.innerText='🛡️';e.style.left='50%';e.style.top='50%';document.body.appendChild(e);
