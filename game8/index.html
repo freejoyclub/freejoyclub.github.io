@@ -2354,7 +2354,6 @@
         performActualRoll();
     }
 
-
         async function performActualRoll(){
         const capturedTurnIdx=turnIdx;
         const p=players[capturedTurnIdx];
@@ -2615,7 +2614,6 @@
         if(spacesTriggeredThisTurn.has(p.pos)){endTurn();return;}
         spacesTriggeredThisTurn.add(p.pos);
         const spaceCol=getSpaceColor(p.pos);
-        const popupEl=document.getElementById('main-popup');
         popupEl.style.borderColor=spaceCol;popupEl.style.boxShadow=`0 0 30px ${spaceCol}`;
         if(r.sound&&r.choice!=='remedy')playSpaceSfx(r.sound);
         /* Remedy: blocked if ANY label deal is active */
