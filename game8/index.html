@@ -86,6 +86,7 @@
         @keyframes vuBounce      { 0%{transform:rotate(-45deg);}25%{transform:rotate(20deg);}50%{transform:rotate(-30deg);}75%{transform:rotate(35deg);}100%{transform:rotate(-45deg);} }
 
         /* Animated warm tan background gradient — slow, smooth, more varied */
+        @keyframes videoKeepAlive { 0%,100%{opacity:1;} 50%{opacity:0.99;} }
         @keyframes bgRotate {
             from { transform:translate(-50%,-50%) rotate(0deg); }
             to   { transform:translate(-50%,-50%) rotate(360deg); }
@@ -2376,6 +2377,8 @@
         const capturedTurnIdx=turnIdx;
         const p=players[capturedTurnIdx];
         spacesTriggeredThisTurn=new Set(); /* fresh slate each roll */
+        /* Mobile video activation bridge — prime media stack on user gesture */
+        try{const _vp=document.createElement('video');_vp.src='trevortrim.mp4';_vp.muted=true;_vp.load();}catch(e){}
         /* Set both guards — isRolling stays true until endTurn */
         isRolling=true;isMoving=true;
         document.getElementById('roll-btn').disabled=true;
@@ -2743,9 +2746,9 @@
             const fadeOutVideo=(vid)=>{if(!vid)return;let vol=vid.volume||1;const fade=setInterval(()=>{if(vol>0.1){vol-=0.1;vid.volume=vol;}else{vid.pause();clearInterval(fade);}},200);};
             if(r.choice==='remedy'){
                 const remedyDesc=document.createElement('div');
-                remedyDesc.innerHTML=`<div id="video-wrapper" style="position:relative;width:70%;margin:0 auto 14px;border-radius:8px;overflow:hidden;background:#000;border:1px solid #333;"><div id="close-video" style="position:absolute;top:5px;right:10px;color:white;cursor:pointer;font-size:22px;font-weight:bold;z-index:10;text-shadow:0 0 5px #000;">×</div><video id="remedy-video" style="width:100%;display:block;" autoplay playsinline><source src="trevortrim.mp4?v=24" type="video/mp4"></video></div>
-<div style="margin-bottom:8px;">The cure for your obscurity!<br>A major label likes your sound.<br><b style="color:var(--joy-glow);">Sign for +6 spaces now!</b></div>
-<div style="font-family:'Courier New',monospace;font-size:0.88rem;color:rgba(255,255,255,0.72);margin-top:8px;"><span style="display:inline-block;animation:phoneWiggle 1.8s ease-in-out infinite;">📱</span> Hey, it's your lawyer. I suggest you:</div>`;
+                remedyDesc.innerHTML=`<div id="video-wrapper" style="position:relative;width:70%;margin:0 auto 14px;border-radius:8px;overflow:hidden;background:#000;border:1px solid #333;animation:videoKeepAlive 4s ease-in-out infinite;"><div id="close-video" style="position:absolute;top:5px;right:10px;color:white;cursor:pointer;font-size:22px;font-weight:bold;z-index:10;text-shadow:0 0 5px #000;">×</div><video id="remedy-video" style="width:100%;display:block;" autoplay playsinline muted><source src="trevortrim.mp4?v=24" type="video/mp4"></video></div>
+                <div style="margin-bottom:8px;">The cure for your obscurity!<br>A major label likes your sound.<br><b style="color:var(--joy-glow);">Sign for +6 spaces now!</b></div>
+                <div style="font-family:'Courier New',monospace;font-size:0.88rem;color:rgba(255,255,255,0.72);margin-top:8px;"><span style="display:inline-block;animation:phoneWiggle 1.8s ease-in-out infinite;">📱</span> Hey, it's your lawyer. I suggest you:</div>`;
                 const fpBtn2=document.createElement('button');
                 fpBtn2.style.cssText='display:block;margin:8px auto 0;padding:7px 16px;background:transparent;border:1px solid rgba(255,255,255,0.3);color:rgba(255,255,255,0.55);font-family:Courier New,monospace;font-size:0.8rem;border-radius:6px;cursor:pointer;letter-spacing:1px;transition:all 0.2s;';
                 fpBtn2.innerText='Read the Fine Print ⬇️';
@@ -2761,7 +2764,15 @@
                 setTimeout(()=>{
                     const cv=document.getElementById('close-video');const vid=document.getElementById('remedy-video');
                     if(cv)cv.onclick=(e)=>{e.stopPropagation();fadeOutVideo(vid);document.getElementById('video-wrapper').style.display='none';};
-                    if(vid){vid.play().catch(()=>{});/* mobile buffer fix */const _rnudge=setInterval(()=>{if(vid&&!vid.paused){}else if(vid&&!vid.ended)vid.play().catch(()=>{});},2000);vid.addEventListener('ended',()=>clearInterval(_rnudge),{once:true});}
+                    if(vid){
+                        vid.load();
+                        vid.play().then(()=>{
+                            /* Unmute after successful play — user gesture already captured */
+                            vid.muted=false;vid.volume=0.5;
+                        }).catch(()=>{vid.muted=true;vid.play().catch(()=>{});});
+                        const _rnudge=setInterval(()=>{if(vid&&!vid.paused){}else if(vid&&!vid.ended){vid.load();vid.play().catch(()=>{});}},2000);
+                        vid.addEventListener('ended',()=>clearInterval(_rnudge),{once:true});
+                    }
                     setTimeout(()=>playSfx('remedyclip.wav'),150);
                 },50);
             }
