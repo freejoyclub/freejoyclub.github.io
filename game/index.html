@@ -1,7 +1,7 @@
 <!DOCTYPE html><html lang="en"><head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Fearjoy: the Game (v29)</title>
+    <title>Fearjoy: the Game (v31)</title>
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
@@ -46,7 +46,7 @@
         @keyframes passFloatA    { 0%{transform:rotate(-2deg) rotateX(1deg) translateY(0);}33%{transform:rotate(-1.5deg) rotateX(-0.5deg) translateY(-3px);}66%{transform:rotate(-2.5deg) rotateX(0.8deg) translateY(-1px);}100%{transform:rotate(-2deg) rotateX(1deg) translateY(0);} }
         @keyframes passFloatB    { 0%{transform:rotate(1.5deg) rotateX(-0.5deg) translateY(0);}33%{transform:rotate(2deg) rotateX(1deg) translateY(-4px);}66%{transform:rotate(1deg) rotateX(-0.8deg) translateY(-2px);}100%{transform:rotate(1.5deg) rotateX(-0.5deg) translateY(0);} }
         @keyframes passFloatC    { 0%{transform:rotate(-1deg) rotateX(0.5deg) translateY(0);}33%{transform:rotate(-0.5deg) rotateX(-1deg) translateY(-3px);}66%{transform:rotate(-1.5deg) rotateX(0.3deg) translateY(-1px);}100%{transform:rotate(-1deg) rotateX(0.5deg) translateY(0);} }
-        @keyframes popupFloat    { 0%{transform:translateY(0) rotateX(0deg) rotateZ(0deg);}25%{transform:translateY(-4px) rotateX(0.4deg) rotateZ(0.2deg);}50%{transform:translateY(-2px) rotateX(-0.3deg) rotateZ(-0.15deg);}75%{transform:translateY(-5px) rotateX(0.2deg) rotateZ(0.1deg);}100%{transform:translateY(0) rotateX(0deg) rotateZ(0deg);} }
+        @keyframes popupFloat    { 0%{transform:translateY(0);}25%{transform:translateY(-4px);}50%{transform:translateY(-2px);}75%{transform:translateY(-5px);}100%{transform:translateY(0);} }
         @keyframes popupShine    { 0%{background-position:-300% center;opacity:0;}40%{opacity:1;}60%{opacity:1;}100%{background-position:300% center;opacity:0;} }
         @keyframes menuBloom     { 0%{opacity:0;transform:scale(0.7);}100%{opacity:1;transform:scale(1);} }
         /* Mystery space — cool multi-color slow loop */
@@ -80,25 +80,16 @@
         @keyframes phoneWiggle   { 0%,100%{transform:rotate(0deg);}20%{transform:rotate(-15deg);}40%{transform:rotate(15deg);}60%{transform:rotate(-10deg);}80%{transform:rotate(10deg);} }
         /* Tape shine — slow, soft, allowed to bleed beyond stroke */
         @keyframes tapeShine     { 0%{stroke-dashoffset:5000;opacity:0;}8%{opacity:0.6;}85%{opacity:0.45;}100%{stroke-dashoffset:-5000;opacity:0;} }
-        @keyframes lorePeekOut   { 0%{right:10px;}100%{right:calc(-100% + 18px);} }
-        @keyframes lorePeekIn    { 0%{right:calc(-100% + 18px);}100%{right:10px;} }
+
         @keyframes barShine      { 0%{background-position:-400% center;}100%{background-position:400% center;} }
         /* VU needle bounce animation during roll */
         @keyframes vuBounce      { 0%{transform:rotate(-45deg);}25%{transform:rotate(20deg);}50%{transform:rotate(-30deg);}75%{transform:rotate(35deg);}100%{transform:rotate(-45deg);} }
 
         /* Animated warm tan background gradient — slow, smooth, more varied */
-        @keyframes bgFade {
-            0%   { background-position: 0% 50%; }
-            50%  { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
-            14% {background:linear-gradient(168deg,#b86a35 0%,#c88055 30%,#c0754a 62%,#bf7e58 100%);}
-            28% {background:linear-gradient(128deg,#bf7e58 0%,#b06535 28%,#c98a52 58%,#c4773e 100%);}
-            42% {background:linear-gradient(152deg,#c98a52 0%,#bf7e58 32%,#b86a35 60%,#cc8049 100%);}
-            57% {background:linear-gradient(138deg,#c4773e 0%,#d4915a 28%,#bf7e58 62%,#a86030 100%);}
-            71% {background:linear-gradient(162deg,#cc8049 0%,#c4773e 36%,#d4915a 68%,#c98a52 100%);}
-            85% {background:linear-gradient(132deg,#b86a35 0%,#bf7e58 30%,#cc8049 62%,#c4773e 100%);}
-            100%{background:linear-gradient(145deg,#cc8049 0%,#a86030 35%,#bf7e58 68%,#d4915a 100%);}
+        @keyframes videoKeepAlive { 0%,100%{opacity:1;} 50%{opacity:0.99;} }
+        @keyframes bgRotate {
+            from { transform:translate(-50%,-50%) rotate(0deg); }
+            to   { transform:translate(-50%,-50%) rotate(360deg); }
         }
 
         /* ── PAGE SHELL ── */
@@ -109,11 +100,15 @@
             display:flex; flex-direction:column;
             height:100vh; height:100dvh; overflow:hidden; position:relative;
         }
-        /* Farthest-back layer: animated tan gradient */
+        /* Farthest-back layer: slow rotating gradient — GPU transform only, no repaint */
         body::before {
-            content:''; position:fixed; inset:0; z-index:-2;
-            animation:bgFade 20s ease-in-out infinite;
-            background:linear-gradient(145deg,#cc8049 0%,#a86030 35%,#bf7e58 70%,#d4915a 100%);
+            content:''; position:fixed;
+            width:300vmax; height:300vmax;
+            top:50%; left:50%;
+            z-index:-2; pointer-events:none;
+            background:linear-gradient(0deg,#a85c2a 0%,#bf7840 25%,#b86535 50%,#cc8a50 75%,#a85c2a 100%);
+            animation:bgRotate 60s linear infinite;
+            will-change:transform;
         }
         /* Vignette layer, just above bg — darker */
         body::after {
@@ -258,7 +253,6 @@
         }
         .nav-menu-btn:hover { background:rgba(255,255,255,0.07); transform:translateX(-4px); }
         .nav-icon { font-size:1.2rem; }
-        .btn-audio:hover      { border-color:var(--gold);      color:var(--gold);      box-shadow:0 0 12px var(--gold); }
         .btn-tracks:hover     { border-color:var(--joy-glow);  color:var(--joy-glow);  box-shadow:0 0 12px var(--joy-glow); }
         .btn-sfx:hover        { border-color:var(--blue-glow); color:var(--blue-glow); box-shadow:0 0 12px var(--blue-glow); }
         .btn-accolade-key:hover { border-color:var(--gold);    color:var(--gold);      box-shadow:0 0 12px var(--gold); }
@@ -325,6 +319,7 @@
             font-family:'KCStrikerSans','Courier New',monospace;
             transition:opacity 0.35s ease; position:absolute;
             animation:diceGlow 3s ease-in-out infinite; cursor:pointer;
+            will-change:transform,opacity;
         }
         .dice-rise-out   { animation:diceRiseOut   0.35s ease-in  forwards !important; }
         .dice-fall-in    { animation:diceFallIn    0.4s  ease-out forwards !important; }
@@ -373,8 +368,9 @@
             box-shadow:0 2px 12px rgba(0,0,0,0.4),inset 0 1px 0 rgba(255,255,255,0.6),inset 0 -1px 0 rgba(0,0,0,0.1);
             position:relative; transform-style:preserve-3d;
             transition:border-color 0.4s,box-shadow 0.4s,transform 0.25s;
-            cursor:pointer;
+            cursor:pointer; will-change:transform;
         }
+        
         .pass-float-a { animation:passFloatA 6s ease-in-out infinite; }
         .pass-float-b { animation:passFloatB 7s ease-in-out infinite; animation-delay:-2.3s; }
         .pass-float-c { animation:passFloatC 5.5s ease-in-out infinite; animation-delay:-3.8s; }
@@ -497,8 +493,8 @@
             position:relative; transition:transform 0.18s ease,box-shadow 0.18s ease;
             cursor:help; box-sizing:border-box;
         }
-        .space:hover { transform:scale(1.06); box-shadow:0 0 14px rgba(255,255,255,0.3); z-index:6; }
-        /* Text shadow for readability on wood background */
+        .space:hover { transform:scale(1.06); box-shadow:0 0 14px rgba(255,255,255,0.3); z-index:6; will-change:transform; }
+            /* Text shadow for readability on wood background */
         .space .sp-text,.space .sp-emoji,.mystery-q { text-shadow:0 0 3px rgba(0,0,0,0.5),0 0 1px rgba(0,0,0,0.7); }
         .space:not(.blank):not(.mystery-space):not(.true-blank) { font-family:'KCStrikerSans','Courier New',monospace; }
         .sp-emoji { font-size:var(--space-emoji); margin-bottom:2px; }
@@ -507,8 +503,8 @@
         .space:not(.true-blank):not(.mystery-space):not(.reel-space):not(.tracklist-space) {
             background:radial-gradient(ellipse at center,rgba(200,180,169,0.1) 10%,rgba(69,50,40,0.3) 100%) !important;
         }
-        .mystery-space { background:radial-gradient(ellipse at center,rgba(20,0,30,0.3) 0%,rgba(0,0,0,0.6) 100%) !important; }
-        .true-blank { 
+            .mystery-space { background:radial-gradient(ellipse at center,rgba(60,20,80,0.15) 0%,rgba(20,10,30,0.25) 100%) !important; }
+            .true-blank { 
             background: none !important; 
             border: 1px dashed rgba(200,180,169,0.6) !important;
             transform: scale(0.7);
@@ -522,17 +518,19 @@
             transform:scale(1.15); z-index:5; font-size:calc(var(--space-font)*1.2) !important; color:white !important;
         }
         .tracklist-space:hover { transform:scale(1.22) !important; box-shadow:inset 0 0 15px #000,0 0 14px rgba(255,255,255,0.25) !important; }
+        .win-track:hover { transform:scale(1.05) !important; box-shadow:0 0 14px var(--blue-glow) !important; }
         .tracklist-space.vinyl-spinning { animation:vinylSpin 3.2s ease forwards !important; transform-origin:center center !important; }
         .tracklist-space.vinyl-wiggle   { animation:vinylWiggle 1.2s ease-in-out !important; transform-origin:center center !important; }
         /* Joy/Fear white text + glow border */
-        .joy-space  { border-color:var(--joy-glow) !important; color:white !important; animation:joyFlicker 2.5s ease-in-out infinite; }
-        .fear-space { border-color:var(--fear-glow) !important; color:white !important; animation:fearFlicker 2.8s ease-in-out infinite; }
-        /* Regular special spaces — white glow border */
+      .joy-space  { border-color:var(--joy-glow) !important; color:white !important; animation:joyFlicker 2.5s ease-in-out infinite; will-change:box-shadow; }
+        .fear-space { border-color:var(--fear-glow) !important; color:white !important; animation:fearFlicker 2.8s ease-in-out infinite; will-change:box-shadow; }
+         /* Regular special spaces — white glow border */
         .space:not(.joy-space):not(.fear-space):not(.tracklist-space):not(.mystery-space):not(.true-blank):not(.reel-space):not(.hybrid) {
             border-color:rgba(255,255,255,0.8) !important;
             animation:specialFlicker 3s ease-in-out infinite;
+            will-change:box-shadow;
         }
-        .hybrid { border-style:dotted; border-width:3px; border-color:white; animation:specialFlicker 3.2s ease-in-out infinite; }
+        .hybrid { border-style:dotted; border-width:3px; border-color:white; animation:specialFlicker 3.2s ease-in-out infinite; will-change:box-shadow; }
         /* ── FEARJOY SPACE — rotating split glow ── */
         .hybrid {
             position:relative;
@@ -566,8 +564,7 @@
         }
         .mystery-space:hover { transform:scale(0.9) !important; }
         /* Per-space mystery animation speed set via --mystery-speed inline */
-        .mystery-space { animation:mysteryPulse var(--mystery-speed,4s) ease-in-out infinite; }
-        /* Reel spaces (0 and 59) */
+        .mystery-space { animation:mysteryPulse var(--mystery-speed,4s) ease-in-out infinite; will-change:box-shadow; }
         .reel-space {
             border:3px solid rgba(255,255,255,0.4) !important;
             transform:scale(1.15); z-index:5;
@@ -595,24 +592,25 @@
         .reel-space .sp-text,.reel-space .sp-emoji { position:relative; z-index:1; }
         .space-land { animation:spaceLand 1.2s ease-out forwards; }
         /* ── SPACE-SPECIFIC GLOW COLORS ── */
-        #s55 { --space-glow:#ff5522; animation:lostTapeFlicker 2.6s ease-in-out infinite; }
+        #s55 { --space-glow:#ff5522; animation:lostTapeFlicker 2.6s ease-in-out infinite; will-change:box-shadow; }
         @keyframes lostTapeFlicker { 0%,100%{box-shadow:0 0 6px #ff5522;} 50%{box-shadow:0 0 18px #ff5522,0 0 30px #ff3300;} }
-        #s30 { --space-glow:var(--gold); animation:grammyFlicker 2.4s ease-in-out infinite; }
+        #s30 { --space-glow:var(--gold); animation:grammyFlicker 2.4s ease-in-out infinite; will-change:box-shadow; }
         @keyframes grammyFlicker { 0%,100%{box-shadow:0 0 8px var(--gold);} 50%{box-shadow:0 0 22px var(--gold),0 0 30px #f7ca60;} }
-        #s20 { --space-glow:#3399ff; animation:investFlicker 2.7s ease-in-out infinite; }
+        #s20 { --space-glow:#3399ff; animation:investFlicker 2.7s ease-in-out infinite; will-change:box-shadow; }
         @keyframes investFlicker { 0%,100%{box-shadow:0 0 6px #3399ff;} 50%{box-shadow:0 0 18px #3399ff,0 0 30px #66aaff;} }
-        #s42 { --space-glow:#88ffaa; animation:encoreFlicker 2.3s ease-in-out infinite; }
+        #s42 { --space-glow:#88ffaa; animation:encoreFlicker 2.3s ease-in-out infinite; will-change:box-shadow; }
         @keyframes encoreFlicker { 0%,100%{box-shadow:0 0 6px #88ffaa;} 50%{box-shadow:0 0 18px #88ffaa,0 0 30px #aaffcc;} }
-        #s12, #s53 { --space-glow:#776655; animation:vanFlicker 2.9s ease-in-out infinite; }
+        #s12, #s53 { --space-glow:#776655; animation:vanFlicker 2.9s ease-in-out infinite; will-change:box-shadow; }
         @keyframes vanFlicker { 0%,100%{box-shadow:0 0 5px #de5b33;} 50%{box-shadow:0 0 14px #de5b33,0 0 22px #7d3b1a;} }
 
 
         /* ── PLAYER PIECES ── */
         .player {
             position:absolute; z-index:100;
-            transition:all 0.7s cubic-bezier(0.18,0.89,0.32,1.28);
+            transition:top 0.7s cubic-bezier(0.18,0.89,0.32,1.28),left 0.7s cubic-bezier(0.18,0.89,0.32,1.28),width 0.7s cubic-bezier(0.18,0.89,0.32,1.28),height 0.7s cubic-bezier(0.18,0.89,0.32,1.28);
             background-size:contain; background-repeat:no-repeat; background-position:center bottom;
             pointer-events:none; animation:pieceHover 4s infinite ease-in-out;
+            will-change:top,left,width,height;
         }
         .active-turn { animation:turnPulse 1.5s infinite ease-in-out; }
         .swap-target {
@@ -671,13 +669,12 @@
 
         /* Rule sidebar — PERMANENT: always content-adaptive, never full-height */
         #rule-sidebar {
-            position:fixed; right:-400px;
+            position:fixed; right:-400px; will-change:right;
             top:calc(var(--bar-h) + 8px);
             width:min(260px,78vw);
             max-height:calc(100dvh - var(--bar-h) - 24px);
             height:auto;
-            background:linear-gradient(160deg,rgba(8,8,8,0.80) 0%,rgba(28,28,28,0.80) 100%);
-            backdrop-filter:blur(8px);
+            background:linear-gradient(160deg,rgba(6,6,6,0.97) 0%,rgba(22,22,22,0.97) 100%);
             padding:clamp(14px,2.2vw,26px);
             border-radius:20px 0 0 20px; border:2px solid var(--joy-glow); border-right:none;
             transition:right 0.55s cubic-bezier(0.175,0.885,0.32,1.275);
@@ -685,20 +682,7 @@
             display:flex; flex-direction:column; overflow-y:auto;
         }
         #rule-sidebar.active { right:0; }
-        /* Peek tab — visible when sidebar is peeked off-screen */
-        #lore-peek-tab {
-            position:absolute; left:-28px; top:50%; transform:translateY(-50%);
-            width:28px; height:60px;
-            background:rgba(221,153,255,0.25);
-            border:2px solid var(--mystery-glow); border-right:none;
-            border-radius:10px 0 0 10px;
-            display:flex; align-items:center; justify-content:center;
-            font-size:0.9rem; cursor:pointer; color:var(--mystery-glow);
-            box-shadow:0 0 12px var(--mystery-glow);
-            opacity:0; transition:opacity 0.3s ease;
-            pointer-events:none;
-        }
-        #rule-sidebar.lore-peek #lore-peek-tab { opacity:1; pointer-events:auto; }
+        
         #rule-sidebar.mystery-sidebar { font-size:0.88em; width:min(240px,72vw); }
         #side-sub   { font-size:0.75rem; letter-spacing:2px; color:rgba(255,255,255,0.4); text-transform:uppercase; margin-bottom:6px; font-family:'Courier New',monospace; }
         #side-title { font-family:'KCStrikerSans','Courier New',monospace; margin:0 0 8px; font-size:clamp(1rem,2.5vw,1.5rem); }
@@ -882,7 +866,7 @@
         <div id="pass-expanded-card">
             <span class="exp-close" onclick="collapsePass()">×</span>
             <div style="width:20px;height:9px;background:#888;border-radius:3px 3px 0 0;margin:0 auto 8px;"></div>
-            <div class="pass-all-access" style="text-align:center;margin-bottom:6px;font-size:0.6rem;letter-spacing:3px;color:rgba(255,255,255,0.35);">All-Access Pass</div>
+            <div class="pass-all-access" style="text-align:center;margin-bottom:6px;font-size:0.8rem;letter-spacing:4px;color:rgba(0,0,0,0.65);">All-Access Pass</div>
             <img id="exp-avatar" class="exp-avatar" src="" alt="">
             <div class="exp-name" id="exp-name"></div>
             <div class="exp-section-label">Status</div>
@@ -898,7 +882,6 @@
     <!-- Lore backdrop — click outside sidebar to dismiss -->
     <div id="lore-backdrop" onclick="handleLoreBackdropClick()" style="display:none;position:fixed;inset:0;z-index:199;"></div>
     <div id="rule-sidebar" onclick="handleSidebarClick(event)">
-        <div id="lore-peek-tab" onclick="lorePeekToggle(event)">◀</div>
         <div id="side-sub"></div>
         <h3 id="side-title" style="margin:0 0 8px;"></h3>
         <p  id="side-desc"  style="line-height:1.6;margin:0;"></p>
@@ -1009,11 +992,12 @@
     const boardLayout=[
         "START","blank","blank","blank","DAYSPRING","blank","FEARJOY","blank","FIGMENT","JOY",
         "THE REMEDY","FEAR","VAN BREAKS DOWN","JOY","blank","DMITRI","blank","FEARJOY","NIGHTDRIVE","JOY",
-        "INVEST IN MERCH","FEAR","blank","5TH DIMENSION","blank","IT HAPPENS","blank","GHOST 2","MAYA","blank",
-        "WIN A GRAMMY","blank","FEAR","OPENING ACT","blank","JOY","blank","TELLUS","blank","FEARJOY",
+        "INVEST IN MERCH","FEAR","blank","5TH DIMENSION","blank","IT HAPPENS","blank","GHOST 2","MAYA","JOY",
+        "WIN A GRAMMY","blank","blank","OPENING ACT","blank","FEAR","blank","TELLUS","FEARJOY","blank",
         "blank","blank","ENCORE","blank","VOID","blank","blank","THE ENDLESS SMILE","GATEKEEPER","blank",
-        "blank","blank","FEARJOY","VAN BREAKS DOWN","blank","LOST RECORDING","blank","FEARJOY","blank","SWIMMIN"
+        "blank","FEARJOY","blank","VAN BREAKS DOWN","blank","LOST RECORDING","blank","FEARJOY","blank","SWIMMIN"
     ];
+    
     const DISPLAY_NAMES={"VAN BREAKS DOWN":"VAN BREAKS","WIN A GRAMMY":"GRAMMY","5TH DIMENSION":"5D","OPENING ACT":"OPENER","LOST RECORDING":"LOST TAPE"};
     const TRACKLIST_INDICES=[4,8,10,15,18,25,27,28,37,44,47]; /* Maya (28) added — it IS tracklist */
     const GRAMMY_SPACE=30;
@@ -1041,17 +1025,17 @@
         25:{title:"IT HAPPENS",emoji:"🔔",isItHappens:true,isTrack:true,desc:"Suddenly, instantly, take an extra turn!",sound:"happensclip.wav"},
         27:{title:"GHOST 2",emoji:"👻",isGhost:true,isTrack:true,desc:"Paralyzed in fear: Stay silent for one turn. Make a sound = Rewind 1.",sound:"ghostclip.wav"},
         28:{title:"MAYA",emoji:"👁️",isMaya:true,isTrack:true,desc:"Hold 10s of eye contact for Both +2, or avoid for -1.",sound:"mayaclip.wav"},
+        29:{title:"JOY",emoji:"😄",shift:1,isAuto:true,desc:"PUREJOY! Forward 1.",sound:"coinclip.wav"},
         30:{title:"WIN A GRAMMY",emoji:"🏆",isGrammy:true,desc:"Grammy Won! Switch places with the leader! (If leader, Forward 1)",sound:"coinclip.wav"},
-        32:{title:"FEAR",emoji:"😱",shift:-1,isAuto:true,desc:"Fear of failure! Rewind 1.",sound:"spookyclip1.wav"},
         33:{title:"OPENING ACT",emoji:"🎤",isOpeningAct:true,desc:"Slide 2 spaces behind the leader. If leader, Rewind 2."},
-        35:{title:"JOY",emoji:"😄",shift:1,isAuto:true,desc:"EARJOY! Forward 1.",sound:"coinclip.wav"},
+        35:{title:"FEAR",emoji:"😱",shift:-1,isAuto:true,desc:"Fear of failure! Rewind 1.",sound:"spookyclip1.wav"},
         37:{title:"TELLUS",emoji:"📣",isTellus:true,isTrack:true,desc:"Swap positions with any artist.",sound:"tellusclip.wav"},
-        39:{title:"FEARJOY",emoji:"☯️",isFearjoy:true,desc:"FEAR? JOY? Fate decides.",sound:"coin.wav"},
+        38:{title:"FEARJOY",emoji:"☯️",isFearjoy:true,desc:"FEAR? JOY? Fate decides.",sound:"coin.wav"},
         42:{title:"ENCORE",emoji:"👏",shift:3,isAuto:true,desc:"Encore! Three more songs! Move forward 3.",sound:"coinclip.wav"},
         44:{title:"VOID",emoji:"🌀",shift:-3,isAuto:true,isTrack:true,desc:"Lost in the Void. Rewind 3.",sound:"voidclip.wav"},
         47:{title:"THE ENDLESS SMILE",emoji:"💀",isSmile:true,isTrack:true,desc:"Remain smiling until your next turn. Break it = Rewind 1.",sound:"smileclip.wav"},
         48:{title:"GATEKEEPER",emoji:"🚪",isGate:true,desc:"Industry Gatekeeper. Stop here unless you're in last place, or you've signed with a major label."},
-        52:{title:"FEARJOY",emoji:"☯️",isFearjoy:true,desc:"Flip for destiny.",sound:"coin.wav"},
+        51:{title:"FEARJOY",emoji:"☯️",isFearjoy:true,desc:"Flip for destiny.",sound:"coin.wav"},
         53:{title:"VAN BREAKS DOWN",emoji:"🛠",skipTurns:1,desc:"Van breaks! Skip a turn."},
         55:{title:"LOST RECORDING",emoji:"📼",isLostRecording:true,desc:"Tape erased! Roll and rewind that amount.",sound:"mistakeclip.wav"},
         57:{title:"FEARJOY",emoji:"☯️",isFearjoy:true,desc:"FEAR or JOY: JOY = +1, FEAR = -1.",sound:"coin.wav"},
@@ -1062,6 +1046,8 @@
     // GAME STATE
     // ══════════════════════════════════════════════
     let players=[],turnIdx=0,isMoving=false,isRolling=false,totalP=0,currentSetupP=0;
+    let spacesTriggeredThisTurn=new Set(); /* prevents same space firing twice in one turn */
+    let spaceOffsets=[]; /* perpendicular nudge per space, generated once per session */
     let selectedAvatar=null,selectedColor=null;
     let isSwapping=false,isMayaPartner=false;
     let sidebarTimer=null,expandedPassIdx=null;
@@ -1544,7 +1530,10 @@
                 /* Stop reel spinning until movement resumes */
                 reelSpinning=false;
                 [0,59].forEach(idx=>{const s=document.getElementById('s'+idx);if(s)s.classList.remove('reel-spinning');});
+                
                 assignMysterySpaces();
+                spaceOffsets=[];
+                spacesTriggeredThisTurn=new Set();
                 turnIdx=0;isMoving=false;isRolling=false;isSwapping=false;isInLoreDrop=false;loreDoneResolver=null;
                 stopMetronome();stopActiveLoreVid();
                 updateUI();updatePositions();
@@ -1694,44 +1683,84 @@
                 fadeVideoAudioOut(vid,true);if(activeLoreVid===vid)activeLoreVid=null;
             },{once:true});
         } else if(item.type==='link'||item.type==='download'){
-            const card=document.createElement('div');card.className='bucket-link-card';
-            const lbl=document.createElement('div');lbl.className='bucket-link-label';
-            /* Merch discount header */
-            lbl.innerHTML=`Merch Discount <span style="color:var(--joy-glow);font-size:0.85em;">(+2 spaces!)</span>`;
-            card.appendChild(lbl);
-            if(item.code){
-                const pct=parseInt(item.code.replace(/\D/g,''))||20;
-                const pctLine=document.createElement('div');
-                pctLine.style.cssText='font-size:0.82rem;color:rgba(255,255,255,0.7);margin-bottom:8px;';
-                pctLine.innerText=`${pct}% off Fearjoy merch — in real life!`;
-                card.appendChild(pctLine);
-            }
-            if(item.isMax){const max=document.createElement('div');max.style.cssText='font-size:0.7rem;color:rgba(255,255,255,0.5);letter-spacing:1px;margin-bottom:6px;';max.innerText='(Max discount — best we offer!)';card.appendChild(max);}
-            if(item.code){
-                const hint=document.createElement('div');hint.className='bucket-code-hint';hint.innerText=`Copy code for +2 spaces`;card.appendChild(hint);
-                const codeEl=document.createElement('div');codeEl.className='bucket-code';codeEl.innerText=item.code;
-                codeEl.onclick=e=>{
-                    e.stopPropagation();
-                    navigator.clipboard.writeText(item.code).then(()=>{const orig=codeEl.innerText;codeEl.innerText='COPIED!';setTimeout(()=>codeEl.innerText=orig,2000);}).catch(()=>{});
-                    if(playerIdx!==undefined&&players[playerIdx]&&!players[playerIdx].hasThrifty){
-                        const pct=parseInt(item.code.replace(/\D/g,''))||20;
-                        players[playerIdx].hasThrifty=true;players[playerIdx].merchdiscountPct=pct;
-                        players[playerIdx].accolades.push('🎫');
-                        if(pct>highestDiscountPct)highestDiscountPct=pct;
-                        /* +2 spaces reward */
-                        const pidx=playerIdx;
-                        players[pidx].pos=Math.min(59,players[pidx].pos+2);
-                        updatePositions();flashSpaceLanding(players[pidx].pos);
-                        renderPasses();
-                    }
-                };card.appendChild(codeEl);
-            }
-            if(item.url){
-                const btn=document.createElement('a');btn.className='bucket-btn';btn.href=(item.url||'https://freejoy.club/store').replace('freejoy.club','freejoy.club/store').replace('/store/store','/store');btn.target='_blank';
-                btn.innerText=item.type==='download'?'DOWNLOAD':'STORE';card.appendChild(btn);
-            }
-            container.appendChild(card);
+            /* Merch drops are handled as a central modal — not a sidecard */
+            showMerchModal(item,playerIdx);
         }
+    }
+        // ══════════════════════════════════════════════
+    // MERCH MODAL — central popup for discount drops
+    // ══════════════════════════════════════════════
+    function showMerchModal(item,playerIdx){
+        const pct=parseInt((item.code||'').replace(/\D/g,''))||20;
+        const isMax=!!item.isMax;
+        const modal=document.getElementById('overlay-event');
+        const popupEl=document.getElementById('main-popup');
+        const _pmb=document.getElementById('popup-mute-btn');if(_pmb)_pmb.style.display='none';
+        popupEl.style.borderColor='var(--mystery-glow)';
+        popupEl.style.boxShadow=`0 0 30px var(--mystery-glow)`;
+        document.getElementById('event-title').innerText='🎫 Merch Discount Drop!';
+        const tu=document.getElementById('timer-ui');if(tu){tu.style.display='none';tu.innerText='';}
+        const ab=document.getElementById('action-bar');if(ab)ab.classList.remove('timer-mode');
+        const nm=document.getElementById('timer-nevermind');if(nm)nm.style.display='none';
+        const tm=document.getElementById('timer-mute');if(tm)tm.style.display='none';
+        stopMetronome();
+        const desc=document.getElementById('event-desc');
+        desc.innerHTML='';
+        const body=document.createElement('div');
+        body.style.cssText='text-align:center;';
+        body.innerHTML=`<div style="font-size:clamp(1rem,2.2vw,1.3rem);margin-bottom:6px;">${pct}% off Fearjoy merch — in real life!</div>`+
+            (isMax?`<div style="font-size:0.78rem;color:rgba(255,255,255,0.5);letter-spacing:1px;margin-bottom:10px;">(Max discount — best we offer!)</div>`:'<div style="height:6px;"></div>')+
+            `<div style="font-size:0.78rem;letter-spacing:1.5px;color:rgba(255,255,255,0.45);text-transform:uppercase;margin-bottom:6px;">Tap to copy — then claim +2 spaces</div>`;
+        const codeEl=document.createElement('div');
+        codeEl.className='bucket-code';
+        codeEl.innerText=item.code||'';
+        codeEl.style.cssText+='display:inline-block;margin:0 auto 14px;cursor:pointer;';
+        codeEl.onclick=()=>{
+            navigator.clipboard.writeText(item.code).then(()=>{
+                const orig=codeEl.innerText;codeEl.innerText='COPIED!';
+                setTimeout(()=>codeEl.innerText=orig,2000);
+            }).catch(()=>{});
+            if(playerIdx!==undefined&&players[playerIdx]&&!players[playerIdx].hasThrifty){
+                const p=players[playerIdx];
+                p.hasThrifty=true;p.merchdiscountPct=pct;p.accolades.push('🎫');
+                if(pct>highestDiscountPct)highestDiscountPct=pct;
+                p.pos=Math.min(59,p.pos+2);
+                updatePositions();flashSpaceLanding(p.pos);renderPasses();
+            }
+        };
+        body.appendChild(codeEl);
+        if(item.url){
+            const storeBtn=document.createElement('a');
+            storeBtn.href=(item.url||'https://freejoy.club/store').replace('freejoy.club','freejoy.club/store').replace('/store/store','/store');
+            storeBtn.target='_blank';
+            storeBtn.className='bucket-btn';
+            storeBtn.style.cssText='display:inline-block;margin:0 auto 14px;';
+            storeBtn.innerText='STORE';
+            body.appendChild(storeBtn);
+        }
+        desc.appendChild(body);
+        const coin=document.getElementById('coin');coin.style.display='none';
+        const pBtn=document.getElementById('event-btn-primary');
+        const sBtn=document.getElementById('event-btn-secondary');
+        pBtn.style.display='inline-block';
+        pBtn.style.background='var(--mystery-glow)';pBtn.style.color='black';
+        pBtn.innerText='NICE — COPIED!';
+        pBtn.onclick=()=>{
+            navigator.clipboard.writeText(item.code).catch(()=>{});
+            if(playerIdx!==undefined&&players[playerIdx]&&!players[playerIdx].hasThrifty){
+                const p=players[playerIdx];
+                p.hasThrifty=true;p.merchdiscountPct=pct;p.accolades.push('🎫');
+                if(pct>highestDiscountPct)highestDiscountPct=pct;
+                p.pos=Math.min(59,p.pos+2);
+                updatePositions();flashSpaceLanding(p.pos);renderPasses();
+            }
+            pBtn.style.background='';pBtn.style.color='';
+            modal.style.display='none';
+        };
+        sBtn.style.display='inline-block';
+        sBtn.innerText='Wow, nice try';
+        sBtn.onclick=()=>{sBtn.style.display='none';pBtn.style.background='';pBtn.style.color='';modal.style.display='none';};
+        modal.style.display='flex';resetKbFocus();
     }
 
     // ══════════════════════════════════════════════
@@ -1912,6 +1941,37 @@
         }
     }
 
+    
+        function generateSpaceOffsets(){
+        spaceOffsets=[];
+        for(let i=0;i<60;i++){
+            if(i===0||i===59){spaceOffsets.push(0);continue;}
+            /* Vary magnitude per space — some nudge more, some less */
+            const mag=(Math.random()*12-6)*(0.5+Math.random()*0.8);
+            spaceOffsets.push(parseFloat(mag.toFixed(1)));
+        }
+    }
+
+    function applySpaceOffsets(mode){
+        if(!spaceOffsets.length)generateSpaceOffsets();
+        const dirs=computeNextDirs(mode);
+        boardLayout.forEach((_,i)=>{
+            const s=document.getElementById('s'+i);
+            if(!s)return;
+            if(i===0||i===59){s.style.position='';s.style.left='';s.style.top='';return;}
+            const mag=spaceOffsets[i];
+            /* Use the space's own travel direction — perpendicular means:
+               travelling right/left → nudge in Y; travelling up/down → nudge in X */
+            const dir=dirs[i]||(i>0?dirs[i-1]:null)||'right';
+            let ox=0,oy=0;
+            if(dir==='right'||dir==='left'){oy=mag;}
+            else{ox=mag;}
+            s.style.position='relative';
+            s.style.left=ox+'px';
+            s.style.top=oy+'px';
+        });
+    }
+
     /* Full layout refresh — call on init and resize */
     function refreshLayout(){
         const newMode=detectLayout();
@@ -1919,11 +1979,13 @@
         layoutMode=newMode;
         applyLayout(layoutMode);
         setTimeout(()=>{
+            applySpaceOffsets(layoutMode);
             drawArrows(layoutMode);
             drawTapePath();
             updatePositions();
         },50);
     }
+        
 
     // ══════════════════════════════════════════════
     // BOARD INIT
@@ -1943,7 +2005,7 @@
             if(name==="blank"){
                 if(mysterySpaces.has(i)){
                     s.classList.add('mystery-space');
-                    const _spd=(3.2+Math.random()*3.3).toFixed(2)+'s';
+                    const _spd=(5.5+Math.random()*3.5).toFixed(2)+'s';
                     s.style.setProperty('--mystery-speed',_spd);
                     s.innerHTML=`<span class="mystery-q">?</span>`;
                     s.onclick=()=>handleMysteryClick(i);
@@ -1971,8 +2033,10 @@
             }
             board.appendChild(s);
         });
-        /* Apply grid placement */
+        
+            /* Apply grid placement */
         applyLayout(layoutMode);
+        applySpaceOffsets(layoutMode);
         players.forEach((p,i)=>{
             const el=document.createElement('div');el.id='p'+i;el.className='player';
             el.style.backgroundImage=`url('${p.avatar.img}')`;
@@ -2010,7 +2074,7 @@
                 );
                 document.getElementById('event-btn-secondary').style.display='none';
                 /* 20% smaller text for How to Play card */
-                setTimeout(()=>{const d=document.getElementById('event-desc');if(d)d.style.fontSize='clamp(0.96rem,2.1vw,1.3rem)';},30);
+                setTimeout(()=>{const d=document.getElementById('event-desc');if(d)d.style.fontSize='clamp(0.8rem,1.7vw,1rem)';},30);
             }
         );
         /* Inject credits into the first popup immediately */
@@ -2050,10 +2114,12 @@
         sidebar.querySelectorAll('.access-pass').forEach(c=>c.remove());
         players.forEach((pl,i)=>{
             const isCurrent=(i===turnIdx);
-            const tags=(pl.isInvestor?`<span class="tag tag-investor">INVESTOR</span>`:'')
+            const tags=(!pl.isSellout&&!pl.isColdPitchSellout?`<span class="tag tag-indie">INDIE</span>`:'')
                 +(pl.isSellout||pl.isColdPitchSellout?`<span class="tag tag-sellout">SELLOUT</span>`:'')
+                +(pl.isInvestor?`<span class="tag tag-investor">INVESTOR</span>`:'')
                 +(pl.usedColdPitch?`<span class="tag tag-pitched">PITCHED</span>`:'')
                 +(pl.hasThrifty?`<span class="tag tag-thrifty">THRIFTY</span>`:'');
+            
             const notify=isCurrent&&pl.pos===GATEKEEPER_SPACE&&!pl.hasSeenGatekeeperHint&&!pl.isSellout&&!pl.isColdPitchSellout&&!pl.usedColdPitch;
             const selectable=(isSwapping||isMayaPartner)&&i!==turnIdx;
             /* Pitch bubble: show on current player's pass once ANY player hits pos>=30 */
@@ -2065,7 +2131,9 @@
                 +(isCurrent?' pass-active':'')+(notify?' pass-notify':'')+(selectable?' pass-selectable':'');
             card.style.setProperty('--p-color',pl.avatar.color);
             card.id='pass-'+i;
+            
             card.innerHTML=`
+                ${pl.hasPlotArmor?`<div style="position:absolute;top:5px;left:6px;font-size:1.3rem;line-height:1;z-index:2;">🛡️</div>`:''}
                 <div class="pass-clip"></div>
                 <div class="pass-all-access">All-Access Pass</div>
                 <div class="pass-header">
@@ -2073,7 +2141,7 @@
                     <div class="pass-name">${pl.name}</div>
                 </div>
                 <div class="pass-label">Status</div>
-                <div class="pass-tags">${tags||`<span class="tag tag-indie">INDIE</span>`}</div>
+                <div class="pass-tags">${tags}</div>
                 <div class="pass-label">Accolades</div>
                 <div class="pass-accolades">${pl.accolades.join('')||'—'}</div>
                 <div class="pass-stripe"></div>`;
@@ -2091,17 +2159,27 @@
         expandedPassIdx=idx;
         const pl=players[idx];const isCurrent=(idx===turnIdx);
         if(pl.pitchBubbleShown===false&&pl.pos>=30)pl.pitchBubbleShown=true;
-        const tags=(pl.isInvestor?`<span class="tag tag-investor" style="font-size:0.75rem;padding:3px 8px;">INVESTOR</span>`:'')
+        const tags=(!pl.isSellout&&!pl.isColdPitchSellout?`<span class="tag tag-indie" style="font-size:0.75rem;padding:3px 8px;">INDIE</span>`:'')
             +(pl.isSellout||pl.isColdPitchSellout?`<span class="tag tag-sellout" style="font-size:0.75rem;padding:3px 8px;">SELLOUT</span>`:'')
+            +(pl.isInvestor?`<span class="tag tag-investor" style="font-size:0.75rem;padding:3px 8px;">INVESTOR</span>`:'')
             +(pl.usedColdPitch?`<span class="tag tag-pitched" style="font-size:0.75rem;padding:3px 8px;">PITCHED</span>`:'')
             +(pl.hasThrifty?`<span class="tag tag-thrifty" style="font-size:0.75rem;padding:3px 8px;">THRIFTY</span>`:'');
+        
         const card=document.getElementById('pass-expanded-card');
         card.style.setProperty('--exp-color',pl.avatar.color);
+        const expShield=document.getElementById('exp-shield-badge');
+        if(expShield)expShield.remove();
+        if(pl.hasPlotArmor){
+            const sb=document.createElement('div');sb.id='exp-shield-badge';
+            sb.style.cssText='font-size:2rem;text-align:center;margin-bottom:6px;';
+            sb.innerText='🛡️';
+            document.getElementById('pass-expanded-card').insertBefore(sb,document.getElementById('exp-avatar'));
+        }
         document.getElementById('exp-avatar').src=pl.avatar.img;
         document.getElementById('exp-avatar').style.borderColor=pl.avatar.color;
         document.getElementById('exp-name').innerText=pl.name;
         document.getElementById('exp-name').style.color=pl.avatar.color;
-        document.getElementById('exp-tags').innerHTML=tags||'<span class="tag tag-indie" style="font-size:0.75rem;padding:3px 8px;">INDIE</span>';
+        document.getElementById('exp-tags').innerHTML=tags;
         document.getElementById('exp-accolades').innerText=pl.accolades.join('')||'—';
         document.getElementById('exp-stripe').style.background=`linear-gradient(90deg,${pl.avatar.color} 0%,transparent 100%)`;
         const pitchEligible=isCurrent&&!isMoving&&!pl.isSellout&&!pl.isColdPitchSellout&&!pl.usedColdPitch&&pl.pos>2&&pl.pos<=GATEKEEPER_SPACE;
@@ -2269,19 +2347,16 @@
     // Modal popups (isMoving=true, not in lore) block roll normally.
     // ══════════════════════════════════════════════
     async function doRoll(){
-        /* If in lore drop: dismiss it and immediately roll for the current player */
+        
+        /* If a lore sidecard is lingering, dismiss it silently before rolling */
         if(isInLoreDrop){
-            stopActiveLoreVid();
-            closeSidebar(); /* also clears lore-peek state */
-            hideLoreBackdrop();
-            isInLoreDrop=false;isMoving=false;isRolling=false;
-            if(loreDoneResolver){loreDoneResolver();loreDoneResolver=null;}
-            await new Promise(r=>setTimeout(r,80));
+            isInLoreDrop=false;loreDoneResolver=null;
         }
-        /* Hard guard — isRolling blocks re-entry during entire roll+move sequence */
-        if(isRolling||isMoving||isSwapping||isMayaPartner)return;
         stopActiveLoreVid();
         closeSidebar();
+        
+        /* Hard guard — isRolling blocks re-entry during entire roll+move sequence */
+        if(isRolling||isMoving||isSwapping||isMayaPartner)return;
         const p=players[turnIdx];
         if(p.grammyNominator){
             const nom=p.grammyNominator;p.grammyNominator=null;
@@ -2336,9 +2411,12 @@
         performActualRoll();
     }
 
-    async function performActualRoll(){
+        async function performActualRoll(){
         const capturedTurnIdx=turnIdx;
         const p=players[capturedTurnIdx];
+        spacesTriggeredThisTurn=new Set(); /* fresh slate each roll */
+        /* Mobile video activation bridge — prime media stack on user gesture */
+        try{const _vp=document.createElement('video');_vp.src='trevortrim.mp4';_vp.muted=true;_vp.load();}catch(e){}
         /* Set both guards — isRolling stays true until endTurn */
         isRolling=true;isMoving=true;
         document.getElementById('roll-btn').disabled=true;
@@ -2425,12 +2503,15 @@
                     break;
                 }
                 playSlide();p.pos+=dir;updatePositions();
-                if(dir>0&&p.pos===GATEKEEPER_SPACE&&!isLast&&!anyLabelDeal&&i<Math.abs(n)-1){playSfx('gateexec.wav');break;}
-                if(dir>0&&p.pos===GATEKEEPER_SPACE&&(isLast||anyLabelDeal)&&i===0)playSfx('gateexec.wav');
+                /* Stop non-exempt players at Gatekeeper */
+                if(dir>0&&p.pos===GATEKEEPER_SPACE&&!isLast&&!anyLabelDeal&&i<Math.abs(n)-1){break;}
+                /* Fire gateexec the exact moment a player steps from 48 to 49 */
+                if(dir>0&&p.pos===GATEKEEPER_SPACE+1)playSfx('gateexec.wav');
                 await new Promise(r=>setTimeout(r,240));
                 if(p.pos>=59){showWinScreen();return;}
             }
         }
+        
         if(skipSpaceCheck){updatePositions();return;}
         flashSpaceLanding(p.pos);
         if(TRACKLIST_INDICES.includes(p.pos))triggerVinylSpin(p.pos);
@@ -2445,11 +2526,9 @@
                 /* Show armor award as sidebar */
                 document.getElementById('rule-sidebar').classList.add('mystery-sidebar');
                 showSidebar('🛡️ Plot Armor!',`${p.name} is protected from the next bad outcome!`,'var(--mystery-glow)',`Space ${p.pos}`);
-                isMoving=false;document.getElementById('roll-btn').disabled=false;
-                isInLoreDrop=true;showLoreBackdrop();
-                await new Promise(res=>{loreDoneResolver=res;setTimeout(res,6000);});
-                isInLoreDrop=false;loreDoneResolver=null;hideLoreBackdrop();
-                lorePeekSidebar();endTurn();return;
+                hideLoreBackdrop();
+                isMoving=false;isRolling=false;
+                endTurn();return;
             }
 
             item=getRandomBucketItem(idx);
@@ -2467,42 +2546,33 @@
 
             const bucketVid=document.getElementById('side-bucket').querySelector('video');
             if(bucketVid){
-                await new Promise(res=>{
-                    loreDoneResolver=res;
-                    const onEnd=()=>{fadeVideoAudioOut(bucketVid,true);if(activeLoreVid===bucketVid)activeLoreVid=null;res();};
-                    bucketVid.addEventListener('ended',onEnd,{once:true});
-                    const setCap=()=>{
-                        const cap=Math.min((bucketVid.duration||30)*1000,90000);
-                        setTimeout(()=>{bucketVid.removeEventListener('ended',onEnd);fadeVideoAudioOut(bucketVid,true);if(activeLoreVid===bucketVid)activeLoreVid=null;res();},cap);
-                    };
-                    if(bucketVid.readyState>=1){setCap();}
-                    else{bucketVid.addEventListener('loadedmetadata',setCap,{once:true});}
-                });
+                /* Unlock turn immediately — video plays in sidebar independently */
+                isInLoreDrop=false;loreDoneResolver=null;
+                hideLoreBackdrop();
+                isMoving=false;isRolling=false;
+                endTurn();
+                /* Video cleans itself up when done or dismissed */
+                const onEnd=()=>{fadeVideoAudioOut(bucketVid,true);if(activeLoreVid===bucketVid)activeLoreVid=null;};
+                bucketVid.addEventListener('ended',onEnd,{once:true});
+                const setCap=()=>{
+                    const cap=Math.min((bucketVid.duration||30)*1000,90000);
+                    setTimeout(()=>{bucketVid.removeEventListener('ended',onEnd);fadeVideoAudioOut(bucketVid,true);if(activeLoreVid===bucketVid)activeLoreVid=null;},cap);
+                };
+                if(bucketVid.readyState>=1){setCap();}
+                else{bucketVid.addEventListener('loadedmetadata',setCap,{once:true});}
+                return;
             } else {
-                /* Image / merch — 40s linger (merch=20s), then auto-peek. Roll always dismisses. */
-                const _isMerch=item&&(item.type==='link'||item.type==='download');
-                const _lingerMs=_isMerch?20000:40000;
-                await new Promise(res=>{
-                    loreDoneResolver=res;
-                    const _t=setTimeout(()=>{loreDoneResolver=null;res();},_lingerMs);
-                    const sb=document.getElementById('rule-sidebar');
-                    const origClose=sb.onclick;
-                    sb.onclick=(e)=>{
-                        clearTimeout(_t);loreDoneResolver=null;
-                        stopActiveLoreVid();sb.onclick=origClose;if(origClose)origClose(e);res();
-                    };
-                });
-                /* Merch: peek (stays visible as tab) until next action; image: fully close */
-                if(_isMerch){
-                    isInLoreDrop=false;loreDoneResolver=null;isMoving=false;isRolling=false;
-                    hideLoreBackdrop();lorePeekSidebar();endTurn();return;
-                }
+                /* Image lore — 40s auto-dismiss via sidebarTimer in showSidebar. Turn hands off immediately. */
+                const sb=document.getElementById('rule-sidebar');
+                const origClose=sb.onclick;
+                sb.onclick=(e)=>{
+                    stopActiveLoreVid();sb.onclick=origClose;if(origClose)origClose(e);
+                };
             }
 
             isInLoreDrop=false;loreDoneResolver=null;
-            isMoving=false;isRolling=false;
             hideLoreBackdrop();
-            lorePeekSidebar();
+            isMoving=false;isRolling=false;
             endTurn();return;
         }
 
@@ -2516,34 +2586,9 @@
         updatePositions();
     }
 
-    // ══════════════════════════════════════════════
-    // LORE PEEK — slide sidebar almost off right, tab lingers
-    // ══════════════════════════════════════════════
-    function lorePeekSidebar(){
-        const sb=document.getElementById('rule-sidebar');
-        if(!sb.classList.contains('active'))return;
-        sb.classList.add('lore-peek');
-        /* Animate right to almost off-screen */
-        const w=sb.offsetWidth;
-        sb.style.transition='right 0.6s cubic-bezier(0.4,0,0.2,1)';
-        sb.style.right=`-${w-18}px`;
-    }
-    function lorePeekToggle(e){
-        e.stopPropagation();
-        const sb=document.getElementById('rule-sidebar');
-        const w=sb.offsetWidth;
-        if(sb.style.right===`-${w-18}px`||sb.style.right===`-${w-18}px`){
-            /* Pull back out */
-            sb.style.right='0';
-        } else {
-            sb.style.right=`-${w-18}px`;
-        }
-    }
     function handleSidebarClick(e){
-        /* Don't trigger close if clicking peek tab */
-        if(e.target.id==='lore-peek-tab')return;
         const sb=document.getElementById('rule-sidebar');
-        sb.classList.remove('active','mystery-sidebar','lore-peek');
+        sb.classList.remove('active','mystery-sidebar');
         sb.style.right='';sb.style.transition='';
         stopActiveLoreVid();
         if(sidebarTimer)clearTimeout(sidebarTimer);
@@ -2569,7 +2614,7 @@
             nmBtn=document.createElement('button');
             nmBtn.id='timer-nevermind';
             nmBtn.className='btn-nevermind';
-            nmBtn.innerText='nevermind - take penalty';
+            nmBtn.innerText='nevermind - take penalty';
             actionBar.appendChild(nmBtn);
         }
         nmBtn.style.display='block';
@@ -2624,8 +2669,11 @@
         }
         const r=rules[p.pos];
         if(!r){endTurn();return;}
-        const spaceCol=getSpaceColor(p.pos);
+        /* Prevent same space firing twice in one turn — blocks loops */
+        if(spacesTriggeredThisTurn.has(p.pos)){endTurn();return;}
+        spacesTriggeredThisTurn.add(p.pos);
         const popupEl=document.getElementById('main-popup');
+        const spaceCol=getSpaceColor(p.pos);
         popupEl.style.borderColor=spaceCol;popupEl.style.boxShadow=`0 0 30px ${spaceCol}`;
         if(r.sound&&r.choice!=='remedy')playSpaceSfx(r.sound);
         /* Remedy: blocked if ANY label deal is active */
@@ -2736,9 +2784,9 @@
             const fadeOutVideo=(vid)=>{if(!vid)return;let vol=vid.volume||1;const fade=setInterval(()=>{if(vol>0.1){vol-=0.1;vid.volume=vol;}else{vid.pause();clearInterval(fade);}},200);};
             if(r.choice==='remedy'){
                 const remedyDesc=document.createElement('div');
-                remedyDesc.innerHTML=`<div id="video-wrapper" style="position:relative;width:70%;margin:0 auto 14px;border-radius:8px;overflow:hidden;background:#000;border:1px solid #333;"><div id="close-video" style="position:absolute;top:5px;right:10px;color:white;cursor:pointer;font-size:22px;font-weight:bold;z-index:10;text-shadow:0 0 5px #000;">×</div><video id="remedy-video" style="width:100%;display:block;" autoplay playsinline><source src="trevortrim.mp4?v=24" type="video/mp4"></video></div>
-<div style="margin-bottom:8px;">The cure for your obscurity!<br>A major label likes your sound.<br><b style="color:var(--joy-glow);">Sign for +6 spaces now!</b></div>
-<div style="font-family:'Courier New',monospace;font-size:0.88rem;color:rgba(255,255,255,0.72);margin-top:8px;"><span style="display:inline-block;animation:phoneWiggle 1.8s ease-in-out infinite;">📱</span> Hey, it's your lawyer. I suggest you:</div>`;
+                remedyDesc.innerHTML=`<div id="video-wrapper" style="position:relative;width:70%;margin:0 auto 14px;border-radius:8px;overflow:hidden;background:#000;border:1px solid #333;animation:videoKeepAlive 4s ease-in-out infinite;"><div id="close-video" style="position:absolute;top:5px;right:10px;color:white;cursor:pointer;font-size:22px;font-weight:bold;z-index:10;text-shadow:0 0 5px #000;">×</div><video id="remedy-video" style="width:100%;display:block;" autoplay playsinline muted><source src="trevortrim.mp4?v=24" type="video/mp4"></video></div>
+                <div style="margin-bottom:8px;">The cure for your obscurity!<br>A major label likes your sound.<br><b style="color:var(--joy-glow);">Sign for +6 spaces now!</b></div>
+                <div style="font-family:'Courier New',monospace;font-size:0.88rem;color:rgba(255,255,255,0.72);margin-top:8px;"><span style="display:inline-block;animation:phoneWiggle 1.8s ease-in-out infinite;">📱</span> Hey, it's your lawyer. I suggest you:</div>`;
                 const fpBtn2=document.createElement('button');
                 fpBtn2.style.cssText='display:block;margin:8px auto 0;padding:7px 16px;background:transparent;border:1px solid rgba(255,255,255,0.3);color:rgba(255,255,255,0.55);font-family:Courier New,monospace;font-size:0.8rem;border-radius:6px;cursor:pointer;letter-spacing:1px;transition:all 0.2s;';
                 fpBtn2.innerText='Read the Fine Print ⬇️';
@@ -2754,7 +2802,15 @@
                 setTimeout(()=>{
                     const cv=document.getElementById('close-video');const vid=document.getElementById('remedy-video');
                     if(cv)cv.onclick=(e)=>{e.stopPropagation();fadeOutVideo(vid);document.getElementById('video-wrapper').style.display='none';};
-                    if(vid){vid.play().catch(()=>{});/* mobile buffer fix */const _rnudge=setInterval(()=>{if(vid&&!vid.paused){}else if(vid&&!vid.ended)vid.play().catch(()=>{});},2000);vid.addEventListener('ended',()=>clearInterval(_rnudge),{once:true});}
+                    if(vid){
+                        vid.load();
+                        vid.play().then(()=>{
+                            /* Unmute after successful play — user gesture already captured */
+                            vid.muted=false;vid.volume=0.5;
+                        }).catch(()=>{vid.muted=true;vid.play().catch(()=>{});});
+                        const _rnudge=setInterval(()=>{if(vid&&!vid.paused){}else if(vid&&!vid.ended){vid.load();vid.play().catch(()=>{});}},2000);
+                        vid.addEventListener('ended',()=>clearInterval(_rnudge),{once:true});
+                    }
                     setTimeout(()=>playSfx('remedyclip.wav'),150);
                 },50);
             }
@@ -2888,6 +2944,8 @@
             /* Plot armor: eat the lost recording penalty entirely — no re-roll */
             if(checkPlotArmor(capturedTurnIdx,true)){
                 modal.style.display='none';
+                players[capturedTurnIdx].accolades.push('📼');
+                renderPasses();
                 showSidebar("🛡️ PLOT ARMOR","Shield absorbed the Lost Recording!",'var(--mystery-glow)');
                 endTurn();return;
             }
@@ -2996,17 +3054,32 @@
             document.querySelectorAll('.player').forEach(el=>{el.classList.remove('swap-target');el.style.pointerEvents='none';});
             const p=players[turnIdx],target=players[idx];
             const oldPos=p.pos;
-            if(checkPlotArmor(idx,true)){
+            const targetArmorBlocked=target.hasPlotArmor;
+            if(targetArmorBlocked){
+                /* Active player moves to target's spot; armored target stays put */
+                target.hasPlotArmor=false;target.accolades[target.accolades.lastIndexOf('🛡️')]&&target.accolades.splice(target.accolades.lastIndexOf('🛡️'),1);
                 playSlide();p.pos=target.pos;
+                updatePositions();renderPasses();
+                if(p.pos===GRAMMY_SPACE)awardSwapGrammy(turnIdx);
+                checkPassiveGrammys(p.name);
+                /* Show armor sidecard 1s later, then hand off turn */
+                setTimeout(()=>{
+                    const e=document.createElement('div');e.className='floating-emoji-slow';
+                    e.innerText='🛡️';e.style.left='50%';e.style.top='50%';document.body.appendChild(e);
+                    setTimeout(()=>e.remove(),2400);
+                    showPlotArmorSidecard(idx);
+                    renderPasses();
+                    setTimeout(()=>endTurn(),1000);
+                },1000);
             } else {
-                /* Mark target as passively moved */
+                /* Normal swap */
                 target.wasPassivelyMoved=true;
                 playSlide();p.pos=target.pos;
                 playSlide();target.pos=oldPos;
                 if(target.pos===GRAMMY_SPACE)awardSwapGrammy(idx);
+                if(p.pos===GRAMMY_SPACE)awardSwapGrammy(turnIdx);
+                checkPassiveGrammys(p.name);updatePositions();renderPasses();endTurn();
             }
-            if(p.pos===GRAMMY_SPACE)awardSwapGrammy(turnIdx);
-            checkPassiveGrammys(p.name);updatePositions();renderPasses();endTurn();
         } else if(isMayaPartner){
             dismissReminder();isMayaPartner=false;
             document.querySelectorAll('.player').forEach(el=>{el.classList.remove('swap-target');el.style.pointerEvents='none';});
@@ -3020,8 +3093,7 @@
     function showSidebar(title,desc,color='#ffffff',subtext=''){
         if(sidebarTimer)clearTimeout(sidebarTimer);
         const sb=document.getElementById('rule-sidebar');
-        /* Reset any lore-peek positioning */
-        sb.style.right='';sb.style.transition='';sb.classList.remove('lore-peek');
+        sb.style.right='';sb.style.transition='';
         sb.style.borderColor=color;sb.style.boxShadow=`-10px 0 40px ${color}`;
         document.getElementById('side-sub').innerText=subtext;
         document.getElementById('side-title').innerText=title;
@@ -3034,7 +3106,7 @@
     function closeSidebar(){
         stopActiveLoreVid();
         const sb=document.getElementById('rule-sidebar');
-        sb.classList.remove('active','mystery-sidebar','lore-peek');
+        sb.classList.remove('active','mystery-sidebar');
         sb.style.right='';sb.style.transition='';
         if(sidebarTimer)clearTimeout(sidebarTimer);
     }
@@ -3073,8 +3145,9 @@
         const p=players[turnIdx];
         playSpaceSfx('swimclip.wav');
         let statsHtml=`<h2 style="color:${p.avatar.color};animation:winPulse 2s infinite ease-in-out;font-family:'KCStrikerSans','Courier New',monospace;margin:5px 0;--p-color:${p.avatar.color};text-shadow:0 0 20px ${p.avatar.color};">${p.name} WINS!</h2>`;
-        statsHtml+=`<div style="text-align:left;margin-top:15px;font-family:monospace;background:rgba(0,0,0,0.4);border-radius:12px;padding:12px;border:1px solid #333;"><div style="text-align:right;margin-bottom:8px;"><span onclick="showAccoladeKey()" style="cursor:pointer;font-size:0.7rem;letter-spacing:1px;color:rgba(255,255,255,0.4);border:1px solid rgba(255,255,255,0.2);border-radius:4px;padding:2px 7px;font-family:Courier New,monospace;text-transform:uppercase;transition:all 0.2s;" onmouseover="this.style.color='white';this.style.borderColor='rgba(255,255,255,0.6)'" onmouseout="this.style.color='rgba(255,255,255,0.4)';this.style.borderColor='rgba(255,255,255,0.2)'">? key</span></div>`;
-        players.forEach(pl=>{
+        statsHtml+=`<div style="text-align:left;margin-top:15px;font-family:monospace;background:rgba(0,0,0,0.4);border-radius:12px;padding:12px;border:1px solid #333;">`;
+        const sortedPlayers=[...players].sort((a,b)=>b.pos-a.pos);
+        sortedPlayers.forEach((pl,sortIdx)=>{
             const supporterLine=pl.hasThrifty?`<div style="font-size:0.7rem;color:rgba(255,255,255,0.5);letter-spacing:1px;margin-top:2px;">Merch code: <span class="bucket-code" style="font-size:0.85rem;padding:3px 8px;cursor:pointer;" onclick="navigator.clipboard.writeText('PLAYER${pl.merchdiscountPct}').then(()=>{this.innerText='COPIED!';setTimeout(()=>this.innerText='PLAYER${pl.merchdiscountPct}',2000)})">PLAYER${pl.merchdiscountPct}</span> &mdash; ${pl.merchdiscountPct}% off</div>`:'';
             const statusTags=[(pl.isInvestor?'<span style="background:var(--teal-glow);color:black;padding:1px 6px;border-radius:3px;font-size:0.65rem;font-weight:bold;letter-spacing:0.5px;margin-right:4px;">INVESTOR</span>':''),
                 (pl.isSellout||pl.isColdPitchSellout?'<span style="background:var(--fear-glow);color:white;padding:1px 6px;border-radius:3px;font-size:0.65rem;font-weight:bold;letter-spacing:0.5px;margin-right:4px;">SELLOUT</span>':''),
@@ -3082,13 +3155,15 @@
                 (pl.hasThrifty?'<span style="background:var(--mystery-glow);color:black;padding:1px 6px;border-radius:3px;font-size:0.65rem;font-weight:bold;letter-spacing:0.5px;margin-right:4px;">THRIFTY</span>':''),
                 (!pl.isSellout&&!pl.isColdPitchSellout&&!pl.isInvestor&&!pl.usedColdPitch?'<span style="background:#2a2a2a;color:rgba(255,255,255,0.85);padding:1px 6px;border-radius:3px;font-size:0.65rem;font-weight:bold;letter-spacing:0.5px;margin-right:4px;">INDIE</span>':'')
             ].join('');
-            statsHtml+=`<div style="margin-bottom:12px;border-bottom:1px solid #222;display:flex;align-items:center;gap:12px;padding-bottom:10px;">
-                <img src="${pl.avatar.img}" style="width:50px;height:50px;border-radius:50%;background:#000;border:2px solid ${pl.avatar.color};box-shadow:0 0 10px ${pl.avatar.color};">
-                <div style="flex-grow:1;"><b style="color:${pl.avatar.color};font-size:1.1rem;letter-spacing:1px;">${pl.name}</b>${supporterLine}
+            
+            const _isWinner=sortIdx===0;
+            statsHtml+=`<div style="margin-bottom:${_isWinner?'16':'10'}px;border-bottom:1px solid #333;display:flex;align-items:center;gap:12px;padding-bottom:${_isWinner?'14':'8'}px;${_isWinner?'background:rgba(255,255,255,0.04);border-radius:10px;padding:10px;':''}">
+                <img src="${pl.avatar.img}" style="width:${_isWinner?'60':'44'}px;height:${_isWinner?'60':'44'}px;border-radius:50%;background:#000;border:${_isWinner?'3':'2'}px solid ${pl.avatar.color};box-shadow:0 0 ${_isWinner?'18':'8'}px ${pl.avatar.color};">
+                <div style="flex-grow:1;"><b style="color:${pl.avatar.color};font-size:${_isWinner?'1.25':'1.0'}rem;letter-spacing:1px;">${pl.name}</b>${supporterLine}
                 <div style="margin:3px 0;">${statusTags}</div>
-                <div style="font-size:1.2rem;margin:2px 0;">${pl.accolades.join('')}</div></div></div>`;
+                <div style="font-size:1.2rem;margin:2px 0;">${pl.accolades.join('')}${_isWinner?` <span onclick="showAccoladeKey()" style="cursor:pointer;opacity:0.55;font-size:0.7rem;letter-spacing:0;background:rgba(0,0,0,0.18);border-radius:50%;width:15px;height:15px;display:inline-flex;align-items:center;justify-content:center;vertical-align:middle;font-family:sans-serif;transition:opacity 0.2s;" onmouseover="this.style.opacity='0.9'" onmouseout="this.style.opacity='0.55'" title="Accolades key">?</span>`:''}</div></div></div>`;
         });
-        statsHtml+=`</div></div>`;
+        statsHtml+=`</div>`;
         const popupEl=document.getElementById('main-popup');
         popupEl.style.borderColor=p.avatar.color;popupEl.style.boxShadow=`0 0 80px ${p.avatar.color}`;
         document.getElementById('event-title').innerText="The tour is over. Go Swimmin!";
@@ -3115,7 +3190,9 @@
         document.getElementById('event-btn-secondary').style.display='none';
         document.getElementById('hard-reset-win').onclick=()=>location.reload();
         document.getElementById('soft-reset-win').onclick=()=>{document.getElementById('overlay-event').style.display='none';confirmSoftRestart();};
-        document.getElementById('overlay-event').style.display='flex';
+        const _winOverlay=document.getElementById('overlay-event');
+        _winOverlay.style.display='flex';
+        _winOverlay.onclick=(e)=>{e.stopPropagation();};
     }
 
     // ══════════════════════════════════════════════
@@ -3123,6 +3200,7 @@
     // ══════════════════════════════════════════════
     function endTurn(){
         dismissReminder();
+        spacesTriggeredThisTurn=new Set();
         const fb=document.getElementById('maya-fear-btn');if(fb)fb.remove();
         isSwapping=false;isMayaPartner=false;
         document.querySelectorAll('.player').forEach(el=>{el.classList.remove('swap-target');el.style.pointerEvents='none';});
@@ -3194,9 +3272,18 @@
         if(p.hasPlotArmor)return false;
         if(Math.random()>1/6)return false;
         p.hasPlotArmor=true;
-        p.accolades.push('🛡️');
         renderPasses();
         return true;
+    }
+
+    /* Show plot armor sidecard with player name in their color */
+    function showPlotArmorSidecard(playerIdx){
+        const p=players[playerIdx];
+        showSidebar(
+            `${p.name}'s Plot Armor`,
+            `Penalty blocked! Lucky — the armor absorbed the hit.`,
+            p.avatar.color
+        );
     }
 
     /* Call before any detrimental move — returns true if blocked by armor */
@@ -3205,11 +3292,12 @@
         const p=players[playerIdx];
         if(!p.hasPlotArmor)return false;
         p.hasPlotArmor=false; /* armor consumed */
+        p.accolades.push('🛡️');
         /* Flash shield emoji */
         const e=document.createElement('div');e.className='floating-emoji-slow';
         e.innerText='🛡️';e.style.left='50%';e.style.top='50%';document.body.appendChild(e);
         setTimeout(()=>e.remove(),2400);
-        showSidebar('🛡️ PLOT ARMOR!','Shield absorbed the hit. Lucky!','var(--mystery-glow)');
+        showPlotArmorSidecard(playerIdx);
         renderPasses();
         return true; /* blocked */
     }
