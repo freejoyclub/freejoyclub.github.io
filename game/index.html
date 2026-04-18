@@ -1415,11 +1415,23 @@
         svg.setAttribute('height',outer.offsetHeight);
         const origin=outer.getBoundingClientRect();
         const pts=[];
+        const isLandscape=layoutMode==='landscape';
         boardLayout.forEach((_,i)=>{
             const el=document.getElementById('s'+i);
             if(!el)return;
             const r=el.getBoundingClientRect();
-            pts.push({x:r.left-origin.left+r.width/2,y:r.top-origin.top+r.height/2});
+            let cx=r.left-origin.left+r.width/2;
+            let cy=r.top-origin.top+r.height/2;
+            /* Offset reel space endpoints toward the board — safe starting value of 30% of space size */
+            const nudge=r.width*0.30;
+            if(i===0){
+                /* Start space: nudge toward board — up in landscape, right in portrait */
+                if(isLandscape)cy-=nudge; else cx+=nudge;
+            } else if(i===59){
+                /* End space: nudge toward board — down in landscape, left in portrait */
+                if(isLandscape)cy+=nudge; else cx-=nudge;
+            }
+            pts.push({x:cx,y:cy});
         });
         if(pts.length<2)return;
 
