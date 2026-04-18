@@ -1968,8 +1968,7 @@
         boardLayout.forEach((_,i)=>{
             const s=document.getElementById('s'+i);
             if(!s)return;
-            if(i===0)   {s.style.transform='scale(1.15)';return;}
-            if(i===59)  {s.style.transform='scale(1.2)';return;}
+            if(i===0||i===59){return;}
             const mag=spaceOffsets[i];
             const dir=dirs[i]||(i>0?dirs[i-1]:null)||'right';
             let ox=0,oy=0;
