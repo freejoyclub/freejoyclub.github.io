@@ -170,6 +170,49 @@
       opacity: 0.45;
     }
 
+    /* ── Featured Short (vertical, centered, alone on its row) ── */
+    .featured-short {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.9rem;
+      margin-bottom: 2.8rem;
+    }
+
+    .short-embed {
+      position: relative;
+      width: 100%;
+      max-width: 340px;
+      padding-bottom: calc(177.78% * (340 / 340));
+      /* 9:16 ratio capped at 340px wide */
+      padding-bottom: min(177.78%, calc(177.78vw - 5rem));
+      height: 0;
+      overflow: hidden;
+      border-radius: 4px;
+      box-shadow: 4px 4px 0 rgba(139,94,26,0.25), 0 8px 24px var(--shadow);
+      border: 2px solid rgba(139,94,26,0.3);
+    }
+
+    /* cleaner approach: fixed aspect via aspect-ratio */
+    .short-embed {
+      position: relative;
+      width: min(340px, 60vw);
+      aspect-ratio: 9 / 16;
+      padding-bottom: 0;
+      height: auto;
+      overflow: hidden;
+      border-radius: 4px;
+      box-shadow: 4px 4px 0 rgba(139,94,26,0.25), 0 8px 24px var(--shadow);
+      border: 2px solid rgba(139,94,26,0.3);
+    }
+
+    .short-embed iframe {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      border: 0;
+    }
+
     /* ── Video grid ── */
     .video-grid {
       display: grid;
@@ -202,11 +245,12 @@
       text-shadow: 1px 2px 6px var(--shadow);
     }
 
-    .video-card:nth-child(2) .video-title { animation-delay: -0.7s; }
-    .video-card:nth-child(3) .video-title { animation-delay: -1.4s; }
-    .video-card:nth-child(4) .video-title { animation-delay: -2.1s; }
-    .video-card:nth-child(5) .video-title { animation-delay: -2.8s; }
-    .video-card:nth-child(6) .video-title { animation-delay: -3.5s; }
+    .featured-short .video-title { animation-delay: 0s; }
+    .video-card:nth-child(1) .video-title { animation-delay: -0.7s; }
+    .video-card:nth-child(2) .video-title { animation-delay: -1.4s; }
+    .video-card:nth-child(3) .video-title { animation-delay: -2.1s; }
+    .video-card:nth-child(4) .video-title { animation-delay: -2.8s; }
+    .video-card:nth-child(5) .video-title { animation-delay: -3.5s; }
 
     @keyframes floatTitle {
       0%, 100% { transform: translateY(0px); }
@@ -372,22 +416,18 @@
 
     <!-- Staff divider -->
     <svg class="staff-divider" viewBox="0 0 520 36" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-      <!-- 5 staff lines -->
       <line x1="20" y1="8"  x2="500" y2="8"  stroke="#2c1a0e" stroke-width="1"/>
       <line x1="20" y1="14" x2="500" y2="14" stroke="#2c1a0e" stroke-width="1"/>
       <line x1="20" y1="20" x2="500" y2="20" stroke="#2c1a0e" stroke-width="1"/>
       <line x1="20" y1="26" x2="500" y2="26" stroke="#2c1a0e" stroke-width="1"/>
       <line x1="20" y1="32" x2="500" y2="32" stroke="#2c1a0e" stroke-width="1"/>
-      <!-- treble clef suggestion (simple shape) -->
       <text x="4" y="30" font-size="28" fill="#2c1a0e" font-family="serif">𝄞</text>
-      <!-- a few random notes scattered along the staff -->
       <ellipse cx="80"  cy="17" rx="5" ry="3.5" fill="#2c1a0e" transform="rotate(-15,80,17)"/>
       <line x1="85"  y1="17" x2="85"  y2="3"  stroke="#2c1a0e" stroke-width="1.2"/>
       <ellipse cx="140" cy="23" rx="5" ry="3.5" fill="#2c1a0e" transform="rotate(-15,140,23)"/>
       <line x1="145" y1="23" x2="145" y2="9"  stroke="#2c1a0e" stroke-width="1.2"/>
       <ellipse cx="200" cy="11" rx="5" ry="3.5" fill="#2c1a0e" transform="rotate(-15,200,11)"/>
       <line x1="205" y1="11" x2="205" y2="0"  stroke="#2c1a0e" stroke-width="1.2"/>
-      <!-- eighth note flag on the last note -->
       <path d="M205 0 Q215 4 210 10" stroke="#2c1a0e" stroke-width="1.2" fill="none"/>
       <ellipse cx="270" cy="20" rx="5" ry="3.5" fill="#2c1a0e" transform="rotate(-15,270,20)"/>
       <line x1="275" y1="20" x2="275" y2="6"  stroke="#2c1a0e" stroke-width="1.2"/>
@@ -395,24 +435,21 @@
       <line x1="345" y1="14" x2="345" y2="0"  stroke="#2c1a0e" stroke-width="1.2"/>
       <ellipse cx="410" cy="26" rx="5" ry="3.5" fill="#2c1a0e" transform="rotate(-15,410,26)"/>
       <line x1="415" y1="26" x2="415" y2="12" stroke="#2c1a0e" stroke-width="1.2"/>
-      <!-- bar line near end -->
       <line x1="470" y1="8" x2="470" y2="32" stroke="#2c1a0e" stroke-width="1.5"/>
-      <!-- double bar at end -->
       <line x1="498" y1="8" x2="498" y2="32" stroke="#2c1a0e" stroke-width="1"/>
       <line x1="502" y1="8" x2="502" y2="32" stroke="#2c1a0e" stroke-width="3"/>
     </svg>
 
-    <!-- Video grid -->
-    <section class="video-grid" aria-label="Videos">
-
-      <div class="video-card">
-        <div class="video-title">People Named Al (Capital&nbsp;I's)</div>
-        <div class="video-embed">
-          <!-- Replace src with actual YouTube embed URL -->
-          <div class="video-placeholder">video coming soon</div>
-          <!-- <iframe src="https://www.youtube.com/embed/VIDEO_ID" allowfullscreen></iframe> -->
-        </div>
+    <!-- Featured Short — vertical, centered, alone -->
+    <div class="featured-short">
+      <div class="video-title">People Named Al (Capital&nbsp;I's)</div>
+      <div class="short-embed">
+        <iframe src="https://www.youtube.com/embed/t17ouKlQc0M" allowfullscreen></iframe>
       </div>
+    </div>
+
+    <!-- Video grid — remaining 5 videos -->
+    <section class="video-grid" aria-label="Videos">
 
       <div class="video-card">
         <div class="video-title">High on Christmas</div>
