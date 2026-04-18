@@ -1624,14 +1624,35 @@
         const minPos=Math.min(...players.map(p=>p.pos));
         return players.reduce((arr,p,i)=>{if(p.pos===minPos)arr.push(i);return arr;},[]);
     }
-    window.addEventListener('resize',()=>setTimeout(()=>{
-        if(document.getElementById('s0')){refreshLayout();}
-        else{updatePositions();drawTapePath();}
-    },150));
-    window.addEventListener('orientationchange',()=>setTimeout(()=>{
-        if(document.getElementById('s0')){refreshLayout();}
-        else{updatePositions();drawTapePath();}
-    },350));
+    let _lastRefreshW=0,_lastRefreshH=0,_resizeTimer=null;
+    window.addEventListener('resize',()=>{
+        if(_resizeTimer)clearTimeout(_resizeTimer);
+        _resizeTimer=setTimeout(()=>{
+            _resizeTimer=null;
+            const w=window.innerWidth,h=window.innerHeight;
+            /* Only act if dimensions changed by more than 30px — ignores browser chrome show/hide */
+            if(Math.abs(w-_lastRefreshW)<30&&Math.abs(h-_lastRefreshH)<30)return;
+            const newMode=detectLayout();
+            if(!document.getElementById('s0')){updatePositions();drawTapePath();return;}
+            /* Only do full refresh if layout mode actually changed */
+            if(newMode===layoutMode){
+                /* Same mode — just redraw positions and tape, skip space recomposition */
+                drawTapePath();updatePositions();
+            } else {
+                _lastRefreshW=w;_lastRefreshH=h;
+                refreshLayout();
+            }
+        },500);
+    });
+    window.addEventListener('orientationchange',()=>{
+        if(_resizeTimer)clearTimeout(_resizeTimer);
+        _resizeTimer=setTimeout(()=>{
+            _resizeTimer=null;
+            _lastRefreshW=window.innerWidth;_lastRefreshH=window.innerHeight;
+            if(document.getElementById('s0')){refreshLayout();}
+            else{updatePositions();drawTapePath();}
+        },500);
+    });
 
     // ══════════════════════════════════════════════
     // MYSTERY SPACE ASSIGNMENT
@@ -1967,7 +1988,7 @@
         for(let i=0;i<60;i++){
             if(i===0||i===59){spaceOffsets.push(0);continue;}
             /* Vary magnitude per space — some nudge more, some less */
-            const mag=(Math.random()*18-6)*(0.5+Math.random()*0.8);
+            const mag=(Math.random()*16-6)*(0.4+Math.random()*0.7);
             spaceOffsets.push(parseFloat(mag.toFixed(1)));
         }
     }
@@ -1999,9 +2020,12 @@
     }
 
     /* Full layout refresh — call on init and resize */
-    function refreshLayout(){
+    function refreshLayout(force=false){
         const newMode=detectLayout();
-        if(newMode===layoutMode&&document.getElementById('s0')){}  /* allow re-run for redraw */
+        if(!force&&newMode===layoutMode&&document.getElementById('s0')){
+            /* Mode unchanged — lightweight redraw only, no space recomposition */
+            drawTapePath();updatePositions();return;
+        }
         layoutMode=newMode;
         applyLayout(layoutMode);
         setTimeout(()=>{
