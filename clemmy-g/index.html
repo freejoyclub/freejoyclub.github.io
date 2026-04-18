@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Clemmy G – Grant Clementi</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400;1,700&family=IM+Fell+English:ital@0;1&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --tan1: #e8d5b0;
+      --tan2: #d4a96a;
+      --tan3: #c8956c;
+      --tan4: #e2c9a0;
+      --tan5: #f0dfc0;
+      --tan6: #d9b48f;
+      --tan7: #c4a882;
+      --tan8: #e6cfa8;
+      --ink: #2c1a0e;
+      --ink-light: #4a2e18;
+      --gold: #8b5e1a;
+      --gold-bright: #b8860b;
+      --cream: #fdf6e8;
+      --shadow: rgba(44,26,14,0.18);
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Libre Baskerville', Georgia, serif;
+      color: var(--ink);
+      min-height: 100vh;
+      overflow-x: hidden;
+      background: var(--tan1);
+    }
+
+    /* ── Gradient sweep background ── */
+    .bg-sweep {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      background: linear-gradient(
+        125deg,
+        var(--tan1),
+        var(--tan5),
+        var(--tan2),
+        var(--tan3),
+        var(--tan6),
+        var(--tan4),
+        var(--tan7),
+        var(--tan8),
+        var(--tan2),
+        var(--tan1)
+      );
+      background-size: 400% 400%;
+      animation: sweepGradient 18s ease infinite;
+    }
+
+    @keyframes sweepGradient {
+      0%   { background-position: 0% 50%; }
+      50%  { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    /* ── Subtle noise overlay for parchment feel ── */
+    .bg-sweep::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+      opacity: 0.5;
+      pointer-events: none;
+    }
+
+    /* ── Page wrapper ── */
+    .page {
+      position: relative;
+      z-index: 1;
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 0 1.5rem 4rem;
+    }
+
+    /* ── Marquee banner ── */
+    .marquee-wrap {
+      background: var(--ink);
+      color: var(--tan4);
+      font-family: 'IM Fell English', serif;
+      font-size: 0.78rem;
+      letter-spacing: 0.12em;
+      overflow: hidden;
+      white-space: nowrap;
+      padding: 0.45rem 0;
+      position: relative;
+      z-index: 2;
+    }
+
+    .marquee-track {
+      display: inline-block;
+      animation: marqueeScroll 28s linear infinite;
+    }
+
+    .marquee-track span {
+      margin: 0 2.5rem;
+    }
+
+    @keyframes marqueeScroll {
+      0%   { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
+    }
+
+    /* ── Header ── */
+    header {
+      text-align: center;
+      padding: 3.5rem 1rem 1.5rem;
+      position: relative;
+    }
+
+    .presents {
+      font-family: 'IM Fell English', serif;
+      font-style: italic;
+      font-size: 1.05rem;
+      letter-spacing: 0.08em;
+      color: var(--ink-light);
+      display: block;
+      margin-bottom: 0.4rem;
+      opacity: 0.85;
+    }
+
+    h1 {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: clamp(3.5rem, 10vw, 6.5rem);
+      font-weight: 700;
+      line-height: 1;
+      color: var(--ink);
+      text-shadow: 3px 3px 0 rgba(139,94,26,0.2), 6px 6px 12px var(--shadow);
+      letter-spacing: -0.01em;
+    }
+
+    .subtitle-rule {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin: 1.8rem auto 0;
+      max-width: 420px;
+    }
+
+    .subtitle-rule hr {
+      flex: 1;
+      border: none;
+      border-top: 1px solid var(--gold);
+      opacity: 0.6;
+    }
+
+    .subtitle-rule span {
+      font-family: 'IM Fell English', serif;
+      font-style: italic;
+      font-size: 0.82rem;
+      color: var(--gold);
+      letter-spacing: 0.1em;
+      white-space: nowrap;
+    }
+
+    /* ── Musical staff divider ── */
+    .staff-divider {
+      display: block;
+      width: 100%;
+      max-width: 520px;
+      margin: 2.5rem auto;
+      opacity: 0.45;
+    }
+
+    /* ── Video grid ── */
+    .video-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 2.8rem;
+    }
+
+    @media (min-width: 640px) {
+      .video-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 2.2rem 2rem;
+      }
+    }
+
+    .video-card {
+      display: flex;
+      flex-direction: column;
+      gap: 0.9rem;
+    }
+
+    .video-title {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: 1.25rem;
+      font-weight: 700;
+      font-style: italic;
+      color: var(--ink);
+      text-align: center;
+      line-height: 1.3;
+      animation: floatTitle 4s ease-in-out infinite;
+      text-shadow: 1px 2px 6px var(--shadow);
+    }
+
+    .video-card:nth-child(2) .video-title { animation-delay: -0.7s; }
+    .video-card:nth-child(3) .video-title { animation-delay: -1.4s; }
+    .video-card:nth-child(4) .video-title { animation-delay: -2.1s; }
+    .video-card:nth-child(5) .video-title { animation-delay: -2.8s; }
+    .video-card:nth-child(6) .video-title { animation-delay: -3.5s; }
+
+    @keyframes floatTitle {
+      0%, 100% { transform: translateY(0px); }
+      50%       { transform: translateY(-5px); }
+    }
+
+    .video-embed {
+      position: relative;
+      padding-bottom: 56.25%;
+      height: 0;
+      overflow: hidden;
+      border-radius: 4px;
+      box-shadow: 4px 4px 0 rgba(139,94,26,0.25), 0 8px 24px var(--shadow);
+      border: 2px solid rgba(139,94,26,0.3);
+    }
+
+    .video-embed iframe {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      border: 0;
+    }
+
+    /* placeholder for when no src yet */
+    .video-placeholder {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(44,26,14,0.08);
+      font-family: 'IM Fell English', serif;
+      font-style: italic;
+      font-size: 0.9rem;
+      color: var(--ink-light);
+      opacity: 0.7;
+    }
+
+    /* ── Contact button ── */
+    .contact-wrap {
+      text-align: center;
+      margin: 3.5rem 0 1rem;
+    }
+
+    .btn-contact {
+      display: inline-block;
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--cream);
+      background: var(--ink);
+      border: 2px solid var(--gold);
+      padding: 0.85rem 2.5rem;
+      border-radius: 2px;
+      text-decoration: none;
+      letter-spacing: 0.06em;
+      box-shadow: 4px 4px 0 var(--gold);
+      transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.2s ease;
+    }
+
+    .btn-contact:hover {
+      transform: translate(-2px, -2px);
+      box-shadow: 6px 6px 0 var(--gold-bright);
+      background: var(--ink-light);
+    }
+
+    .btn-contact:active {
+      transform: translate(1px, 1px);
+      box-shadow: 2px 2px 0 var(--gold);
+    }
+
+    /* ── Bottom nav ── */
+    .bottom-nav {
+      margin-top: 3rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid rgba(139,94,26,0.35);
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 0.5rem 2rem;
+      font-family: 'IM Fell English', serif;
+      font-size: 0.95rem;
+    }
+
+    .bottom-nav a {
+      color: var(--ink-light);
+      text-decoration: none;
+      letter-spacing: 0.05em;
+      position: relative;
+      transition: color 0.2s ease;
+    }
+
+    .bottom-nav a::after {
+      content: '';
+      position: absolute;
+      left: 0; bottom: -2px;
+      width: 0; height: 1px;
+      background: var(--gold-bright);
+      transition: width 0.25s ease;
+    }
+
+    .bottom-nav a:hover {
+      color: var(--gold-bright);
+    }
+
+    .bottom-nav a:hover::after {
+      width: 100%;
+    }
+
+    .nav-sep {
+      color: var(--gold);
+      opacity: 0.5;
+      user-select: none;
+    }
+
+    /* ── Footer blurb ── */
+    .footer-blurb {
+      text-align: center;
+      margin-top: 2rem;
+      font-family: 'IM Fell English', serif;
+      font-style: italic;
+      font-size: 0.8rem;
+      color: var(--ink);
+      opacity: 0.5;
+      letter-spacing: 0.04em;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Scrolling marquee banner -->
+  <div class="marquee-wrap" aria-hidden="true">
+    <div class="marquee-track">
+      <span>⭐ AS SEEN ON THE INTERNET ⭐</span>
+      <span>✦ LIVE FROM WHEREVER YOU ARE ✦</span>
+      <span>⭐ AS SEEN ON THE INTERNET ⭐</span>
+      <span>✦ AVAILABLE FOR WEDDINGS, FUNERALS &amp; EVERYTHING IN BETWEEN ✦</span>
+      <span>⭐ AS SEEN ON THE INTERNET ⭐</span>
+      <span>✦ LIVE FROM WHEREVER YOU ARE ✦</span>
+      <span>⭐ AS SEEN ON THE INTERNET ⭐</span>
+      <span>✦ AVAILABLE FOR WEDDINGS, FUNERALS &amp; EVERYTHING IN BETWEEN ✦</span>
+    </div>
+  </div>
+
+  <div class="bg-sweep"></div>
+
+  <div class="page">
+
+    <!-- Header -->
+    <header>
+      <span class="presents">Grant Clementi presents:</span>
+      <h1>Clemmy&nbsp;G</h1>
+      <div class="subtitle-rule">
+        <hr />
+        <span>musical comedy</span>
+        <hr />
+      </div>
+    </header>
+
+    <!-- Staff divider -->
+    <svg class="staff-divider" viewBox="0 0 520 36" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <!-- 5 staff lines -->
+      <line x1="20" y1="8"  x2="500" y2="8"  stroke="#2c1a0e" stroke-width="1"/>
+      <line x1="20" y1="14" x2="500" y2="14" stroke="#2c1a0e" stroke-width="1"/>
+      <line x1="20" y1="20" x2="500" y2="20" stroke="#2c1a0e" stroke-width="1"/>
+      <line x1="20" y1="26" x2="500" y2="26" stroke="#2c1a0e" stroke-width="1"/>
+      <line x1="20" y1="32" x2="500" y2="32" stroke="#2c1a0e" stroke-width="1"/>
+      <!-- treble clef suggestion (simple shape) -->
+      <text x="4" y="30" font-size="28" fill="#2c1a0e" font-family="serif">𝄞</text>
+      <!-- a few random notes scattered along the staff -->
+      <ellipse cx="80"  cy="17" rx="5" ry="3.5" fill="#2c1a0e" transform="rotate(-15,80,17)"/>
+      <line x1="85"  y1="17" x2="85"  y2="3"  stroke="#2c1a0e" stroke-width="1.2"/>
+      <ellipse cx="140" cy="23" rx="5" ry="3.5" fill="#2c1a0e" transform="rotate(-15,140,23)"/>
+      <line x1="145" y1="23" x2="145" y2="9"  stroke="#2c1a0e" stroke-width="1.2"/>
+      <ellipse cx="200" cy="11" rx="5" ry="3.5" fill="#2c1a0e" transform="rotate(-15,200,11)"/>
+      <line x1="205" y1="11" x2="205" y2="0"  stroke="#2c1a0e" stroke-width="1.2"/>
+      <!-- eighth note flag on the last note -->
+      <path d="M205 0 Q215 4 210 10" stroke="#2c1a0e" stroke-width="1.2" fill="none"/>
+      <ellipse cx="270" cy="20" rx="5" ry="3.5" fill="#2c1a0e" transform="rotate(-15,270,20)"/>
+      <line x1="275" y1="20" x2="275" y2="6"  stroke="#2c1a0e" stroke-width="1.2"/>
+      <ellipse cx="340" cy="14" rx="5" ry="3.5" fill="#2c1a0e" transform="rotate(-15,340,14)"/>
+      <line x1="345" y1="14" x2="345" y2="0"  stroke="#2c1a0e" stroke-width="1.2"/>
+      <ellipse cx="410" cy="26" rx="5" ry="3.5" fill="#2c1a0e" transform="rotate(-15,410,26)"/>
+      <line x1="415" y1="26" x2="415" y2="12" stroke="#2c1a0e" stroke-width="1.2"/>
+      <!-- bar line near end -->
+      <line x1="470" y1="8" x2="470" y2="32" stroke="#2c1a0e" stroke-width="1.5"/>
+      <!-- double bar at end -->
+      <line x1="498" y1="8" x2="498" y2="32" stroke="#2c1a0e" stroke-width="1"/>
+      <line x1="502" y1="8" x2="502" y2="32" stroke="#2c1a0e" stroke-width="3"/>
+    </svg>
+
+    <!-- Video grid -->
+    <section class="video-grid" aria-label="Videos">
+
+      <div class="video-card">
+        <div class="video-title">People Named Al (Capital&nbsp;I's)</div>
+        <div class="video-embed">
+          <!-- Replace src with actual YouTube embed URL -->
+          <div class="video-placeholder">video coming soon</div>
+          <!-- <iframe src="https://www.youtube.com/embed/VIDEO_ID" allowfullscreen></iframe> -->
+        </div>
+      </div>
+
+      <div class="video-card">
+        <div class="video-title">High on Christmas</div>
+        <div class="video-embed">
+          <div class="video-placeholder">video coming soon</div>
+        </div>
+      </div>
+
+      <div class="video-card">
+        <div class="video-title">Regrets</div>
+        <div class="video-embed">
+          <div class="video-placeholder">video coming soon</div>
+        </div>
+      </div>
+
+      <div class="video-card">
+        <div class="video-title">Big Shoe</div>
+        <div class="video-embed">
+          <div class="video-placeholder">video coming soon</div>
+        </div>
+      </div>
+
+      <div class="video-card">
+        <div class="video-title">My Butter Knives</div>
+        <div class="video-embed">
+          <div class="video-placeholder">video coming soon</div>
+        </div>
+      </div>
+
+      <div class="video-card">
+        <div class="video-title">Health Advice</div>
+        <div class="video-embed">
+          <div class="video-placeholder">video coming soon</div>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- Staff divider -->
+    <svg class="staff-divider" viewBox="0 0 520 36" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <line x1="20" y1="8"  x2="500" y2="8"  stroke="#2c1a0e" stroke-width="1"/>
+      <line x1="20" y1="14" x2="500" y2="14" stroke="#2c1a0e" stroke-width="1"/>
+      <line x1="20" y1="20" x2="500" y2="20" stroke="#2c1a0e" stroke-width="1"/>
+      <line x1="20" y1="26" x2="500" y2="26" stroke="#2c1a0e" stroke-width="1"/>
+      <line x1="20" y1="32" x2="500" y2="32" stroke="#2c1a0e" stroke-width="1"/>
+      <text x="4" y="30" font-size="28" fill="#2c1a0e" font-family="serif">𝄞</text>
+      <ellipse cx="90"  cy="20" rx="5" ry="3.5" fill="#2c1a0e" transform="rotate(-15,90,20)"/>
+      <line x1="95"  y1="20" x2="95"  y2="6"  stroke="#2c1a0e" stroke-width="1.2"/>
+      <ellipse cx="160" cy="14" rx="5" ry="3.5" fill="#2c1a0e" transform="rotate(-15,160,14)"/>
+      <line x1="165" y1="14" x2="165" y2="0"  stroke="#2c1a0e" stroke-width="1.2"/>
+      <ellipse cx="230" cy="26" rx="5" ry="3.5" fill="#2c1a0e" transform="rotate(-15,230,26)"/>
+      <line x1="235" y1="26" x2="235" y2="12" stroke="#2c1a0e" stroke-width="1.2"/>
+      <ellipse cx="300" cy="11" rx="5" ry="3.5" fill="#2c1a0e" transform="rotate(-15,300,11)"/>
+      <line x1="305" y1="11" x2="305" y2="0"  stroke="#2c1a0e" stroke-width="1.2"/>
+      <ellipse cx="380" cy="23" rx="5" ry="3.5" fill="#2c1a0e" transform="rotate(-15,380,23)"/>
+      <line x1="385" y1="23" x2="385" y2="9"  stroke="#2c1a0e" stroke-width="1.2"/>
+      <line x1="440" y1="8" x2="440" y2="32" stroke="#2c1a0e" stroke-width="1.5"/>
+      <line x1="498" y1="8" x2="498" y2="32" stroke="#2c1a0e" stroke-width="1"/>
+      <line x1="502" y1="8" x2="502" y2="32" stroke="#2c1a0e" stroke-width="3"/>
+    </svg>
+
+    <!-- Contact button -->
+    <div class="contact-wrap">
+      <a class="btn-contact" href="mailto:grant@freejoy.club?cc=grantclementimusic@gmail.com">
+        Contact Grant
+      </a>
+    </div>
+
+    <!-- Bottom nav -->
+    <nav class="bottom-nav" aria-label="Site navigation">
+      <a href="https://freejoy.club">Band</a>
+      <span class="nav-sep">✦</span>
+      <a href="https://freejoy.club/game">Game</a>
+      <span class="nav-sep">✦</span>
+      <a href="mailto:grant@freejoy.club?cc=grantclementimusic@gmail.com">Contact</a>
+      <span class="nav-sep">✦</span>
+      <a href="https://www.instagram.com/grantclementi" target="_blank" rel="noopener">Instagram</a>
+      <span class="nav-sep">✦</span>
+      <a href="https://www.youtube.com/c/GrantClementi" target="_blank" rel="noopener">YouTube</a>
+    </nav>
+
+    <p class="footer-blurb">available for weddings, funerals &amp; everything in between</p>
+
+  </div>
+
+</body>
+</html>
