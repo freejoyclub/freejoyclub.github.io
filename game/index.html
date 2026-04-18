@@ -110,9 +110,15 @@
             animation:bgRotate 60s linear infinite;
             will-change:transform;
         }
+        /* Wood texture layer — above gradient, below vignette */
+        #wood-bg {
+            position:fixed; inset:0; z-index:-1; pointer-events:none;
+            background:url('wood-bg.jpg') center/cover no-repeat;
+            opacity:0.30;
+        }
         /* Vignette layer, just above bg — darker */
         body::after {
-            content:''; position:fixed; inset:0; z-index:-1; pointer-events:none;
+            content:''; position:fixed; inset:0; z-index:0; pointer-events:none;
             background:radial-gradient(ellipse 80% 75% at 50% 50%,transparent 30%,rgba(0,0,0,0.8) 100%);
         }
 
@@ -959,6 +965,7 @@
         </div>
     </div>
 
+    <div id="wood-bg"></div>
     <div id="screen-glow"></div>
 
     <script>
