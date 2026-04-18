@@ -107,20 +107,21 @@
             width:300vmax; height:300vmax;
             top:50%; left:50%;
             z-index:-2; pointer-events:none;
-            background:linear-gradient(0deg,#a85c2a 0%,#bf7840 25%,#b86535 50%,#cc8a50 75%,#a85c2a 100%);
-            animation:bgRotate 60s linear infinite;
+            background:linear-gradient(0deg,#a85c2a 0%,#d18c58 25%,#b05019 50%,#b07b4d 75%,#a85c2a 100%);
+            animation:bgRotate 8s linear infinite;
             will-change:transform;
         }
         /* Wood texture layer — above gradient, below vignette */
         #wood-bg {
             position:fixed; inset:0; z-index:-1; pointer-events:none;
             background:url('wood-bg.jpg') center/cover no-repeat;
-            opacity:0.1;
+            opacity:0.2;
+            filter:blur(3px)
         }
         /* Vignette layer */
         body::after {
             content:''; position:fixed; inset:0; z-index:0; pointer-events:none;
-            background:radial-gradient(ellipse 80% 75% at 50% 50%,transparent 30%,rgba(0,0,0,0.8) 100%);
+            background:radial-gradient(ellipse 80% 75% at 50% 50%,transparent 30%,rgba(46,4,33,0.6) 100%);
         }
 
         /* ── SCREEN BORDER GLOW — current player color ── */
@@ -574,11 +575,11 @@
         .space-land { animation:spaceLand 1.2s ease-out forwards; }
 
         /* ── NAMED SPACE GLOWS — static colored box-shadow for identity + brightness pulse ── */
-        #s55 { box-shadow:0 0 8px #ff5522;        animation:namedPulse 2.6s ease-in-out infinite; }
-        #s30 { box-shadow:0 0 8px var(--gold);     animation:namedPulse 2.4s ease-in-out infinite; }
-        #s20 { box-shadow:0 0 8px #3399ff;         animation:namedPulse 2.7s ease-in-out infinite; }
-        #s42 { box-shadow:0 0 8px #88ffaa;         animation:namedPulse 2.3s ease-in-out infinite; }
-        #s12, #s53 { box-shadow:0 0 6px #de5b33;   animation:namedPulse 2.9s ease-in-out infinite; }
+        #s55 { box-shadow:0 0 12px #ff5522;        animation:namedPulse 2.6s ease-in-out infinite; }
+        #s30 { box-shadow:0 0 12px var(--gold), 0 0 28px var(--gold); animation:namedPulse 2s ease-in-out infinite; }
+        #s20 { box-shadow:0 0 12px #3399ff;         animation:namedPulse 2.7s ease-in-out infinite; }
+        #s42 { box-shadow:0 0 12px #88ffaa;         animation:namedPulse 2.3s ease-in-out infinite; }
+        #s12, #s53 { box-shadow:0 0 8px #de5b33;   animation:namedPulse 2.9s ease-in-out infinite; }
 
         /* ── PLAYER PIECES ── */
         .player {
@@ -957,7 +958,7 @@
         "THE REMEDY","FEAR","VAN BREAKS DOWN","JOY","blank","DMITRI","blank","FEARJOY","NIGHTDRIVE","JOY",
         "INVEST IN MERCH","FEAR","blank","5TH DIMENSION","blank","IT HAPPENS","blank","GHOST 2","MAYA","JOY",
         "WIN A GRAMMY","blank","blank","OPENING ACT","blank","FEAR","blank","TELLUS","FEARJOY","blank",
-        "blank","blank","ENCORE","blank","VOID","blank","blank","THE ENDLESS SMILE","GATEKEEPER","blank",
+        "blank","blank","ENCORE","blank","VOID","blank","JOY","THE ENDLESS SMILE","GATEKEEPER","blank",
         "blank","FEARJOY","blank","VAN BREAKS DOWN","blank","LOST RECORDING","blank","FEARJOY","blank","SWIMMIN"
     ];
     
@@ -996,6 +997,7 @@
         38:{title:"FEARJOY",emoji:"☯️",isFearjoy:true,desc:"FEAR? JOY? Fate decides.",sound:"coin.wav"},
         42:{title:"ENCORE",emoji:"👏",shift:3,isAuto:true,desc:"Encore! Three more songs! Move forward 3.",sound:"coinclip.wav"},
         44:{title:"VOID",emoji:"🌀",shift:-3,isAuto:true,isTrack:true,desc:"Lost in the Void. Rewind 3.",sound:"voidclip.wav"},
+        46:{title:"JOY",emoji:"😄",shift:1,isAuto:true,desc:"PUREJOY! Forward 1.",sound:"coinclip.wav"},
         47:{title:"THE ENDLESS SMILE",emoji:"💀",isSmile:true,isTrack:true,desc:"Remain smiling until your next turn. Break it = Rewind 1.",sound:"smileclip.wav"},
         48:{title:"GATEKEEPER",emoji:"🚪",isGate:true,desc:"Industry Gatekeeper. Stop here unless you're in last place, or you've signed with a major label."},
         51:{title:"FEARJOY",emoji:"☯️",isFearjoy:true,desc:"Flip for destiny.",sound:"coin.wav"},
