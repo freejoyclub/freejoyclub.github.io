@@ -1,7 +1,7 @@
 <!DOCTYPE html><html lang="en"><head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Fearjoy: the Game (v31)</title>
+    <title>Fearjoy - Game (v35)</title>
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
@@ -18,7 +18,7 @@
             --pink-glow:#ff00ff; --mystery-glow:#dd99ff; --pitch-orange:#ff8800;
             --roll-color:#00ff88; /* updated each turn to current player color */
             --bar-h:clamp(52px,10vh,110px);
-            --space-size:clamp(24px,5.8vw,min(8.5vh,85px));
+            --space-size:clamp(24px,min(5.8vw,calc((100dvh - var(--bar-h) - 32px) / 6.5)),85px);
             --space-font:clamp(0.34rem,0.9vw,0.9rem);
             --space-emoji:clamp(0.5rem,1.1vw,1.4rem);
             --board-gap:clamp(2px,0.85vw,18px);
@@ -34,7 +34,6 @@
         @keyframes turnPulse     { 0%{filter:drop-shadow(0 0 5px var(--p-color));transform:translate(0,0) scale(1);}50%{filter:drop-shadow(0 0 20px var(--p-color));transform:translate(0,-4px) scale(1.15);}100%{filter:drop-shadow(0 0 5px var(--p-color));transform:translate(0,0) scale(1);} }
         @keyframes winPulse      { 0%{transform:scale(1);filter:drop-shadow(0 0 5px var(--p-color));}50%{transform:scale(1.1);filter:drop-shadow(0 0 20px var(--p-color));}100%{transform:scale(1);filter:drop-shadow(0 0 5px var(--p-color));} }
         @keyframes flipping      { 0%{transform:rotateY(0);}100%{transform:rotateY(1800deg);} }
-        /* Roll button pulse uses current player color via CSS var */
         @keyframes rollPulse     { 0%,100%{box-shadow:0 0 8px var(--roll-color,#00ff88),0 0 16px var(--roll-color,#00ff88);}50%{box-shadow:0 0 18px var(--roll-color,#00ff88),0 0 36px var(--roll-color,#00ff88);} }
         @keyframes rollHoverPulse{ 0%,100%{box-shadow:0 0 14px var(--roll-color,#00ff88),0 0 28px var(--roll-color,#00ff88);}50%{box-shadow:0 0 22px var(--roll-color,#00ff88),0 0 44px var(--roll-color,#00ff88),0 0 8px rgba(255,255,255,0.3);} }
         @keyframes rollBtnPress  { 0%{transform:scale(1);box-shadow:none;}40%{transform:scale(0.96);box-shadow:inset 0 2px 6px rgba(0,0,0,0.6);}100%{transform:scale(1);box-shadow:none;} }
@@ -49,23 +48,30 @@
         @keyframes popupFloat    { 0%{transform:translateY(0);}25%{transform:translateY(-4px);}50%{transform:translateY(-2px);}75%{transform:translateY(-5px);}100%{transform:translateY(0);} }
         @keyframes popupShine    { 0%{background-position:-300% center;opacity:0;}40%{opacity:1;}60%{opacity:1;}100%{background-position:300% center;opacity:0;} }
         @keyframes menuBloom     { 0%{opacity:0;transform:scale(0.7);}100%{opacity:1;transform:scale(1);} }
-        /* Mystery space — cool multi-color slow loop */
-        @keyframes mysteryPulse  {
-            0%  {box-shadow:0 0 8px #dd99ff,0 0 16px #dd99ff;}
-            20% {box-shadow:0 0 12px #88ddff,0 0 28px #44bbff;}
-            40% {box-shadow:0 0 8px #aa66cc,0 0 18px #882299;}
-            60% {box-shadow:0 0 14px #ff88cc,0 0 30px #dd44aa;}
-            80% {box-shadow:0 0 10px #88ddff,0 0 22px #55ccee;}
-            100%{box-shadow:0 0 8px #dd99ff,0 0 16px #dd99ff;}
+
+        /* ── SPACE PULSE ANIMATIONS — GPU-compositable filter:brightness/hue-rotate, zero repaint ── */
+        /* Joy — green border stays static, whole space breathes brighter */
+        @keyframes joyPulse     { 0%,100%{filter:brightness(1);}    50%{filter:brightness(1.55);} }
+        /* Fear — red border stays static, whole space breathes brighter */
+        @keyframes fearPulse    { 0%,100%{filter:brightness(1);}    50%{filter:brightness(1.55);} }
+        /* Special spaces — white border static, subtle brightness breath */
+        @keyframes specialPulse { 0%,100%{filter:brightness(0.9);}  50%{filter:brightness(1.3);} }
+        /* Mystery — hue-rotate cycles through colors, approximating the original multi-color pulse */
+        @keyframes mysteryShift {
+            0%  { filter:hue-rotate(0deg)   brightness(0.85); }
+            20% { filter:hue-rotate(-80deg) brightness(1.1);  }
+            40% { filter:hue-rotate(-40deg) brightness(0.9);  }
+            60% { filter:hue-rotate(40deg)  brightness(1.05); }
+            80% { filter:hue-rotate(-60deg) brightness(1.0);  }
+            100%{ filter:hue-rotate(0deg)   brightness(0.85); }
         }
-        /* Space border flicker keyframes */
-        @keyframes joyFlicker    {0%,100%{box-shadow:0 0 6px var(--joy-glow);}50%{box-shadow:0 0 18px var(--joy-glow),0 0 30px var(--joy-glow);}}
-        @keyframes fearFlicker   {0%,100%{box-shadow:0 0 6px var(--fear-glow);}50%{box-shadow:0 0 18px var(--fear-glow),0 0 30px var(--fear-glow);}}
-        @keyframes specialFlicker{0%,100%{box-shadow:0 0 6px rgba(255,255,255,0.7);}50%{box-shadow:0 0 18px rgba(255,255,255,0.9),0 0 30px rgba(255,255,255,0.5);}}
+        /* Named special spaces — static colored glow + brightness pulse */
+        @keyframes namedPulse   { 0%,100%{filter:brightness(0.95);} 50%{filter:brightness(1.4);} }
+
         @keyframes passNotify    { 0%,100%{box-shadow:0 0 5px var(--pitch-orange);}50%{box-shadow:0 0 20px var(--pitch-orange),0 0 40px var(--pitch-orange);} }
-        @keyframes vinylSpin     { 0%{transform:scale(1.15) rotate(0deg);animation-timing-function:ease-in;}30%{transform:scale(1.15) rotate(540deg);animation-timing-function:linear;}70%{transform:scale(1.15) rotate(1440deg);animation-timing-function:ease-out;}100%{transform:scale(1.15) rotate(1800deg);} }
-        @keyframes vinylWiggle   { 0%,100%{transform:scale(1.15) rotate(0deg);}20%{transform:scale(1.15) rotate(-3.5deg);}50%{transform:scale(1.15) rotate(3deg);}75%{transform:scale(1.15) rotate(-2deg);} }
         @keyframes reelSpin      { from{transform:rotate(0deg);}to{transform:rotate(360deg);} }
+        @keyframes vinylSpin     { 0%{transform:var(--space-translate,translate(0,0)) scale(1.15) rotate(0deg);animation-timing-function:ease-in;}30%{transform:var(--space-translate,translate(0,0)) scale(1.15) rotate(540deg);animation-timing-function:linear;}70%{transform:var(--space-translate,translate(0,0)) scale(1.15) rotate(1440deg);animation-timing-function:ease-out;}100%{transform:var(--space-translate,translate(0,0)) scale(1.15) rotate(1800deg);} }
+        @keyframes vinylWiggle   { 0%,100%{transform:var(--space-translate,translate(0,0)) scale(1.15) rotate(0deg);}20%{transform:var(--space-translate,translate(0,0)) scale(1.15) rotate(-3.5deg);}50%{transform:var(--space-translate,translate(0,0)) scale(1.15) rotate(3deg);}75%{transform:var(--space-translate,translate(0,0)) scale(1.15) rotate(-2deg);} }
         @keyframes spaceLand     { 0%{box-shadow:0 0 0px var(--land-color,white);}40%{box-shadow:0 0 30px var(--land-color,white),0 0 60px var(--land-color,white);}100%{box-shadow:0 0 0px var(--land-color,white);} }
         @keyframes diceRiseOut   { 0%{opacity:1;transform:translate(0,0) scale(1);}100%{opacity:0;transform:translate(0,-60px) scale(0.5);} }
         @keyframes diceFallIn    { 0%{opacity:0;transform:translate(0,-80px) scale(0.4);}100%{opacity:1;transform:translate(0,0) scale(1);} }
@@ -78,14 +84,9 @@
         @keyframes progressPulse { 0%,100%{opacity:0.7;}50%{opacity:1;} }
         @keyframes bubblePop     { 0%{transform:scale(0);}70%{transform:scale(1.2);}100%{transform:scale(1);} }
         @keyframes phoneWiggle   { 0%,100%{transform:rotate(0deg);}20%{transform:rotate(-15deg);}40%{transform:rotate(15deg);}60%{transform:rotate(-10deg);}80%{transform:rotate(10deg);} }
-        /* Tape shine — slow, soft, allowed to bleed beyond stroke */
         @keyframes tapeShine     { 0%{stroke-dashoffset:5000;opacity:0;}8%{opacity:0.6;}85%{opacity:0.45;}100%{stroke-dashoffset:-5000;opacity:0;} }
-
         @keyframes barShine      { 0%{background-position:-400% center;}100%{background-position:400% center;} }
-        /* VU needle bounce animation during roll */
         @keyframes vuBounce      { 0%{transform:rotate(-45deg);}25%{transform:rotate(20deg);}50%{transform:rotate(-30deg);}75%{transform:rotate(35deg);}100%{transform:rotate(-45deg);} }
-
-        /* Animated warm tan background gradient — slow, smooth, more varied */
         @keyframes videoKeepAlive { 0%,100%{opacity:1;} 50%{opacity:0.99;} }
         @keyframes bgRotate {
             from { transform:translate(-50%,-50%) rotate(0deg); }
@@ -106,16 +107,22 @@
             width:300vmax; height:300vmax;
             top:50%; left:50%;
             z-index:-2; pointer-events:none;
-            background:linear-gradient(0deg,#a85c2a 0%,#bf7840 25%,#b86535 50%,#cc8a50 75%,#a85c2a 100%);
-            animation:bgRotate 60s linear infinite;
+            background:linear-gradient(0deg,#a85c2a 0%,#d18c58 25%,#b05019 50%,#b07b4d 75%,#a85c2a 100%);
+            animation:bgRotate 15s linear infinite;
             will-change:transform;
         }
-        /* Vignette layer, just above bg — darker */
-        body::after {
-            content:''; position:fixed; inset:0; z-index:-1; pointer-events:none;
-            background:radial-gradient(ellipse 80% 75% at 50% 50%,transparent 30%,rgba(0,0,0,0.8) 100%);
+        /* Wood texture layer — above gradient, below vignette */
+        #wood-bg {
+            position:fixed; inset:0; z-index:-1; pointer-events:none;
+            background:url('wood-bg.jpg') center/cover no-repeat;
+            opacity:0.2;
+            filter:blur(2px)
         }
-
+        /* Vignette layer */
+        body::after {
+            content:''; position:fixed; inset:0; z-index:0; pointer-events:none;
+            background:radial-gradient(ellipse 80% 75% at 50% 50%,transparent 30%,rgba(46,4,33,0.6) 100%);
+        }
 
         /* ── SCREEN BORDER GLOW — current player color ── */
         #screen-glow {
@@ -125,10 +132,9 @@
             border-radius:2px;
             transition:box-shadow 0.6s ease;
         }
-        /* ── MAIN AREA (board + passes) — ORDER: board first, bar at bottom ── */
         #main-area { flex:1; display:flex; flex-direction:row; min-height:0; overflow:hidden; position:relative; }
 
-        /* ── BOTTOM UI BAR — opaque near-black 1176 rack compressor ── */
+        /* ── BOTTOM UI BAR ── */
         #ui-layer {
             display:flex; align-items:center; justify-content:center;
             padding:0 clamp(28px,3.5vw,50px);
@@ -147,7 +153,6 @@
             background:linear-gradient(105deg,transparent 30%,rgba(255,255,255,0.025) 50%,transparent 65%);
             background-size:400% 100%; animation:barShine 8s ease-in-out infinite;
         }
-        /* Four corner dome rack screws — pure black cross, darker dome */
         #ui-layer::before {
             content:''; position:absolute; inset:0; pointer-events:none;
             border-radius:inherit;
@@ -200,7 +205,6 @@
             transition:transform 0.2s cubic-bezier(0.15,3.5,0.3,1);
         }
         #vu-needle.rolling { animation:vuBounce 0.35s ease-in-out infinite; }
-        /* 6 notch marks — 95% transparent (barely visible) */
         #vu-arc::before {
             content:''; position:absolute; bottom:0; left:0; right:0; top:0;
             pointer-events:none;
@@ -214,23 +218,18 @@
         }
         #vu-arc::after { display:none; }
 
-        /* ── NAV KNOB + MUTE — fixed above all, flex row, prefer shrink ── */
+        /* ── NAV KNOB + MUTE ── */
         #nav-knob {
             position:fixed;
-            right:clamp(12px,3vw,33px);
-            bottom:0;
-            height:var(--bar-h);
-            z-index:999999;
-            display:flex; align-items:center; gap:clamp(3px,0.5vw,6px);
-            flex-shrink:2;
+            right:clamp(12px,3vw,33px); bottom:0; height:var(--bar-h);
+            z-index:999999; display:flex; align-items:center; gap:clamp(3px,0.5vw,6px); flex-shrink:2;
         }
         #nav-knob-btn {
             width:clamp(28px,3.5vw,46px); height:clamp(26px,3.2vw,42px);
             border-radius:6px; background:#1a1a1a; border:1.5px solid #444;
             cursor:pointer; display:flex; align-items:center; justify-content:center;
             flex-direction:column; gap:3px; transition:all 0.15s ease;
-            padding:0; box-shadow:0 2px 5px rgba(0,0,0,0.6);
-            flex-shrink:2;
+            padding:0; box-shadow:0 2px 5px rgba(0,0,0,0.6); flex-shrink:2;
         }
         #nav-knob-btn:hover { background:#252525; border-color:rgba(255,255,255,0.35); }
         #nav-knob-btn:active { box-shadow:inset 0 2px 5px rgba(0,0,0,0.7); transform:scale(0.96); background:#111; }
@@ -263,17 +262,14 @@
         .btn-album:hover      { border-color:var(--joy-glow);   color:var(--joy-glow);  box-shadow:0 0 12px var(--joy-glow); }
         .btn-fullscreen:hover { border-color:var(--blue-glow);  color:var(--blue-glow); box-shadow:0 0 12px var(--blue-glow); }
 
-        /* Mute button */
         #mute-btn {
             width:clamp(28px,3.8vw,52px); height:clamp(26px,3.2vw,42px);
             border-radius:6px; background:#1a1a1a; border:1.5px solid #660000;
             cursor:pointer; color:#bb1111; font-family:sans-serif;
             font-size:clamp(0.42rem,0.7vw,0.65rem); font-weight:bold;
             letter-spacing:1px; text-transform:uppercase;
-            box-shadow:0 0 6px rgba(160,0,0,0.35);
-            transition:all 0.15s ease;
-            display:flex; align-items:center; justify-content:center;
-            flex-shrink:2;
+            box-shadow:0 0 6px rgba(160,0,0,0.35); transition:all 0.15s ease;
+            display:flex; align-items:center; justify-content:center; flex-shrink:2;
         }
         #mute-btn:hover { box-shadow:0 0 12px rgba(200,0,0,0.5); }
         #mute-btn:active { box-shadow:inset 0 2px 5px rgba(0,0,0,0.7); transform:scale(0.96); }
@@ -282,7 +278,7 @@
             box-shadow:inset 0 2px 4px rgba(0,0,0,0.6),0 0 14px rgba(220,0,0,0.45);
         }
 
-        /* ── ROLL BUTTON — uses current player color via --roll-color ── */
+        /* ── ROLL BUTTON ── */
         #roll-btn {
             background:rgba(0,0,0,0.65); color:var(--roll-color);
             width:clamp(65px,13vw,180px); font-size:clamp(0.82rem,1.8vw,1.45rem);
@@ -303,12 +299,11 @@
         #roll-btn:active { animation:rollBtnPress 0.2s ease forwards !important; }
         #roll-btn:disabled { opacity:0.35; animation:none; cursor:not-allowed; }
 
-        /* ── DICE SLOT — smaller, prefer shrink ── */
+        /* ── DICE SLOT ── */
         #dice-slot-right {
             width:clamp(36px,5vw,66px); height:clamp(36px,5vw,66px);
             position:relative; flex-shrink:2;
-            display:flex; align-items:center; justify-content:center;
-            padding:3px;
+            display:flex; align-items:center; justify-content:center; padding:3px;
         }
         #dice-box {
             width:clamp(28px,4vw,54px); height:clamp(28px,4vw,54px);
@@ -358,8 +353,6 @@
             flex-shrink:0; margin-bottom:4px;
             font-family:'KCStrikerSans','Courier New',monospace; font-weight:bold;
         }
-
-        /* Pass card — paper feel, slow 3D float */
         .access-pass {
             width:clamp(74px,10.5vw,152px);
             background:linear-gradient(160deg,#ede8dc 0%,#e2d9c4 55%,#d8ccb0 100%);
@@ -370,7 +363,6 @@
             transition:border-color 0.4s,box-shadow 0.4s,transform 0.25s;
             cursor:pointer; will-change:transform;
         }
-        
         .pass-float-a { animation:passFloatA 6s ease-in-out infinite; }
         .pass-float-b { animation:passFloatB 7s ease-in-out infinite; animation-delay:-2.3s; }
         .pass-float-c { animation:passFloatC 5.5s ease-in-out infinite; animation-delay:-3.8s; }
@@ -434,9 +426,7 @@
         .exp-tags      { display:flex; flex-wrap:wrap; gap:6px; margin-bottom:8px; }
         .exp-accolades { font-size:1.6rem; letter-spacing:4px; min-height:24px; color:rgba(0,0,0,0.85); }
         .exp-pass-stripe { background:linear-gradient(90deg,var(--exp-color,#333) 0%,transparent 100%); height:4px; border-radius:2px; margin-top:16px; }
-        /* Pass stripe uses full bright color */
         .pass-stripe   { background:linear-gradient(90deg,var(--p-color,#888) 0%,transparent 100%); height:clamp(2px,0.32vw,4px); border-radius:2px; margin-top:clamp(2px,0.3vw,5px); }
-        /* INDIE tag — shown when no sellout status */
         .tag-indie     { background:#2a2a2a; color:rgba(255,255,255,0.85); }
         #pitch-btn {
             display:none; width:100%; margin-top:14px; padding:10px;
@@ -447,10 +437,11 @@
         }
         #pitch-btn:hover { background:#ff9f22; border-color:#ff9f22; color:black; box-shadow:0 0 16px var(--pitch-orange); transform:translateY(-2px); }
 
-        /* ── BOARD SCROLL — fully transparent, no color overlay ── */
+        /* ── BOARD SCROLL ── */
         #board-scroll {
             flex:1; display:flex; align-items:center; justify-content:center;
-            overflow:hidden; padding:clamp(4px,0.6vw,12px);
+            overflow:hidden; padding:clamp(4px,0.6vw,12px) clamp(4px,0.6vw,12px);
+            padding-top:max(6px,0.5vh); padding-bottom:max(6px,0.5vh);
             box-sizing:border-box; min-height:0; min-width:0;
             z-index:5; position:relative;
         }
@@ -461,21 +452,17 @@
         }
         #tape-svg { position:absolute; inset:0; width:100%; height:100%; pointer-events:none; z-index:2; overflow:visible; }
         #board-container {
-            display:grid;
-            gap:var(--board-gap); padding:var(--board-pad);
+            display:grid; gap:var(--board-gap); padding:var(--board-pad);
             position:relative; z-index:3; flex-shrink:0;
         }
-        /* Landscape 10×6 */
         #board-container.layout-landscape {
             grid-template-columns:repeat(10,var(--space-size));
             grid-template-rows:repeat(6,var(--space-size));
         }
-        /* Portrait 6×10 */
         #board-container.layout-portrait {
             grid-template-columns:repeat(6,var(--space-size));
             grid-template-rows:repeat(10,var(--space-size));
         }
-        /* Arrows live on #board-outer, not inside spaces — won't spin with vinyl */
         .board-arrow {
             position:absolute; font-size:clamp(0.7rem,1.4vw,1.9rem);
             color:rgba(230,200,155,0.95); font-weight:900; pointer-events:none;
@@ -493,25 +480,22 @@
             position:relative; transition:transform 0.18s ease,box-shadow 0.18s ease;
             cursor:help; box-sizing:border-box;
         }
-        .space:hover { transform:scale(1.06); box-shadow:0 0 14px rgba(255,255,255,0.3); z-index:6; will-change:transform; }
-            /* Text shadow for readability on wood background */
+        .space:hover { transform:translate(var(--ox,0px),var(--oy,0px)) scale(1.06); box-shadow:0 0 14px rgba(255,255,255,0.3); z-index:6; will-change:transform; }
         .space .sp-text,.space .sp-emoji,.mystery-q { text-shadow:0 0 3px rgba(0,0,0,0.5),0 0 1px rgba(0,0,0,0.7); }
         .space:not(.blank):not(.mystery-space):not(.true-blank) { font-family:'KCStrikerSans','Courier New',monospace; }
         .sp-emoji { font-size:var(--space-emoji); margin-bottom:2px; }
         .sp-text  { padding:0 2px; }
-        /* Dark radial backdrop for all named spaces */
         .space:not(.true-blank):not(.mystery-space):not(.reel-space):not(.tracklist-space) {
             background:radial-gradient(ellipse at center,rgba(200,180,169,0.1) 10%,rgba(69,50,40,0.3) 100%) !important;
         }
-            .mystery-space { background:radial-gradient(ellipse at center,rgba(60,20,80,0.15) 0%,rgba(20,10,30,0.25) 100%) !important; }
-            .true-blank { 
-            background: none !important; 
-            border: 1px dashed rgba(200,180,169,0.6) !important;
-            transform: scale(0.7);
+        .mystery-space { background:radial-gradient(ellipse at center,rgba(60,20,80,0.15) 0%,rgba(20,10,30,0.25) 100%) !important; }
+        .true-blank {
+            background: none !important;
+            border: 1.2px dashed rgba(200,180,169,0.6) !important;
+            transform: scale(0.6);
         }
-        /* Special space font boost */
-        .space:not(.blank):not(.mystery-space):not(.true-blank) { font-size:calc(var(--space-font) * 1.2); }
-        .mystery-q { font-size:calc(clamp(0.85rem,1.6vw,1.5rem) * 1.1); font-weight:bold; opacity:0.9; }
+        .space:not(.blank):not(.mystery-space):not(.true-blank) { font-size:calc(var(--space-font) * 1.3); }
+        .mystery-q { font-size:calc(clamp(0.98rem,1.9vw,1.8rem) * 1.1); font-weight:bold; opacity:0.9; }
         .tracklist-space {
             background: url('vinyl.png?v=24') center/115% no-repeat !important;
             border:3px double #666 !important; box-shadow:inset 0 0 15px #000;
@@ -521,40 +505,41 @@
         .win-track:hover { transform:scale(1.05) !important; box-shadow:0 0 14px var(--blue-glow) !important; }
         .tracklist-space.vinyl-spinning { animation:vinylSpin 3.2s ease forwards !important; transform-origin:center center !important; }
         .tracklist-space.vinyl-wiggle   { animation:vinylWiggle 1.2s ease-in-out !important; transform-origin:center center !important; }
-        /* Joy/Fear white text + glow border */
-      .joy-space  { border-color:var(--joy-glow) !important; color:white !important; animation:joyFlicker 2.5s ease-in-out infinite; will-change:box-shadow; }
-        .fear-space { border-color:var(--fear-glow) !important; color:white !important; animation:fearFlicker 2.8s ease-in-out infinite; will-change:box-shadow; }
-         /* Regular special spaces — white glow border */
+
+        /* ── SPACE ANIMATIONS — all GPU-compositable filter, no box-shadow repaints ── */
+        /* Joy — static green border glow, brightness pulse */
+        .joy-space {
+            border-color:var(--joy-glow) !important; color:white !important;
+            box-shadow:0 0 8px var(--joy-glow);
+            animation:joyPulse 2.5s ease-in-out infinite;
+        }
+        /* Fear — static red border glow, brightness pulse */
+        .fear-space {
+            border-color:var(--fear-glow) !important; color:white !important;
+            box-shadow:0 0 8px var(--fear-glow);
+            animation:fearPulse 2.8s ease-in-out infinite;
+        }
+        /* Regular special spaces — static white glow, brightness pulse */
         .space:not(.joy-space):not(.fear-space):not(.tracklist-space):not(.mystery-space):not(.true-blank):not(.reel-space):not(.hybrid) {
             border-color:rgba(255,255,255,0.8) !important;
-            animation:specialFlicker 3s ease-in-out infinite;
-            will-change:box-shadow;
+            box-shadow:0 0 6px rgba(255,255,255,0.5);
+            animation:specialPulse 3s ease-in-out infinite;
         }
-        .hybrid { border-style:dotted; border-width:3px; border-color:white; animation:specialFlicker 3.2s ease-in-out infinite; will-change:box-shadow; }
-        /* ── FEARJOY SPACE — rotating split glow ── */
-        .hybrid {
-            position:relative;
-            overflow:visible;
-        }
+        /* FEARJOY — static dotted border, brightness pulse; rotating ::after handles the split glow */
+        .hybrid { border-style:dotted; border-width:3px; border-color:white; animation:specialPulse 3.2s ease-in-out infinite; }
+        .hybrid { position:relative; overflow:visible; }
         .hybrid::after {
-            content:'';
-            position:absolute;
-            inset:-6px;
-            border-radius:50%;
-            z-index:-1;
+            content:''; position:absolute; inset:-6px; border-radius:50%; z-index:-1;
             background:conic-gradient(
-                var(--joy-glow) 0deg,
-                var(--joy-glow) 150deg,
-                var(--fear-glow) 210deg,
-                var(--fear-glow) 360deg
+                var(--joy-glow) 0deg, var(--joy-glow) 150deg,
+                var(--fear-glow) 210deg, var(--fear-glow) 360deg
             );
-            filter:blur(8px);
-            opacity:0.55;
+            filter:blur(8px); opacity:0.55;
             animation:fearjoyRotate 5s linear infinite;
         }
         @keyframes fearjoyRotate { from{transform:rotate(0deg);} to{transform:rotate(360deg);} }
 
-        /* Mystery space */
+        /* Mystery — hue-rotate shifts border + ? color through spectrum, no box-shadow repaint */
         .mystery-space {
             border-style:dashed !important;
             cursor:help; font-family:'Courier New',monospace !important;
@@ -563,23 +548,21 @@
             border-width:2px !important;
         }
         .mystery-space:hover { transform:scale(0.9) !important; }
-        /* Per-space mystery animation speed set via --mystery-speed inline */
-        .mystery-space { animation:mysteryPulse var(--mystery-speed,4s) ease-in-out infinite; will-change:box-shadow; }
+        .mystery-space { animation:mysteryShift var(--mystery-speed,4s) ease-in-out infinite; }
+
         .reel-space {
             border:3px solid rgba(255,255,255,0.4) !important;
             transform:scale(1.15); z-index:5;
-            background:rgba(0,0,0,0.5) !important;
-            overflow:hidden; position:relative;
+            background:rgba(0,0,0,0.5) !important; position:relative;
         }
         .reel-space::before {
             content:''; position:absolute; inset:0;
             background:url('reel1.png?v=24') center/cover no-repeat;
             border-radius:50%; transition:none;
         }
-        .reel-space.reel-spinning::before {
-            animation:reelSpin 12s linear infinite !important;
-            transform-origin:center center !important;
-        }
+        .reel-space.reel-spinning::before { animation:reelSpin 12s linear infinite !important; transform-origin:center center !important; }
+        #s0.reel-spinning::before { animation:reelSpin 6s linear infinite !important; }
+        .win-track.reel-spinning::before { animation:reelSpin 5s linear infinite !important; }
         .win-track {
             border:4px solid var(--blue-glow) !important;
             box-shadow:0 0 30px var(--blue-glow);
@@ -587,22 +570,16 @@
             background:rgba(0,0,0,0.5) !important;
         }
         .win-track::before { background:url('reel1.png?v=24') center/cover no-repeat; }
-        /* win-track reel spins 10% slower than space 0 */
         .win-track.reel-spinning::before { animation:reelSpin 13.2s linear infinite !important; }
         .reel-space .sp-text,.reel-space .sp-emoji { position:relative; z-index:1; }
         .space-land { animation:spaceLand 1.2s ease-out forwards; }
-        /* ── SPACE-SPECIFIC GLOW COLORS ── */
-        #s55 { --space-glow:#ff5522; animation:lostTapeFlicker 2.6s ease-in-out infinite; will-change:box-shadow; }
-        @keyframes lostTapeFlicker { 0%,100%{box-shadow:0 0 6px #ff5522;} 50%{box-shadow:0 0 18px #ff5522,0 0 30px #ff3300;} }
-        #s30 { --space-glow:var(--gold); animation:grammyFlicker 2.4s ease-in-out infinite; will-change:box-shadow; }
-        @keyframes grammyFlicker { 0%,100%{box-shadow:0 0 8px var(--gold);} 50%{box-shadow:0 0 22px var(--gold),0 0 30px #f7ca60;} }
-        #s20 { --space-glow:#3399ff; animation:investFlicker 2.7s ease-in-out infinite; will-change:box-shadow; }
-        @keyframes investFlicker { 0%,100%{box-shadow:0 0 6px #3399ff;} 50%{box-shadow:0 0 18px #3399ff,0 0 30px #66aaff;} }
-        #s42 { --space-glow:#88ffaa; animation:encoreFlicker 2.3s ease-in-out infinite; will-change:box-shadow; }
-        @keyframes encoreFlicker { 0%,100%{box-shadow:0 0 6px #88ffaa;} 50%{box-shadow:0 0 18px #88ffaa,0 0 30px #aaffcc;} }
-        #s12, #s53 { --space-glow:#776655; animation:vanFlicker 2.9s ease-in-out infinite; will-change:box-shadow; }
-        @keyframes vanFlicker { 0%,100%{box-shadow:0 0 5px #de5b33;} 50%{box-shadow:0 0 14px #de5b33,0 0 22px #7d3b1a;} }
 
+        /* ── NAMED SPACE GLOWS — static colored box-shadow for identity + brightness pulse ── */
+        #s55 { box-shadow:0 0 12px #ff5522;        animation:namedPulse 2.6s ease-in-out infinite; }
+        #s30 { box-shadow:0 0 12px var(--gold), 0 0 28px var(--gold); animation:namedPulse 2s ease-in-out infinite; }
+        #s20 { box-shadow:0 0 12px #3399ff;         animation:namedPulse 2.7s ease-in-out infinite; }
+        #s42 { box-shadow:0 0 12px #88ffaa;         animation:namedPulse 2.3s ease-in-out infinite; }
+        #s12, #s53 { box-shadow:0 0 8px #de5b33;   animation:namedPulse 2.9s ease-in-out infinite; }
 
         /* ── PLAYER PIECES ── */
         .player {
@@ -622,24 +599,19 @@
 
         /* ── POPUPS & OVERLAYS ── */
         .overlay { position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:2000; display:none; align-items:center; justify-content:center; padding:clamp(10px,3vw,20px); box-sizing:border-box; }
-        /* ----Central Modal / Action Middle Popup Card - dark gray - for choices */
         .popup {
             background:linear-gradient(160deg,rgba(8,8,8,0.60) 0%,rgba(45,45,45,0.60) 100%);
-            backdrop-filter:blur(10px);
-            position:relative; overflow:hidden;
+            backdrop-filter:blur(10px); position:relative; overflow:hidden;
             padding:clamp(16px,3vw,45px); border-radius:30px;
             border:2px solid #444; width:min(680px,92vw);
             max-height:88vh; overflow-y:auto;
             text-align:center; transition:0.4s; box-sizing:border-box;
-            transform-style:preserve-3d;
-            animation:popupFloat 8s ease-in-out infinite;
+            transform-style:preserve-3d; animation:popupFloat 8s ease-in-out infinite;
         }
-        /* Prominent shine on popup */
         .popup::before {
             content:''; position:absolute; inset:0; pointer-events:none;
             background:linear-gradient(105deg,transparent 25%,rgba(255,255,255,0.08) 48%,rgba(255,255,255,0.12) 52%,transparent 68%);
-            background-size:300% 100%;
-            animation:popupShine 5s ease-in-out infinite;
+            background-size:300% 100%; animation:popupShine 5s ease-in-out infinite;
         }
         .popup h1 { font-family:'KCStrikerSans','Courier New',monospace; font-size:clamp(1.44rem,4.8vw,2.4rem); margin:0 0 12px; position:relative; color:#fff; letter-spacing:-0.01em; }
         #event-desc { font-size:clamp(1.2rem,2.6vw,1.62rem) !important; position:relative; color:rgba(255,255,255,0.97) !important; letter-spacing:-0.01em; }
@@ -655,7 +627,6 @@
         #event-btn-secondary { display:none; background:#333; color:white; margin-left:clamp(8px,1.5vw,15px); }
         #event-btn-secondary:hover { transform:translateY(-2px) scale(1.04); background:#444; box-shadow:0 6px 20px rgba(0,0,0,0.4); }
         .btn-kb-focus { outline:2px solid white !important; animation:btnFocusPulse 1s ease-in-out infinite; }
-        /* Fear of Intimacy / red modal button */
         .btn-fear {
             font-family:'KCStrikerSans','Courier New',monospace;
             padding:clamp(8px,1.2vh,14px) clamp(16px,2.5vw,32px);
@@ -667,13 +638,11 @@
         }
         .btn-fear:hover { background:rgba(255,68,68,0.15); transform:translateY(-2px); box-shadow:0 0 16px var(--fear-glow); }
 
-        /* Rule sidebar — PERMANENT: always content-adaptive, never full-height */
+        /* ── RULE SIDEBAR ── */
         #rule-sidebar {
             position:fixed; right:-400px; will-change:right;
-            top:calc(var(--bar-h) + 8px);
-            width:min(260px,78vw);
-            max-height:calc(100dvh - var(--bar-h) - 24px);
-            height:auto;
+            top:calc(var(--bar-h) + 8px); width:min(260px,78vw);
+            max-height:calc(100dvh - var(--bar-h) - 24px); height:auto;
             background:linear-gradient(160deg,rgba(6,6,6,0.97) 0%,rgba(22,22,22,0.97) 100%);
             padding:clamp(14px,2.2vw,26px);
             border-radius:20px 0 0 20px; border:2px solid var(--joy-glow); border-right:none;
@@ -682,7 +651,6 @@
             display:flex; flex-direction:column; overflow-y:auto;
         }
         #rule-sidebar.active { right:0; }
-        
         #rule-sidebar.mystery-sidebar { font-size:0.88em; width:min(240px,72vw); }
         #side-sub   { font-size:0.75rem; letter-spacing:2px; color:rgba(255,255,255,0.4); text-transform:uppercase; margin-bottom:6px; font-family:'Courier New',monospace; }
         #side-title { font-family:'KCStrikerSans','Courier New',monospace; margin:0 0 8px; font-size:clamp(1rem,2.5vw,1.5rem); }
@@ -699,17 +667,14 @@
         .bucket-btn:hover { transform:translateY(-2px); box-shadow:0 0 16px var(--mystery-glow); }
         #coin { font-family:'KCStrikerSans','Courier New',monospace; }
         #coin.lost-tape-dice { border-radius:12px !important; background:rgba(0,0,0,0.75) !important; border:3px solid rgba(255,255,255,0.7) !important; color:white !important; }
-        /* Timer display — KCStrikerSans, large */
         #timer-ui {
             font-family:'KCStrikerSans','Courier New',monospace;
             font-size:clamp(2.8rem,9vw,5.5rem);
             font-weight:900; color:var(--joy-glow);
             margin:16px 0; display:none; line-height:1;
         }
-        /* Action bar — reset flex each time; timers set column, normal modals use default */
         #action-bar { display:flex; flex-wrap:wrap; justify-content:center; gap:8px; }
         #action-bar.timer-mode { flex-direction:column; align-items:center; gap:8px; }
-        /* Popup mini mute syncs with master mute */
         #popup-mute-btn.muted { background:#880000; border-color:#cc0000; color:#000; }
         .btn-nevermind {
             display:inline-block; margin-top:10px; padding:8px 20px;
@@ -719,7 +684,6 @@
             cursor:pointer; transition:all 0.2s ease;
         }
         .btn-nevermind:hover { background:rgba(255,68,68,0.12); color:var(--fear-glow); border-color:var(--fear-glow); }
-        /* Credits line */
         .credits-line {
             font-family:'Courier New',monospace; font-size:0.85rem;
             letter-spacing:1.5px; color:rgba(255,255,255,0.7);
@@ -785,7 +749,6 @@
             #board-outer { margin-left:0; }
             #lineup-label { writing-mode:horizontal-tb; margin-bottom:0; margin-right:8px; flex-shrink:0; font-size:clamp(0.7rem,2vw,0.95rem); letter-spacing:3px; }
             .access-pass { width:clamp(72px,22vw,115px); flex-shrink:0; }
-            /* Portrait rule-sidebar — content-adaptive, slides up from bottom */
             #rule-sidebar {
                 top:auto; bottom:calc(var(--bar-h) + 4px);
                 max-height:55vh; height:auto;
@@ -796,7 +759,6 @@
             #rule-sidebar.active { right:0; }
             #lore-peek-tab { left:50%; top:auto; bottom:calc(100% + 2px); transform:translateX(-50%) rotate(90deg); height:28px; width:60px; border-radius:10px 10px 0 0; }
         }
-        /* Large screen — push space size up more aggressively */
         @media (min-width:1400px) {
             :root { --space-size:clamp(60px,5.5vw,110px); }
         }
@@ -804,6 +766,7 @@
             :root { --space-size:clamp(80px,5.8vw,140px); }
         }
     </style>
+
 </head>
 <body>
 
@@ -955,6 +918,7 @@
         </div>
     </div>
 
+    <div id="wood-bg"></div>
     <div id="screen-glow"></div>
 
     <script>
@@ -972,8 +936,17 @@
         {type:'image',file:'bucket/morganshootsthings Grant ok.jpg'},
         {type:'video',file:'bucket/story harmony hunting tunnel.mp4'},
         {type:'video',file:'bucket/story mu nightdrive 3.mp4'},
-        {type:'video',file:'bucket/game v1.png'},
-        
+        {type:'image',file:'bucket/game v1.png'},
+        {type:'video',file:'bucket/js-mistake.mp4'},
+        {type:'video',file:'bucket/j-drum-tracking.mp4'},
+        {type:'video',file:'bucket/sploinky-garrett.mp4'},
+        {type:'image',file:'bucket/Chilis.jpg'},
+        {type:'image',file:'bucket/yung-jesse.jpg'},
+        {type:'image',file:'bucket/fine-china.jpg'},
+        {type:'image',file:'bucket/g-wedding.jpg'},
+        {type:'image',file:'bucket/forbidden-stache.jpg'},
+        {type:'image',file:'bucket/j-g-18.jpg'}
+
     ];
     const MERCH_DISCOUNTS = [
         {type:'link',label:'20% off merch',url:'https://freejoy.club',code:'PLAYER20',codeHint:'tap to copy'},
@@ -994,7 +967,7 @@
         "THE REMEDY","FEAR","VAN BREAKS DOWN","JOY","blank","DMITRI","blank","FEARJOY","NIGHTDRIVE","JOY",
         "INVEST IN MERCH","FEAR","blank","5TH DIMENSION","blank","IT HAPPENS","blank","GHOST 2","MAYA","JOY",
         "WIN A GRAMMY","blank","blank","OPENING ACT","blank","FEAR","blank","TELLUS","FEARJOY","blank",
-        "blank","blank","ENCORE","blank","VOID","blank","blank","THE ENDLESS SMILE","GATEKEEPER","blank",
+        "blank","blank","ENCORE","blank","VOID","blank","JOY","THE ENDLESS SMILE","GATEKEEPER","blank",
         "blank","FEARJOY","blank","VAN BREAKS DOWN","blank","LOST RECORDING","blank","FEARJOY","blank","SWIMMIN"
     ];
     
@@ -1033,6 +1006,7 @@
         38:{title:"FEARJOY",emoji:"☯️",isFearjoy:true,desc:"FEAR? JOY? Fate decides.",sound:"coin.wav"},
         42:{title:"ENCORE",emoji:"👏",shift:3,isAuto:true,desc:"Encore! Three more songs! Move forward 3.",sound:"coinclip.wav"},
         44:{title:"VOID",emoji:"🌀",shift:-3,isAuto:true,isTrack:true,desc:"Lost in the Void. Rewind 3.",sound:"voidclip.wav"},
+        46:{title:"JOY",emoji:"😄",shift:1,isAuto:true,desc:"PUREJOY! Forward 1.",sound:"coinclip.wav"},
         47:{title:"THE ENDLESS SMILE",emoji:"💀",isSmile:true,isTrack:true,desc:"Remain smiling until your next turn. Break it = Rewind 1.",sound:"smileclip.wav"},
         48:{title:"GATEKEEPER",emoji:"🚪",isGate:true,desc:"Industry Gatekeeper. Stop here unless you're in last place, or you've signed with a major label."},
         51:{title:"FEARJOY",emoji:"☯️",isFearjoy:true,desc:"Flip for destiny.",sound:"coin.wav"},
@@ -1146,14 +1120,17 @@
     function playCoinSfx(){playSfx('coin.wav',0.707);}
     function playSlide(){
         const n=Math.floor(Math.random()*4)+1;playSfx(`slide${n}.wav`);
-        /* Start reel spinning on first movement */
-        if(!reelSpinning){
-            reelSpinning=true;
-            [0,59].forEach(idx=>{
-                const s=document.getElementById('s'+idx);
-                if(s)s.classList.add('reel-spinning');
-            });
-        }
+        startReelSpin();
+    }
+
+    function startReelSpin(){
+        if(reelSpinning)return;
+        const s0=document.getElementById('s0');
+        const s59=document.getElementById('s59');
+        if(!s0||!s59)return;
+        reelSpinning=true;
+        s0.classList.add('reel-spinning');
+        s59.classList.add('reel-spinning');
     }
 
     /* Metronome click track — MetronomeUp beat 1, Metronome x3 beats 2-4, repeats each second */
@@ -1199,7 +1176,7 @@
         if(masterMuted||!audioEnabled||!sfxEnabled)return;
         const ctx=getAudioCtx();if(ctx.state==='suspended')ctx.resume();
         fetch('remedyclip.wav').then(r=>r.arrayBuffer()).then(buf=>ctx.decodeAudioData(buf)).then(decoded=>{
-            const gainNode=ctx.createGain();gainNode.gain.value=1;gainNode.connect(masterGain);
+            const gainNode=ctx.createGain();gainNode.gain.value=.8;gainNode.connect(masterGain);
             const src=ctx.createBufferSource();src.buffer=decoded;src.connect(gainNode);
             activeSources.add(src);src.onended=()=>activeSources.delete(src);src.start();
             setTimeout(()=>{
@@ -1409,11 +1386,23 @@
         svg.setAttribute('height',outer.offsetHeight);
         const origin=outer.getBoundingClientRect();
         const pts=[];
+        const isLandscape=layoutMode==='landscape';
         boardLayout.forEach((_,i)=>{
             const el=document.getElementById('s'+i);
             if(!el)return;
             const r=el.getBoundingClientRect();
-            pts.push({x:r.left-origin.left+r.width/2,y:r.top-origin.top+r.height/2});
+            let cx=r.left-origin.left+r.width/2;
+            let cy=r.top-origin.top+r.height/2;
+            /* Offset reel space endpoints toward the board — safe starting value of 30% of space size */
+            const nudge=r.width*0.40;
+            if(i===0){
+                /* Start space: nudge toward board — up in landscape, right in portrait */
+                if(isLandscape)cy-=nudge; else cx+=nudge;
+            } else if(i===59){
+                /* End space: nudge toward board — down in landscape, left in portrait */
+                if(isLandscape)cy+=nudge; else cx-=nudge;
+            }
+            pts.push({x:cx,y:cy});
         });
         if(pts.length<2)return;
 
@@ -1449,7 +1438,7 @@
         /* Wide base tape with variable-width effect via two paths */
         const base=document.createElementNS('http://www.w3.org/2000/svg','path');
         base.setAttribute('d',d);base.setAttribute('fill','none');
-        base.setAttribute('stroke','rgba(130,90,40,0.35)');
+        base.setAttribute('stroke','rgba(80,45,10,0.7)');
         /* Responsive stroke-width based on screen size */
         const tapeW=Math.max(4,Math.min(12,window.innerWidth*0.006)).toFixed(1);
         base.setAttribute('stroke-width',tapeW);
@@ -1459,7 +1448,7 @@
         /* Inner highlight for tape depth */
         const inner=document.createElementNS('http://www.w3.org/2000/svg','path');
         inner.setAttribute('d',d);inner.setAttribute('fill','none');
-        inner.setAttribute('stroke','rgba(180,130,70,0.18)');
+        inner.setAttribute('stroke','rgba(60,30,5,0.35)');
         inner.setAttribute('stroke-width','3');
         inner.setAttribute('stroke-linecap','round');inner.setAttribute('stroke-linejoin','round');
         svg.appendChild(inner);
@@ -1605,14 +1594,35 @@
         const minPos=Math.min(...players.map(p=>p.pos));
         return players.reduce((arr,p,i)=>{if(p.pos===minPos)arr.push(i);return arr;},[]);
     }
-    window.addEventListener('resize',()=>setTimeout(()=>{
-        if(document.getElementById('s0')){refreshLayout();}
-        else{updatePositions();drawTapePath();}
-    },150));
-    window.addEventListener('orientationchange',()=>setTimeout(()=>{
-        if(document.getElementById('s0')){refreshLayout();}
-        else{updatePositions();drawTapePath();}
-    },350));
+    let _lastRefreshW=0,_lastRefreshH=0,_resizeTimer=null;
+    window.addEventListener('resize',()=>{
+        if(_resizeTimer)clearTimeout(_resizeTimer);
+        _resizeTimer=setTimeout(()=>{
+            _resizeTimer=null;
+            const w=window.innerWidth,h=window.innerHeight;
+            /* Only act if dimensions changed by more than 30px — ignores browser chrome show/hide */
+            if(Math.abs(w-_lastRefreshW)<30&&Math.abs(h-_lastRefreshH)<30)return;
+            const newMode=detectLayout();
+            if(!document.getElementById('s0')){updatePositions();drawTapePath();return;}
+            /* Only do full refresh if layout mode actually changed */
+            if(newMode===layoutMode){
+                /* Same mode — just redraw positions and tape, skip space recomposition */
+                drawTapePath();updatePositions();
+            } else {
+                _lastRefreshW=w;_lastRefreshH=h;
+                refreshLayout();
+            }
+        },500);
+    });
+    window.addEventListener('orientationchange',()=>{
+        if(_resizeTimer)clearTimeout(_resizeTimer);
+        _resizeTimer=setTimeout(()=>{
+            _resizeTimer=null;
+            _lastRefreshW=window.innerWidth;_lastRefreshH=window.innerHeight;
+            if(document.getElementById('s0')){refreshLayout();}
+            else{updatePositions();drawTapePath();}
+        },500);
+    });
 
     // ══════════════════════════════════════════════
     // MYSTERY SPACE ASSIGNMENT
@@ -1694,6 +1704,7 @@
         const pct=parseInt((item.code||'').replace(/\D/g,''))||20;
         const isMax=!!item.isMax;
         const modal=document.getElementById('overlay-event');
+        modal.onclick=(e)=>{e.stopPropagation();};
         const popupEl=document.getElementById('main-popup');
         const _pmb=document.getElementById('popup-mute-btn');if(_pmb)_pmb.style.display='none';
         popupEl.style.borderColor='var(--mystery-glow)';
@@ -1947,7 +1958,7 @@
         for(let i=0;i<60;i++){
             if(i===0||i===59){spaceOffsets.push(0);continue;}
             /* Vary magnitude per space — some nudge more, some less */
-            const mag=(Math.random()*12-6)*(0.5+Math.random()*0.8);
+            const mag=(Math.random()*16-6)*(0.4+Math.random()*0.7);
             spaceOffsets.push(parseFloat(mag.toFixed(1)));
         }
     }
@@ -1958,24 +1969,33 @@
         boardLayout.forEach((_,i)=>{
             const s=document.getElementById('s'+i);
             if(!s)return;
-            if(i===0||i===59){s.style.position='';s.style.left='';s.style.top='';return;}
+            if(i===0||i===59){return;}
             const mag=spaceOffsets[i];
-            /* Use the space's own travel direction — perpendicular means:
-               travelling right/left → nudge in Y; travelling up/down → nudge in X */
             const dir=dirs[i]||(i>0?dirs[i-1]:null)||'right';
             let ox=0,oy=0;
             if(dir==='right'||dir==='left'){oy=mag;}
             else{ox=mag;}
-            s.style.position='relative';
-            s.style.left=ox+'px';
-            s.style.top=oy+'px';
+            s.style.setProperty('--space-translate',`translate(${ox}px,${oy}px)`);
+            if(s.classList.contains('tracklist-space')){
+                s.style.transform=`scale(1.15) translate(${ox}px,${oy}px)`;
+            } else if(s.classList.contains('win-track')){
+                s.style.transform=`scale(1.2) translate(${ox}px,${oy}px)`;
+            } else {
+                s.style.transform='';
+                s.style.marginLeft=ox+'px';
+                s.style.marginTop=oy+'px';
+            }
+            
         });
     }
 
     /* Full layout refresh — call on init and resize */
-    function refreshLayout(){
+    function refreshLayout(force=false){
         const newMode=detectLayout();
-        if(newMode===layoutMode&&document.getElementById('s0')){}  /* allow re-run for redraw */
+        if(!force&&newMode===layoutMode&&document.getElementById('s0')){
+            /* Mode unchanged — lightweight redraw only, no space recomposition */
+            drawTapePath();updatePositions();return;
+        }
         layoutMode=newMode;
         applyLayout(layoutMode);
         setTimeout(()=>{
@@ -2074,7 +2094,7 @@
                 );
                 document.getElementById('event-btn-secondary').style.display='none';
                 /* 20% smaller text for How to Play card */
-                setTimeout(()=>{const d=document.getElementById('event-desc');if(d)d.style.fontSize='clamp(0.8rem,1.7vw,1rem)';},30);
+                setTimeout(()=>{const d=document.getElementById('event-desc');if(d)d.style.fontSize='clamp(0.6rem,1.3vw,.8rem)';},30);
             }
         );
         /* Inject credits into the first popup immediately */
@@ -2374,6 +2394,7 @@
             const _ndIdx=turnIdx;
             showStatusPopup("🌙 NIGHTDRIVE CHECK","Did you keep your eyes closed?",
                 "YES - EYES SHUT",()=>{
+            setTimeout(()=>{const d=document.getElementById('event-desc');const h=document.createElement('div');h.style.cssText=`font-family:'KCStrikerSans',monospace;font-size:1.4rem;color:${players[_ndIdx].avatar.color};margin-bottom:8px;letter-spacing:2px;`;h.innerText=players[_ndIdx].name+',';d.insertBefore(h,d.firstChild);},0);
                     players[_ndIdx].nightDriveActive=false;
                     isRolling=false;isMoving=false;
                     document.getElementById('overlay-event').style.display='none';
@@ -2389,6 +2410,7 @@
             isRolling=true;isMoving=true;
             showStatusPopup("👻 GHOST CHECK","Did you stay quiet?",
                 "YES - I WAS SILENT",()=>{
+            setTimeout(()=>{const d=document.getElementById('event-desc');const h=document.createElement('div');h.style.cssText=`font-family:'KCStrikerSans',monospace;font-size:1.4rem;color:${players[_hnIdx].avatar.color};margin-bottom:8px;letter-spacing:2px;`;h.innerText=players[_hnIdx].name+',';d.insertBefore(h,d.firstChild);},0);
                     players[_hnIdx].ghostCounter=0;
                     isRolling=false;isMoving=false;
                     document.getElementById('overlay-event').style.display='none';
@@ -2399,8 +2421,9 @@
         }
         if(p.smileActive){
             isRolling=true;isMoving=true;
-            showStatusPopup("💀 THE ENDLESS SMILE","Did you hold the smile?",
+            showStatusPopup("💀 THE ENDLESS SMILE","Did you smile endlessly?",
                 "HELD IT",()=>{
+            setTimeout(()=>{const d=document.getElementById('event-desc');const h=document.createElement('div');h.style.cssText=`font-family:'KCStrikerSans',monospace;font-size:1.4rem;color:${players[_hnIdx].avatar.color};margin-bottom:8px;letter-spacing:2px;`;h.innerText=players[_hnIdx].name+',';d.insertBefore(h,d.firstChild);},0);
                     players[_hnIdx].smileActive=false;
                     isRolling=false;isMoving=false;
                     document.getElementById('overlay-event').style.display='none';
@@ -2675,6 +2698,7 @@
         const popupEl=document.getElementById('main-popup');
         const spaceCol=getSpaceColor(p.pos);
         popupEl.style.borderColor=spaceCol;popupEl.style.boxShadow=`0 0 30px ${spaceCol}`;
+        
         if(r.sound&&r.choice!=='remedy')playSpaceSfx(r.sound);
         /* Remedy: blocked if ANY label deal is active */
         if(r.choice==='remedy'&&(p.isSellout||p.isColdPitchSellout)){showSidebar("CONTRACT ACTIVE","Already signed with a major label.",spaceCol);endTurn();return;}
@@ -2806,7 +2830,7 @@
                         vid.load();
                         vid.play().then(()=>{
                             /* Unmute after successful play — user gesture already captured */
-                            vid.muted=false;vid.volume=0.5;
+                            vid.muted=false;vid.volume=0.8;
                         }).catch(()=>{vid.muted=true;vid.play().catch(()=>{});});
                         const _rnudge=setInterval(()=>{if(vid&&!vid.paused){}else if(vid&&!vid.ended){vid.load();vid.play().catch(()=>{});}},2000);
                         vid.addEventListener('ended',()=>clearInterval(_rnudge),{once:true});
@@ -3119,7 +3143,9 @@
         /* Hide space-popup mute btn on non-space popups */
         const _pmb=document.getElementById('popup-mute-btn');if(_pmb)_pmb.style.display='none';
         const modal=document.getElementById('overlay-event'),popupEl=document.getElementById('main-popup');
+        modal.onclick=(e)=>{e.stopPropagation();};
         popupEl.style.borderColor='#444';popupEl.style.boxShadow='none';
+    
         document.getElementById('event-title').innerText=t;
         document.getElementById('event-desc').innerText=d;
         document.getElementById('coin').style.display='none';
