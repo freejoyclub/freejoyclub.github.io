@@ -2399,6 +2399,7 @@
             const _ndIdx=turnIdx;
             showStatusPopup("🌙 NIGHTDRIVE CHECK","Did you keep your eyes closed?",
                 "YES - EYES SHUT",()=>{
+            setTimeout(()=>{const d=document.getElementById('event-desc');const h=document.createElement('div');h.style.cssText=`font-family:'KCStrikerSans',monospace;font-size:1.4rem;color:${players[_ndIdx].avatar.color};margin-bottom:8px;letter-spacing:2px;`;h.innerText=players[_ndIdx].name+',';d.insertBefore(h,d.firstChild);},0);
                     players[_ndIdx].nightDriveActive=false;
                     isRolling=false;isMoving=false;
                     document.getElementById('overlay-event').style.display='none';
@@ -2414,6 +2415,7 @@
             isRolling=true;isMoving=true;
             showStatusPopup("👻 GHOST CHECK","Did you stay quiet?",
                 "YES - I WAS SILENT",()=>{
+            setTimeout(()=>{const d=document.getElementById('event-desc');const h=document.createElement('div');h.style.cssText=`font-family:'KCStrikerSans',monospace;font-size:1.4rem;color:${players[_hnIdx].avatar.color};margin-bottom:8px;letter-spacing:2px;`;h.innerText=players[_hnIdx].name+',';d.insertBefore(h,d.firstChild);},0);
                     players[_hnIdx].ghostCounter=0;
                     isRolling=false;isMoving=false;
                     document.getElementById('overlay-event').style.display='none';
@@ -2424,8 +2426,9 @@
         }
         if(p.smileActive){
             isRolling=true;isMoving=true;
-            showStatusPopup("💀 THE ENDLESS SMILE","Did you hold the smile?",
+            showStatusPopup("💀 THE ENDLESS SMILE","Did you smile endlessly?",
                 "HELD IT",()=>{
+            setTimeout(()=>{const d=document.getElementById('event-desc');const h=document.createElement('div');h.style.cssText=`font-family:'KCStrikerSans',monospace;font-size:1.4rem;color:${players[_hnIdx].avatar.color};margin-bottom:8px;letter-spacing:2px;`;h.innerText=players[_hnIdx].name+',';d.insertBefore(h,d.firstChild);},0);
                     players[_hnIdx].smileActive=false;
                     isRolling=false;isMoving=false;
                     document.getElementById('overlay-event').style.display='none';
