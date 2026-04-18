@@ -1423,7 +1423,7 @@
             let cx=r.left-origin.left+r.width/2;
             let cy=r.top-origin.top+r.height/2;
             /* Offset reel space endpoints toward the board — safe starting value of 30% of space size */
-            const nudge=r.width*0.30;
+            const nudge=r.width*0.40;
             if(i===0){
                 /* Start space: nudge toward board — up in landscape, right in portrait */
                 if(isLandscape)cy-=nudge; else cx+=nudge;
@@ -1713,8 +1713,7 @@
         const isMax=!!item.isMax;
         const modal=document.getElementById('overlay-event');
         modal.onclick=(e)=>{e.stopPropagation();};
-        const title=document.getElementById('event-title');
-        
+        const popupEl=document.getElementById('main-popup');
         const _pmb=document.getElementById('popup-mute-btn');if(_pmb)_pmb.style.display='none';
         popupEl.style.borderColor='var(--mystery-glow)';
         popupEl.style.boxShadow=`0 0 30px var(--mystery-glow)`;
