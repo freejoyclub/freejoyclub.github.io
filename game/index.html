@@ -1152,13 +1152,16 @@
     }
 
     function startReelSpin(){
+        console.log('startReelSpin called, reelSpinning=',reelSpinning);
         if(reelSpinning)return;
         const s0=document.getElementById('s0');
         const s59=document.getElementById('s59');
-        if(!s0||!s59)return; /* board not ready yet — don't set reelSpinning true */
+        console.log('s0=',s0,'s59=',s59);
+        if(!s0||!s59){console.log('elements missing');return;}
         reelSpinning=true;
         s0.classList.add('reel-spinning');
         s59.classList.add('reel-spinning');
+        console.log('reel spin started, s0 classes=',s0.className);
     }
 
     /* Metronome click track — MetronomeUp beat 1, Metronome x3 beats 2-4, repeats each second */
