@@ -68,26 +68,6 @@
       padding: 0 1.5rem 5rem;
     }
 
-    /* ── Marquee ── */
-    .marquee-wrap {
-      background: var(--ink);
-      color: var(--tan4);
-      font-family: 'Special Elite', monospace;
-      font-size: 0.75rem;
-      letter-spacing: 0.14em;
-      overflow: hidden;
-      white-space: nowrap;
-      padding: 0.45rem 0;
-      position: relative;
-      z-index: 2;
-    }
-    .marquee-track { display: inline-block; animation: marqueeScroll 30s linear infinite; }
-    .marquee-track span { margin: 0 2.5rem; }
-    @keyframes marqueeScroll {
-      0%   { transform: translateX(0); }
-      100% { transform: translateX(-50%); }
-    }
-
     /* ── Header ── */
     header {
       text-align: center;
@@ -133,29 +113,28 @@
       font-style: italic;
     }
 
-    /* ── Red string connector ── */
-    .string-row {
-      display: flex;
-      align-items: center;
-      gap: 0;
-      margin: 2.5rem 0 0;
+    /* ── Video embed placeholder ── */
+    .video-placeholder-wrap {
+      margin: 2rem auto 0;
+      max-width: 480px;
       position: relative;
-      justify-content: center;
+      padding-top: 10px;
     }
 
-    .pin {
-      width: 14px;
-      height: 14px;
-      background: var(--red);
+    .video-placeholder-pin {
+      position: absolute;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 16px;
+      height: 16px;
+      background: radial-gradient(circle at 40% 35%, #e74c3c, var(--red-dark));
       border-radius: 50%;
-      border: 2px solid var(--red-dark);
-      box-shadow: 0 2px 6px rgba(192,57,43,0.5), inset 0 1px 2px rgba(255,255,255,0.3);
-      flex-shrink: 0;
-      position: relative;
-      z-index: 2;
+      box-shadow: 0 2px 6px rgba(192,57,43,0.6), inset 0 1px 2px rgba(255,255,255,0.3);
+      z-index: 3;
     }
 
-    .pin::after {
+    .video-placeholder-pin::after {
       content: '';
       position: absolute;
       top: 50%; left: 50%;
@@ -165,12 +144,48 @@
       transform: translate(-40%, -55%);
     }
 
-    .string-line {
-      flex: 1;
-      height: 2px;
-      background: var(--red);
-      opacity: 0.7;
-      max-width: 80px;
+    .video-embed-box {
+      background: rgba(44,26,14,0.07);
+      border: 1.5px solid rgba(139,94,26,0.28);
+      border-radius: 3px;
+      aspect-ratio: 16/9;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      box-shadow: 3px 3px 0 rgba(139,94,26,0.1), 0 6px 20px var(--shadow);
+    }
+
+    .video-embed-box .coming-soon-label {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.6rem;
+      letter-spacing: 0.1em;
+      color: var(--ink);
+      opacity: 0.3;
+    }
+
+    .video-embed-box .coming-soon-sub {
+      font-family: 'Special Elite', monospace;
+      font-size: 0.68rem;
+      letter-spacing: 0.14em;
+      color: var(--gold);
+      opacity: 0.65;
+      text-transform: uppercase;
+    }
+
+    /* ── Swaying animated string row ── */
+    .string-row {
+      margin: 2rem 0 0;
+      display: flex;
+      justify-content: center;
+    }
+
+    .string-row svg {
+      width: 100%;
+      max-width: 600px;
+      height: 44px;
+      overflow: visible;
     }
 
     /* ── Sections ── */
@@ -188,7 +203,6 @@
       box-shadow: 3px 3px 0 rgba(139,94,26,0.12), 0 6px 20px var(--shadow);
     }
 
-    /* Push pin on each card */
     .section-inner::before {
       content: '';
       position: absolute;
@@ -203,7 +217,6 @@
       z-index: 3;
     }
 
-    /* Red string down from pin */
     .section-inner::after {
       content: '';
       position: absolute;
@@ -212,11 +225,16 @@
       width: 2px;
       height: 30px;
       background: var(--red);
-      opacity: 0.65;
+      opacity: 0.6;
+      transform-origin: top center;
+      animation: swayCord 5s ease-in-out infinite;
     }
 
-    .section:first-of-type .section-inner::after {
-      display: none;
+    .section:first-of-type .section-inner::after { display: none; }
+
+    @keyframes swayCord {
+      0%, 100% { transform: rotate(-2deg); }
+      50%       { transform: rotate(2deg); }
     }
 
     h2 {
@@ -259,7 +277,101 @@
       border-radius: 0 2px 2px 0;
     }
 
-    /* ── Shoe cards ── */
+    /* ── Pinned photos ── */
+    .pinned-photo {
+      display: block;
+      position: relative;
+      padding-top: 12px;
+    }
+
+    .pinned-photo.float-right {
+      float: right;
+      width: 200px;
+      margin: 0 0 1.2rem 1.6rem;
+    }
+
+    .pinned-photo.float-left {
+      float: left;
+      width: 190px;
+      margin: 0 1.6rem 1.2rem 0;
+    }
+
+    .pinned-photo.centered {
+      display: flex;
+      justify-content: center;
+      clear: both;
+      margin: 1.4rem 0 0.6rem;
+      width: 100%;
+    }
+
+    .photo-inner {
+      position: relative;
+      display: inline-block;
+    }
+
+    .photo-inner img {
+      display: block;
+      width: 100%;
+      max-width: 260px;
+      border: 3px solid var(--cream);
+      border-radius: 2px;
+      box-shadow: 3px 4px 0 rgba(139,94,26,0.2), 0 6px 18px var(--shadow);
+      transform-origin: top center;
+    }
+
+    .pinned-photo.float-right .photo-inner img,
+    .pinned-photo.float-left .photo-inner img {
+      max-width: 100%;
+    }
+
+    /* Swing animations with different speeds/delays */
+    .swing-a img { animation: photoSwing 5.2s ease-in-out infinite; }
+    .swing-b img { animation: photoSwing 6.1s ease-in-out infinite; animation-delay: -1.5s; }
+    .swing-c img { animation: photoSwing 4.8s ease-in-out infinite; animation-delay: -2.8s; }
+    .swing-d img { animation: photoSwing 5.7s ease-in-out infinite; animation-delay: -0.9s; }
+    .swing-e img { animation: photoSwing 6.4s ease-in-out infinite; animation-delay: -3.3s; }
+
+    @keyframes photoSwing {
+      0%, 100% { transform: rotate(-2.5deg); }
+      50%       { transform: rotate(2.5deg); }
+    }
+
+    .photo-pin {
+      position: absolute;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 14px;
+      height: 14px;
+      background: radial-gradient(circle at 40% 35%, #e74c3c, var(--red-dark));
+      border-radius: 50%;
+      box-shadow: 0 2px 6px rgba(192,57,43,0.55), inset 0 1px 2px rgba(255,255,255,0.3);
+      z-index: 4;
+    }
+
+    .photo-pin::after {
+      content: '';
+      position: absolute;
+      top: 50%; left: 50%;
+      width: 3px; height: 3px;
+      background: rgba(255,255,255,0.4);
+      border-radius: 50%;
+      transform: translate(-40%, -55%);
+    }
+
+    .photo-thread {
+      position: absolute;
+      top: 13px;
+      left: calc(50% - 1px);
+      width: 2px;
+      height: 10px;
+      background: var(--red);
+      opacity: 0.55;
+    }
+
+    .clearfix::after { content: ''; display: table; clear: both; }
+
+    /* ── Shoe tier label ── */
     .shoe-tier-label {
       font-family: 'Bebas Neue', sans-serif;
       font-size: 1rem;
@@ -399,31 +511,6 @@
 
 <div class="bg-sweep"></div>
 
-<div class="marquee-wrap">
-  <div class="marquee-track">
-    <span>BIG SHOE DOESN'T WANT YOU TO READ THIS</span>
-    <span>&#9632;</span>
-    <span>YOUR FEET WERE SHAPED LIKE FEET ONCE</span>
-    <span>&#9632;</span>
-    <span>FOLLOW THE LACES</span>
-    <span>&#9632;</span>
-    <span>WIDE TOE BOX OR BUST</span>
-    <span>&#9632;</span>
-    <span>ZERO DROP ZERO COMPROMISES</span>
-    <span>&#9632;</span>
-    <span>BIG SHOE DOESN'T WANT YOU TO READ THIS</span>
-    <span>&#9632;</span>
-    <span>YOUR FEET WERE SHAPED LIKE FEET ONCE</span>
-    <span>&#9632;</span>
-    <span>FOLLOW THE LACES</span>
-    <span>&#9632;</span>
-    <span>WIDE TOE BOX OR BUST</span>
-    <span>&#9632;</span>
-    <span>ZERO DROP ZERO COMPROMISES</span>
-    <span>&#9632;</span>
-  </div>
-</div>
-
 <div class="page">
 
   <header>
@@ -435,52 +522,97 @@
     <p class="tagline">Big Shoe has you now...</p>
   </header>
 
-  <!-- connector row under header -->
+  <!-- Video embed placeholder -->
+  <div class="video-placeholder-wrap">
+    <div class="video-placeholder-pin"></div>
+    <div class="video-embed-box">
+      <span class="coming-soon-label">Video Coming Soon</span>
+      <span class="coming-soon-sub">Big Shoe &mdash; Official Music Video</span>
+    </div>
+  </div>
+
+  <!-- Animated swaying string row -->
   <div class="string-row">
-    <div class="pin"></div>
-    <div class="string-line"></div>
-    <div class="pin"></div>
-    <div class="string-line"></div>
-    <div class="pin"></div>
-    <div class="string-line"></div>
-    <div class="pin"></div>
-    <div class="string-line"></div>
-    <div class="pin"></div>
+    <svg id="string-svg" viewBox="0 0 600 44" preserveAspectRatio="xMidYMid meet"></svg>
   </div>
 
   <!-- Section 1 -->
   <div class="section">
-    <div class="section-inner">
+    <div class="section-inner clearfix">
       <p class="section-label">Exhibit A</p>
       <h2>Your Pain Isn't Random</h2>
+
+      <div class="pinned-photo float-right swing-a">
+        <div class="photo-inner">
+          <div class="photo-pin"></div>
+          <div class="photo-thread"></div>
+          <img src="/shoe/foot shoe explain.jpg" alt="Foot vs shoe shape" />
+        </div>
+      </div>
+
       <p>Bad knees? Tight back? Before you blame your posture, your job, or your genes... take a look at your shoes.</p>
       <p>Most shoes have a raised heel, even a small one. That tilts your whole body forward. Your calves and the connective tissue running up the back of your legs stay permanently shortened. Everything downstream - knees, hips, lower back - compensates. Every day, for years.</p>
       <div class="callout">Then there's the toe box. Your FOOT is widest at the toes. Your SHOE is narrowest at the toes. That's not a coincidence. That's BIG SHOE.</div>
+
+      <div class="pinned-photo float-left swing-b">
+        <div class="photo-inner">
+          <div class="photo-pin"></div>
+          <div class="photo-thread"></div>
+          <img src="/shoe/foot prison.jpg" alt="Foot imprisoned by shoe" />
+        </div>
+      </div>
+
       <p>Bunions, hammer toes, neuromas - these are almost nonexistent in populations that don't wear shoes. They call bunions genetic, but the truth is darker. You give them to yourself.</p>
     </div>
   </div>
 
   <!-- Section 2 -->
   <div class="section">
-    <div class="section-inner">
+    <div class="section-inner clearfix">
       <p class="section-label">Exhibit B</p>
       <h2>A Brief History of BIG SHOE</h2>
+
+      <div class="pinned-photo float-right swing-c">
+        <div class="photo-inner">
+          <div class="photo-pin"></div>
+          <div class="photo-thread"></div>
+          <img src="/shoe/middle age royalty shoes.jpg" alt="Medieval aristocrat shoes" />
+        </div>
+      </div>
+
       <p>Narrow pointed shoes were never practical. *That was the point.* Centuries ago, European aristocrats wore impractical footwear to signal they didn't work in the fields.</p>
       <p>Merchants copied the look to seem wealthy. The working class copied the merchants. And nobody stopped to ask whether the shoes were actually good for anyone.</p>
       <p>The modern dress shoe - the pointed heel, the narrow form - it all traces back to that original "elite" template. Designed to be impractical, and never reconsidered. You're walking around in 500-year-old aristocrat cosplay every day.</p>
+
+      <div class="pinned-photo centered swing-d">
+        <div class="photo-inner">
+          <div class="photo-pin"></div>
+          <div class="photo-thread"></div>
+          <img src="/shoe/1900 shoes all.jpg" alt="Shoe styles through the 1900s" />
+        </div>
+      </div>
     </div>
   </div>
 
   <!-- Section 3 -->
   <div class="section">
-    <div class="section-inner">
+    <div class="section-inner clearfix">
       <p class="section-label">Exhibit C</p>
       <h2>Big Shoe's Psyop</h2>
+
+      <div class="pinned-photo float-right swing-e">
+        <div class="photo-inner">
+          <div class="photo-pin"></div>
+          <div class="photo-thread"></div>
+          <img src="/shoe/lebron shoe.jpg" alt="LeBron signature shoe" />
+        </div>
+      </div>
+
       <p>The narrow pointed shoe is still the prestige signal. Dress shoes. Jordans. Yeezys. Every celebrity collab. The narrow toe, the elevated heel - that's luxury. That's fashion. If your feet don't hurt, are you even cool?</p>
       <p>And the wide, flat, foot-shaped shoe? You know what that looks like to someone raised in the SYSTEM? Clown shoes.</p>
       <div class="callout">Big Shoe's psyop is so thorough that the healthy option looks like the strange one.</div>
       <p>And if your feet are already compromised - bunions, tight calves, broken arches - you can't just switch overnight. You need orthotics. Arch support. Maybe surgery. The system that broke your feet is selling you the fix.</p>
-      <p>Big Shoe > Big Insole > Big Ortho. It's a pipeline. Your feet are the product.</p>
+      <p>Big Shoe &gt; Big Insole &gt; Big Ortho. It's a pipeline. Your feet are the product.</p>
     </div>
   </div>
 
@@ -596,5 +728,86 @@
   <p class="footer-blurb">If Foot Locker sends their foot soldiers after us, you never saw this page.</p>
 
 </div>
+
+<script>
+(function() {
+  const svg = document.getElementById('string-svg');
+  if (!svg) return;
+
+  const ns = 'http://www.w3.org/2000/svg';
+  const pinCount = 7;
+  const W = 600;
+  const pinY = 10;
+  const sagY = 34;
+  const spacing = W / (pinCount - 1);
+
+  // Defs for pin gradient
+  const defs = document.createElementNS(ns, 'defs');
+  defs.innerHTML = '<radialGradient id="pg" cx="40%" cy="35%" r="60%"><stop offset="0%" stop-color="#e74c3c"/><stop offset="100%" stop-color="#922b21"/></radialGradient>';
+  svg.appendChild(defs);
+
+  // String segments
+  const paths = [];
+  for (let i = 0; i < pinCount - 1; i++) {
+    const p = document.createElementNS(ns, 'path');
+    p.setAttribute('fill', 'none');
+    p.setAttribute('stroke', '#c0392b');
+    p.setAttribute('stroke-width', '1.8');
+    p.setAttribute('opacity', '0.68');
+    svg.appendChild(p);
+    paths.push(p);
+  }
+
+  // Pins
+  const pinEls = [];
+  for (let i = 0; i < pinCount; i++) {
+    const g = document.createElementNS(ns, 'g');
+    const c = document.createElementNS(ns, 'circle');
+    c.setAttribute('r', '7');
+    c.setAttribute('fill', 'url(#pg)');
+    c.setAttribute('stroke', '#922b21');
+    c.setAttribute('stroke-width', '1.5');
+    const shine = document.createElementNS(ns, 'circle');
+    shine.setAttribute('r', '2.2');
+    shine.setAttribute('cx', '-2');
+    shine.setAttribute('cy', '-2.5');
+    shine.setAttribute('fill', 'rgba(255,255,255,0.38)');
+    g.appendChild(c);
+    g.appendChild(shine);
+    svg.appendChild(g);
+    pinEls.push(g);
+  }
+
+  const baseXs = Array.from({length: pinCount}, (_, i) => i * spacing);
+  let t = 0;
+
+  function tick() {
+    t += 0.01;
+    const xs = baseXs.map((bx, i) => {
+      // Each pin sways at slightly different phase and amplitude
+      return bx + Math.sin(t + i * 1.1) * 5 + Math.sin(t * 1.3 + i * 0.7) * 3;
+    });
+
+    pinEls.forEach((el, i) => {
+      el.setAttribute('transform', `translate(${xs[i]}, ${pinY})`);
+    });
+
+    paths.forEach((path, i) => {
+      const x1 = xs[i];
+      const x2 = xs[i + 1];
+      const mx = (x1 + x2) / 2;
+      // Control point sags down, more sag for wider gaps
+      const gap = Math.abs(x2 - x1);
+      const cy = sagY + gap * 0.04;
+      path.setAttribute('d', `M ${x1} ${pinY} Q ${mx} ${cy} ${x2} ${pinY}`);
+    });
+
+    requestAnimationFrame(tick);
+  }
+
+  tick();
+})();
+</script>
+
 </body>
 </html>
