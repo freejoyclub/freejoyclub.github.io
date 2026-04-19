@@ -1679,16 +1679,24 @@
 
     function renderBucketItem(item,container,playerIdx){
         container.innerHTML='';if(!item)return;
+        /* Strip path and extension for caption — "bucket/g sticker.png" → "g sticker" */
+        const _caption=item.file?item.file.replace(/^.*\//,'').replace(/\.[^.]+$/,''):'';
+        const _cap=()=>{
+            if(!_caption)return;
+            const c=document.createElement('div');
+            c.style.cssText='font-family:"Courier New",monospace;font-size:0.62rem;letter-spacing:1.5px;color:rgba(255,255,255,0.35);text-transform:lowercase;text-align:center;margin-top:5px;padding:0 4px;';
+            c.innerText=_caption;container.appendChild(c);
+        };
         if(item.type==='image'){
             const img=document.createElement('img');
             img.src=item.file;img.className='bucket-img';img.alt='Mystery drop';
-            container.appendChild(img);
+            container.appendChild(img);_cap();
         } else if(item.type==='video'){
             const vid=document.createElement('video');
             vid.src=item.file;vid.className='bucket-video';
             vid.autoplay=true;vid.loop=false;vid.muted=false;vid.volume=0;vid.playsInline=true;
             vid.setAttribute('playsinline','');
-            container.appendChild(vid);
+            container.appendChild(vid);_cap();
             activeLoreVid=vid;
             const _tryPlay=()=>{if(vid.paused&&!vid.ended)vid.play().catch(()=>{});};
             vid.play().then(()=>fadeVideoAudioIn(vid)).catch(()=>{vid.muted=true;vid.play().catch(()=>{});});
