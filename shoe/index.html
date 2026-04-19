@@ -1,0 +1,601 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>The Big Shoe Guide</title>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Special+Elite&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --tan1: #e8d5b0;
+      --tan2: #d4a96a;
+      --tan3: #c8956c;
+      --tan4: #e2c9a0;
+      --tan5: #f0dfc0;
+      --tan6: #d9b48f;
+      --tan7: #c4a882;
+      --tan8: #e6cfa8;
+      --ink: #2c1a0e;
+      --ink-light: #4a2e18;
+      --gold: #8b5e1a;
+      --gold-bright: #b8860b;
+      --cream: #fdf6e8;
+      --red: #c0392b;
+      --red-dark: #922b21;
+      --shadow: rgba(44,26,14,0.22);
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      color: var(--ink);
+      min-height: 100vh;
+      overflow-x: hidden;
+      background: var(--tan1);
+    }
+
+    .bg-sweep {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      background: linear-gradient(125deg, var(--tan1), var(--tan5), var(--tan2), var(--tan3), var(--tan6), var(--tan4), var(--tan7), var(--tan8), var(--tan2), var(--tan1));
+      background-size: 400% 400%;
+      animation: sweepGradient 18s ease infinite;
+    }
+
+    @keyframes sweepGradient {
+      0%   { background-position: 0% 50%; }
+      50%  { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    .bg-sweep::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+      opacity: 0.5;
+      pointer-events: none;
+    }
+
+    .page {
+      position: relative;
+      z-index: 1;
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 0 1.5rem 5rem;
+    }
+
+    /* ── Marquee ── */
+    .marquee-wrap {
+      background: var(--ink);
+      color: var(--tan4);
+      font-family: 'Special Elite', monospace;
+      font-size: 0.75rem;
+      letter-spacing: 0.14em;
+      overflow: hidden;
+      white-space: nowrap;
+      padding: 0.45rem 0;
+      position: relative;
+      z-index: 2;
+    }
+    .marquee-track { display: inline-block; animation: marqueeScroll 30s linear infinite; }
+    .marquee-track span { margin: 0 2.5rem; }
+    @keyframes marqueeScroll {
+      0%   { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
+    }
+
+    /* ── Header ── */
+    header {
+      text-align: center;
+      padding: 3.5rem 1rem 1rem;
+    }
+
+    .eyebrow {
+      font-family: 'Special Elite', monospace;
+      font-size: 0.75rem;
+      letter-spacing: 0.18em;
+      color: var(--gold);
+      text-transform: uppercase;
+      margin-bottom: 0.75rem;
+      opacity: 0.9;
+    }
+
+    h1 {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(4rem, 13vw, 8rem);
+      line-height: 0.9;
+      color: var(--ink);
+      letter-spacing: 0.04em;
+      text-shadow: 4px 4px 0 rgba(139,94,26,0.18), 0 8px 24px var(--shadow);
+    }
+
+    h1 em {
+      display: block;
+      font-style: normal;
+      color: var(--red);
+      font-size: 0.45em;
+      letter-spacing: 0.22em;
+      text-shadow: none;
+      margin-bottom: 0.2em;
+    }
+
+    .tagline {
+      font-family: 'Special Elite', monospace;
+      font-size: 0.82rem;
+      color: var(--ink-light);
+      margin-top: 1rem;
+      opacity: 0.75;
+      letter-spacing: 0.06em;
+      font-style: italic;
+    }
+
+    /* ── Red string connector ── */
+    .string-row {
+      display: flex;
+      align-items: center;
+      gap: 0;
+      margin: 2.5rem 0 0;
+      position: relative;
+      justify-content: center;
+    }
+
+    .pin {
+      width: 14px;
+      height: 14px;
+      background: var(--red);
+      border-radius: 50%;
+      border: 2px solid var(--red-dark);
+      box-shadow: 0 2px 6px rgba(192,57,43,0.5), inset 0 1px 2px rgba(255,255,255,0.3);
+      flex-shrink: 0;
+      position: relative;
+      z-index: 2;
+    }
+
+    .pin::after {
+      content: '';
+      position: absolute;
+      top: 50%; left: 50%;
+      width: 4px; height: 4px;
+      background: rgba(255,255,255,0.4);
+      border-radius: 50%;
+      transform: translate(-40%, -55%);
+    }
+
+    .string-line {
+      flex: 1;
+      height: 2px;
+      background: var(--red);
+      opacity: 0.7;
+      max-width: 80px;
+    }
+
+    /* ── Sections ── */
+    .section {
+      margin-top: 2.8rem;
+      position: relative;
+    }
+
+    .section-inner {
+      background: rgba(253,246,232,0.72);
+      border: 1px solid rgba(139,94,26,0.2);
+      border-radius: 3px;
+      padding: 1.6rem 1.8rem;
+      position: relative;
+      box-shadow: 3px 3px 0 rgba(139,94,26,0.12), 0 6px 20px var(--shadow);
+    }
+
+    /* Push pin on each card */
+    .section-inner::before {
+      content: '';
+      position: absolute;
+      top: -10px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 16px;
+      height: 16px;
+      background: radial-gradient(circle at 40% 35%, #e74c3c, var(--red-dark));
+      border-radius: 50%;
+      box-shadow: 0 2px 6px rgba(192,57,43,0.6), inset 0 1px 2px rgba(255,255,255,0.3);
+      z-index: 3;
+    }
+
+    /* Red string down from pin */
+    .section-inner::after {
+      content: '';
+      position: absolute;
+      top: -38px;
+      left: calc(50% - 1px);
+      width: 2px;
+      height: 30px;
+      background: var(--red);
+      opacity: 0.65;
+    }
+
+    .section:first-of-type .section-inner::after {
+      display: none;
+    }
+
+    h2 {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.7rem;
+      letter-spacing: 0.06em;
+      color: var(--ink);
+      margin-bottom: 0.6rem;
+      line-height: 1;
+    }
+
+    .section-label {
+      font-family: 'Special Elite', monospace;
+      font-size: 0.65rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 0.3rem;
+      opacity: 0.85;
+    }
+
+    p {
+      font-size: 0.97rem;
+      line-height: 1.75;
+      color: var(--ink-light);
+      margin-bottom: 0.8rem;
+    }
+
+    p:last-child { margin-bottom: 0; }
+
+    .callout {
+      background: rgba(192,57,43,0.07);
+      border-left: 3px solid var(--red);
+      padding: 0.8rem 1rem;
+      margin: 1rem 0;
+      font-family: 'Special Elite', monospace;
+      font-size: 0.83rem;
+      line-height: 1.6;
+      color: var(--ink);
+      border-radius: 0 2px 2px 0;
+    }
+
+    /* ── Shoe cards ── */
+    .shoe-tier-label {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1rem;
+      letter-spacing: 0.15em;
+      color: var(--gold);
+      margin: 1.5rem 0 0.8rem;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .shoe-tier-label::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--gold);
+      opacity: 0.35;
+    }
+
+    .shoe-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 0.75rem;
+    }
+
+    @media (min-width: 560px) {
+      .shoe-grid { grid-template-columns: 1fr 1fr; }
+    }
+
+    .shoe-card {
+      background: rgba(253,246,232,0.6);
+      border: 1px solid rgba(139,94,26,0.22);
+      border-radius: 3px;
+      padding: 0.9rem 1rem;
+      position: relative;
+    }
+
+    .shoe-card.starter {
+      border-color: var(--red);
+      border-width: 1.5px;
+      background: rgba(192,57,43,0.05);
+    }
+
+    .starter-badge {
+      position: absolute;
+      top: -9px; right: 10px;
+      background: var(--red);
+      color: var(--cream);
+      font-family: 'Special Elite', monospace;
+      font-size: 0.6rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      padding: 2px 8px;
+      border-radius: 2px;
+    }
+
+    .shoe-card h3 {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.2rem;
+      letter-spacing: 0.06em;
+      color: var(--ink);
+      margin-bottom: 0.1rem;
+    }
+
+    .shoe-card .price {
+      font-size: 0.75rem;
+      color: var(--gold);
+      font-family: 'Special Elite', monospace;
+      margin-bottom: 0.4rem;
+    }
+
+    .shoe-card p {
+      font-size: 0.85rem;
+      margin-bottom: 0.5rem;
+      line-height: 1.55;
+    }
+
+    .shoe-card a {
+      font-family: 'Special Elite', monospace;
+      font-size: 0.73rem;
+      color: var(--red-dark);
+      text-decoration: none;
+      letter-spacing: 0.06em;
+      border-bottom: 1px solid rgba(146,43,33,0.3);
+      transition: border-color 0.2s, color 0.2s;
+    }
+    .shoe-card a:hover { color: var(--red); border-color: var(--red); }
+
+    /* ── Bottom nav ── */
+    .bottom-nav {
+      margin-top: 3.5rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid rgba(139,94,26,0.35);
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 0.5rem 2rem;
+      font-family: 'Special Elite', monospace;
+      font-size: 0.9rem;
+    }
+
+    .bottom-nav a {
+      color: var(--ink-light);
+      text-decoration: none;
+      letter-spacing: 0.05em;
+      position: relative;
+      transition: color 0.2s ease;
+    }
+
+    .bottom-nav a::after {
+      content: '';
+      position: absolute;
+      left: 0; bottom: -2px;
+      width: 0; height: 1px;
+      background: var(--gold-bright);
+      transition: width 0.25s ease;
+    }
+
+    .bottom-nav a:hover { color: var(--gold-bright); }
+    .bottom-nav a:hover::after { width: 100%; }
+
+    .nav-sep { color: var(--gold); opacity: 0.5; user-select: none; }
+
+    .footer-blurb {
+      text-align: center;
+      margin-top: 2rem;
+      font-family: 'Special Elite', monospace;
+      font-style: italic;
+      font-size: 0.75rem;
+      color: var(--ink);
+      opacity: 0.45;
+      letter-spacing: 0.05em;
+    }
+  </style>
+</head>
+<body>
+
+<div class="bg-sweep"></div>
+
+<div class="marquee-wrap">
+  <div class="marquee-track">
+    <span>BIG SHOE DOESN'T WANT YOU TO READ THIS</span>
+    <span>&#9632;</span>
+    <span>YOUR FEET WERE SHAPED LIKE FEET ONCE</span>
+    <span>&#9632;</span>
+    <span>FOLLOW THE LACES</span>
+    <span>&#9632;</span>
+    <span>WIDE TOE BOX OR BUST</span>
+    <span>&#9632;</span>
+    <span>ZERO DROP ZERO COMPROMISES</span>
+    <span>&#9632;</span>
+    <span>BIG SHOE DOESN'T WANT YOU TO READ THIS</span>
+    <span>&#9632;</span>
+    <span>YOUR FEET WERE SHAPED LIKE FEET ONCE</span>
+    <span>&#9632;</span>
+    <span>FOLLOW THE LACES</span>
+    <span>&#9632;</span>
+    <span>WIDE TOE BOX OR BUST</span>
+    <span>&#9632;</span>
+    <span>ZERO DROP ZERO COMPROMISES</span>
+    <span>&#9632;</span>
+  </div>
+</div>
+
+<div class="page">
+
+  <header>
+    <p class="eyebrow">The Official Companion Guide to</p>
+    <h1>
+      <em>Clemmy G presents</em>
+      Big Shoe
+    </h1>
+    <p class="tagline">They've had your feet this whole time. Here's how to get them back.</p>
+  </header>
+
+  <!-- connector row under header -->
+  <div class="string-row">
+    <div class="pin"></div>
+    <div class="string-line"></div>
+    <div class="pin"></div>
+    <div class="string-line"></div>
+    <div class="pin"></div>
+    <div class="string-line"></div>
+    <div class="pin"></div>
+    <div class="string-line"></div>
+    <div class="pin"></div>
+  </div>
+
+  <!-- Section 1 -->
+  <div class="section">
+    <div class="section-inner">
+      <p class="section-label">Exhibit A</p>
+      <h2>Your Pain Isn't Random</h2>
+      <p>Bad knees? Tight back? Hips that click? Before you blame your posture, your job, or your genes -- take a look at your shoes.</p>
+      <p>Most shoes have a raised heel, even a small one. That tilts your whole body forward. Your calves and the connective tissue running up the back of your legs stay permanently shortened. Everything downstream -- knees, hips, lower back -- compensates. Every day. For years.</p>
+      <div class="callout">Then there's the toe box. Your foot is widest at the toes. Your shoe is narrowest at the toes. That's not a coincidence. That's a vice.</div>
+      <p>Bunions, hammer toes, neuromas -- these are almost nonexistent in populations that don't wear shoes. Your grandmother's bunions weren't genetic. Big Shoe gave them to both of you.</p>
+    </div>
+  </div>
+
+  <!-- Section 2 -->
+  <div class="section">
+    <div class="section-inner">
+      <p class="section-label">Exhibit B</p>
+      <h2>A Brief History of Stupid Shoes</h2>
+      <p>Narrow pointed shoes were never practical. That was the point. Centuries ago, European aristocrats wore impractical footwear to signal they didn't work in the fields. The message: my feet don't need to function. I have people for that.</p>
+      <p>Merchants copied the look to seem wealthy. The working class copied the merchants. And nobody -- at any step down that ladder -- stopped to ask whether the shoes were actually good for anyone.</p>
+      <p>The modern dress shoe, the pointed heel, the narrow silhouette -- it all traces back to that original template. Designed to be impractical. Never reconsidered. You are walking around in 500-year-old aristocrat cosplay every single day.</p>
+    </div>
+  </div>
+
+  <!-- Section 3 -->
+  <div class="section">
+    <div class="section-inner">
+      <p class="section-label">Exhibit C</p>
+      <h2>Big Shoe's Current Operation</h2>
+      <p>The narrow pointed shoe is still the prestige signal. Dress shoes. Jordans. Yeezys. Every celebrity collab. The narrow toe, the elevated heel -- that's luxury. That's fashion. That's the drip.</p>
+      <p>And the wide, flat, foot-shaped shoe? You know what that looks like to someone raised in this system? Clown shoes. Orthopedic. Weird.</p>
+      <div class="callout">Big Shoe has done such a thorough job that the healthy option looks like the strange one.</div>
+      <p>And if your feet are already compromised -- bunions, tight calves, chronic pain -- you can't just switch overnight. You need orthotics. Special shoes. Maybe surgery. The system that broke your feet is also selling you the fix. Sound familiar?</p>
+      <p>Big Shoe. Big Insole. Big Ortho. It's a pipeline. Your feet are the product.</p>
+    </div>
+  </div>
+
+  <!-- Section 4 -->
+  <div class="section">
+    <div class="section-inner">
+      <p class="section-label">The Solution</p>
+      <h2>What Feet Actually Look Like</h2>
+      <p>Look at a toddler's feet. Wide at the toes. Flat. They splay and grip. Nobody is born with a narrow toe box. That develops -- or fails to -- based on what you strap onto your feet for 30 years.</p>
+      <p>Barefoot-style shoes don't require you to walk across gravel barefoot like some kind of monk. They just have three things: a wide toe box so your toes can exist as individual toes, zero drop (flat sole, heel same height as toe) so your body can stack properly, and a flexible thin sole so your feet can actually feel and respond to the ground.</p>
+      <p>Shoes shaped like feet instead of shoes shaped like shoes. Revolutionary concept.</p>
+    </div>
+  </div>
+
+  <!-- Section 5: The shoes -->
+  <div class="section">
+    <div class="section-inner">
+      <p class="section-label">The Lineup</p>
+      <h2>How to Escape (By Budget)</h2>
+      <p>Fair warning: go slow. Your feet have been asleep for years. Let them wake up gradually.</p>
+
+      <div class="shoe-tier-label">Tier 1 -- Start here</div>
+      <div class="shoe-grid">
+        <div class="shoe-card starter">
+          <div class="starter-badge">gateway drug</div>
+          <h3>Whitin</h3>
+          <p class="price">~$30-50 &middot; Amazon</p>
+          <p>Solid barefoot basics without the commitment. Wide toe box, zero drop, available tomorrow. Start here before you spend real money.</p>
+          <a href="https://www.amazon.com/s?k=whitin+barefoot+shoes" target="_blank">find on amazon &rarr;</a>
+        </div>
+      </div>
+
+      <div class="shoe-tier-label">Tier 2 -- Mid-range</div>
+      <div class="shoe-grid">
+        <div class="shoe-card">
+          <h3>Lems</h3>
+          <p class="price">~$100-150 &middot; lemsshoes.com</p>
+          <p>The most normal-looking barefoot shoe. Good for daily wear and not getting asked "what are those."</p>
+          <a href="https://www.lemsshoes.com" target="_blank">lemsshoes.com &rarr;</a>
+        </div>
+        <div class="shoe-card">
+          <h3>Splay</h3>
+          <p class="price">~$80-120 &middot; splayshoes.com</p>
+          <p>Athletic lean. Gym to street without broadcasting your whole foot journey to strangers.</p>
+          <a href="https://splayshoes.com" target="_blank">splayshoes.com &rarr;</a>
+        </div>
+        <div class="shoe-card">
+          <h3>Feelgrounds</h3>
+          <p class="price">~$100-130 &middot; feelgrounds.com</p>
+          <p>Clean, minimal aesthetic. Barefoot shoes that actually look intentional rather than medical.</p>
+          <a href="https://feelgrounds.com" target="_blank">feelgrounds.com &rarr;</a>
+        </div>
+        <div class="shoe-card">
+          <h3>Xero Shoes</h3>
+          <p class="price">~$80-160 &middot; xeroshoes.com</p>
+          <p>Widest range in the game. Trails, casual, sandals, dress. The brand for people who are fully in the rabbit hole.</p>
+          <a href="https://xeroshoes.com" target="_blank">xeroshoes.com &rarr;</a>
+        </div>
+      </div>
+
+      <div class="shoe-tier-label">Specialty</div>
+      <div class="shoe-grid">
+        <div class="shoe-card">
+          <h3>Birchbury</h3>
+          <p class="price">~$120-170 &middot; birchbury.com</p>
+          <p>Barefoot dress shoes. For when you have to wear nice shoes but refuse to comply with Big Shoe.</p>
+          <a href="https://birchbury.com" target="_blank">birchbury.com &rarr;</a>
+        </div>
+        <div class="shoe-card">
+          <h3>Earth Runners</h3>
+          <p class="price">~$60-100 &middot; earthrunners.com</p>
+          <p>Minimalist sandals with a grounding element -- conductive laces, copper plug, fully online community. Warm weather liberation.</p>
+          <a href="https://earthrunners.com" target="_blank">earthrunners.com &rarr;</a>
+        </div>
+      </div>
+
+      <div class="shoe-tier-label">Tier 3 -- The Cadillac</div>
+      <div class="shoe-grid">
+        <div class="shoe-card">
+          <h3>Vivobarefoot</h3>
+          <p class="price">~$150-250 &middot; vivobarefoot.com</p>
+          <p>Where everyone ends up eventually. Trail, casual, dress, kids. The quality is hard to argue with and the website will cost you an afternoon. The Primus Trail and the Gobi are fan favorites.</p>
+          <a href="https://www.vivobarefoot.com" target="_blank">vivobarefoot.com &rarr;</a>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Closing -->
+  <div class="section">
+    <div class="section-inner">
+      <p class="section-label">Final Transmission</p>
+      <h2>Stand Up to the Man</h2>
+      <p>You don't have to believe any of this. Big Shoe appreciates your continued business either way.</p>
+      <p>Or you can try a pair of wide-toe-box, zero-drop shoes and see what happens to your knees after a few months. See if your calves loosen up. See if your toes remember what it felt like to be individual toes.</p>
+      <div class="callout">Your feet are the foundation of everything. You literally can't stand up to anyone if your own foundation is compromised. That's not just a metaphor. That's Big Shoe's whole game.</div>
+      <p style="font-size:0.82rem; opacity:0.65; font-family:'Special Elite',monospace;">Not sponsored by anyone. This guide exists because a song called Big Shoe exists, and the song exists because all of this is real and also slightly funny.</p>
+    </div>
+  </div>
+
+  <!-- Bottom nav -->
+  <nav class="bottom-nav">
+    <a href="/clemmy-g">Home</a>
+    <span class="nav-sep">&middot;</span>
+    <a href="#">Music</a>
+    <span class="nav-sep">&middot;</span>
+    <a href="#">Videos</a>
+    <span class="nav-sep">&middot;</span>
+    <a href="#">Big Shoe Guide</a>
+    <span class="nav-sep">&middot;</span>
+    <a href="#">Contact</a>
+  </nav>
+
+  <p class="footer-blurb">If Foot Locker sends their foot soldiers after us, you never saw this page.</p>
+
+</div>
+</body>
+</html>
