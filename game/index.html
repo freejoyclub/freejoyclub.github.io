@@ -1311,6 +1311,10 @@
     }
     document.addEventListener('fullscreenchange',()=>{
         document.getElementById('fullscreen-label').innerText=document.fullscreenElement?'Exit Fullscreen':'Fullscreen';
+        if(!document.getElementById('s0'))return;
+        /* Always force full redraw on fullscreen change — viewport shifts significantly */
+        _lastRefreshW=0;_lastRefreshH=0;
+        setTimeout(()=>refreshLayout(true),120);
     });
 
     // ══════════════════════════════════════════════
@@ -1610,20 +1614,19 @@
         _resizeTimer=setTimeout(()=>{
             _resizeTimer=null;
             const w=window.innerWidth,h=window.innerHeight;
-            /* Only act if dimensions changed by more than 30px — ignores browser chrome show/hide */
-            if(Math.abs(w-_lastRefreshW)<30&&Math.abs(h-_lastRefreshH)<30)return;
+            if(Math.abs(w-_lastRefreshW)<8&&Math.abs(h-_lastRefreshH)<8)return;
+            _lastRefreshW=w;_lastRefreshH=h;
             const newMode=detectLayout();
             if(!document.getElementById('s0')){updatePositions();drawTapePath();return;}
-            /* Only do full refresh if layout mode actually changed */
             if(newMode===layoutMode){
-                /* Same mode — just redraw positions and tape, skip space recomposition */
-                drawTapePath();updatePositions();
+                /* Same mode — redraw arrows, tape, positions */
+                drawArrows(layoutMode);drawTapePath();updatePositions();
             } else {
-                _lastRefreshW=w;_lastRefreshH=h;
                 refreshLayout();
             }
-        },500);
+        },400);
     });
+        
     window.addEventListener('orientationchange',()=>{
         if(_resizeTimer)clearTimeout(_resizeTimer);
         _resizeTimer=setTimeout(()=>{
@@ -2011,8 +2014,8 @@
     function refreshLayout(force=false){
         const newMode=detectLayout();
         if(!force&&newMode===layoutMode&&document.getElementById('s0')){
-            /* Mode unchanged — lightweight redraw only, no space recomposition */
-            drawTapePath();updatePositions();return;
+            /* Mode unchanged — redraw arrows, tape, positions */
+            drawArrows(layoutMode);drawTapePath();updatePositions();return;
         }
         layoutMode=newMode;
         applyLayout(layoutMode);
