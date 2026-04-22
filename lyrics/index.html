@@ -13,62 +13,39 @@
         body {
             font-family: Arial, sans-serif;
             font-weight: bold;
-            background: linear-gradient(to bottom, black, #5f0d75);
+            /* Updated to brown gradient */
+            background: linear-gradient(to bottom, #2c1e14, #5e4610);
             text-align: center;
             padding: 20px;
             color: white;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            margin: 0;
         }
 
         h1 {
             font-family: 'GoldenTrail', sans-serif;
             font-size: 3.45rem;
             letter-spacing: 2px;
-            margin-bottom: 20px;
-            display: block; /* Ensure it takes full width */
+            margin-bottom: 40px;
+            display: block;
             animation: float 3s ease-in-out infinite;
         }
 
         @keyframes float {
             0% { transform: translateY(0px); }
-            50% { transform: translateY(-10px); }
+            50% { transform: translateY(-15px); }
             100% { transform: translateY(0px); }
         }
 
-        #file-list {
-            max-width: 600px;
-            margin: auto;
-            padding: 20px;
-            background: white;
-            border-radius: 10px;
-            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
-        }
-
-        ul {
-            list-style: none;
-            padding: 0;
-        }
-
-        li {
-            margin: 10px 0;
-            padding: 10px;
-            background: linear-gradient(to bottom, #5e4610, #856917);
-            color: white;
-            border-radius: 5px;
-            transition: transform 0.2s, background 0.2s;
-        }
-
-        li:hover {
-            transform: scale(1.04);
-        }
-
-        a {
-            display: block;
-            width: 100%;
-            height: 100%;
-            color: white;
-            text-decoration: none;
-            padding: 10px;
-            border-radius: 5px;
+        /* Fade in and out animation for the button */
+        @keyframes pulse-fade {
+            0% { opacity: 0.7; }
+            50% { opacity: 1; }
+            100% { opacity: 0.7; }
         }
 
         .button-container {
@@ -76,60 +53,50 @@
         }
 
         .custom-button {
-            font-size: 1.5rem;
-            background: linear-gradient(to bottom, #5e4610, #856917);
+            font-size: 2rem; /* Big fat button */
+            background: linear-gradient(to bottom, #856917, #5e4610);
             color: white;
-            padding: 15px 30px;
-            border: none;
-            border-radius: 10px;
+            padding: 25px 50px;
+            border: 2px solid #ac9042;
+            border-radius: 15px;
             cursor: pointer;
-            transition: transform 0.2s, background 0.2s;
-            margin: 10px;
+            text-decoration: none;
             display: inline-block;
+            box-shadow: 0px 10px 20px rgba(0,0,0,0.3);
+            transition: transform 0.3s ease, box-shadow 0.3s ease, background 0.3s ease;
+            animation: float 4s ease-in-out infinite, pulse-fade 5s ease-in-out infinite;
         }
 
         .custom-button:hover {
-            transform: scale(1.05);
-            background: linear-gradient(to bottom, #49390d, #6e5613);
+            transform: scale(1.1) translateY(-5px);
+            background: linear-gradient(to bottom, #ac9042, #856917);
+            box-shadow: 0px 15px 30px rgba(0,0,0,0.5);
+            animation-play-state: paused; /* Optional: stops floating on hover for stability */
+            opacity: 1 !important;
+        }
+
+        .home-button {
+            margin-top: 50px;
+            background: none;
+            border: 1px solid rgba(255,255,255,0.3);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none;
         }
     </style>
 </head>
 <body>
-    <h1>Lyrics / Chords</h1>
+    <h1>fearjoy - lyrics & chords</h1>
 
     <div class="button-container">
-        <button class="custom-button" onclick="window.open('https://drive.google.com/drive/folders/1X3AbAV6poAGM58tuHHNDhvO1PlmXzohv', '_blank')">
-            📂 Lyric/Chord Drive Folder 📂
-        </button>
+        <a href="https://drive.google.com/drive/folders/1X3AbAV6poAGM58tuHHNDhvO1PlmXzohv" target="_blank" class="custom-button">
+            📂 OPEN DRIVE FOLDER
+        </a>
     </div>
 
-    <div id="file-list">
-        <p>Loading files...</p>
-    </div>
+    <a href="https://freejoy.club" class="home-button">🏠 Back to Home</a>
 
-    <div class="button-container">
-        <button class="custom-button" onclick="window.location.href='https://freejoy.club'">🏠</button>
-    </div>
-
-    <script>
-        async function fetchDriveFiles() {
-            const response = await fetch("http://localhost:3000/api-key");
-            const data = await response.json();
-            const apiKey = data.apiKey;
-
-            const folderId = "1X3AbAV6poAGM58tuHHNDhvO1PlmXzohv";
-            const url = `https://www.googleapis.com/drive/v3/files?q='${folderId}'+in+parents&key=${apiKey}`;
-            
-            const fileResponse = await fetch(url);
-            const fileData = await fileResponse.json();
-
-            const fileList = document.getElementById("file-list");
-            fileList.innerHTML = "<ul>" + fileData.files.map(file =>
-                `<li><a href="https://drive.google.com/file/d/${file.id}/view" target="_blank">${file.name}</a></li>`
-            ).join("") + "</ul>";
-        }
-
-        fetchDriveFiles();
-    </script>
 </body>
 </html>
