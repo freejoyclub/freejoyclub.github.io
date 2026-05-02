@@ -1,0 +1,1250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<title>The Lab — Freejoy Club</title>
+<link rel="icon" type="image/png" href="favicon.png" />
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Bebas+Neue&family=DM+Sans:wght@300;400;500&display=swap');
+
+:root {
+  --bg: #0d0a07;
+  --warm1: #1a1208;
+  --warm2: #251a0a;
+  --edison: #c8781a;
+  --edison-dim: #8b5012;
+  --edison-bright: #e8962a;
+  --filament: #f5d080;
+  --cream: #f0e0c0;
+  --cream-dim: #a08060;
+  --metal: #4a3f32;
+  --metal-light: #6b5c4a;
+  --glow: rgba(200,120,26,0.18);
+  --glow-strong: rgba(200,120,26,0.45);
+  --tag-music: #2a4a3a;
+  --tag-music-text: #5de8a0;
+  --tag-elec: #1a2a4a;
+  --tag-elec-text: #5ab0f0;
+  --tag-print: #3a2a1a;
+  --tag-print-text: #e0a050;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+html, body {
+  width: 100%; height: 100%;
+  background: var(--bg);
+  color: var(--cream);
+  font-family: 'DM Sans', sans-serif;
+  overflow: hidden;
+}
+
+/* ── TOP BAR ── */
+.topbar {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  height: 52px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 20px;
+  z-index: 200;
+  background: linear-gradient(to bottom, rgba(13,10,7,0.98), transparent);
+  pointer-events: none;
+}
+
+.topbar-left {
+  pointer-events: all;
+}
+
+.lab-wordmark {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.6rem;
+  letter-spacing: 5px;
+  color: var(--filament);
+  text-shadow: 0 0 12px var(--edison), 0 0 30px var(--edison-dim);
+  line-height: 1;
+}
+
+.lab-sub {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.58rem;
+  letter-spacing: 3px;
+  color: var(--cream-dim);
+  text-transform: uppercase;
+  margin-top: -2px;
+}
+
+.topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  pointer-events: all;
+}
+
+.view-toggle {
+  display: flex;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 30px;
+  overflow: hidden;
+}
+
+.view-btn {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.62rem;
+  letter-spacing: 2px;
+  padding: 5px 12px;
+  background: transparent;
+  color: var(--cream-dim);
+  border: none;
+  cursor: pointer;
+  transition: all 0.25s;
+  text-transform: uppercase;
+}
+
+.view-btn.active {
+  background: var(--edison-dim);
+  color: var(--filament);
+  text-shadow: 0 0 8px var(--edison);
+}
+
+/* ── CORRIDOR VIEW ── */
+#corridor-view {
+  position: fixed;
+  inset: 0;
+  perspective: 900px;
+  perspective-origin: 50% 48%;
+  overflow: hidden;
+}
+
+/* Floor */
+.floor {
+  position: absolute;
+  bottom: 0; left: -50%; right: -50%;
+  height: 55%;
+  background: linear-gradient(to bottom,
+    #1a0f05 0%,
+    #110c04 40%,
+    #0d0a07 100%
+  );
+  transform: rotateX(70deg);
+  transform-origin: bottom center;
+}
+
+/* Ceiling */
+.ceiling {
+  position: absolute;
+  top: 0; left: -50%; right: -50%;
+  height: 30%;
+  background: linear-gradient(to top,
+    #0d0a07 0%,
+    #0a0804 60%
+  );
+  transform: rotateX(-60deg);
+  transform-origin: top center;
+}
+
+/* Wall lines for depth */
+.depth-lines {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.depth-lines svg {
+  width: 100%; height: 100%;
+  opacity: 0.08;
+}
+
+/* Overhead Edison string */
+.light-string {
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 48%;
+  pointer-events: none;
+  z-index: 5;
+}
+
+.light-string svg {
+  width: 100%; height: 100%;
+}
+
+/* ── CORRIDOR TRACK ── */
+.corridor-track {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transform-style: preserve-3d;
+  transition: none;
+}
+
+/* ── ITEM CARD ── */
+.item-card {
+  position: absolute;
+  width: clamp(180px, 22vw, 280px);
+  cursor: pointer;
+  transform-style: preserve-3d;
+  transition: filter 0.4s ease;
+  user-select: none;
+}
+
+.pedestal {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.pedestal-top {
+  width: 85%;
+  height: clamp(160px, 22vw, 240px);
+  background: linear-gradient(160deg, var(--warm2), var(--warm1));
+  border: 1px solid var(--metal-light);
+  border-bottom: none;
+  border-radius: 6px 6px 0 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 0 30px rgba(0,0,0,0.6), inset 0 0 20px rgba(0,0,0,0.4);
+}
+
+.pedestal-top::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 30% 30%, rgba(200,120,26,0.06), transparent 70%);
+}
+
+.item-placeholder {
+  width: 70%;
+  height: 70%;
+  border: 1.5px dashed var(--metal-light);
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 8px;
+  opacity: 0.5;
+}
+
+.item-placeholder-icon {
+  font-size: clamp(1.4rem, 3vw, 2.2rem);
+  opacity: 0.6;
+}
+
+.item-placeholder-label {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.55rem;
+  letter-spacing: 2px;
+  color: var(--cream-dim);
+  text-transform: uppercase;
+}
+
+/* Edison glow on pedestal top */
+.item-glow {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 3px;
+  background: linear-gradient(to right, transparent, var(--edison), transparent);
+  opacity: 0;
+  transition: opacity 0.4s;
+}
+
+.pedestal-shaft {
+  width: 60%;
+  height: 28px;
+  background: linear-gradient(to bottom, var(--metal), #2a1f12);
+  border-left: 1px solid var(--metal-light);
+  border-right: 1px solid var(--metal-light);
+}
+
+.pedestal-base {
+  width: 100%;
+  height: 14px;
+  background: linear-gradient(to bottom, var(--metal-light), #1a1208);
+  border-radius: 0 0 3px 3px;
+  border: 1px solid var(--metal);
+}
+
+.item-label {
+  margin-top: 14px;
+  text-align: center;
+  padding: 0 8px;
+}
+
+.item-number {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.58rem;
+  letter-spacing: 3px;
+  color: var(--edison-dim);
+  text-transform: uppercase;
+  margin-bottom: 3px;
+}
+
+.item-name {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: clamp(0.9rem, 1.6vw, 1.3rem);
+  letter-spacing: 3px;
+  color: var(--filament);
+  text-shadow: 0 0 8px var(--edison-dim);
+  line-height: 1.1;
+}
+
+.item-tags {
+  display: flex;
+  gap: 4px;
+  justify-content: center;
+  margin-top: 6px;
+  flex-wrap: wrap;
+}
+
+.tag {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.48rem;
+  letter-spacing: 1.5px;
+  padding: 2px 6px;
+  border-radius: 2px;
+  text-transform: uppercase;
+}
+
+.tag-music  { background: var(--tag-music);  color: var(--tag-music-text); }
+.tag-elec   { background: var(--tag-elec);   color: var(--tag-elec-text); }
+.tag-print  { background: var(--tag-print);  color: var(--tag-print-text); }
+
+/* ── FOCUS STATE ── */
+.item-card.focused .item-glow { opacity: 1; }
+.item-card.focused .pedestal-top {
+  box-shadow: 0 0 40px var(--glow-strong), 0 0 80px var(--glow), inset 0 0 20px rgba(0,0,0,0.4);
+}
+
+/* ── NAVIGATION ARROWS ── */
+.nav-arrow {
+  position: fixed;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 150;
+  background: rgba(13,10,7,0.7);
+  border: 1px solid var(--metal-light);
+  color: var(--filament);
+  width: 44px; height: 44px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 1.2rem;
+  transition: all 0.2s;
+  backdrop-filter: blur(8px);
+  user-select: none;
+}
+
+.nav-arrow:hover {
+  background: var(--edison-dim);
+  border-color: var(--edison);
+  box-shadow: 0 0 16px var(--glow-strong);
+}
+
+.nav-arrow:active { transform: translateY(-50%) scale(0.92); }
+.nav-arrow.disabled { opacity: 0.2; pointer-events: none; }
+
+#nav-prev { left: 12px; }
+#nav-next { right: 12px; }
+
+/* ── COUNTER ── */
+.counter {
+  position: fixed;
+  bottom: 80px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.62rem;
+  letter-spacing: 4px;
+  color: var(--cream-dim);
+  z-index: 150;
+  white-space: nowrap;
+}
+
+.counter-dots {
+  display: flex;
+  gap: 6px;
+  justify-content: center;
+  margin-top: 6px;
+}
+
+.counter-dot {
+  width: 5px; height: 5px;
+  border-radius: 50%;
+  background: var(--metal-light);
+  transition: all 0.3s;
+}
+
+.counter-dot.active {
+  background: var(--edison);
+  box-shadow: 0 0 6px var(--edison);
+}
+
+/* ── BOTTOM NAV ── */
+.nav-cluster {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  background: rgba(0,0,0,0.55);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 100px;
+  padding: 7px 14px;
+  z-index: 200;
+  white-space: nowrap;
+}
+
+.nav-cluster a {
+  font-family: 'Share Tech Mono', monospace;
+  text-decoration: none;
+  color: var(--cream-dim);
+  padding: 6px 10px;
+  font-size: 0.62rem;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  transition: all 0.25s;
+}
+
+.nav-cluster a:hover {
+  color: var(--filament);
+  text-shadow: 0 0 10px var(--edison);
+}
+
+.nav-divider {
+  width: 1px; height: 12px;
+  background: rgba(255,255,255,0.1);
+  align-self: center;
+  margin: 0 3px;
+}
+
+/* ── DETAIL PANEL ── */
+.detail-panel {
+  position: fixed;
+  inset: 0;
+  z-index: 300;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.35s ease;
+  background: rgba(13,10,7,0.88);
+  backdrop-filter: blur(16px);
+}
+
+.detail-panel.open {
+  opacity: 1;
+  pointer-events: all;
+}
+
+.detail-box {
+  width: 100%;
+  max-width: 560px;
+  max-height: 85vh;
+  overflow-y: auto;
+  background: linear-gradient(160deg, #1e160a, #141009);
+  border: 1px solid var(--metal-light);
+  border-radius: 12px;
+  padding: 28px;
+  position: relative;
+  box-shadow: 0 0 60px rgba(0,0,0,0.8), 0 0 30px var(--glow);
+  transform: translateY(20px);
+  transition: transform 0.35s ease;
+}
+
+.detail-panel.open .detail-box {
+  transform: translateY(0);
+}
+
+.detail-close {
+  position: absolute;
+  top: 14px; right: 14px;
+  background: transparent;
+  border: 1px solid var(--metal-light);
+  color: var(--cream-dim);
+  width: 30px; height: 30px;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+
+.detail-close:hover {
+  border-color: var(--edison);
+  color: var(--filament);
+}
+
+.detail-num {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.6rem;
+  letter-spacing: 3px;
+  color: var(--edison-dim);
+  margin-bottom: 6px;
+  text-transform: uppercase;
+}
+
+.detail-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 2.2rem;
+  letter-spacing: 4px;
+  color: var(--filament);
+  text-shadow: 0 0 16px var(--edison-dim);
+  line-height: 1;
+  margin-bottom: 10px;
+}
+
+.detail-tags {
+  display: flex;
+  gap: 5px;
+  flex-wrap: wrap;
+  margin-bottom: 18px;
+}
+
+/* Video placeholder */
+.detail-video {
+  width: 100%;
+  aspect-ratio: 16/9;
+  background: #0a0805;
+  border: 1.5px dashed var(--metal-light);
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 18px;
+  color: var(--cream-dim);
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.62rem;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  opacity: 0.6;
+}
+
+.detail-desc {
+  font-size: 0.9rem;
+  line-height: 1.7;
+  color: var(--cream-dim);
+  margin-bottom: 20px;
+  font-weight: 300;
+}
+
+.detail-specs {
+  border-top: 1px solid rgba(255,255,255,0.07);
+  padding-top: 16px;
+  margin-bottom: 20px;
+}
+
+.spec-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 7px 0;
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+  font-size: 0.82rem;
+}
+
+.spec-label {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.6rem;
+  letter-spacing: 2px;
+  color: var(--cream-dim);
+  text-transform: uppercase;
+}
+
+.spec-value {
+  color: var(--filament);
+  font-weight: 400;
+}
+
+.detail-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.action-btn {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.62rem;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  padding: 10px 18px;
+  border-radius: 4px;
+  cursor: pointer;
+  border: none;
+  transition: all 0.2s;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.action-primary {
+  background: var(--edison-dim);
+  color: var(--filament);
+  box-shadow: 0 0 12px var(--glow);
+}
+
+.action-primary:hover {
+  background: var(--edison);
+  box-shadow: 0 0 20px var(--glow-strong);
+}
+
+.action-secondary {
+  background: transparent;
+  border: 1px solid var(--metal-light) !important;
+  color: var(--cream-dim);
+}
+
+.action-secondary:hover {
+  border-color: var(--edison-dim) !important;
+  color: var(--filament);
+}
+
+/* ── GRID VIEW ── */
+#grid-view {
+  position: fixed;
+  inset: 0;
+  overflow-y: auto;
+  padding: 70px 20px 100px;
+  display: none;
+}
+
+#grid-view.active {
+  display: block;
+}
+
+.grid-container {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.grid-header {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.6rem;
+  letter-spacing: 3px;
+  color: var(--cream-dim);
+  text-transform: uppercase;
+  margin-bottom: 20px;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  padding-bottom: 10px;
+}
+
+.grid-list {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.grid-item {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 14px 16px;
+  background: rgba(255,255,255,0.025);
+  border: 1px solid rgba(255,255,255,0.05);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-decoration: none;
+  color: inherit;
+}
+
+.grid-item:hover {
+  background: rgba(200,120,26,0.08);
+  border-color: var(--metal-light);
+}
+
+.grid-item-num {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.6rem;
+  letter-spacing: 2px;
+  color: var(--edison-dim);
+  min-width: 36px;
+}
+
+.grid-thumb {
+  width: 52px; height: 40px;
+  background: var(--warm2);
+  border: 1px solid var(--metal);
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  flex-shrink: 0;
+}
+
+.grid-info { flex: 1; }
+
+.grid-name {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.05rem;
+  letter-spacing: 2px;
+  color: var(--filament);
+}
+
+.grid-tags {
+  display: flex;
+  gap: 4px;
+  margin-top: 3px;
+  flex-wrap: wrap;
+}
+
+.grid-avail {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.58rem;
+  letter-spacing: 1.5px;
+  color: var(--cream-dim);
+  text-align: right;
+  min-width: 80px;
+}
+
+/* ── JESSEC CREDIT ── */
+.jessec-credit {
+  position: fixed;
+  bottom: 56px;
+  right: 16px;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.52rem;
+  letter-spacing: 2.5px;
+  color: var(--metal-light);
+  text-transform: uppercase;
+  z-index: 150;
+  opacity: 0.7;
+}
+
+/* ── KEYBOARD HINT ── */
+.key-hint {
+  position: fixed;
+  top: 58px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.52rem;
+  letter-spacing: 2px;
+  color: var(--metal-light);
+  text-transform: uppercase;
+  z-index: 150;
+  opacity: 0;
+  transition: opacity 1s;
+  pointer-events: none;
+}
+
+.key-hint.visible { opacity: 1; }
+
+@media (max-width: 600px) {
+  .nav-cluster a { font-size: 0.55rem; padding: 6px 7px; }
+  .detail-box { padding: 20px; }
+  .detail-title { font-size: 1.7rem; }
+  .key-hint { display: none; }
+  .grid-avail { display: none; }
+}
+</style>
+</head>
+<body>
+
+<!-- TOP BAR -->
+<div class="topbar">
+  <div class="topbar-left">
+    <div class="lab-wordmark">THE LAB</div>
+    <div class="lab-sub">Freejoy Club</div>
+  </div>
+  <div class="topbar-right">
+    <div class="view-toggle">
+      <button class="view-btn active" id="btn-walk" onclick="setView('walk')">Walk</button>
+      <button class="view-btn" id="btn-grid" onclick="setView('grid')">List</button>
+    </div>
+  </div>
+</div>
+
+<!-- KEY HINT -->
+<div class="key-hint" id="keyHint">← → to navigate · click to inspect</div>
+
+<!-- JESSEC CREDIT -->
+<div class="jessec-credit">by JesseC</div>
+
+<!-- ══════════════════ CORRIDOR VIEW ══════════════════ -->
+<div id="corridor-view">
+
+  <!-- Atmospheric depth lines -->
+  <div class="depth-lines">
+    <svg viewBox="0 0 100 100" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+      <!-- vanishing point lines -->
+      <line x1="50" y1="45" x2="0" y2="100"   stroke="#c8781a" stroke-width="0.3"/>
+      <line x1="50" y1="45" x2="100" y2="100"  stroke="#c8781a" stroke-width="0.3"/>
+      <line x1="50" y1="45" x2="0" y2="70"     stroke="#c8781a" stroke-width="0.15"/>
+      <line x1="50" y1="45" x2="100" y2="70"   stroke="#c8781a" stroke-width="0.15"/>
+      <line x1="50" y1="45" x2="0" y2="0"      stroke="#c8781a" stroke-width="0.15"/>
+      <line x1="50" y1="45" x2="100" y2="0"    stroke="#c8781a" stroke-width="0.15"/>
+      <line x1="50" y1="45" x2="20" y2="0"     stroke="#c8781a" stroke-width="0.1"/>
+      <line x1="50" y1="45" x2="80" y2="0"     stroke="#c8781a" stroke-width="0.1"/>
+    </svg>
+  </div>
+
+  <!-- Edison string lights overhead -->
+  <div class="light-string">
+    <svg viewBox="0 0 1000 200" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+      <!-- Drooping cable -->
+      <path d="M0,20 Q125,55 250,35 Q375,15 500,40 Q625,65 750,38 Q875,12 1000,28"
+            fill="none" stroke="#3a2a18" stroke-width="1.5" opacity="0.8"/>
+      <!-- Bulbs -->
+      <g fill="none">
+        <ellipse cx="250" cy="35" rx="6" ry="9" fill="#c8781a" opacity="0.9">
+          <animate attributeName="opacity" values="0.9;0.7;0.95;0.8;0.9" dur="4s" repeatCount="indefinite"/>
+        </ellipse>
+        <ellipse cx="500" cy="40" rx="6" ry="9" fill="#c8781a" opacity="0.85">
+          <animate attributeName="opacity" values="0.85;0.95;0.7;0.9;0.85" dur="5s" repeatCount="indefinite"/>
+        </ellipse>
+        <ellipse cx="750" cy="38" rx="6" ry="9" fill="#c8781a" opacity="0.9">
+          <animate attributeName="opacity" values="0.9;0.8;0.95;0.75;0.9" dur="3.5s" repeatCount="indefinite"/>
+        </ellipse>
+      </g>
+      <!-- Glow halos -->
+      <ellipse cx="250" cy="38" rx="22" ry="18" fill="rgba(200,120,26,0.07)"/>
+      <ellipse cx="500" cy="43" rx="22" ry="18" fill="rgba(200,120,26,0.07)"/>
+      <ellipse cx="750" cy="41" rx="22" ry="18" fill="rgba(200,120,26,0.07)"/>
+    </svg>
+  </div>
+
+  <!-- CORRIDOR TRACK — items are positioned here by JS -->
+  <div class="corridor-track" id="corridorTrack"></div>
+
+  <!-- NAV ARROWS -->
+  <button class="nav-arrow" id="nav-prev" onclick="navigate(-1)">&#8592;</button>
+  <button class="nav-arrow" id="nav-next" onclick="navigate(1)">&#8594;</button>
+
+  <!-- COUNTER -->
+  <div class="counter">
+    <span id="counter-text">01 / 07</span>
+    <div class="counter-dots" id="counterDots"></div>
+  </div>
+</div>
+
+<!-- ══════════════════ GRID VIEW ══════════════════ -->
+<div id="grid-view">
+  <div class="grid-container">
+    <div class="grid-header">All Inventions — JesseC / Freejoy Club Lab</div>
+    <div class="grid-list" id="gridList"></div>
+  </div>
+</div>
+
+<!-- ══════════════════ DETAIL PANEL ══════════════════ -->
+<div class="detail-panel" id="detailPanel" onclick="handlePanelClick(event)">
+  <div class="detail-box" id="detailBox">
+    <button class="detail-close" onclick="closeDetail()">&#x2715;</button>
+    <div class="detail-num" id="dNum"></div>
+    <div class="detail-title" id="dTitle"></div>
+    <div class="detail-tags" id="dTags"></div>
+    <div class="detail-video" id="dVideo">
+      <span style="font-size:1.6rem;opacity:0.4;">▶</span>
+      <span>Video 0 — Coming Soon</span>
+    </div>
+    <div class="detail-desc" id="dDesc"></div>
+    <div class="detail-specs" id="dSpecs"></div>
+    <div class="detail-actions" id="dActions"></div>
+  </div>
+</div>
+
+<!-- BOTTOM NAV -->
+<div class="nav-cluster">
+  <a href="https://freejoy.club">Home</a>
+  <div class="nav-divider"></div>
+  <a href="/game">Game</a>
+  <div class="nav-divider"></div>
+  <a href="/breathe">Breathe</a>
+  <div class="nav-divider"></div>
+  <a href="/move">Move</a>
+</div>
+
+<script>
+// ══════════════════════════════════════════
+// DATA
+// ══════════════════════════════════════════
+const items = [
+  {
+    id: 1,
+    name: "Invention 01",
+    icon: "⚙️",
+    tags: [{ label: "Musical Gear", cls: "tag-music" }, { label: "Printable", cls: "tag-print" }],
+    availability: "Order / Download",
+    video: "Video 01",
+    desc: "Placeholder description for Invention 01. A unique handmade gadget designed by JesseC in the Freejoy Club Lab. Details coming soon.",
+    specs: [
+      { label: "Type", value: "Placeholder" },
+      { label: "Files", value: "STL available" },
+      { label: "Ships", value: "Yes" },
+    ],
+    actions: [
+      { label: "📦 Order", type: "primary" },
+      { label: "⬇ Download Files", type: "secondary" },
+    ]
+  },
+  {
+    id: 2,
+    name: "Invention 02",
+    icon: "🎛️",
+    tags: [{ label: "Electronics", cls: "tag-elec" }, { label: "Musical Gear", cls: "tag-music" }],
+    availability: "Order Only",
+    video: "Video 02",
+    desc: "Placeholder description for Invention 02. A unique handmade gadget designed by JesseC in the Freejoy Club Lab. Details coming soon.",
+    specs: [
+      { label: "Type", value: "Placeholder" },
+      { label: "Electronics", value: "Yes" },
+      { label: "Ships", value: "Yes" },
+    ],
+    actions: [
+      { label: "📦 Order", type: "primary" },
+    ]
+  },
+  {
+    id: 3,
+    name: "Invention 03",
+    icon: "🔊",
+    tags: [{ label: "Musical Gear", cls: "tag-music" }, { label: "Electronics", cls: "tag-elec" }],
+    availability: "Download Free",
+    video: "Video 03",
+    desc: "Placeholder description for Invention 03. A unique handmade gadget designed by JesseC in the Freejoy Club Lab. Details coming soon.",
+    specs: [
+      { label: "Type", value: "Placeholder" },
+      { label: "Files", value: "Free STL" },
+      { label: "Ships", value: "No" },
+    ],
+    actions: [
+      { label: "⬇ Download Free", type: "primary" },
+    ]
+  },
+  {
+    id: 4,
+    name: "Invention 04",
+    icon: "🖨️",
+    tags: [{ label: "Printable", cls: "tag-print" }],
+    availability: "Download / Order",
+    video: "Video 04",
+    desc: "Placeholder description for Invention 04. A unique handmade gadget designed by JesseC in the Freejoy Club Lab. Details coming soon.",
+    specs: [
+      { label: "Type", value: "Placeholder" },
+      { label: "Files", value: "STL (paid)" },
+      { label: "Ships", value: "Yes" },
+    ],
+    actions: [
+      { label: "📦 Order", type: "primary" },
+      { label: "⬇ Buy Files", type: "secondary" },
+    ]
+  },
+  {
+    id: 5,
+    name: "Invention 05",
+    icon: "🎹",
+    tags: [{ label: "Musical Gear", cls: "tag-music" }, { label: "Electronics", cls: "tag-elec" }, { label: "Printable", cls: "tag-print" }],
+    availability: "Order Only",
+    video: "Video 05",
+    desc: "Placeholder description for Invention 05. A unique handmade gadget designed by JesseC in the Freejoy Club Lab. Details coming soon.",
+    specs: [
+      { label: "Type", value: "Placeholder" },
+      { label: "CPU", value: "Yes" },
+      { label: "Ships", value: "Yes" },
+    ],
+    actions: [
+      { label: "📦 Order", type: "primary" },
+    ]
+  },
+  {
+    id: 6,
+    name: "Invention 06",
+    icon: "🔧",
+    tags: [{ label: "Printable", cls: "tag-print" }, { label: "Electronics", cls: "tag-elec" }],
+    availability: "Download Free",
+    video: "Video 06",
+    desc: "Placeholder description for Invention 06. A unique handmade gadget designed by JesseC in the Freejoy Club Lab. Details coming soon.",
+    specs: [
+      { label: "Type", value: "Placeholder" },
+      { label: "Files", value: "Free STL" },
+      { label: "Ships", value: "No" },
+    ],
+    actions: [
+      { label: "⬇ Download Free", type: "primary" },
+    ]
+  },
+  {
+    id: 7,
+    name: "Invention 07",
+    icon: "🎵",
+    tags: [{ label: "Musical Gear", cls: "tag-music" }],
+    availability: "Coming Soon",
+    video: "Video 07",
+    desc: "Placeholder description for Invention 07. A unique handmade gadget designed by JesseC in the Freejoy Club Lab. Details coming soon.",
+    specs: [
+      { label: "Type", value: "Placeholder" },
+      { label: "Status", value: "In progress" },
+    ],
+    actions: [
+      { label: "🔔 Notify Me", type: "secondary" },
+    ]
+  },
+];
+
+// ══════════════════════════════════════════
+// STATE
+// ══════════════════════════════════════════
+let currentIndex = 0;
+let currentView = 'walk';
+
+// ══════════════════════════════════════════
+// CORRIDOR POSITIONING
+// ══════════════════════════════════════════
+// Each item gets a Z position in 3D space.
+// The "current" item is at Z=0, items behind are at +Z (closer), items ahead at -Z (further)
+// We translate the track so the current item is centered.
+
+const SPACING = 520; // px between items in Z
+
+function buildCorridor() {
+  const track = document.getElementById('corridorTrack');
+  track.innerHTML = '';
+
+  items.forEach((item, i) => {
+    const card = document.createElement('div');
+    card.className = 'item-card';
+    card.id = `card-${i}`;
+    card.dataset.index = i;
+
+    const zPos = i * SPACING;
+
+    card.style.cssText = `
+      transform: translateZ(${zPos}px) translateX(-50%);
+      left: 50%;
+      top: 50%;
+      margin-top: -160px;
+    `;
+
+    card.innerHTML = `
+      <div class="pedestal">
+        <div class="pedestal-top">
+          <div class="item-glow"></div>
+          <div class="item-placeholder">
+            <div class="item-placeholder-icon">${item.icon}</div>
+            <div class="item-placeholder-label">Image Placeholder</div>
+          </div>
+        </div>
+        <div class="pedestal-shaft"></div>
+        <div class="pedestal-base"></div>
+      </div>
+      <div class="item-label">
+        <div class="item-number">JC — ${String(item.id).padStart(2,'0')}</div>
+        <div class="item-name">${item.name}</div>
+        <div class="item-tags">${item.tags.map(t => `<span class="tag ${t.cls}">${t.label}</span>`).join('')}</div>
+      </div>
+    `;
+
+    card.addEventListener('click', () => {
+      if (i === currentIndex) openDetail(i);
+      else navigate(i - currentIndex);
+    });
+
+    track.appendChild(card);
+  });
+
+  updateCorridorPosition(false);
+  buildDots();
+}
+
+function updateCorridorPosition(animate = true) {
+  const track = document.getElementById('corridorTrack');
+  const targetZ = -(currentIndex * SPACING);
+
+  if (animate) {
+    track.style.transition = 'transform 0.65s cubic-bezier(0.4,0,0.2,1)';
+  } else {
+    track.style.transition = 'none';
+  }
+
+  track.style.transform = `translateZ(${targetZ}px)`;
+
+  // Update card states
+  items.forEach((_, i) => {
+    const card = document.getElementById(`card-${i}`);
+    if (!card) return;
+    const dist = i - currentIndex;
+    const absDist = Math.abs(dist);
+
+    card.classList.toggle('focused', dist === 0);
+
+    // Scale & opacity based on distance
+    let opacity, scale, blur;
+    if (dist === 0) {
+      opacity = 1; scale = 1; blur = 0;
+    } else if (absDist === 1) {
+      opacity = 0.55; scale = 0.72; blur = 1;
+    } else if (absDist === 2) {
+      opacity = 0.28; scale = 0.5; blur = 2;
+    } else {
+      opacity = 0.1; scale = 0.32; blur = 3;
+    }
+
+    card.style.opacity = opacity;
+    card.style.filter = blur > 0 ? `blur(${blur}px)` : 'none';
+    card.style.pointerEvents = dist === 0 ? 'all' : 'auto';
+  });
+
+  // Update counter
+  document.getElementById('counter-text').textContent =
+    `${String(currentIndex + 1).padStart(2,'0')} / ${String(items.length).padStart(2,'0')}`;
+
+  // Update dots
+  document.querySelectorAll('.counter-dot').forEach((dot, i) => {
+    dot.classList.toggle('active', i === currentIndex);
+  });
+
+  // Update arrows
+  document.getElementById('nav-prev').classList.toggle('disabled', currentIndex === 0);
+  document.getElementById('nav-next').classList.toggle('disabled', currentIndex === items.length - 1);
+}
+
+function buildDots() {
+  const container = document.getElementById('counterDots');
+  container.innerHTML = '';
+  items.forEach((_, i) => {
+    const dot = document.createElement('div');
+    dot.className = 'counter-dot' + (i === 0 ? ' active' : '');
+    dot.onclick = () => { currentIndex = i; updateCorridorPosition(); };
+    container.appendChild(dot);
+  });
+}
+
+function navigate(delta) {
+  const next = Math.max(0, Math.min(items.length - 1, currentIndex + delta));
+  if (next === currentIndex) return;
+  currentIndex = next;
+  updateCorridorPosition();
+}
+
+// ══════════════════════════════════════════
+// GRID VIEW
+// ══════════════════════════════════════════
+function buildGrid() {
+  const list = document.getElementById('gridList');
+  list.innerHTML = '';
+  items.forEach((item, i) => {
+    const row = document.createElement('div');
+    row.className = 'grid-item';
+    row.innerHTML = `
+      <div class="grid-item-num">JC-${String(item.id).padStart(2,'0')}</div>
+      <div class="grid-thumb">${item.icon}</div>
+      <div class="grid-info">
+        <div class="grid-name">${item.name}</div>
+        <div class="grid-tags">${item.tags.map(t => `<span class="tag ${t.cls}">${t.label}</span>`).join('')}</div>
+      </div>
+      <div class="grid-avail">${item.availability}</div>
+    `;
+    row.addEventListener('click', () => openDetail(i));
+    list.appendChild(row);
+  });
+}
+
+// ══════════════════════════════════════════
+// DETAIL PANEL
+// ══════════════════════════════════════════
+function openDetail(idx) {
+  const item = items[idx];
+  document.getElementById('dNum').textContent = `JC — ${String(item.id).padStart(2,'0')}`;
+  document.getElementById('dTitle').textContent = item.name;
+
+  document.getElementById('dTags').innerHTML =
+    item.tags.map(t => `<span class="tag ${t.cls}">${t.label}</span>`).join('');
+
+  document.getElementById('dVideo').innerHTML = `
+    <span style="font-size:1.6rem;opacity:0.4;">▶</span>
+    <span>${item.video} — Coming Soon</span>
+  `;
+
+  document.getElementById('dDesc').textContent = item.desc;
+
+  document.getElementById('dSpecs').innerHTML = item.specs.map(s => `
+    <div class="spec-row">
+      <span class="spec-label">${s.label}</span>
+      <span class="spec-value">${s.value}</span>
+    </div>
+  `).join('');
+
+  document.getElementById('dActions').innerHTML = item.actions.map(a => `
+    <button class="action-btn action-${a.type}">${a.label}</button>
+  `).join('');
+
+  document.getElementById('detailPanel').classList.add('open');
+}
+
+function closeDetail() {
+  document.getElementById('detailPanel').classList.remove('open');
+}
+
+function handlePanelClick(e) {
+  if (e.target === document.getElementById('detailPanel')) closeDetail();
+}
+
+// ══════════════════════════════════════════
+// VIEW SWITCHING
+// ══════════════════════════════════════════
+function setView(view) {
+  currentView = view;
+  document.getElementById('corridor-view').style.display = view === 'walk' ? 'block' : 'none';
+  document.getElementById('grid-view').classList.toggle('active', view === 'grid');
+  document.getElementById('btn-walk').classList.toggle('active', view === 'walk');
+  document.getElementById('btn-grid').classList.toggle('active', view === 'grid');
+}
+
+// ══════════════════════════════════════════
+// KEYBOARD + SWIPE
+// ══════════════════════════════════════════
+document.addEventListener('keydown', e => {
+  if (document.getElementById('detailPanel').classList.contains('open')) {
+    if (e.key === 'Escape') closeDetail();
+    return;
+  }
+  if (e.key === 'ArrowRight' || e.key === 'ArrowDown') navigate(1);
+  if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') navigate(-1);
+  if (e.key === 'Enter' || e.key === ' ') openDetail(currentIndex);
+});
+
+// Touch swipe
+let touchStartX = 0;
+document.addEventListener('touchstart', e => { touchStartX = e.touches[0].clientX; }, { passive: true });
+document.addEventListener('touchend', e => {
+  if (document.getElementById('detailPanel').classList.contains('open')) return;
+  const dx = touchStartX - e.changedTouches[0].clientX;
+  if (Math.abs(dx) > 40) navigate(dx > 0 ? 1 : -1);
+}, { passive: true });
+
+// ══════════════════════════════════════════
+// INIT
+// ══════════════════════════════════════════
+buildCorridor();
+buildGrid();
+
+// Show keyboard hint briefly
+setTimeout(() => {
+  const hint = document.getElementById('keyHint');
+  hint.classList.add('visible');
+  setTimeout(() => hint.classList.remove('visible'), 3500);
+}, 800);
+</script>
+
+</body>
+</html>
