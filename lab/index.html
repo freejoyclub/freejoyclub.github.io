@@ -1,767 +1,320 @@
+<!-- LAB v4 -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-<title>The Lab — Freejoy Club</title>
-<link rel="icon" type="image/png" href="favicon.png" />
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+<title>The Lab — Freejoy Club (v4)</title>
+<link rel="icon" type="image/png" href="favicon.png"/>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Bebas+Neue&family=DM+Sans:wght@300;400;500&display=swap');
 
 :root {
-  --bg: #0d0a07;
-  --warm1: #1a1208;
-  --warm2: #251a0a;
-  --edison: #c8781a;
-  --edison-dim: #8b5012;
-  --edison-bright: #e8962a;
-  --filament: #f5d080;
-  --cream: #f0e0c0;
-  --cream-dim: #a08060;
-  --metal: #4a3f32;
-  --metal-light: #6b5c4a;
-  --glow: rgba(200,120,26,0.18);
-  --glow-strong: rgba(200,120,26,0.45);
-  --tag-music: #2a4a3a;
-  --tag-music-text: #5de8a0;
-  --tag-elec: #1a2a4a;
-  --tag-elec-text: #5ab0f0;
-  --tag-print: #3a2a1a;
-  --tag-print-text: #e0a050;
+  --bg:#0d0a07; --warm1:#1a1208; --warm2:#251a0a;
+  --edison:#c8781a; --edison-dim:#8b5012; --filament:#f5d080;
+  --cream:#f0e0c0; --cream-dim:#a08060;
+  --metal:#4a3f32; --metal-light:#6b5c4a;
+  --glow:rgba(200,120,26,0.18); --glow-strong:rgba(200,120,26,0.5);
+  --tag-music:#2a4a3a; --tag-music-text:#5de8a0;
+  --tag-elec:#1a2a4a;  --tag-elec-text:#5ab0f0;
+  --tag-print:#3a2a1a; --tag-print-text:#e0a050;
+  --pillar-w: clamp(160px, 20vw, 240px);
+  --side-w: clamp(60px, 8vw, 90px);
 }
 
-* { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-
-html, body {
-  width: 100%; height: 100%;
-  background: var(--bg);
-  color: var(--cream);
-  font-family: 'DM Sans', sans-serif;
-  overflow: hidden;
-}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+html,body{width:100%;height:100%;background:var(--bg);color:var(--cream);font-family:'DM Sans',sans-serif;overflow:hidden;}
 
 /* ── TOP BAR ── */
-.topbar {
-  position: fixed;
-  top: 0; left: 0; right: 0;
-  height: 52px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 20px;
-  z-index: 200;
-  background: linear-gradient(to bottom, rgba(13,10,7,0.98), transparent);
-  pointer-events: none;
+.topbar{
+  position:fixed;top:0;left:0;right:0;height:52px;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 20px;z-index:200;
+  background:linear-gradient(to bottom,rgba(13,10,7,0.97) 70%,transparent);
+  pointer-events:none;
+}
+.topbar-left{pointer-events:all;}
+.lab-wordmark{font-family:'Bebas Neue',sans-serif;font-size:1.5rem;letter-spacing:5px;color:var(--filament);text-shadow:0 0 12px var(--edison),0 0 28px var(--edison-dim);line-height:1;}
+.lab-sub{font-family:'Share Tech Mono',monospace;font-size:0.54rem;letter-spacing:3px;color:var(--cream-dim);text-transform:uppercase;margin-top:-2px;}
+.topbar-right{display:flex;align-items:center;gap:10px;pointer-events:all;}
+.view-toggle{display:flex;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:30px;overflow:hidden;}
+.view-btn{font-family:'Share Tech Mono',monospace;font-size:0.58rem;letter-spacing:2px;padding:5px 13px;background:transparent;color:var(--cream-dim);border:none;cursor:pointer;transition:all 0.25s;text-transform:uppercase;}
+.view-btn.active{background:var(--edison-dim);color:var(--filament);text-shadow:0 0 8px var(--edison);}
+
+/* ── CORRIDOR ── */
+#corridor-view{position:fixed;inset:0;overflow:hidden;}
+
+.depth-lines{position:absolute;inset:0;pointer-events:none;z-index:1;}
+.depth-lines svg{width:100%;height:100%;opacity:0.06;}
+
+.ceiling-bar{
+  position:absolute;top:0;left:0;right:0;height:2px;
+  background:linear-gradient(to right,transparent,rgba(200,120,26,0.45),rgba(245,208,128,0.65),rgba(200,120,26,0.45),transparent);
+  filter:blur(3px);z-index:4;pointer-events:none;
+}
+.ceiling-bar::after{content:'';position:absolute;top:0;left:10%;right:10%;height:100px;background:radial-gradient(ellipse at 50% 0%,rgba(200,120,26,0.05),transparent 70%);}
+
+.floor-fade{position:absolute;bottom:0;left:0;right:0;height:45%;background:linear-gradient(to top,rgba(13,10,7,0.95),transparent);z-index:4;pointer-events:none;}
+
+/* Perspective wrapper — steep top-down angle */
+.perspective-wrap{
+  position:absolute;inset:0;
+  perspective:800px;
+  /* High perspective-origin Y = looking down steeply from above */
+  perspective-origin:50% 12%;
 }
 
-.topbar-left {
-  pointer-events: all;
+.corridor-track{
+  position:absolute;top:0;left:0;width:100%;height:100%;
+  transform-style:preserve-3d;
+  z-index:2;
 }
 
-.lab-wordmark {
-  font-family: 'Bebas Neue', sans-serif;
-  font-size: 1.6rem;
-  letter-spacing: 5px;
-  color: var(--filament);
-  text-shadow: 0 0 12px var(--edison), 0 0 30px var(--edison-dim);
-  line-height: 1;
+/* ── ITEM SLOT — three-column: CTA | pillar | video ── */
+.item-slot{
+  position:absolute;
+  left:50%;
+  /* Center vertically — shifted up vs v3 */
+  top:42%;
+  display:flex;
+  align-items:flex-end;
+  justify-content:center;
+  gap:clamp(8px,1.5vw,20px);
+  transform-origin:center bottom;
+  pointer-events:none;
+  user-select:none;
+}
+.item-slot.focused{ pointer-events:all; }
+
+/* ── LEFT SIDE — CTA buttons ── */
+.side-cta{
+  width:var(--side-w);
+  display:flex;flex-direction:column;
+  align-items:flex-end;
+  gap:6px;
+  /* Align with display box bottom */
+  padding-bottom: clamp(70px,11vw,130px);
+  opacity:0;
+  transition:opacity 0.45s ease;
+  flex-shrink:0;
+}
+.item-slot.focused .side-cta{ opacity:1; }
+
+.cta-btn{
+  font-family:'Share Tech Mono',monospace;
+  font-size:clamp(0.38rem,0.6vw,0.52rem);
+  letter-spacing:1.2px;text-transform:uppercase;
+  padding:5px 8px;border-radius:3px;
+  cursor:pointer;border:none;transition:all 0.2s;
+  white-space:nowrap;text-align:right;width:100%;
+}
+.cta-primary{background:var(--edison-dim);color:var(--filament);box-shadow:0 0 8px var(--glow);}
+.cta-primary:hover{background:var(--edison);box-shadow:0 0 16px var(--glow-strong);}
+.cta-secondary{background:transparent;border:1px solid var(--metal-light)!important;color:var(--cream-dim);}
+.cta-secondary:hover{border-color:var(--edison-dim)!important;color:var(--filament);}
+.cta-note{font-family:'Share Tech Mono',monospace;font-size:0.42rem;letter-spacing:1px;color:var(--cream-dim);text-transform:uppercase;text-align:right;}
+
+/* ── PILLAR CENTER ── */
+.pillar-wrap{
+  display:flex;flex-direction:column;align-items:center;
+  width:var(--pillar-w);
+  flex-shrink:0;
+  position:relative;
 }
 
-.lab-sub {
-  font-family: 'Share Tech Mono', monospace;
-  font-size: 0.58rem;
-  letter-spacing: 3px;
-  color: var(--cream-dim);
-  text-transform: uppercase;
-  margin-top: -2px;
+/* Floating object — sits ABOVE the capital, lifted on Y */
+.float-object{
+  position:absolute;
+  /* negative top = floats above the capital */
+  top: clamp(-80px,-12vw,-55px);
+  left:50%;
+  transform:translateX(-50%);
+  width:clamp(110px,15vw,180px);
+  height:clamp(110px,15vw,180px);
+  z-index:10;
+  pointer-events:all;
+}
+.float-canvas{
+  width:100%;height:100%;
+  cursor:grab;display:block;
+}
+.float-canvas:active{cursor:grabbing;}
+
+/* Capital */
+.capital{
+  width:100%;
+  display:flex;flex-direction:column;align-items:center;
+}
+.cap-slab{
+  width:100%;height:clamp(10px,1.4vw,18px);
+  background:linear-gradient(to bottom,#4a3822,#2e2210);
+  border-radius:3px 3px 0 0;
+  box-shadow:0 -1px 0 rgba(255,230,180,0.08),inset 0 1px 0 rgba(255,230,180,0.05);
+}
+.cap-ogee{
+  width:96%;height:clamp(6px,0.9vw,11px);
+  background:linear-gradient(to bottom,#3a2c18,#22180a);
+  clip-path:polygon(0 100%,2% 0,98% 0,100% 100%);
+}
+.cap-shelf{
+  width:90%;height:clamp(16px,2.2vw,28px);
+  background:linear-gradient(160deg,#281e0e,#1a1208);
+  border:1px solid rgba(107,92,74,0.45);border-bottom:none;
+  position:relative;overflow:hidden;
+}
+.cap-shelf::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at 30% 30%,rgba(200,120,26,0.09),transparent 65%);}
+.cap-neck{
+  width:84%;height:clamp(5px,0.7vw,9px);
+  background:linear-gradient(to bottom,#1e1609,#141009);
+  border-left:1px solid rgba(107,92,74,0.3);border-right:1px solid rgba(107,92,74,0.3);
 }
 
-.topbar-right {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  pointer-events: all;
-}
-
-.view-toggle {
-  display: flex;
-  background: rgba(255,255,255,0.05);
-  border: 1px solid rgba(255,255,255,0.1);
-  border-radius: 30px;
-  overflow: hidden;
-}
-
-.view-btn {
-  font-family: 'Share Tech Mono', monospace;
-  font-size: 0.62rem;
-  letter-spacing: 2px;
-  padding: 5px 12px;
-  background: transparent;
-  color: var(--cream-dim);
-  border: none;
-  cursor: pointer;
-  transition: all 0.25s;
-  text-transform: uppercase;
-}
-
-.view-btn.active {
-  background: var(--edison-dim);
-  color: var(--filament);
-  text-shadow: 0 0 8px var(--edison);
-}
-
-/* ── CORRIDOR VIEW ── */
-#corridor-view {
-  position: fixed;
-  inset: 0;
-  perspective: 900px;
-  perspective-origin: 50% 48%;
-  overflow: hidden;
-}
-
-/* Floor */
-.floor {
-  position: absolute;
-  bottom: 0; left: -50%; right: -50%;
-  height: 55%;
-  background: linear-gradient(to bottom,
-    #1a0f05 0%,
-    #110c04 40%,
-    #0d0a07 100%
+/* Shaft — tapers, light warm tone at top fading to transparent */
+.column-shaft{
+  width:clamp(26px,4vw,50px);
+  height:clamp(80px,11vw,140px);
+  background:linear-gradient(to bottom,
+    rgba(100,78,50,0.85) 0%,
+    rgba(70,54,34,0.55) 25%,
+    rgba(45,33,18,0.25) 55%,
+    rgba(20,14,6,0.08) 80%,
+    transparent 100%
   );
-  transform: rotateX(70deg);
-  transform-origin: bottom center;
+  border-left:1px solid rgba(107,92,74,0.2);
+  border-right:1px solid rgba(107,92,74,0.2);
+  /* Mask: fade out left/right edges too */
+  -webkit-mask-image:linear-gradient(to bottom,rgba(0,0,0,1) 0%,rgba(0,0,0,0) 100%);
+  mask-image:linear-gradient(to bottom,rgba(0,0,0,1) 0%,rgba(0,0,0,0) 100%);
+  clip-path:polygon(10% 0,90% 0,100% 100%,0 100%);
 }
 
-/* Ceiling */
-.ceiling {
-  position: absolute;
-  top: 0; left: -50%; right: -50%;
-  height: 30%;
-  background: linear-gradient(to top,
-    #0d0a07 0%,
-    #0a0804 60%
-  );
-  transform: rotateX(-60deg);
-  transform-origin: top center;
+/* Bottom glow from capital — subtle warm pool */
+.capital-glow{
+  position:absolute;
+  bottom:clamp(78px,11vw,138px); /* sits at shaft top */
+  left:50%;transform:translateX(-50%);
+  width:80%;height:30px;
+  background:radial-gradient(ellipse at 50% 100%,rgba(200,120,26,0.12),transparent 70%);
+  pointer-events:none;
 }
 
-/* Wall lines for depth */
-.depth-lines {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
+/* Focused glow on capital */
+.item-slot.focused .cap-shelf{
+  box-shadow:0 0 30px var(--glow-strong),0 0 60px var(--glow);
 }
 
-.depth-lines svg {
-  width: 100%; height: 100%;
-  opacity: 0.08;
+/* Item label */
+.item-label{margin-top:8px;text-align:center;padding:0 6px;width:100%;}
+.item-number{font-family:'Share Tech Mono',monospace;font-size:0.52rem;letter-spacing:3px;color:var(--edison-dim);text-transform:uppercase;margin-bottom:3px;}
+.item-name{font-family:'Bebas Neue',sans-serif;font-size:clamp(0.9rem,1.5vw,1.25rem);letter-spacing:3px;color:var(--filament);text-shadow:0 0 8px var(--edison-dim);line-height:1.1;}
+.item-tags{display:flex;gap:4px;justify-content:center;margin-top:5px;flex-wrap:wrap;}
+.tag{font-family:'Share Tech Mono',monospace;font-size:0.43rem;letter-spacing:1.5px;padding:2px 5px;border-radius:2px;text-transform:uppercase;}
+.tag-music{background:var(--tag-music);color:var(--tag-music-text);}
+.tag-elec{background:var(--tag-elec);color:var(--tag-elec-text);}
+.tag-print{background:var(--tag-print);color:var(--tag-print-text);}
+
+/* ── RIGHT SIDE — video ── */
+.side-video{
+  width:var(--side-w);
+  aspect-ratio:9/16;
+  background:#080604;
+  border:1px solid rgba(107,92,74,0.3);
+  border-radius:4px;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;
+  flex-shrink:0;
+  /* align bottom with capital base */
+  margin-bottom:clamp(80px,12vw,145px);
+  opacity:0;
+  transition:opacity 0.45s ease;
+  position:relative;overflow:hidden;
 }
+.side-video::after{content:'';position:absolute;top:0;left:15%;right:15%;height:1px;background:linear-gradient(to right,transparent,rgba(200,120,26,0.4),transparent);}
+.item-slot.focused .side-video{opacity:1;}
+.video-play-icon{font-size:1rem;opacity:0.3;}
+.video-label{font-family:'Share Tech Mono',monospace;font-size:0.4rem;letter-spacing:1.5px;color:var(--cream-dim);text-transform:uppercase;text-align:center;padding:0 5px;line-height:1.5;}
 
-/* Overhead Edison string */
-.light-string {
-  position: absolute;
-  top: 0; left: 0; right: 0;
-  height: 48%;
-  pointer-events: none;
-  z-index: 5;
+/* ── NAV ── */
+.nav-arrow{
+  position:fixed;left:50%;transform:translateX(-50%);z-index:150;
+  background:rgba(13,10,7,0.5);border:1px solid var(--metal-light);color:var(--filament);
+  width:34px;height:34px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;font-size:0.9rem;transition:all 0.2s;backdrop-filter:blur(8px);user-select:none;
 }
-
-.light-string svg {
-  width: 100%; height: 100%;
-}
-
-/* ── CORRIDOR TRACK ── */
-.corridor-track {
-  position: absolute;
-  top: 0; left: 0;
-  width: 100%; height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transform-style: preserve-3d;
-  transition: none;
-}
-
-/* ── ITEM CARD ── */
-.item-card {
-  position: absolute;
-  width: clamp(180px, 22vw, 280px);
-  cursor: pointer;
-  transform-style: preserve-3d;
-  transition: filter 0.4s ease;
-  user-select: none;
-}
-
-.pedestal {
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.pedestal-top {
-  width: 85%;
-  height: clamp(160px, 22vw, 240px);
-  background: linear-gradient(160deg, var(--warm2), var(--warm1));
-  border: 1px solid var(--metal-light);
-  border-bottom: none;
-  border-radius: 6px 6px 0 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  position: relative;
-  overflow: hidden;
-  box-shadow: 0 0 30px rgba(0,0,0,0.6), inset 0 0 20px rgba(0,0,0,0.4);
-}
-
-.pedestal-top::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: radial-gradient(circle at 30% 30%, rgba(200,120,26,0.06), transparent 70%);
-}
-
-.item-placeholder {
-  width: 70%;
-  height: 70%;
-  border: 1.5px dashed var(--metal-light);
-  border-radius: 4px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-direction: column;
-  gap: 8px;
-  opacity: 0.5;
-}
-
-.item-placeholder-icon {
-  font-size: clamp(1.4rem, 3vw, 2.2rem);
-  opacity: 0.6;
-}
-
-.item-placeholder-label {
-  font-family: 'Share Tech Mono', monospace;
-  font-size: 0.55rem;
-  letter-spacing: 2px;
-  color: var(--cream-dim);
-  text-transform: uppercase;
-}
-
-/* Edison glow on pedestal top */
-.item-glow {
-  position: absolute;
-  bottom: 0; left: 0; right: 0;
-  height: 3px;
-  background: linear-gradient(to right, transparent, var(--edison), transparent);
-  opacity: 0;
-  transition: opacity 0.4s;
-}
-
-.pedestal-shaft {
-  width: 60%;
-  height: 28px;
-  background: linear-gradient(to bottom, var(--metal), #2a1f12);
-  border-left: 1px solid var(--metal-light);
-  border-right: 1px solid var(--metal-light);
-}
-
-.pedestal-base {
-  width: 100%;
-  height: 14px;
-  background: linear-gradient(to bottom, var(--metal-light), #1a1208);
-  border-radius: 0 0 3px 3px;
-  border: 1px solid var(--metal);
-}
-
-.item-label {
-  margin-top: 14px;
-  text-align: center;
-  padding: 0 8px;
-}
-
-.item-number {
-  font-family: 'Share Tech Mono', monospace;
-  font-size: 0.58rem;
-  letter-spacing: 3px;
-  color: var(--edison-dim);
-  text-transform: uppercase;
-  margin-bottom: 3px;
-}
-
-.item-name {
-  font-family: 'Bebas Neue', sans-serif;
-  font-size: clamp(0.9rem, 1.6vw, 1.3rem);
-  letter-spacing: 3px;
-  color: var(--filament);
-  text-shadow: 0 0 8px var(--edison-dim);
-  line-height: 1.1;
-}
-
-.item-tags {
-  display: flex;
-  gap: 4px;
-  justify-content: center;
-  margin-top: 6px;
-  flex-wrap: wrap;
-}
-
-.tag {
-  font-family: 'Share Tech Mono', monospace;
-  font-size: 0.48rem;
-  letter-spacing: 1.5px;
-  padding: 2px 6px;
-  border-radius: 2px;
-  text-transform: uppercase;
-}
-
-.tag-music  { background: var(--tag-music);  color: var(--tag-music-text); }
-.tag-elec   { background: var(--tag-elec);   color: var(--tag-elec-text); }
-.tag-print  { background: var(--tag-print);  color: var(--tag-print-text); }
-
-/* ── FOCUS STATE ── */
-.item-card.focused .item-glow { opacity: 1; }
-.item-card.focused .pedestal-top {
-  box-shadow: 0 0 40px var(--glow-strong), 0 0 80px var(--glow), inset 0 0 20px rgba(0,0,0,0.4);
-}
-
-/* ── NAVIGATION ARROWS ── */
-.nav-arrow {
-  position: fixed;
-  top: 50%;
-  transform: translateY(-50%);
-  z-index: 150;
-  background: rgba(13,10,7,0.7);
-  border: 1px solid var(--metal-light);
-  color: var(--filament);
-  width: 44px; height: 44px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  font-size: 1.2rem;
-  transition: all 0.2s;
-  backdrop-filter: blur(8px);
-  user-select: none;
-}
-
-.nav-arrow:hover {
-  background: var(--edison-dim);
-  border-color: var(--edison);
-  box-shadow: 0 0 16px var(--glow-strong);
-}
-
-.nav-arrow:active { transform: translateY(-50%) scale(0.92); }
-.nav-arrow.disabled { opacity: 0.2; pointer-events: none; }
-
-#nav-prev { left: 12px; }
-#nav-next { right: 12px; }
+.nav-arrow:hover{background:var(--edison-dim);border-color:var(--edison);box-shadow:0 0 14px var(--glow-strong);}
+#nav-next{top:60px;}
+#nav-prev{bottom:108px;opacity:0.3;font-size:0.75rem;}
+#nav-prev:hover{opacity:1;}
 
 /* ── COUNTER ── */
-.counter {
-  position: fixed;
-  bottom: 80px;
-  left: 50%;
-  transform: translateX(-50%);
-  font-family: 'Share Tech Mono', monospace;
-  font-size: 0.62rem;
-  letter-spacing: 4px;
-  color: var(--cream-dim);
-  z-index: 150;
-  white-space: nowrap;
-}
-
-.counter-dots {
-  display: flex;
-  gap: 6px;
-  justify-content: center;
-  margin-top: 6px;
-}
-
-.counter-dot {
-  width: 5px; height: 5px;
-  border-radius: 50%;
-  background: var(--metal-light);
-  transition: all 0.3s;
-}
-
-.counter-dot.active {
-  background: var(--edison);
-  box-shadow: 0 0 6px var(--edison);
-}
+.counter{position:fixed;bottom:80px;left:50%;transform:translateX(-50%);font-family:'Share Tech Mono',monospace;font-size:0.56rem;letter-spacing:4px;color:var(--cream-dim);z-index:150;white-space:nowrap;text-align:center;}
+.counter-dots{display:flex;gap:6px;justify-content:center;margin-top:7px;}
+.counter-dot{width:5px;height:5px;border-radius:50%;background:var(--metal-light);transition:all 0.3s;cursor:pointer;}
+.counter-dot.active{background:var(--edison);box-shadow:0 0 6px var(--edison);}
 
 /* ── BOTTOM NAV ── */
-.nav-cluster {
-  position: fixed;
-  bottom: 20px;
-  left: 50%;
-  transform: translateX(-50%);
-  display: flex;
-  background: rgba(0,0,0,0.55);
-  backdrop-filter: blur(12px);
-  border: 1px solid rgba(255,255,255,0.08);
-  border-radius: 100px;
-  padding: 7px 14px;
-  z-index: 200;
-  white-space: nowrap;
-}
-
-.nav-cluster a {
-  font-family: 'Share Tech Mono', monospace;
-  text-decoration: none;
-  color: var(--cream-dim);
-  padding: 6px 10px;
-  font-size: 0.62rem;
-  text-transform: uppercase;
-  letter-spacing: 1.5px;
-  transition: all 0.25s;
-}
-
-.nav-cluster a:hover {
-  color: var(--filament);
-  text-shadow: 0 0 10px var(--edison);
-}
-
-.nav-divider {
-  width: 1px; height: 12px;
-  background: rgba(255,255,255,0.1);
-  align-self: center;
-  margin: 0 3px;
-}
+.nav-cluster{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);display:flex;background:rgba(0,0,0,0.55);backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,0.08);border-radius:100px;padding:7px 14px;z-index:200;white-space:nowrap;}
+.nav-cluster a{font-family:'Share Tech Mono',monospace;text-decoration:none;color:var(--cream-dim);padding:6px 10px;font-size:0.56rem;text-transform:uppercase;letter-spacing:1.5px;transition:all 0.25s;}
+.nav-cluster a:hover{color:var(--filament);text-shadow:0 0 10px var(--edison);}
+.nav-divider{width:1px;height:12px;background:rgba(255,255,255,0.1);align-self:center;margin:0 3px;}
 
 /* ── DETAIL PANEL ── */
-.detail-panel {
-  position: fixed;
-  inset: 0;
-  z-index: 300;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 20px;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.35s ease;
-  background: rgba(13,10,7,0.88);
-  backdrop-filter: blur(16px);
-}
-
-.detail-panel.open {
-  opacity: 1;
-  pointer-events: all;
-}
-
-.detail-box {
-  width: 100%;
-  max-width: 560px;
-  max-height: 85vh;
-  overflow-y: auto;
-  background: linear-gradient(160deg, #1e160a, #141009);
-  border: 1px solid var(--metal-light);
-  border-radius: 12px;
-  padding: 28px;
-  position: relative;
-  box-shadow: 0 0 60px rgba(0,0,0,0.8), 0 0 30px var(--glow);
-  transform: translateY(20px);
-  transition: transform 0.35s ease;
-}
-
-.detail-panel.open .detail-box {
-  transform: translateY(0);
-}
-
-.detail-close {
-  position: absolute;
-  top: 14px; right: 14px;
-  background: transparent;
-  border: 1px solid var(--metal-light);
-  color: var(--cream-dim);
-  width: 30px; height: 30px;
-  border-radius: 50%;
-  cursor: pointer;
-  font-size: 0.9rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.2s;
-}
-
-.detail-close:hover {
-  border-color: var(--edison);
-  color: var(--filament);
-}
-
-.detail-num {
-  font-family: 'Share Tech Mono', monospace;
-  font-size: 0.6rem;
-  letter-spacing: 3px;
-  color: var(--edison-dim);
-  margin-bottom: 6px;
-  text-transform: uppercase;
-}
-
-.detail-title {
-  font-family: 'Bebas Neue', sans-serif;
-  font-size: 2.2rem;
-  letter-spacing: 4px;
-  color: var(--filament);
-  text-shadow: 0 0 16px var(--edison-dim);
-  line-height: 1;
-  margin-bottom: 10px;
-}
-
-.detail-tags {
-  display: flex;
-  gap: 5px;
-  flex-wrap: wrap;
-  margin-bottom: 18px;
-}
-
-/* Video placeholder */
-.detail-video {
-  width: 100%;
-  aspect-ratio: 16/9;
-  background: #0a0805;
-  border: 1.5px dashed var(--metal-light);
-  border-radius: 6px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-direction: column;
-  gap: 8px;
-  margin-bottom: 18px;
-  color: var(--cream-dim);
-  font-family: 'Share Tech Mono', monospace;
-  font-size: 0.62rem;
-  letter-spacing: 2px;
-  text-transform: uppercase;
-  opacity: 0.6;
-}
-
-.detail-desc {
-  font-size: 0.9rem;
-  line-height: 1.7;
-  color: var(--cream-dim);
-  margin-bottom: 20px;
-  font-weight: 300;
-}
-
-.detail-specs {
-  border-top: 1px solid rgba(255,255,255,0.07);
-  padding-top: 16px;
-  margin-bottom: 20px;
-}
-
-.spec-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 7px 0;
-  border-bottom: 1px solid rgba(255,255,255,0.04);
-  font-size: 0.82rem;
-}
-
-.spec-label {
-  font-family: 'Share Tech Mono', monospace;
-  font-size: 0.6rem;
-  letter-spacing: 2px;
-  color: var(--cream-dim);
-  text-transform: uppercase;
-}
-
-.spec-value {
-  color: var(--filament);
-  font-weight: 400;
-}
-
-.detail-actions {
-  display: flex;
-  gap: 10px;
-  flex-wrap: wrap;
-}
-
-.action-btn {
-  font-family: 'Share Tech Mono', monospace;
-  font-size: 0.62rem;
-  letter-spacing: 2px;
-  text-transform: uppercase;
-  padding: 10px 18px;
-  border-radius: 4px;
-  cursor: pointer;
-  border: none;
-  transition: all 0.2s;
-  text-decoration: none;
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.action-primary {
-  background: var(--edison-dim);
-  color: var(--filament);
-  box-shadow: 0 0 12px var(--glow);
-}
-
-.action-primary:hover {
-  background: var(--edison);
-  box-shadow: 0 0 20px var(--glow-strong);
-}
-
-.action-secondary {
-  background: transparent;
-  border: 1px solid var(--metal-light) !important;
-  color: var(--cream-dim);
-}
-
-.action-secondary:hover {
-  border-color: var(--edison-dim) !important;
-  color: var(--filament);
-}
+.detail-panel{position:fixed;inset:0;z-index:300;display:flex;align-items:center;justify-content:center;padding:20px;opacity:0;pointer-events:none;transition:opacity 0.3s ease;background:rgba(13,10,7,0.92);backdrop-filter:blur(20px);}
+.detail-panel.open{opacity:1;pointer-events:all;}
+.detail-box{width:100%;max-width:540px;max-height:88vh;overflow-y:auto;background:linear-gradient(160deg,#1e160a,#141009);border:1px solid var(--metal-light);border-radius:12px;padding:26px;position:relative;box-shadow:0 0 60px rgba(0,0,0,0.9),0 0 30px var(--glow);transform:translateY(14px);transition:transform 0.3s ease;}
+.detail-panel.open .detail-box{transform:translateY(0);}
+.detail-close{position:absolute;top:14px;right:14px;background:transparent;border:1px solid var(--metal-light);color:var(--cream-dim);width:28px;height:28px;border-radius:50%;cursor:pointer;font-size:0.85rem;display:flex;align-items:center;justify-content:center;transition:all 0.2s;}
+.detail-close:hover{border-color:var(--edison);color:var(--filament);}
+.detail-num{font-family:'Share Tech Mono',monospace;font-size:0.54rem;letter-spacing:3px;color:var(--edison-dim);margin-bottom:4px;text-transform:uppercase;}
+.detail-title{font-family:'Bebas Neue',sans-serif;font-size:1.9rem;letter-spacing:4px;color:var(--filament);text-shadow:0 0 14px var(--edison-dim);line-height:1;margin-bottom:10px;}
+.detail-tags{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:16px;}
+.detail-body{display:flex;gap:14px;margin-bottom:16px;}
+.detail-video-col{width:80px;flex-shrink:0;aspect-ratio:9/16;background:#080604;border:1px solid rgba(107,92,74,0.4);border-radius:4px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;color:var(--cream-dim);font-family:'Share Tech Mono',monospace;font-size:0.44rem;letter-spacing:1.5px;text-transform:uppercase;opacity:0.6;}
+.detail-desc{font-size:0.85rem;line-height:1.75;color:var(--cream-dim);font-weight:300;}
+.detail-specs{border-top:1px solid rgba(255,255,255,0.06);padding-top:13px;margin-bottom:16px;}
+.spec-row{display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-bottom:1px solid rgba(255,255,255,0.04);font-size:0.8rem;}
+.spec-label{font-family:'Share Tech Mono',monospace;font-size:0.54rem;letter-spacing:2px;color:var(--cream-dim);text-transform:uppercase;}
+.spec-value{color:var(--filament);}
+.detail-actions{display:flex;gap:10px;flex-wrap:wrap;align-items:flex-start;}
+.action-wrap{display:flex;flex-direction:column;align-items:center;gap:3px;}
+.action-btn{font-family:'Share Tech Mono',monospace;font-size:0.56rem;letter-spacing:2px;text-transform:uppercase;padding:9px 14px;border-radius:4px;cursor:pointer;border:none;transition:all 0.2s;display:inline-flex;align-items:center;gap:5px;}
+.action-primary{background:var(--edison-dim);color:var(--filament);box-shadow:0 0 12px var(--glow);}
+.action-primary:hover{background:var(--edison);box-shadow:0 0 22px var(--glow-strong);}
+.action-secondary{background:transparent;border:1px solid var(--metal-light)!important;color:var(--cream-dim);}
+.action-secondary:hover{border-color:var(--edison-dim)!important;color:var(--filament);}
+.action-note{font-family:'Share Tech Mono',monospace;font-size:0.5rem;letter-spacing:1.5px;color:var(--cream-dim);text-transform:uppercase;}
 
 /* ── GRID VIEW ── */
-#grid-view {
-  position: fixed;
-  inset: 0;
-  overflow-y: auto;
-  padding: 70px 20px 100px;
-  display: none;
-}
+#grid-view{position:fixed;inset:0;overflow-y:auto;padding:66px 20px 100px;display:none;}
+#grid-view.active{display:block;}
+.grid-container{max-width:840px;margin:0 auto;}
+.grid-header{font-family:'Share Tech Mono',monospace;font-size:0.54rem;letter-spacing:3px;color:var(--cream-dim);text-transform:uppercase;margin-bottom:14px;border-bottom:1px solid rgba(255,255,255,0.06);padding-bottom:9px;}
+.grid-list{display:flex;flex-direction:column;gap:4px;}
+.grid-item{display:flex;align-items:center;gap:12px;padding:15px 16px;background:rgba(255,255,255,0.025);border:1px solid rgba(255,255,255,0.05);border-radius:6px;cursor:pointer;transition:all 0.2s;}
+.grid-item:hover{background:rgba(200,120,26,0.07);border-color:var(--metal-light);}
+.grid-num{font-family:'Share Tech Mono',monospace;font-size:0.54rem;letter-spacing:2px;color:var(--edison-dim);min-width:36px;}
+.grid-thumb{width:52px;height:42px;background:var(--warm2);border:1px solid var(--metal);border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:1.2rem;flex-shrink:0;}
+.grid-vid{width:32px;aspect-ratio:9/16;background:#080604;border:1px solid rgba(107,92,74,0.35);border-radius:3px;display:flex;align-items:center;justify-content:center;font-size:0.7rem;opacity:0.45;flex-shrink:0;}
+.grid-info{flex:1;}
+.grid-name{font-family:'Bebas Neue',sans-serif;font-size:1rem;letter-spacing:2px;color:var(--filament);}
+.grid-tags{display:flex;gap:4px;margin-top:3px;flex-wrap:wrap;}
+.grid-avail{font-family:'Share Tech Mono',monospace;font-size:0.52rem;letter-spacing:1.5px;color:var(--cream-dim);text-align:right;min-width:76px;}
 
-#grid-view.active {
-  display: block;
-}
+.jessec-credit{position:fixed;bottom:54px;right:16px;font-family:'Share Tech Mono',monospace;font-size:0.48rem;letter-spacing:2.5px;color:var(--metal-light);text-transform:uppercase;z-index:150;opacity:0.6;}
+.key-hint{position:fixed;top:58px;left:50%;transform:translateX(-50%);font-family:'Share Tech Mono',monospace;font-size:0.46rem;letter-spacing:2px;color:var(--metal-light);text-transform:uppercase;z-index:150;opacity:0;transition:opacity 1s;pointer-events:none;white-space:nowrap;}
+.key-hint.visible{opacity:1;}
 
-.grid-container {
-  max-width: 900px;
-  margin: 0 auto;
-}
-
-.grid-header {
-  font-family: 'Share Tech Mono', monospace;
-  font-size: 0.6rem;
-  letter-spacing: 3px;
-  color: var(--cream-dim);
-  text-transform: uppercase;
-  margin-bottom: 20px;
-  border-bottom: 1px solid rgba(255,255,255,0.06);
-  padding-bottom: 10px;
-}
-
-.grid-list {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-
-.grid-item {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  padding: 14px 16px;
-  background: rgba(255,255,255,0.025);
-  border: 1px solid rgba(255,255,255,0.05);
-  border-radius: 6px;
-  cursor: pointer;
-  transition: all 0.2s;
-  text-decoration: none;
-  color: inherit;
-}
-
-.grid-item:hover {
-  background: rgba(200,120,26,0.08);
-  border-color: var(--metal-light);
-}
-
-.grid-item-num {
-  font-family: 'Share Tech Mono', monospace;
-  font-size: 0.6rem;
-  letter-spacing: 2px;
-  color: var(--edison-dim);
-  min-width: 36px;
-}
-
-.grid-thumb {
-  width: 52px; height: 40px;
-  background: var(--warm2);
-  border: 1px solid var(--metal);
-  border-radius: 4px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.2rem;
-  flex-shrink: 0;
-}
-
-.grid-info { flex: 1; }
-
-.grid-name {
-  font-family: 'Bebas Neue', sans-serif;
-  font-size: 1.05rem;
-  letter-spacing: 2px;
-  color: var(--filament);
-}
-
-.grid-tags {
-  display: flex;
-  gap: 4px;
-  margin-top: 3px;
-  flex-wrap: wrap;
-}
-
-.grid-avail {
-  font-family: 'Share Tech Mono', monospace;
-  font-size: 0.58rem;
-  letter-spacing: 1.5px;
-  color: var(--cream-dim);
-  text-align: right;
-  min-width: 80px;
-}
-
-/* ── JESSEC CREDIT ── */
-.jessec-credit {
-  position: fixed;
-  bottom: 56px;
-  right: 16px;
-  font-family: 'Share Tech Mono', monospace;
-  font-size: 0.52rem;
-  letter-spacing: 2.5px;
-  color: var(--metal-light);
-  text-transform: uppercase;
-  z-index: 150;
-  opacity: 0.7;
-}
-
-/* ── KEYBOARD HINT ── */
-.key-hint {
-  position: fixed;
-  top: 58px;
-  left: 50%;
-  transform: translateX(-50%);
-  font-family: 'Share Tech Mono', monospace;
-  font-size: 0.52rem;
-  letter-spacing: 2px;
-  color: var(--metal-light);
-  text-transform: uppercase;
-  z-index: 150;
-  opacity: 0;
-  transition: opacity 1s;
-  pointer-events: none;
-}
-
-.key-hint.visible { opacity: 1; }
-
-@media (max-width: 600px) {
-  .nav-cluster a { font-size: 0.55rem; padding: 6px 7px; }
-  .detail-box { padding: 20px; }
-  .detail-title { font-size: 1.7rem; }
-  .key-hint { display: none; }
-  .grid-avail { display: none; }
+@media(max-width:600px){
+  .nav-cluster a{font-size:0.48rem;padding:6px 6px;}
+  .side-cta,.side-video,.grid-avail,.grid-vid{display:none;}
+  .detail-body{flex-direction:column;}
+  .detail-video-col{width:100%;aspect-ratio:16/9;}
+  :root{--side-w:0px;}
 }
 </style>
 </head>
 <body>
 
-<!-- TOP BAR -->
 <div class="topbar">
   <div class="topbar-left">
     <div class="lab-wordmark">THE LAB</div>
@@ -775,70 +328,38 @@ html, body {
   </div>
 </div>
 
-<!-- KEY HINT -->
-<div class="key-hint" id="keyHint">← → to navigate · click to inspect</div>
-
-<!-- JESSEC CREDIT -->
+<div class="key-hint" id="keyHint">swipe up to advance &nbsp;·&nbsp; tap to inspect</div>
 <div class="jessec-credit">by JesseC</div>
 
-<!-- ══════════════════ CORRIDOR VIEW ══════════════════ -->
+<!-- ══ CORRIDOR ══ -->
 <div id="corridor-view">
-
-  <!-- Atmospheric depth lines -->
   <div class="depth-lines">
     <svg viewBox="0 0 100 100" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
-      <!-- vanishing point lines -->
-      <line x1="50" y1="45" x2="0" y2="100"   stroke="#c8781a" stroke-width="0.3"/>
-      <line x1="50" y1="45" x2="100" y2="100"  stroke="#c8781a" stroke-width="0.3"/>
-      <line x1="50" y1="45" x2="0" y2="70"     stroke="#c8781a" stroke-width="0.15"/>
-      <line x1="50" y1="45" x2="100" y2="70"   stroke="#c8781a" stroke-width="0.15"/>
-      <line x1="50" y1="45" x2="0" y2="0"      stroke="#c8781a" stroke-width="0.15"/>
-      <line x1="50" y1="45" x2="100" y2="0"    stroke="#c8781a" stroke-width="0.15"/>
-      <line x1="50" y1="45" x2="20" y2="0"     stroke="#c8781a" stroke-width="0.1"/>
-      <line x1="50" y1="45" x2="80" y2="0"     stroke="#c8781a" stroke-width="0.1"/>
+      <line x1="50" y1="40" x2="0"   y2="100" stroke="#c8781a" stroke-width="0.3"/>
+      <line x1="50" y1="40" x2="100" y2="100" stroke="#c8781a" stroke-width="0.3"/>
+      <line x1="50" y1="40" x2="0"   y2="65"  stroke="#c8781a" stroke-width="0.15"/>
+      <line x1="50" y1="40" x2="100" y2="65"  stroke="#c8781a" stroke-width="0.15"/>
+      <line x1="50" y1="40" x2="8"   y2="0"   stroke="#c8781a" stroke-width="0.1"/>
+      <line x1="50" y1="40" x2="92"  y2="0"   stroke="#c8781a" stroke-width="0.1"/>
     </svg>
   </div>
+  <div class="ceiling-bar"></div>
+  <div class="floor-fade"></div>
 
-  <!-- Edison string lights overhead -->
-  <div class="light-string">
-    <svg viewBox="0 0 1000 200" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
-      <!-- Drooping cable -->
-      <path d="M0,20 Q125,55 250,35 Q375,15 500,40 Q625,65 750,38 Q875,12 1000,28"
-            fill="none" stroke="#3a2a18" stroke-width="1.5" opacity="0.8"/>
-      <!-- Bulbs -->
-      <g fill="none">
-        <ellipse cx="250" cy="35" rx="6" ry="9" fill="#c8781a" opacity="0.9">
-          <animate attributeName="opacity" values="0.9;0.7;0.95;0.8;0.9" dur="4s" repeatCount="indefinite"/>
-        </ellipse>
-        <ellipse cx="500" cy="40" rx="6" ry="9" fill="#c8781a" opacity="0.85">
-          <animate attributeName="opacity" values="0.85;0.95;0.7;0.9;0.85" dur="5s" repeatCount="indefinite"/>
-        </ellipse>
-        <ellipse cx="750" cy="38" rx="6" ry="9" fill="#c8781a" opacity="0.9">
-          <animate attributeName="opacity" values="0.9;0.8;0.95;0.75;0.9" dur="3.5s" repeatCount="indefinite"/>
-        </ellipse>
-      </g>
-      <!-- Glow halos -->
-      <ellipse cx="250" cy="38" rx="22" ry="18" fill="rgba(200,120,26,0.07)"/>
-      <ellipse cx="500" cy="43" rx="22" ry="18" fill="rgba(200,120,26,0.07)"/>
-      <ellipse cx="750" cy="41" rx="22" ry="18" fill="rgba(200,120,26,0.07)"/>
-    </svg>
+  <div class="perspective-wrap">
+    <div class="corridor-track" id="corridorTrack"></div>
   </div>
 
-  <!-- CORRIDOR TRACK — items are positioned here by JS -->
-  <div class="corridor-track" id="corridorTrack"></div>
+  <button class="nav-arrow" id="nav-next" onclick="navigate(1)">&#8593;</button>
+  <button class="nav-arrow" id="nav-prev" onclick="navigate(-1)">&#8595;</button>
 
-  <!-- NAV ARROWS -->
-  <button class="nav-arrow" id="nav-prev" onclick="navigate(-1)">&#8592;</button>
-  <button class="nav-arrow" id="nav-next" onclick="navigate(1)">&#8594;</button>
-
-  <!-- COUNTER -->
   <div class="counter">
     <span id="counter-text">01 / 07</span>
     <div class="counter-dots" id="counterDots"></div>
   </div>
 </div>
 
-<!-- ══════════════════ GRID VIEW ══════════════════ -->
+<!-- ══ GRID ══ -->
 <div id="grid-view">
   <div class="grid-container">
     <div class="grid-header">All Inventions — JesseC / Freejoy Club Lab</div>
@@ -846,19 +367,21 @@ html, body {
   </div>
 </div>
 
-<!-- ══════════════════ DETAIL PANEL ══════════════════ -->
+<!-- ══ DETAIL ══ -->
 <div class="detail-panel" id="detailPanel" onclick="handlePanelClick(event)">
-  <div class="detail-box" id="detailBox">
+  <div class="detail-box">
     <button class="detail-close" onclick="closeDetail()">&#x2715;</button>
-    <div class="detail-num" id="dNum"></div>
+    <div class="detail-num"   id="dNum"></div>
     <div class="detail-title" id="dTitle"></div>
-    <div class="detail-tags" id="dTags"></div>
-    <div class="detail-video" id="dVideo">
-      <span style="font-size:1.6rem;opacity:0.4;">▶</span>
-      <span>Video 0 — Coming Soon</span>
+    <div class="detail-tags"  id="dTags"></div>
+    <div class="detail-body">
+      <div class="detail-video-col" id="dVideo">
+        <span style="font-size:1.1rem;opacity:0.28;">▶</span>
+        <span>Video</span><span>Soon</span>
+      </div>
+      <div class="detail-desc" id="dDesc"></div>
     </div>
-    <div class="detail-desc" id="dDesc"></div>
-    <div class="detail-specs" id="dSpecs"></div>
+    <div class="detail-specs"   id="dSpecs"></div>
     <div class="detail-actions" id="dActions"></div>
   </div>
 </div>
@@ -874,377 +397,368 @@ html, body {
   <a href="/move">Move</a>
 </div>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script>
-// ══════════════════════════════════════════
+
+// ═══════════════════════════════
 // DATA
-// ══════════════════════════════════════════
+// ═══════════════════════════════
 const items = [
   {
-    id: 1,
-    name: "Invention 01",
-    icon: "⚙️",
-    tags: [{ label: "Musical Gear", cls: "tag-music" }, { label: "Printable", cls: "tag-print" }],
-    availability: "Order / Download",
-    video: "Video 01",
-    desc: "Placeholder description for Invention 01. A unique handmade gadget designed by JesseC in the Freejoy Club Lab. Details coming soon.",
-    specs: [
-      { label: "Type", value: "Placeholder" },
-      { label: "Files", value: "STL available" },
-      { label: "Ships", value: "Yes" },
-    ],
-    actions: [
-      { label: "📦 Order", type: "primary" },
-      { label: "⬇ Download Files", type: "secondary" },
+    id:1, name:"Invention 01", icon:"⚙️",
+    tags:[{label:"Musical Gear",cls:"tag-music"},{label:"Printable",cls:"tag-print"}],
+    availability:"Order / Download", video:"Video 01",
+    desc:"Placeholder description for Invention 01. A unique handmade gadget designed by JesseC in the Freejoy Club Lab. Details coming soon.",
+    specs:[{label:"Type",value:"Placeholder"},{label:"Files",value:"STL available"},{label:"Ships",value:"Yes"}],
+    actions:[
+      {label:"📦 Purchase",note:"Free shipping",type:"primary"},
+      {label:"⬇ Files",note:"$11",type:"secondary"},
+      {label:"⬇ Files",note:"Free (basic)",type:"secondary"},
     ]
   },
   {
-    id: 2,
-    name: "Invention 02",
-    icon: "🎛️",
-    tags: [{ label: "Electronics", cls: "tag-elec" }, { label: "Musical Gear", cls: "tag-music" }],
-    availability: "Order Only",
-    video: "Video 02",
-    desc: "Placeholder description for Invention 02. A unique handmade gadget designed by JesseC in the Freejoy Club Lab. Details coming soon.",
-    specs: [
-      { label: "Type", value: "Placeholder" },
-      { label: "Electronics", value: "Yes" },
-      { label: "Ships", value: "Yes" },
-    ],
-    actions: [
-      { label: "📦 Order", type: "primary" },
+    id:2,name:"Invention 02",icon:"🎛️",
+    tags:[{label:"Electronics",cls:"tag-elec"},{label:"Musical Gear",cls:"tag-music"}],
+    availability:"Order Only",video:"Video 02",
+    desc:"Placeholder description for Invention 02. A unique handmade gadget designed by JesseC in the Freejoy Club Lab. Details coming soon.",
+    specs:[{label:"Type",value:"Placeholder"},{label:"Electronics",value:"Yes"},{label:"Ships",value:"Yes"}],
+    actions:[{label:"📦 Purchase",note:"Free shipping",type:"primary"}]
+  },
+  {
+    id:3,name:"Invention 03",icon:"🔊",
+    tags:[{label:"Musical Gear",cls:"tag-music"},{label:"Electronics",cls:"tag-elec"}],
+    availability:"Download Free",video:"Video 03",
+    desc:"Placeholder description for Invention 03. A unique handmade gadget designed by JesseC in the Freejoy Club Lab. Details coming soon.",
+    specs:[{label:"Type",value:"Placeholder"},{label:"Files",value:"Free STL"},{label:"Ships",value:"No"}],
+    actions:[{label:"⬇ Download",note:"Free",type:"primary"}]
+  },
+  {
+    id:4,name:"Invention 04",icon:"🖨️",
+    tags:[{label:"Printable",cls:"tag-print"}],
+    availability:"Download / Order",video:"Video 04",
+    desc:"Placeholder description for Invention 04. A unique handmade gadget designed by JesseC in the Freejoy Club Lab. Details coming soon.",
+    specs:[{label:"Type",value:"Placeholder"},{label:"Files",value:"STL (paid)"},{label:"Ships",value:"Yes"}],
+    actions:[
+      {label:"📦 Purchase",note:"Free shipping",type:"primary"},
+      {label:"⬇ Files",note:"$11",type:"secondary"},
     ]
   },
   {
-    id: 3,
-    name: "Invention 03",
-    icon: "🔊",
-    tags: [{ label: "Musical Gear", cls: "tag-music" }, { label: "Electronics", cls: "tag-elec" }],
-    availability: "Download Free",
-    video: "Video 03",
-    desc: "Placeholder description for Invention 03. A unique handmade gadget designed by JesseC in the Freejoy Club Lab. Details coming soon.",
-    specs: [
-      { label: "Type", value: "Placeholder" },
-      { label: "Files", value: "Free STL" },
-      { label: "Ships", value: "No" },
-    ],
-    actions: [
-      { label: "⬇ Download Free", type: "primary" },
-    ]
+    id:5,name:"Invention 05",icon:"🎹",
+    tags:[{label:"Musical Gear",cls:"tag-music"},{label:"Electronics",cls:"tag-elec"},{label:"Printable",cls:"tag-print"}],
+    availability:"Order Only",video:"Video 05",
+    desc:"Placeholder description for Invention 05. A unique handmade gadget designed by JesseC in the Freejoy Club Lab. Details coming soon.",
+    specs:[{label:"Type",value:"Placeholder"},{label:"CPU",value:"Yes"},{label:"Ships",value:"Yes"}],
+    actions:[{label:"📦 Purchase",note:"Free shipping",type:"primary"}]
   },
   {
-    id: 4,
-    name: "Invention 04",
-    icon: "🖨️",
-    tags: [{ label: "Printable", cls: "tag-print" }],
-    availability: "Download / Order",
-    video: "Video 04",
-    desc: "Placeholder description for Invention 04. A unique handmade gadget designed by JesseC in the Freejoy Club Lab. Details coming soon.",
-    specs: [
-      { label: "Type", value: "Placeholder" },
-      { label: "Files", value: "STL (paid)" },
-      { label: "Ships", value: "Yes" },
-    ],
-    actions: [
-      { label: "📦 Order", type: "primary" },
-      { label: "⬇ Buy Files", type: "secondary" },
-    ]
+    id:6,name:"Invention 06",icon:"🔧",
+    tags:[{label:"Printable",cls:"tag-print"},{label:"Electronics",cls:"tag-elec"}],
+    availability:"Download Free",video:"Video 06",
+    desc:"Placeholder description for Invention 06. A unique handmade gadget designed by JesseC in the Freejoy Club Lab. Details coming soon.",
+    specs:[{label:"Type",value:"Placeholder"},{label:"Files",value:"Free STL"},{label:"Ships",value:"No"}],
+    actions:[{label:"⬇ Download",note:"Free",type:"primary"}]
   },
   {
-    id: 5,
-    name: "Invention 05",
-    icon: "🎹",
-    tags: [{ label: "Musical Gear", cls: "tag-music" }, { label: "Electronics", cls: "tag-elec" }, { label: "Printable", cls: "tag-print" }],
-    availability: "Order Only",
-    video: "Video 05",
-    desc: "Placeholder description for Invention 05. A unique handmade gadget designed by JesseC in the Freejoy Club Lab. Details coming soon.",
-    specs: [
-      { label: "Type", value: "Placeholder" },
-      { label: "CPU", value: "Yes" },
-      { label: "Ships", value: "Yes" },
-    ],
-    actions: [
-      { label: "📦 Order", type: "primary" },
-    ]
-  },
-  {
-    id: 6,
-    name: "Invention 06",
-    icon: "🔧",
-    tags: [{ label: "Printable", cls: "tag-print" }, { label: "Electronics", cls: "tag-elec" }],
-    availability: "Download Free",
-    video: "Video 06",
-    desc: "Placeholder description for Invention 06. A unique handmade gadget designed by JesseC in the Freejoy Club Lab. Details coming soon.",
-    specs: [
-      { label: "Type", value: "Placeholder" },
-      { label: "Files", value: "Free STL" },
-      { label: "Ships", value: "No" },
-    ],
-    actions: [
-      { label: "⬇ Download Free", type: "primary" },
-    ]
-  },
-  {
-    id: 7,
-    name: "Invention 07",
-    icon: "🎵",
-    tags: [{ label: "Musical Gear", cls: "tag-music" }],
-    availability: "Coming Soon",
-    video: "Video 07",
-    desc: "Placeholder description for Invention 07. A unique handmade gadget designed by JesseC in the Freejoy Club Lab. Details coming soon.",
-    specs: [
-      { label: "Type", value: "Placeholder" },
-      { label: "Status", value: "In progress" },
-    ],
-    actions: [
-      { label: "🔔 Notify Me", type: "secondary" },
-    ]
+    id:7,name:"Invention 07",icon:"🎵",
+    tags:[{label:"Musical Gear",cls:"tag-music"}],
+    availability:"Coming Soon",video:"Video 07",
+    desc:"Placeholder description for Invention 07. A unique handmade gadget designed by JesseC in the Freejoy Club Lab. Details coming soon.",
+    specs:[{label:"Type",value:"Placeholder"},{label:"Status",value:"In progress"}],
+    actions:[{label:"🔔 Notify Me",note:"Join waitlist",type:"secondary"}]
   },
 ];
 
-// ══════════════════════════════════════════
-// STATE
-// ══════════════════════════════════════════
+const TOTAL   = items.length;
+const SPACING = 600;
 let currentIndex = 0;
-let currentView = 'walk';
+let currentView  = 'walk';
 
-// ══════════════════════════════════════════
-// CORRIDOR POSITIONING
-// ══════════════════════════════════════════
-// Each item gets a Z position in 3D space.
-// The "current" item is at Z=0, items behind are at +Z (closer), items ahead at -Z (further)
-// We translate the track so the current item is centered.
+// ═══════════════════════════════
+// THREE.JS — one shared scene per canvas
+// ═══════════════════════════════
+const stlInstances = {}; // keyed by slot index
 
-const SPACING = 520; // px between items in Z
+function buildTorus(canvas, idx) {
+  if (!canvas || stlInstances[idx]) return;
 
+  const W = canvas.clientWidth  || 150;
+  const H = canvas.clientHeight || 150;
+
+  const renderer = new THREE.WebGLRenderer({canvas, alpha:true, antialias:true});
+  renderer.setSize(W, H);
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  renderer.setClearColor(0x000000, 0);
+
+  const scene  = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(38, W/H, 0.1, 100);
+  camera.position.set(0, 0.4, 3.2);
+  camera.lookAt(0, 0, 0);
+
+  // Lighting — warm Edison key, cool rim
+  scene.add(new THREE.AmbientLight(0xc8781a, 0.5));
+  const key = new THREE.DirectionalLight(0xf5d080, 1.6);
+  key.position.set(2, 3, 2);
+  scene.add(key);
+  const rim = new THREE.DirectionalLight(0x5ab0f0, 0.35);
+  rim.position.set(-2, -1, -2);
+  scene.add(rim);
+
+  // Torus — warm bronze material
+  const geo = new THREE.TorusGeometry(0.62, 0.24, 20, 72);
+  const mat = new THREE.MeshStandardMaterial({
+    color: 0x8b5c1a,
+    metalness: 0.75,
+    roughness: 0.28,
+    envMapIntensity: 0.8,
+  });
+  const mesh = new THREE.Mesh(geo, mat);
+  // Tilt so it reads well from top-down view
+  mesh.rotation.x = Math.PI * 0.25;
+  scene.add(mesh);
+
+  // Drag state
+  let dragging = false, prevX = 0, prevY = 0;
+  let rotY = 0, rotX = 0.25;
+
+  canvas.addEventListener('mousedown',  e=>{dragging=true;prevX=e.clientX;prevY=e.clientY;e.stopPropagation();});
+  canvas.addEventListener('touchstart', e=>{dragging=true;prevX=e.touches[0].clientX;prevY=e.touches[0].clientY;e.stopPropagation();},{passive:true});
+  window.addEventListener('mousemove',  e=>{
+    if(!dragging)return;
+    rotY+=(e.clientX-prevX)*0.013; rotX+=(e.clientY-prevY)*0.013;
+    prevX=e.clientX;prevY=e.clientY;
+  });
+  window.addEventListener('touchmove',  e=>{
+    if(!dragging)return;
+    rotY+=(e.touches[0].clientX-prevX)*0.013; rotX+=(e.touches[0].clientY-prevY)*0.013;
+    prevX=e.touches[0].clientX;prevY=e.touches[0].clientY;
+  },{passive:true});
+  window.addEventListener('mouseup',  ()=>{dragging=false;});
+  window.addEventListener('touchend', ()=>{dragging=false;});
+
+  stlInstances[idx] = {renderer, scene, camera, mesh, get dragging(){return dragging;}, rotRef:{y:rotY,x:rotX}};
+
+  // Store rot refs so render loop can access
+  stlInstances[idx].getRotY = () => rotY;
+  stlInstances[idx].getRotX = () => rotX;
+  stlInstances[idx].isDragging = () => dragging;
+
+  (function loop(){
+    requestAnimationFrame(loop);
+    if (!dragging) rotY += 0.006;
+    mesh.rotation.y = rotY;
+    mesh.rotation.x = rotX;
+    renderer.render(scene, camera);
+  })();
+}
+
+// ═══════════════════════════════
+// BUILD CORRIDOR
+// ═══════════════════════════════
 function buildCorridor() {
   const track = document.getElementById('corridorTrack');
   track.innerHTML = '';
 
   items.forEach((item, i) => {
-    const card = document.createElement('div');
-    card.className = 'item-card';
-    card.id = `card-${i}`;
-    card.dataset.index = i;
+    const slot = document.createElement('div');
+    slot.className = 'item-slot';
+    slot.id = `slot-${i}`;
 
-    const zPos = i * SPACING;
+    // CTA html
+    const ctaHTML = item.actions.map(a => `
+      <div>
+        <button class="cta-btn cta-${a.type}">${a.label}</button>
+        ${a.note ? `<div class="cta-note">${a.note}</div>` : ''}
+      </div>`).join('');
 
-    card.style.cssText = `
-      transform: translateZ(${zPos}px) translateX(-50%);
-      left: 50%;
-      top: 50%;
-      margin-top: -160px;
-    `;
+    slot.innerHTML = `
+      <!-- LEFT: CTA -->
+      <div class="side-cta">${ctaHTML}</div>
 
-    card.innerHTML = `
-      <div class="pedestal">
-        <div class="pedestal-top">
-          <div class="item-glow"></div>
-          <div class="item-placeholder">
-            <div class="item-placeholder-icon">${item.icon}</div>
-            <div class="item-placeholder-label">Image Placeholder</div>
-          </div>
+      <!-- CENTER: pillar -->
+      <div class="pillar-wrap">
+        <!-- Floating torus above capital -->
+        <div class="float-object">
+          <canvas class="float-canvas" id="canvas-${i}"></canvas>
         </div>
-        <div class="pedestal-shaft"></div>
-        <div class="pedestal-base"></div>
+        <div class="capital-glow"></div>
+        <div class="capital">
+          <div class="cap-slab"></div>
+          <div class="cap-ogee"></div>
+          <div class="cap-shelf"></div>
+          <div class="cap-neck"></div>
+        </div>
+        <div class="column-shaft"></div>
+        <div class="item-label">
+          <div class="item-number">JC — ${String(item.id).padStart(2,'0')}</div>
+          <div class="item-name">${item.name}</div>
+          <div class="item-tags">${item.tags.map(t=>`<span class="tag ${t.cls}">${t.label}</span>`).join('')}</div>
+        </div>
       </div>
-      <div class="item-label">
-        <div class="item-number">JC — ${String(item.id).padStart(2,'0')}</div>
-        <div class="item-name">${item.name}</div>
-        <div class="item-tags">${item.tags.map(t => `<span class="tag ${t.cls}">${t.label}</span>`).join('')}</div>
-      </div>
-    `;
 
-    card.addEventListener('click', () => {
+      <!-- RIGHT: video -->
+      <div class="side-video">
+        <div class="video-play-icon">▶</div>
+        <div class="video-label">${item.video}<br>soon</div>
+      </div>`;
+
+    slot.addEventListener('click', e => {
+      if (e.target.closest('.float-canvas')) return; // don't trigger nav on torus drag
       if (i === currentIndex) openDetail(i);
-      else navigate(i - currentIndex);
+      else navigate(i - currentIndex > 0 ? 1 : -1);
     });
 
-    track.appendChild(card);
+    track.appendChild(slot);
   });
 
-  updateCorridorPosition(false);
+  updateView(false);
   buildDots();
+
+  // Init torus on all canvases after DOM paint
+  setTimeout(() => {
+    items.forEach((_, i) => {
+      const c = document.getElementById(`canvas-${i}`);
+      if (c) buildTorus(c, i);
+    });
+  }, 150);
 }
 
-function updateCorridorPosition(animate = true) {
+// ═══════════════════════════════
+// UPDATE VIEW
+// ═══════════════════════════════
+function updateView(animate = true) {
   const track = document.getElementById('corridorTrack');
-  const targetZ = -(currentIndex * SPACING);
+  track.style.transition = animate ? 'transform 0.62s cubic-bezier(0.4,0,0.2,1)' : 'none';
+  track.style.transform  = `translateZ(${-(currentIndex * SPACING)}px)`;
 
-  if (animate) {
-    track.style.transition = 'transform 0.65s cubic-bezier(0.4,0,0.2,1)';
-  } else {
-    track.style.transition = 'none';
-  }
-
-  track.style.transform = `translateZ(${targetZ}px)`;
-
-  // Update card states
   items.forEach((_, i) => {
-    const card = document.getElementById(`card-${i}`);
-    if (!card) return;
-    const dist = i - currentIndex;
-    const absDist = Math.abs(dist);
+    const slot = document.getElementById(`slot-${i}`);
+    if (!slot) return;
 
-    card.classList.toggle('focused', dist === 0);
+    let dist = i - currentIndex;
+    if (dist >  Math.floor(TOTAL/2)) dist -= TOTAL;
+    if (dist < -Math.floor(TOTAL/2)) dist += TOTAL;
 
-    // Scale & opacity based on distance
-    let opacity, scale, blur;
-    if (dist === 0) {
-      opacity = 1; scale = 1; blur = 0;
-    } else if (absDist === 1) {
-      opacity = 0.55; scale = 0.72; blur = 1;
-    } else if (absDist === 2) {
-      opacity = 0.28; scale = 0.5; blur = 2;
-    } else {
-      opacity = 0.1; scale = 0.32; blur = 3;
-    }
+    const focused = dist === 0;
+    slot.classList.toggle('focused', focused);
 
-    card.style.opacity = opacity;
-    card.style.filter = blur > 0 ? `blur(${blur}px)` : 'none';
-    card.style.pointerEvents = dist === 0 ? 'all' : 'auto';
+    let scale, opacity, blur, zIdx;
+    if      (dist === 0)  { scale=1.18; opacity=1;    blur=0;   zIdx=10; }
+    else if (dist === 1)  { scale=0.72; opacity=0.28; blur=2;   zIdx=5;  }
+    else if (dist === 2)  { scale=0.52; opacity=0.09; blur=3.5; zIdx=3;  }
+    else if (dist < 0)    { scale=0.48; opacity=0.03; blur=5;   zIdx=1;  }
+    else                  { scale=0.45; opacity=0.03; blur=5;   zIdx=2;  }
+
+    // Base Z position + translate to center (translateX -50% handled by left:50% on slot)
+    slot.style.transform    = `translateX(-50%) translateZ(${i * SPACING}px) scale(${scale})`;
+    slot.style.opacity      = opacity;
+    slot.style.filter       = blur > 0 ? `blur(${blur}px)` : 'none';
+    slot.style.zIndex       = zIdx;
+    slot.style.pointerEvents = focused ? 'all' : 'none';
   });
 
-  // Update counter
   document.getElementById('counter-text').textContent =
-    `${String(currentIndex + 1).padStart(2,'0')} / ${String(items.length).padStart(2,'0')}`;
+    `${String(currentIndex+1).padStart(2,'0')} / ${String(TOTAL).padStart(2,'0')}`;
 
-  // Update dots
-  document.querySelectorAll('.counter-dot').forEach((dot, i) => {
-    dot.classList.toggle('active', i === currentIndex);
-  });
-
-  // Update arrows
-  document.getElementById('nav-prev').classList.toggle('disabled', currentIndex === 0);
-  document.getElementById('nav-next').classList.toggle('disabled', currentIndex === items.length - 1);
+  document.querySelectorAll('.counter-dot').forEach((d,i)=>d.classList.toggle('active',i===currentIndex));
 }
 
 function buildDots() {
-  const container = document.getElementById('counterDots');
-  container.innerHTML = '';
-  items.forEach((_, i) => {
-    const dot = document.createElement('div');
-    dot.className = 'counter-dot' + (i === 0 ? ' active' : '');
-    dot.onclick = () => { currentIndex = i; updateCorridorPosition(); };
-    container.appendChild(dot);
+  const c = document.getElementById('counterDots');
+  c.innerHTML = '';
+  items.forEach((_,i)=>{
+    const d=document.createElement('div');
+    d.className='counter-dot'+(i===0?' active':'');
+    d.onclick=()=>{currentIndex=i;updateView();};
+    c.appendChild(d);
   });
 }
 
 function navigate(delta) {
-  const next = Math.max(0, Math.min(items.length - 1, currentIndex + delta));
-  if (next === currentIndex) return;
-  currentIndex = next;
-  updateCorridorPosition();
+  currentIndex = ((currentIndex + delta) % TOTAL + TOTAL) % TOTAL;
+  updateView();
 }
 
-// ══════════════════════════════════════════
-// GRID VIEW
-// ══════════════════════════════════════════
+// ═══════════════════════════════
+// GRID
+// ═══════════════════════════════
 function buildGrid() {
   const list = document.getElementById('gridList');
   list.innerHTML = '';
-  items.forEach((item, i) => {
-    const row = document.createElement('div');
-    row.className = 'grid-item';
-    row.innerHTML = `
-      <div class="grid-item-num">JC-${String(item.id).padStart(2,'0')}</div>
+  items.forEach((item,i)=>{
+    const row=document.createElement('div');
+    row.className='grid-item';
+    row.innerHTML=`
+      <div class="grid-num">JC-${String(item.id).padStart(2,'0')}</div>
       <div class="grid-thumb">${item.icon}</div>
+      <div class="grid-vid">▶</div>
       <div class="grid-info">
         <div class="grid-name">${item.name}</div>
-        <div class="grid-tags">${item.tags.map(t => `<span class="tag ${t.cls}">${t.label}</span>`).join('')}</div>
+        <div class="grid-tags">${item.tags.map(t=>`<span class="tag ${t.cls}">${t.label}</span>`).join('')}</div>
       </div>
-      <div class="grid-avail">${item.availability}</div>
-    `;
-    row.addEventListener('click', () => openDetail(i));
+      <div class="grid-avail">${item.availability}</div>`;
+    row.addEventListener('click',()=>openDetail(i));
     list.appendChild(row);
   });
 }
 
-// ══════════════════════════════════════════
-// DETAIL PANEL
-// ══════════════════════════════════════════
+// ═══════════════════════════════
+// DETAIL
+// ═══════════════════════════════
 function openDetail(idx) {
-  const item = items[idx];
-  document.getElementById('dNum').textContent = `JC — ${String(item.id).padStart(2,'0')}`;
-  document.getElementById('dTitle').textContent = item.name;
-
-  document.getElementById('dTags').innerHTML =
-    item.tags.map(t => `<span class="tag ${t.cls}">${t.label}</span>`).join('');
-
-  document.getElementById('dVideo').innerHTML = `
-    <span style="font-size:1.6rem;opacity:0.4;">▶</span>
-    <span>${item.video} — Coming Soon</span>
-  `;
-
-  document.getElementById('dDesc').textContent = item.desc;
-
-  document.getElementById('dSpecs').innerHTML = item.specs.map(s => `
-    <div class="spec-row">
-      <span class="spec-label">${s.label}</span>
-      <span class="spec-value">${s.value}</span>
-    </div>
-  `).join('');
-
-  document.getElementById('dActions').innerHTML = item.actions.map(a => `
-    <button class="action-btn action-${a.type}">${a.label}</button>
-  `).join('');
-
+  const item=items[idx];
+  document.getElementById('dNum').textContent   =`JC — ${String(item.id).padStart(2,'0')}`;
+  document.getElementById('dTitle').textContent =item.name;
+  document.getElementById('dTags').innerHTML    =item.tags.map(t=>`<span class="tag ${t.cls}">${t.label}</span>`).join('');
+  document.getElementById('dVideo').innerHTML   =`<span style="font-size:1rem;opacity:0.28;">▶</span><span>${item.video}</span><span>Soon</span>`;
+  document.getElementById('dDesc').textContent  =item.desc;
+  document.getElementById('dSpecs').innerHTML   =item.specs.map(s=>`<div class="spec-row"><span class="spec-label">${s.label}</span><span class="spec-value">${s.value}</span></div>`).join('');
+  document.getElementById('dActions').innerHTML =item.actions.map(a=>`<div class="action-wrap"><button class="action-btn action-${a.type}">${a.label}</button>${a.note?`<span class="action-note">${a.note}</span>`:''}</div>`).join('');
   document.getElementById('detailPanel').classList.add('open');
 }
+function closeDetail(){document.getElementById('detailPanel').classList.remove('open');}
+function handlePanelClick(e){if(e.target===document.getElementById('detailPanel'))closeDetail();}
 
-function closeDetail() {
-  document.getElementById('detailPanel').classList.remove('open');
+// ═══════════════════════════════
+// VIEW SWITCH
+// ═══════════════════════════════
+function setView(v){
+  currentView=v;
+  document.getElementById('corridor-view').style.display=v==='walk'?'block':'none';
+  document.getElementById('grid-view').classList.toggle('active',v==='grid');
+  document.getElementById('btn-walk').classList.toggle('active',v==='walk');
+  document.getElementById('btn-grid').classList.toggle('active',v==='grid');
 }
 
-function handlePanelClick(e) {
-  if (e.target === document.getElementById('detailPanel')) closeDetail();
-}
-
-// ══════════════════════════════════════════
-// VIEW SWITCHING
-// ══════════════════════════════════════════
-function setView(view) {
-  currentView = view;
-  document.getElementById('corridor-view').style.display = view === 'walk' ? 'block' : 'none';
-  document.getElementById('grid-view').classList.toggle('active', view === 'grid');
-  document.getElementById('btn-walk').classList.toggle('active', view === 'walk');
-  document.getElementById('btn-grid').classList.toggle('active', view === 'grid');
-}
-
-// ══════════════════════════════════════════
-// KEYBOARD + SWIPE
-// ══════════════════════════════════════════
-document.addEventListener('keydown', e => {
-  if (document.getElementById('detailPanel').classList.contains('open')) {
-    if (e.key === 'Escape') closeDetail();
-    return;
-  }
-  if (e.key === 'ArrowRight' || e.key === 'ArrowDown') navigate(1);
-  if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') navigate(-1);
-  if (e.key === 'Enter' || e.key === ' ') openDetail(currentIndex);
+// ═══════════════════════════════
+// INPUT
+// ═══════════════════════════════
+document.addEventListener('keydown',e=>{
+  if(document.getElementById('detailPanel').classList.contains('open')){if(e.key==='Escape')closeDetail();return;}
+  if(e.key==='ArrowUp'||e.key==='ArrowRight')navigate(1);
+  if(e.key==='ArrowDown'||e.key==='ArrowLeft')navigate(-1);
+  if(e.key==='Enter'||e.key===' ')openDetail(currentIndex);
 });
 
-// Touch swipe
-let touchStartX = 0;
-document.addEventListener('touchstart', e => { touchStartX = e.touches[0].clientX; }, { passive: true });
-document.addEventListener('touchend', e => {
-  if (document.getElementById('detailPanel').classList.contains('open')) return;
-  const dx = touchStartX - e.changedTouches[0].clientX;
-  if (Math.abs(dx) > 40) navigate(dx > 0 ? 1 : -1);
-}, { passive: true });
+let tX=0,tY=0;
+document.addEventListener('touchstart',e=>{tX=e.touches[0].clientX;tY=e.touches[0].clientY;},{passive:true});
+document.addEventListener('touchend',e=>{
+  if(document.getElementById('detailPanel').classList.contains('open'))return;
+  const dx=tX-e.changedTouches[0].clientX,dy=tY-e.changedTouches[0].clientY;
+  if(Math.abs(dy)>Math.abs(dx)&&Math.abs(dy)>36)navigate(dy>0?1:-1);
+},{passive:true});
 
-// ══════════════════════════════════════════
+// ═══════════════════════════════
 // INIT
-// ══════════════════════════════════════════
+// ═══════════════════════════════
 buildCorridor();
 buildGrid();
 
-// Show keyboard hint briefly
-setTimeout(() => {
-  const hint = document.getElementById('keyHint');
-  hint.classList.add('visible');
-  setTimeout(() => hint.classList.remove('visible'), 3500);
-}, 800);
+setTimeout(()=>{
+  const h=document.getElementById('keyHint');
+  h.classList.add('visible');
+  setTimeout(()=>h.classList.remove('visible'),3500);
+},900);
 </script>
-
 </body>
 </html>
