@@ -1,10 +1,10 @@
-<!-- LAB v9.4 -->
+<!-- LAB v9.6 -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
-<title>The Lab — Freejoy Club (v9.4)</title>
+<title>The Lab — Freejoy Club (v9.6)</title>
 <link rel="icon" type="image/png" href="favicon.png"/>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Bebas+Neue&family=DM+Sans:wght@300;400;500&display=swap');
@@ -13,6 +13,7 @@
   --bg:#0d0a07;
   --warm1:#1a1208; --warm2:#251a0a;
   --edison:#c8781a; --edison-dim:#8b5012; --filament:#f5d080;
+  --dark-brown:#3a1f08; /* replaces filament everywhere except THE LAB wordmark */
   --cream:#f0e0c0; --cream-dim:#a08060;
   --metal:#4a3f32; --metal-light:#6b5c4a;
   --glow:rgba(200,120,26,0.18); --glow-strong:rgba(200,120,26,0.5);
@@ -66,7 +67,7 @@ html,body{
 .topbar-right{display:flex;align-items:center;gap:10px;pointer-events:all;}
 .view-toggle{display:flex;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:30px;overflow:hidden;}
 .view-btn{font-family:'Share Tech Mono',monospace;font-size:0.72rem;letter-spacing:2px;padding:6px 15px;background:transparent;color:var(--cream-dim);border:none;cursor:pointer;transition:all 0.25s;text-transform:uppercase;}
-.view-btn.active{background:var(--edison-dim);color:var(--filament);text-shadow:0 0 8px var(--edison);}
+.view-btn.active{background:var(--edison-dim);color:var(--dark-brown);text-shadow:0 0 8px var(--edison);}
 
 /* Subtle shine sweep on toggle buttons after a few seconds */
 @keyframes btnShine {
@@ -92,12 +93,12 @@ html,body{
 .string-wrap.sway1{animation:stringSway 3s ease-in-out infinite;}
 .string-wrap.sway2{animation:stringSway2 4s ease-in-out infinite;}
 .string-line{width:1px;height:clamp(50px,8vh,90px);background:linear-gradient(to bottom,rgba(107,92,74,0.7),rgba(107,92,74,0.3));}
-.bulb-outer{width:14px;height:18px;display:flex;flex-direction:column;align-items:center;}
-.bulb-cap{width:8px;height:4px;background:rgba(107,92,74,0.8);border-radius:1px 1px 0 0;}
-.bulb-body{width:14px;height:14px;border-radius:50% 50% 40% 40%;background:radial-gradient(ellipse at 40% 35%,var(--filament),var(--edison) 60%,var(--edison-dim) 100%);}
+.bulb-outer{width:9px;height:12px;display:flex;flex-direction:column;align-items:center;}
+.bulb-cap{width:5px;height:3px;background:rgba(107,92,74,0.8);border-radius:1px 1px 0 0;}
+.bulb-body{width:9px;height:9px;border-radius:50% 50% 40% 40%;background:radial-gradient(ellipse at 40% 35%,var(--filament),var(--edison) 60%,var(--edison-dim) 100%);}
 .bulb-body.flicker1{animation:bulbFlicker 5s ease-in-out infinite;}
 .bulb-body.flicker2{animation:bulbFlicker2 7s ease-in-out infinite;}
-.bulb-halo{width:60px;height:30px;background:radial-gradient(ellipse at 50% 0%,rgba(200,120,26,0.12),transparent 70%);margin-top:2px;}
+.bulb-halo{width:36px;height:18px;background:radial-gradient(ellipse at 50% 0%,rgba(200,120,26,0.1),transparent 70%);margin-top:2px;}
 
 /* CSS donut placeholder for clone slots — avoids WebGL context limit */
 .donut-placeholder{
@@ -109,68 +110,75 @@ html,body{
 }
 #gallery-view{position:fixed;inset:0;overflow:hidden;}
 
-/* Perspective container — slight top-down */
+/* Perspective container — pointer-events:none so paintings beneath are clickable */
 .gallery-stage{
   position:absolute;inset:0;
   perspective:900px;
   perspective-origin:50% 30%;
   transform-style:preserve-3d;
-  z-index:3; /* above paintings-layer z-index:1 */
+  z-index:3;
+  pointer-events:none; /* pass through to paintings layer */
 }
 
-/* ── PAINTINGS LAYER — flat 2D, z-index behind pillars, clicks fully work ── */
+/* ── PAINTINGS LAYER — z-index:2, visually behind pillars (z-index:3 stage), fully clickable ── */
 .paintings-layer{
   position:absolute;inset:0;
-  z-index:1;
-  pointer-events:none;
+  z-index:2;
+  pointer-events:none; /* layer itself transparent — paintings re-enable */
   overflow:hidden;
 }
 
-/* Individual painting */
+/* Individual painting — higher, slightly blurred, adaptive */
 .painting{
   position:absolute;
-  top:28%;
+  top:12%; /* higher on the wall */
   cursor:pointer;
   pointer-events:all;
-  opacity:0.82;
-  transition:opacity 0.3s, transform 0.3s;
+  opacity:0.78;
+  filter:blur(0.6px);
+  transition:opacity 0.3s, transform 0.3s, filter 0.3s;
   transform:translateX(-50%);
 }
-.painting:hover{ opacity:1; transform:translateX(-50%) translateY(-3px); }
+.painting:hover{ opacity:1; filter:blur(0px); transform:translateX(-50%) translateY(-3px); }
 
 .frame-outer{
-  border:4px solid #5a4a32;
+  border:3px solid #5a4a32;
   border-radius:2px;
-  padding:5px;
+  padding:4px;
   background:#3a2e1e;
-  box-shadow:
-    4px 4px 12px rgba(0,0,0,0.55),
-    -1px -1px 0px rgba(255,255,255,0.08),
-    inset 0 0 8px rgba(0,0,0,0.3);
+  box-shadow:3px 3px 10px rgba(0,0,0,0.5), inset 0 0 6px rgba(0,0,0,0.3);
+  display:inline-block; /* adaptive to content */
 }
-/* Inner mount */
 .frame-mount{
-  padding:6px;
+  padding:5px;
   background:#e8d8b8;
   border:1px solid #c8b890;
+  display:inline-block;
 }
+/* frame-inner is now adaptive — no fixed size, wraps image or icon+label */
 .frame-inner{
-  width:clamp(72px,8.5vw,120px);
-  height:clamp(95px,11vw,160px);
-  background:linear-gradient(160deg,#1a1208,#0d0a07);
   display:flex;flex-direction:column;
   align-items:center;justify-content:center;
-  gap:8px;
+  gap:6px;
   position:relative;overflow:hidden;
+  min-width:clamp(60px,7vw,100px);
+  min-height:clamp(80px,9vw,130px);
+}
+.frame-inner img{
+  display:block;
+  width:clamp(70px,9vw,130px);
+  height:auto;
+  object-fit:cover;
 }
 .frame-inner::before{
   content:'';position:absolute;inset:0;
-  background:radial-gradient(ellipse at 40% 30%,rgba(200,120,26,0.08),transparent 65%);
+  background:radial-gradient(ellipse at 40% 30%,rgba(200,120,26,0.06),transparent 65%);
+  pointer-events:none;
 }
 .frame-label{
   font-family:'Bebas Neue',sans-serif;
   font-size:clamp(0.5rem,1vw,0.8rem);
-  letter-spacing:3px;color:var(--filament);
+  letter-spacing:3px;color:var(--dark-brown);
   text-align:center;padding:0 5px;
   text-shadow:0 0 8px var(--edison-dim);
   position:relative;z-index:1;
@@ -194,9 +202,9 @@ html,body{
   position:absolute;
   width:100%;height:100%;
   transform-style:preserve-3d;
-  /* Track slides horizontally — JS sets translateX */
   will-change:transform;
   z-index:2;
+  pointer-events:none; /* individual slots re-enable via .focused */
 }
 
 /* ── PILLAR SLOT ── */
@@ -251,7 +259,7 @@ html,body{
 /* Item label — clickable */
 .item-label{margin-top:8px;text-align:center;padding:0 5px;width:100%;cursor:pointer;}
 .item-number{font-family:'Share Tech Mono',monospace;font-size:0.5rem;letter-spacing:3px;color:var(--edison-dim);text-transform:uppercase;margin-bottom:3px;}
-.item-name{font-family:'Bebas Neue',sans-serif;font-size:clamp(0.85rem,1.4vw,1.2rem);letter-spacing:3px;color:var(--filament);text-shadow:0 0 8px var(--edison-dim);line-height:1.1;}
+.item-name{font-family:'Bebas Neue',sans-serif;font-size:clamp(0.85rem,1.4vw,1.2rem);letter-spacing:3px;color:var(--dark-brown);text-shadow:0 0 8px var(--edison-dim);line-height:1.1;}
 /* Capital — also clickable */
 .capital{width:100%;display:flex;flex-direction:column;align-items:center;cursor:pointer;}
 .item-tags{display:flex;gap:4px;justify-content:center;margin-top:5px;flex-wrap:wrap;}
@@ -268,10 +276,10 @@ html,body{
 }
 .pillar-slot.focused .item-cta{opacity:1;}
 .cta-btn{font-family:'Share Tech Mono',monospace;font-size:clamp(0.36rem,0.55vw,0.5rem);letter-spacing:1.2px;text-transform:uppercase;padding:5px 8px;border-radius:3px;cursor:pointer;border:none;transition:all 0.2s;white-space:nowrap;}
-.cta-primary{background:var(--edison-dim);color:var(--filament);box-shadow:0 0 8px var(--glow);}
+.cta-primary{background:var(--edison-dim);color:var(--dark-brown);box-shadow:0 0 8px var(--glow);}
 .cta-primary:hover{background:var(--edison);}
 .cta-secondary{background:transparent;border:1px solid var(--metal-light)!important;color:var(--cream-dim);}
-.cta-secondary:hover{border-color:var(--edison-dim)!important;color:var(--filament);}
+.cta-secondary:hover{border-color:var(--edison-dim)!important;color:var(--dark-brown);}
 .cta-note{font-family:'Share Tech Mono',monospace;font-size:0.38rem;letter-spacing:1px;color:var(--cream-dim);text-transform:uppercase;align-self:center;}
 
 /* Video pill — top right of focused item */
@@ -313,7 +321,7 @@ html,body{
 /* ── BOTTOM NAV ── */
 .nav-cluster{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);display:flex;background:rgba(200,185,150,0.75);backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,0.3);border-radius:100px;padding:7px 14px;z-index:200;white-space:nowrap;}
 .nav-cluster a{font-family:'Share Tech Mono',monospace;text-decoration:none;color:var(--cream-dim);padding:6px 10px;font-size:0.56rem;text-transform:uppercase;letter-spacing:1.5px;transition:all 0.25s;}
-.nav-cluster a:hover{color:var(--filament);text-shadow:0 0 10px var(--edison);}
+.nav-cluster a:hover{color:var(--dark-brown);text-shadow:0 0 10px var(--edison);}
 .nav-divider{width:1px;height:12px;background:rgba(255,255,255,0.1);align-self:center;margin:0 3px;}
 
 /* ── FLOOR / CEILING ── */
@@ -326,9 +334,9 @@ html,body{
 .detail-box{width:100%;max-width:560px;max-height:90vh;overflow-y:auto;background:linear-gradient(160deg,#ede0c4,#e0ceaa);border:1px solid rgba(200,170,110,0.5);border-radius:12px;padding:26px;position:relative;box-shadow:0 0 40px rgba(120,90,30,0.25),0 0 20px var(--glow);transform:translateY(14px);transition:transform 0.3s ease;}
 .detail-panel.open .detail-box{transform:translateY(0);}
 .detail-close{position:absolute;top:14px;right:14px;background:transparent;border:1px solid var(--metal-light);color:var(--cream-dim);width:28px;height:28px;border-radius:50%;cursor:pointer;font-size:0.85rem;display:flex;align-items:center;justify-content:center;transition:all 0.2s;}
-.detail-close:hover{border-color:var(--edison);color:var(--filament);}
+.detail-close:hover{border-color:var(--edison);color:var(--dark-brown);}
 .detail-num{font-family:'Share Tech Mono',monospace;font-size:0.54rem;letter-spacing:3px;color:var(--edison-dim);margin-bottom:4px;text-transform:uppercase;}
-.detail-title{font-family:'Bebas Neue',sans-serif;font-size:1.9rem;letter-spacing:4px;color:var(--filament);text-shadow:0 0 14px var(--edison-dim);line-height:1;margin-bottom:10px;}
+.detail-title{font-family:'Bebas Neue',sans-serif;font-size:1.9rem;letter-spacing:4px;color:var(--dark-brown);text-shadow:0 0 14px var(--edison-dim);line-height:1;margin-bottom:10px;}
 .detail-tags{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:14px;}
 .detail-top{display:flex;gap:14px;margin-bottom:16px;align-items:flex-start;}
 .detail-torus-wrap{width:clamp(100px,18%,140px);flex-shrink:0;aspect-ratio:1/1;background:radial-gradient(ellipse at 40% 30%,rgba(200,120,26,0.06),transparent 70%);border:1px solid rgba(107,92,74,0.3);border-radius:6px;overflow:hidden;}
@@ -339,14 +347,14 @@ html,body{
 .detail-specs{border-top:1px solid rgba(255,255,255,0.06);padding-top:13px;margin-bottom:16px;}
 .spec-row{display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-bottom:1px solid rgba(255,255,255,0.04);font-size:0.8rem;}
 .spec-label{font-family:'Share Tech Mono',monospace;font-size:0.52rem;letter-spacing:2px;color:var(--cream-dim);text-transform:uppercase;}
-.spec-value{color:var(--filament);}
+.spec-value{color:var(--dark-brown);}
 .detail-actions{display:flex;gap:10px;flex-wrap:wrap;align-items:flex-start;}
 .action-wrap{display:flex;flex-direction:column;align-items:center;gap:3px;}
 .action-btn{font-family:'Share Tech Mono',monospace;font-size:0.55rem;letter-spacing:2px;text-transform:uppercase;padding:9px 13px;border-radius:4px;cursor:pointer;border:none;transition:all 0.2s;display:inline-flex;align-items:center;gap:5px;}
-.action-primary{background:var(--edison-dim);color:var(--filament);box-shadow:0 0 12px var(--glow);}
+.action-primary{background:var(--edison-dim);color:var(--dark-brown);box-shadow:0 0 12px var(--glow);}
 .action-primary:hover{background:var(--edison);}
 .action-secondary{background:transparent;border:1px solid var(--metal-light)!important;color:var(--cream-dim);}
-.action-secondary:hover{border-color:var(--edison-dim)!important;color:var(--filament);}
+.action-secondary:hover{border-color:var(--edison-dim)!important;color:var(--dark-brown);}
 .action-note{font-family:'Share Tech Mono',monospace;font-size:0.48rem;letter-spacing:1.5px;color:var(--cream-dim);text-transform:uppercase;}
 
 /* Painting popup */
@@ -355,7 +363,7 @@ html,body{
 .painting-box{width:100%;max-width:420px;background:linear-gradient(160deg,#ede0c4,#e0ceaa);border:1px solid rgba(200,170,110,0.4);border-radius:12px;padding:24px;position:relative;box-shadow:0 0 40px rgba(120,90,30,0.2);transform:translateY(14px);transition:transform 0.3s ease;}
 .painting-panel.open .painting-box{transform:translateY(0);}
 .painting-close{position:absolute;top:12px;right:12px;background:transparent;border:1px solid var(--metal-light);color:var(--cream-dim);width:26px;height:26px;border-radius:50%;cursor:pointer;font-size:0.8rem;display:flex;align-items:center;justify-content:center;transition:all 0.2s;}
-.painting-close:hover{border-color:var(--edison);color:var(--filament);}
+.painting-close:hover{border-color:var(--edison);color:var(--dark-brown);}
 .painting-popup-icon{font-size:2.2rem;margin-bottom:10px;}
 .painting-popup-title{font-family:'Bebas Neue',sans-serif;font-size:1.6rem;letter-spacing:4px;color:var(--warm1);margin-bottom:10px;}
 .painting-popup-desc{font-size:0.85rem;line-height:1.7;color:var(--edison-dim);font-weight:300;margin-bottom:18px;}
@@ -363,7 +371,7 @@ html,body{
   display:inline-block;
   font-family:'Share Tech Mono',monospace;font-size:0.6rem;letter-spacing:2px;text-transform:uppercase;
   padding:10px 18px;border-radius:4px;
-  background:var(--edison-dim);color:var(--filament);
+  background:var(--edison-dim);color:var(--dark-brown);
   text-decoration:none;
   box-shadow:0 0 12px var(--glow);
   transition:all 0.2s;
@@ -516,12 +524,12 @@ html,body{
   <!-- NAV arrows — horizontal triangles -->
   <button class="nav-arrow" id="nav-prev" onclick="navigate(-1)">
     <svg width="20" height="36" viewBox="0 0 20 36" fill="none">
-      <polygon points="20,0 0,18 20,36" fill="rgba(245,208,128,0.42)"/>
+      <polygon points="20,0 0,18 20,36" fill="rgba(255,255,255,0.65)"/>
     </svg>
   </button>
   <button class="nav-arrow" id="nav-next" onclick="navigate(1)">
     <svg width="20" height="36" viewBox="0 0 20 36" fill="none">
-      <polygon points="0,0 20,18 0,36" fill="rgba(245,208,128,0.42)"/>
+      <polygon points="0,0 20,18 0,36" fill="rgba(255,255,255,0.65)"/>
     </svg>
   </button>
 
@@ -832,22 +840,27 @@ function buildWall() {
   layer.innerHTML = '';
 
   paintingDefs.forEach((def, pi) => {
+    const p = def.data;
     const el = document.createElement('div');
     el.className = 'painting';
     el.id = `painting-${pi}`;
+
+    // Game painting uses real image, others use icon + label
+    const isGame = p.id === 'p2';
+    const frameContent = isGame
+      ? `<img src="/lab/gamepaint.jpg" alt="${p.label}" loading="lazy">`
+      : `<div class="frame-icon">${p.icon}</div><div class="frame-label">${p.label}</div>`;
+
     el.innerHTML = `
       <div class="painting-light"></div>
       <div class="frame-outer">
         <div class="frame-mount">
-          <div class="frame-inner">
-            <div class="frame-icon">${def.data.icon}</div>
-            <div class="frame-label">${def.data.label}</div>
-          </div>
+          <div class="frame-inner">${frameContent}</div>
         </div>
       </div>`;
     el.addEventListener('click', e => {
       e.stopPropagation();
-      openPainting(def.data);
+      openPainting(p);
     });
     layer.appendChild(el);
   });
