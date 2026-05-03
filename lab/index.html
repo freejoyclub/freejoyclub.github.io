@@ -1,10 +1,10 @@
-<!-- LAB v10.1 -->
+<!-- LAB v10.9 -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
-<title>Jesse's Lab — Freejoy Club (v10.1)</title>
+<title>Jesse's Lab — Freejoy Club (v10.9)</title>
 <link rel="icon" type="image/png" href="favicon.png"/>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Bebas+Neue&family=DM+Sans:wght@300;400;500&display=swap');
@@ -65,20 +65,33 @@ html,body{
 .lab-wordmark{font-family:'Bebas Neue',sans-serif;font-size:1.5rem;letter-spacing:5px;color:var(--filament);animation:edisonFlicker 7s ease-in-out infinite;line-height:1;}
 .lab-sub{font-family:'Share Tech Mono',monospace;font-size:0.54rem;letter-spacing:3px;color:var(--cream-dim);text-transform:uppercase;margin-top:-2px;}
 .topbar-right{display:flex;align-items:center;gap:10px;pointer-events:all;}
-.view-toggle{display:flex;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:30px;overflow:hidden;}
+.view-toggle{display:flex;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:30px;overflow:hidden;box-shadow:0 0 16px rgba(255,255,255,0.28), 0 0 6px rgba(255,255,255,0.15);}
+
+/* Persistent pulsing hint below toggle — JS controls visibility */
+.toggle-hint{
+  position:fixed;top:62px;right:20px;
+  font-family:'Share Tech Mono',monospace;
+  font-size:0.5rem;letter-spacing:1.8px;
+  color:rgba(80,50,20,0.8);text-transform:uppercase;
+  text-align:right;line-height:1.7;
+  z-index:195;pointer-events:none;
+  opacity:0;
+  transition:opacity 0.6s ease;
+  text-shadow:0 0 8px rgba(255,255,255,0.7), 0 1px 3px rgba(255,255,255,0.5);
+}
 .view-btn{font-family:'Share Tech Mono',monospace;font-size:0.72rem;letter-spacing:2px;padding:6px 15px;background:transparent;color:var(--cream-dim);border:none;cursor:pointer;transition:all 0.25s;text-transform:uppercase;}
 .view-btn.active{background:var(--edison-dim);color:var(--dark-brown);text-shadow:0 0 8px var(--edison);}
 
-/* Subtle shine sweep on toggle buttons after a few seconds */
+/* Subtle shine sweep on toggle buttons */
 @keyframes btnShine {
   0%   { background-position: -200% center; }
   100% { background-position: 200% center; }
 }
-.view-toggle.hint-shine .view-btn.active {
+.view-toggle.hint-shine .view-btn {
   background-image: linear-gradient(
     105deg,
     transparent 40%,
-    rgba(255,240,180,0.55) 50%,
+    rgba(255,240,180,0.5) 50%,
     transparent 60%
   );
   background-size: 200% 100%;
@@ -126,6 +139,25 @@ html,body{
   z-index:2;
   pointer-events:none; /* layer itself transparent — paintings re-enable */
   overflow:hidden;
+}
+
+/* Label paper above painting */
+.painting-label-paper{
+  text-align:center;
+  margin-bottom:5px;
+  background:#f0e4c8;
+  border:1px solid #c8a870;
+  border-radius:2px;
+  padding:3px 10px 4px;
+  box-shadow:1px 1px 4px rgba(0,0,0,0.18);
+  display:inline-block;
+}
+.painting-label-text{
+  font-family:'Share Tech Mono',monospace;
+  font-size:clamp(0.42rem,0.7vw,0.58rem);
+  letter-spacing:2.5px;
+  color:#5a3a10;
+  text-transform:uppercase;
 }
 
 /* Individual painting — higher, slightly blurred, adaptive */
@@ -256,49 +288,65 @@ html,body{
   mask-image:linear-gradient(to bottom,rgba(0,0,0,1) 0%,rgba(0,0,0,0) 100%);
 }
 
-/* Item label — clickable */
-.item-label{margin-top:8px;text-align:center;padding:0 5px;width:100%;cursor:pointer;}
-.item-number{font-family:'Share Tech Mono',monospace;font-size:0.5rem;letter-spacing:3px;color:var(--edison-dim);text-transform:uppercase;margin-bottom:3px;}
-.item-name{font-family:'Bebas Neue',sans-serif;font-size:clamp(0.85rem,1.4vw,1.2rem);letter-spacing:3px;color:var(--dark-brown);text-shadow:0 0 8px var(--edison-dim);line-height:1.1;}
 /* Capital — also clickable */
 .capital{width:100%;display:flex;flex-direction:column;align-items:center;cursor:pointer;}
-.item-tags{display:flex;gap:4px;justify-content:center;margin-top:5px;flex-wrap:wrap;}
-.tag{font-family:'Share Tech Mono',monospace;font-size:0.42rem;letter-spacing:1.5px;padding:2px 5px;border-radius:2px;text-transform:uppercase;}
-.tag-music{background:var(--tag-music);color:var(--tag-music-text);}
-.tag-elec{background:var(--tag-elec);color:var(--tag-elec-text);}
-.tag-print{background:var(--tag-print);color:var(--tag-print-text);}
+.cap-shelf{
+  width:90%;height:clamp(14px,2vw,26px);
+  background:linear-gradient(160deg,#ede4d0,#e4d8c0);
+  border:1px solid rgba(200,185,155,0.6);border-bottom:none;
+  position:relative;overflow:hidden;transition:box-shadow 0.5s ease;
+}
+.cap-shelf::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at 30% 30%,rgba(255,240,200,0.3),transparent 65%);}
+.pillar-slot.focused .cap-shelf{box-shadow:0 0 28px rgba(200,160,80,0.35),0 0 55px rgba(200,160,80,0.15);}
 
-/* CTA row below label */
+/* Shaft — light stone, fades out. No children — mask doesn't clip text. */
+.column-shaft{
+  width:84%;
+  height:clamp(70px,9.5vw,125px);
+  background:linear-gradient(to bottom,rgba(220,210,190,0.9) 0%,rgba(210,198,175,0.6) 30%,rgba(200,185,158,0.25) 65%,transparent 100%);
+  border-left:1px solid rgba(200,185,155,0.3);border-right:1px solid rgba(200,185,155,0.3);
+  -webkit-mask-image:linear-gradient(to bottom,rgba(0,0,0,1) 0%,rgba(0,0,0,0) 100%);
+  mask-image:linear-gradient(to bottom,rgba(0,0,0,1) 0%,rgba(0,0,0,0) 100%);
+}
+
+/* Label + CTAs — sibling of shaft, absolutely positioned over it.
+   NOT inside shaft so mask never clips the text. */
+.pillar-below{
+  position:relative;
+  width:100%;
+  display:flex;flex-direction:column;align-items:center;
+  /* Pull up to overlap the shaft top */
+  margin-top:clamp(-65px,-9vw,-44px);
+  z-index:5; /* above shaft */
+}
+
+/* Label + CTAs — overlaid at top of shaft fade area, just below capital */
+.item-label{
+  text-align:center;padding:6px 5px 0;width:100%;cursor:pointer;
+}
+.item-number{font-family:'Share Tech Mono',monospace;font-size:clamp(0.38rem,0.6vw,0.5rem);letter-spacing:2px;color:var(--edison-dim);text-transform:uppercase;margin-bottom:2px;text-shadow:0 1px 4px rgba(255,255,255,0.6);}
+.item-name{font-family:'Bebas Neue',sans-serif;font-size:clamp(0.75rem,1.2vw,1.05rem);letter-spacing:2px;color:var(--dark-brown);line-height:1.1;text-shadow:0 1px 5px rgba(255,255,255,0.7);}
+
+/* CTA row — just below label, in fading shaft area */
 .item-cta{
-  display:flex;gap:8px;justify-content:center;flex-wrap:wrap;
-  margin-top:12px;
+  display:flex;gap:5px;justify-content:center;flex-wrap:wrap;
+  padding:5px 4px 0;
   opacity:0;transition:opacity 0.4s ease;
+  width:100%;
 }
 .pillar-slot.focused .item-cta{opacity:1;}
 .cta-btn{
   font-family:'Share Tech Mono',monospace;
-  font-size:clamp(0.5rem,0.75vw,0.68rem);
-  letter-spacing:1.5px;text-transform:uppercase;
-  padding:7px 12px;border-radius:4px;
+  font-size:clamp(0.38rem,0.6vw,0.52rem);
+  letter-spacing:1px;text-transform:uppercase;
+  padding:5px 8px;border-radius:3px;
   cursor:pointer;border:none;transition:all 0.2s;white-space:nowrap;
 }
-.cta-primary{
-  background:var(--edison-dim);
-  color:#f5e8c0; /* light cream — contrasts amber background */
-  box-shadow:0 0 8px var(--glow);
-}
+.cta-primary{background:var(--edison-dim);color:#f5e8c0;box-shadow:0 0 6px var(--glow);text-shadow:0 1px 3px rgba(0,0,0,0.3);}
 .cta-primary:hover{background:var(--edison);color:#fff8e8;}
-.cta-secondary{
-  background:rgba(255,255,255,0.55);
-  border:1px solid rgba(90,60,20,0.35)!important;
-  color:var(--dark-brown);
-}
+.cta-secondary{background:rgba(255,255,255,0.55);border:1px solid rgba(90,60,20,0.35)!important;color:var(--dark-brown);text-shadow:0 1px 4px rgba(255,255,255,0.8);}
 .cta-secondary:hover{background:rgba(255,255,255,0.8);border-color:var(--edison-dim)!important;}
-.cta-note{
-  font-family:'Share Tech Mono',monospace;
-  font-size:0.45rem;letter-spacing:1px;
-  color:var(--edison-dim);text-transform:uppercase;align-self:center;
-}
+.cta-note{font-family:'Share Tech Mono',monospace;font-size:0.38rem;letter-spacing:1px;color:var(--edison-dim);text-transform:uppercase;align-self:center;text-shadow:0 1px 3px rgba(255,255,255,0.6);}
 
 /* Video pill — top right of focused item */
 .video-pill{
@@ -318,17 +366,18 @@ html,body{
 .pillar-slot.focused .video-pill{opacity:0.55;}
 .video-pill:hover{opacity:0.9!important;}
 
-/* ── NAV ARROWS — horizontal ── */
+/* ── NAV ARROWS — bottom corners ── */
 .nav-arrow{
-  position:fixed;top:50%;transform:translateY(-50%);
+  position:fixed;
+  bottom:clamp(74px,11vh,115px);
   z-index:150;background:transparent;border:none;
   cursor:pointer;user-select:none;padding:12px 16px;
   transition:filter 0.2s,opacity 0.2s;
+  filter:drop-shadow(0 2px 5px rgba(0,0,0,0.25));
 }
-.nav-arrow:hover{filter:drop-shadow(0 0 8px var(--edison));}
-#nav-prev{left:8px;opacity:0.4;}
-#nav-next{right:8px;opacity:0.4;}
-#nav-prev:hover,#nav-next:hover{opacity:0.85;}
+.nav-arrow:hover{ filter:drop-shadow(0 2px 8px rgba(0,0,0,0.35)) drop-shadow(0 0 5px rgba(255,255,255,0.25)); opacity:0.9!important; }
+#nav-prev{ left:8px; opacity:0.55; }
+#nav-next{ right:8px; opacity:0.55; }
 
 /* ── COUNTER ── */
 .counter{position:fixed;bottom:80px;left:50%;transform:translateX(-50%);font-family:'Share Tech Mono',monospace;font-size:0.56rem;letter-spacing:4px;color:var(--cream-dim);z-index:150;white-space:nowrap;text-align:center;}
@@ -509,7 +558,6 @@ html,body{
   .detail-torus-wrap{ width:100%; aspect-ratio:16/9; }
   .counter{ bottom:68px; }
   #nav-prev,#nav-next{ bottom:65px; top:auto; }
-  #nav-next{ top:56px; bottom:auto; }
 }
 </style>
 </head>
@@ -529,6 +577,7 @@ html,body{
   </div>
 </div>
 
+<div class="toggle-hint" id="toggleHint">tap creations<br>for a closer look</div>
 <div class="jessec-credit"></div>
 
 <!-- ══ GALLERY VIEW ══ -->
@@ -671,7 +720,7 @@ const items = [
 const paintings = [
   {
     id:'p1', icon:'🎵', label:'The Album',
-    title:'Fearjoy: The Album',
+    title:'Fearjoy: The Game',
     desc:'The debut album. Coming soon.',
     cta:'Stream / Pre-order', ctaHref:'#'
   },
@@ -711,6 +760,12 @@ const paintings = [
     desc:'Demos, outtakes, early recordings, and things that almost made the album. Coming to Bandcamp.',
     cta:'Bandcamp', ctaHref:'#'
   },
+  {
+    id:'p8', icon:'👕', label:'Merch',
+    title:'Freejoy Club Merch',
+    desc:'Shirts, hats, and things you didn\'t know you needed. All Freejoy, all the time.',
+    cta:'Shop', ctaHref:'/store'
+  },
 ];
 
 // ═══════════════════════════════════
@@ -739,18 +794,24 @@ let _dragPX   = 0, _dragPY   = 0;
 let _tapStartX= 0, _tapStartY= 0;
 
 function _instanceAt(el) {
-  // Walk up from event target to find a .float-object, get its slot id
+  // Check detail canvas first
+  if (el.closest('#detailTorusCanvas') || el.id === 'detailTorusCanvas') {
+    return torusInstances['detail'] || null;
+  }
+  // Walk up to float-object → pillar-slot
   const fo = el.closest('.float-object');
   if (!fo) return null;
   const slot = fo.closest('.pillar-slot');
   if (!slot) return null;
   const s = slot.id.replace('slot-', '');
-  return torusInstances[`slot-${s}`] || torusInstances['detail'] || null;
+  // Return instance if exists — even if canvas was just replaced
+  return torusInstances[`slot-${s}`] || null;
 }
 
 function _startDrag(inst, cx, cy, isCanvas) {
   if (!inst) return;
-  _dragId    = Object.keys(torusInstances).find(k => torusInstances[k] === inst);
+  _dragId = Object.keys(torusInstances).find(k => torusInstances[k] === inst);
+  if (!_dragId) return;
   inst.dragging = true;
   _dragPX = cx; _dragPY = cy;
   _tapStartX = cx; _tapStartY = cy;
@@ -760,7 +821,7 @@ function _startDrag(inst, cx, cy, isCanvas) {
 function _moveDrag(cx, cy) {
   if (!_dragId) return;
   const inst = torusInstances[_dragId];
-  if (!inst) return;
+  if (!inst) { _dragId = null; return; }
   inst.rotY += (cx - _dragPX) * 0.013;
   inst.rotX += (cy - _dragPY) * 0.013;
   _dragPX = cx; _dragPY = cy;
@@ -776,7 +837,8 @@ function _endDrag(cx, cy, isCanvas) {
     }
   }
   _dragId = null;
-  if (isCanvas) setTimeout(()=>{ window._canvasTouchActive = false; }, 0);
+  // Always reset — prevents stuck state
+  if (isCanvas) window._canvasTouchActive = false;
 }
 
 // Mouse
@@ -785,7 +847,7 @@ window.addEventListener('mousedown', e => {
   if (inst) { _startDrag(inst, e.clientX, e.clientY, true); e.stopPropagation(); }
 });
 window.addEventListener('mousemove', e => { if (_dragId) _moveDrag(e.clientX, e.clientY); });
-window.addEventListener('mouseup',   e => { if (_dragId) _endDrag(e.clientX, e.clientY, true); });
+window.addEventListener('mouseup',   e => { if (_dragId) _endDrag(e.clientX, e.clientY, true); else window._canvasTouchActive = false; });
 
 // Touch
 window.addEventListener('touchstart', e => {
@@ -796,7 +858,14 @@ window.addEventListener('touchmove', e => {
   if (_dragId) _moveDrag(e.touches[0].clientX, e.touches[0].clientY);
 }, {passive:true});
 window.addEventListener('touchend', e => {
-  if (_dragId) _endDrag(e.changedTouches[0].clientX, e.changedTouches[0].clientY, true);
+  const wasCanvas = !!_dragId;
+  _endDrag(
+    e.changedTouches[0].clientX,
+    e.changedTouches[0].clientY,
+    wasCanvas
+  );
+  // Always clear — belt and suspenders
+  window._canvasTouchActive = false;
 }, {passive:true});
 
 function destroyTorus(id) {
@@ -897,8 +966,9 @@ function makeTorus(canvas, id, shape='torus') {
 // We store each painting's gap index and recompute screen X on every renderGallery.
 // ═══════════════════════════════════
 const paintingDefs = [
-  { gapAfterItem: 3, data: paintings[0] }, // between item 4 and 5
-  { gapAfterItem: 5, data: paintings[1] }, // between item 6 and 7
+  { gapAfterItem: 0, data: paintings[0] }, // Album  — between item 1 and 2
+  { gapAfterItem: 2, data: paintings[1] }, // Game   — between item 3 and 4
+  { gapAfterItem: 4, data: paintings[7] }, // Merch  — between item 5 and 6
 ];
 
 function buildWall() {
@@ -934,17 +1004,17 @@ function buildWall() {
 
 function updatePaintings(animate) {
   const centerX = window.innerWidth / 2;
+
   paintingDefs.forEach((def, pi) => {
     const el = document.getElementById(`painting-${pi}`);
     if (!el) return;
-    // Paintings move slower than pillars — parallax factor 0.4
     const offset = (def.gapAfterItem + 0.5 - (virtualIdx - OFFSET)) * H_SPACING * 0.4;
     const screenX = centerX + offset;
+    const offscreen = Math.abs(offset) > window.innerWidth * 1.2;
+
     el.style.transition = animate ? 'left 0.58s cubic-bezier(0.4,0,0.2,1), opacity 0.3s' : 'none';
     el.style.left = screenX + 'px';
-    // Hide if too far off screen
-    const offscreen = Math.abs(offset) > window.innerWidth;
-    el.style.opacity = offscreen ? '0' : '0.82';
+    el.style.opacity = offscreen ? '0' : '0.78';
     el.style.pointerEvents = offscreen ? 'none' : 'all';
   });
 }
@@ -990,11 +1060,13 @@ function buildGallery() {
           <div class="cap-neck"></div>
         </div>
         <div class="column-shaft"></div>
-        <div class="item-label">
-          <div class="item-number">JC — ${String(item.id).padStart(2,'0')}</div>
-          <div class="item-name">${item.name}</div>
+        <div class="pillar-below">
+          <div class="item-label">
+            <div class="item-number">JC — ${String(item.id).padStart(2,'0')}</div>
+            <div class="item-name">${item.name}</div>
+          </div>
+          <div class="item-cta">${ctaHTML}</div>
         </div>
-        <div class="item-cta">${ctaHTML}</div>
       </div>`;
 
     slot.addEventListener('click', e=>{
@@ -1119,22 +1191,21 @@ function updateTorusWindow() {
       const slot = document.getElementById(`slot-${s}`);
       if(slot){
         const c = slot.querySelector('.float-canvas');
-        if(c && !torusInstances[`slot-${s}`]){
-          toInit.push({c, s});
-        }
+        if(c && !torusInstances[`slot-${s}`]) toInit.push({c, s});
       }
     } else {
       if(torusInstances[`slot-${s}`]) destroyTorus(`slot-${s}`);
     }
   }
-  // Stagger inits 80ms apart — prevents simultaneous context allocation
-  toInit.forEach(({c, s}, i) => {
+  // Stagger inits — focused slot first (dist 0), then adjacent
+  toInit.sort((a,b) => Math.abs(a.s-virtualIdx) - Math.abs(b.s-virtualIdx));
+  toInit.forEach(({c,s}, i) => {
     setTimeout(()=>{
-      if(!torusInstances[`slot-${s}`]){ // still needed after delay?
+      if(!torusInstances[`slot-${s}`]){
         const itemIdx = s % TOTAL;
         makeTorus(c, `slot-${s}`, items[itemIdx].shape);
       }
-    }, i * 80);
+    }, i * 60); // 60ms between each — faster than before
   });
 }
 
@@ -1145,6 +1216,7 @@ let virtualIdx = OFFSET;
 function navigate(delta){
   if(isTransitioning) return;
   isTransitioning=true;
+  _hintOnNavigate();
   virtualIdx += delta;
   currentIdx = ((virtualIdx - OFFSET % TOTAL + TOTAL * 100) % TOTAL);
 
@@ -1154,10 +1226,12 @@ function navigate(delta){
       renderGallery(false);
     }
     isTransitioning=false;
-    updateTorusWindow(); // only after transition fully settles
+    updateTorusWindow();
   };
 
   renderGallery(true);
+  // Also update torus window mid-transition so new slot starts loading early
+  setTimeout(updateTorusWindow, 300);
   setTimeout(afterTransition, 640);
 }
 
@@ -1254,12 +1328,65 @@ document.addEventListener('touchend', e=>{
   if(window._canvasTouchActive) return;
   const dx=tX-e.changedTouches[0].clientX;
   const dy=tY-e.changedTouches[0].clientY;
-  // Horizontal swipe dominates
-  if(Math.abs(dx)>Math.abs(dy)&&Math.abs(dx)>36) navigate(dx>0?1:-1);
+  const absDx=Math.abs(dx), absDy=Math.abs(dy);
+  // Horizontal swipe = navigate
+  if(absDx>absDy && absDx>36){ navigate(dx>0?1:-1); return; }
+  // Swipe up on focused pillar = open detail
+  if(absDy>absDx && dy>40) openDetail(currentIdx);
 },{passive:true});
 
 // ═══════════════════════════════════
-// INIT
+// SMART HINT — "tap creations for a closer look"
+// Triggers if: user has been on page 5s without tapping detail,
+//              OR navigated 2+ times without opening detail.
+// Once triggered: 3s visible, 10s hidden, repeats.
+// Stops permanently once user taps to inspect.
+// ═══════════════════════════════════
+let _hintNavCount   = 0;   // how many navigates without opening detail
+let _hintTriggered  = false;
+let _hintStopped    = false;
+let _hintCycleTimer = null;
+
+function _showHint() {
+  if (_hintStopped) return;
+  const h = document.getElementById('toggleHint');
+  if (!h) return;
+  h.style.opacity = '1';
+  clearTimeout(_hintCycleTimer);
+  _hintCycleTimer = setTimeout(()=>{
+    h.style.opacity = '0';
+    if (!_hintStopped) _hintCycleTimer = setTimeout(_showHint, 10000);
+  }, 3000);
+}
+
+function _triggerHint() {
+  if (_hintTriggered || _hintStopped) return;
+  _hintTriggered = true;
+  _showHint();
+}
+
+function _stopHint() {
+  _hintStopped = true;
+  clearTimeout(_hintCycleTimer);
+  const h = document.getElementById('toggleHint');
+  if (h) h.style.opacity = '0';
+}
+
+// 5 second idle trigger
+setTimeout(()=>{ if (!_hintStopped) _triggerHint(); }, 5000);
+
+// Navigation counter trigger (called from navigate)
+function _hintOnNavigate() {
+  _hintNavCount++;
+  if (_hintNavCount >= 2) _triggerHint();
+}
+
+// Stop when detail opens
+const _origOpenDetail = openDetail;
+openDetail = function(idx) {
+  _stopHint();
+  _origOpenDetail(idx);
+};
 // ═══════════════════════════════════
 function toggleMenu(){
   const m = document.getElementById('mobileMenu');
@@ -1283,14 +1410,12 @@ buildGrid();
 // Sliding window handles init — re-render after short delay so canvas has dimensions
 setTimeout(()=>{ renderGallery(false); updateTorusWindow(); }, 80);
 
-// Shine the toggle buttons after 3s to hint at list view
-setTimeout(()=>{
+function doToggleShine() {
   const toggle = document.querySelector('.view-toggle');
-  if(toggle){
-    toggle.classList.add('hint-shine');
-    setTimeout(()=> toggle.classList.remove('hint-shine'), 900);
-  }
-}, 3000);
+  if(toggle){ toggle.classList.add('hint-shine'); setTimeout(()=> toggle.classList.remove('hint-shine'), 900); }
+}
+setTimeout(doToggleShine, 2500);
+setInterval(doToggleShine, 6000);
 </script>
 </body>
 </html>
