@@ -1,10 +1,10 @@
-<!-- LAB v9.7 -->
+<!-- LAB v10 -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
-<title>The Lab — Freejoy Club (v9.7)</title>
+<title>Jesse's Lab — Freejoy Club (v10)</title>
 <link rel="icon" type="image/png" href="favicon.png"/>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Bebas+Neue&family=DM+Sans:wght@300;400;500&display=swap');
@@ -13,7 +13,7 @@
   --bg:#0d0a07;
   --warm1:#1a1208; --warm2:#251a0a;
   --edison:#c8781a; --edison-dim:#8b5012; --filament:#f5d080;
-  --dark-brown:#3a1f08; /* replaces filament everywhere except THE LAB wordmark */
+  --dark-brown:#3a1f08; /* replaces filament everywhere except JESSE'S LAB wordmark */
   --cream:#f0e0c0; --cream-dim:#a08060;
   --metal:#4a3f32; --metal-light:#6b5c4a;
   --glow:rgba(200,120,26,0.18); --glow-strong:rgba(200,120,26,0.5);
@@ -338,8 +338,8 @@ html,body{
 
 /* ── BOTTOM NAV ── */
 .nav-cluster{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);display:flex;background:rgba(200,185,150,0.75);backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,0.3);border-radius:100px;padding:7px 14px;z-index:200;white-space:nowrap;}
-.nav-cluster a{font-family:'Share Tech Mono',monospace;text-decoration:none;color:var(--cream-dim);padding:6px 10px;font-size:0.56rem;text-transform:uppercase;letter-spacing:1.5px;transition:all 0.25s;}
-.nav-cluster a:hover{color:var(--dark-brown);text-shadow:0 0 10px var(--edison);}
+.nav-cluster a{font-family:'Share Tech Mono',monospace;text-decoration:none;color:var(--dark-brown);padding:6px 10px;font-size:0.56rem;text-transform:uppercase;letter-spacing:1.5px;transition:all 0.25s;opacity:0.75;}
+.nav-cluster a:hover{color:var(--dark-brown);opacity:1;text-shadow:0 0 10px var(--edison);}
 .nav-divider{width:1px;height:12px;background:rgba(255,255,255,0.1);align-self:center;margin:0 3px;}
 
 /* ── FLOOR / CEILING ── */
@@ -518,7 +518,7 @@ html,body{
 <!-- TOPBAR -->
 <div class="topbar">
   <div class="topbar-left">
-    <div class="lab-wordmark">THE LAB</div>
+    <div class="lab-wordmark">JESSE'S LAB</div>
     <div class="lab-sub">Freejoy Club</div>
   </div>
   <div class="topbar-right">
@@ -529,7 +529,7 @@ html,body{
   </div>
 </div>
 
-<div class="jessec-credit">by JesseC</div>
+<div class="jessec-credit"></div>
 
 <!-- ══ GALLERY VIEW ══ -->
 <div id="gallery-view">
@@ -582,7 +582,7 @@ html,body{
 <!-- ══ GRID VIEW ══ -->
 <div id="grid-view">
   <div class="grid-container">
-    <div class="grid-header">All Inventions — JesseC / Freejoy Club Lab</div>
+    <div class="grid-header">All Inventions — Jesse's Lab / Freejoy Club</div>
     <div class="grid-list" id="gridList"></div>
   </div>
 </div>
@@ -623,7 +623,7 @@ html,body{
   <div class="nav-divider"></div>
   <a href="/music">Music</a>
   <div class="nav-divider"></div>
-  <a href="/merch">Merch</a>
+  <a href="/store">Merch</a>
   <div class="nav-divider"></div>
   <a href="/breathe">Breathe</a>
   <div class="nav-divider"></div>
@@ -638,7 +638,7 @@ html,body{
   <div class="mobile-menu-divider"></div>
   <a href="/music">Music</a>
   <div class="mobile-menu-divider"></div>
-  <a href="/merch">Merch</a>
+  <a href="/store">Merch</a>
   <div class="mobile-menu-divider"></div>
   <a href="/breathe">Breathe</a>
   <div class="mobile-menu-divider"></div>
@@ -656,13 +656,13 @@ html,body{
 // ITEMS DATA
 // ═══════════════════════════════════
 const items = [
-  {id:1,shape:'torus', name:"Invention 01",icon:"⚙️",tags:[{label:"Musical Gear",cls:"tag-music"},{label:"Printable",cls:"tag-print"}],availability:"Order / Download",video:"Video 01",desc:"Placeholder description for Invention 01. A unique handmade gadget designed by JesseC in the Freejoy Club Lab. Details coming soon.",specs:[{label:"Type",value:"Placeholder"},{label:"Files",value:"STL available"},{label:"Ships",value:"Yes"}],actions:[{label:"📦 Purchase",note:"Free shipping",type:"primary"},{label:"⬇ Files",note:"$11",type:"secondary"},{label:"⬇ Files",note:"Free",type:"secondary"}]},
-  {id:2,shape:'knot',  name:"Invention 02",icon:"🎛️",tags:[{label:"Electronics",cls:"tag-elec"},{label:"Musical Gear",cls:"tag-music"}],availability:"Order Only",video:"Video 02",desc:"Placeholder description for Invention 02. A unique handmade gadget designed by JesseC in the Freejoy Club Lab. Details coming soon.",specs:[{label:"Type",value:"Placeholder"},{label:"Electronics",value:"Yes"},{label:"Ships",value:"Yes"}],actions:[{label:"📦 Purchase",note:"Free shipping",type:"primary"}]},
-  {id:3,shape:'torus', name:"Invention 03",icon:"🔊",tags:[{label:"Musical Gear",cls:"tag-music"},{label:"Electronics",cls:"tag-elec"}],availability:"Download Free",video:"Video 03",desc:"Placeholder description for Invention 03. A unique handmade gadget designed by JesseC in the Freejoy Club Lab. Details coming soon.",specs:[{label:"Type",value:"Placeholder"},{label:"Files",value:"Free STL"},{label:"Ships",value:"No"}],actions:[{label:"⬇ Download",note:"Free",type:"primary"}]},
-  {id:4,shape:'knot',  name:"Invention 04",icon:"🖨️",tags:[{label:"Printable",cls:"tag-print"}],availability:"Download / Order",video:"Video 04",desc:"Placeholder description for Invention 04. A unique handmade gadget designed by JesseC in the Freejoy Club Lab. Details coming soon.",specs:[{label:"Type",value:"Placeholder"},{label:"Files",value:"STL (paid)"},{label:"Ships",value:"Yes"}],actions:[{label:"📦 Purchase",note:"Free shipping",type:"primary"},{label:"⬇ Files",note:"$11",type:"secondary"}]},
-  {id:5,shape:'torus', name:"Invention 05",icon:"🎹",tags:[{label:"Musical Gear",cls:"tag-music"},{label:"Electronics",cls:"tag-elec"},{label:"Printable",cls:"tag-print"}],availability:"Order Only",video:"Video 05",desc:"Placeholder description for Invention 05. A unique handmade gadget designed by JesseC in the Freejoy Club Lab. Details coming soon.",specs:[{label:"Type",value:"Placeholder"},{label:"CPU",value:"Yes"},{label:"Ships",value:"Yes"}],actions:[{label:"📦 Purchase",note:"Free shipping",type:"primary"}]},
-  {id:6,shape:'knot',  name:"Invention 06",icon:"🔧",tags:[{label:"Printable",cls:"tag-print"},{label:"Electronics",cls:"tag-elec"}],availability:"Download Free",video:"Video 06",desc:"Placeholder description for Invention 06. A unique handmade gadget designed by JesseC in the Freejoy Club Lab. Details coming soon.",specs:[{label:"Type",value:"Placeholder"},{label:"Files",value:"Free STL"},{label:"Ships",value:"No"}],actions:[{label:"⬇ Download",note:"Free",type:"primary"}]},
-  {id:7,shape:'torus', name:"Invention 07",icon:"🎵",tags:[{label:"Musical Gear",cls:"tag-music"}],availability:"Coming Soon",video:"Video 07",desc:"Placeholder description for Invention 07. A unique handmade gadget designed by JesseC in the Freejoy Club Lab. Details coming soon.",specs:[{label:"Type",value:"Placeholder"},{label:"Status",value:"In progress"}],actions:[{label:"🔔 Notify Me",note:"Join waitlist",type:"secondary"}]},
+  {id:1,shape:'torus', name:"Invention 01",icon:"⚙️",tags:[{label:"Musical Gear",cls:"tag-music"},{label:"Printable",cls:"tag-print"}],availability:"Order / Download",video:"Video 01",desc:"Placeholder description for Invention 01. A unique handmade gadget designed  in the Freejoy Club Lab. Details coming soon.",specs:[{label:"Type",value:"Placeholder"},{label:"Files",value:"STL available"},{label:"Ships",value:"Yes"}],actions:[{label:"📦 Purchase",note:"Free shipping",type:"primary"},{label:"⬇ Files",note:"$11",type:"secondary"},{label:"⬇ Files",note:"Free",type:"secondary"}]},
+  {id:2,shape:'knot',  name:"Invention 02",icon:"🎛️",tags:[{label:"Electronics",cls:"tag-elec"},{label:"Musical Gear",cls:"tag-music"}],availability:"Order Only",video:"Video 02",desc:"Placeholder description for Invention 02. A unique handmade gadget designed  in the Freejoy Club Lab. Details coming soon.",specs:[{label:"Type",value:"Placeholder"},{label:"Electronics",value:"Yes"},{label:"Ships",value:"Yes"}],actions:[{label:"📦 Purchase",note:"Free shipping",type:"primary"}]},
+  {id:3,shape:'torus', name:"Invention 03",icon:"🔊",tags:[{label:"Musical Gear",cls:"tag-music"},{label:"Electronics",cls:"tag-elec"}],availability:"Download Free",video:"Video 03",desc:"Placeholder description for Invention 03. A unique handmade gadget designed  in the Freejoy Club Lab. Details coming soon.",specs:[{label:"Type",value:"Placeholder"},{label:"Files",value:"Free STL"},{label:"Ships",value:"No"}],actions:[{label:"⬇ Download",note:"Free",type:"primary"}]},
+  {id:4,shape:'knot',  name:"Invention 04",icon:"🖨️",tags:[{label:"Printable",cls:"tag-print"}],availability:"Download / Order",video:"Video 04",desc:"Placeholder description for Invention 04. A unique handmade gadget designed  in the Freejoy Club Lab. Details coming soon.",specs:[{label:"Type",value:"Placeholder"},{label:"Files",value:"STL (paid)"},{label:"Ships",value:"Yes"}],actions:[{label:"📦 Purchase",note:"Free shipping",type:"primary"},{label:"⬇ Files",note:"$11",type:"secondary"}]},
+  {id:5,shape:'torus', name:"Invention 05",icon:"🎹",tags:[{label:"Musical Gear",cls:"tag-music"},{label:"Electronics",cls:"tag-elec"},{label:"Printable",cls:"tag-print"}],availability:"Order Only",video:"Video 05",desc:"Placeholder description for Invention 05. A unique handmade gadget designed  in the Freejoy Club Lab. Details coming soon.",specs:[{label:"Type",value:"Placeholder"},{label:"CPU",value:"Yes"},{label:"Ships",value:"Yes"}],actions:[{label:"📦 Purchase",note:"Free shipping",type:"primary"}]},
+  {id:6,shape:'knot',  name:"Invention 06",icon:"🔧",tags:[{label:"Printable",cls:"tag-print"},{label:"Electronics",cls:"tag-elec"}],availability:"Download Free",video:"Video 06",desc:"Placeholder description for Invention 06. A unique handmade gadget designed  in the Freejoy Club Lab. Details coming soon.",specs:[{label:"Type",value:"Placeholder"},{label:"Files",value:"Free STL"},{label:"Ships",value:"No"}],actions:[{label:"⬇ Download",note:"Free",type:"primary"}]},
+  {id:7,shape:'torus', name:"Invention 07",icon:"🎵",tags:[{label:"Musical Gear",cls:"tag-music"}],availability:"Coming Soon",video:"Video 07",desc:"Placeholder description for Invention 07. A unique handmade gadget designed  in the Freejoy Club Lab. Details coming soon.",specs:[{label:"Type",value:"Placeholder"},{label:"Status",value:"In progress"}],actions:[{label:"🔔 Notify Me",note:"Join waitlist",type:"secondary"}]},
 ];
 
 // ═══════════════════════════════════
@@ -671,8 +671,8 @@ const items = [
 const paintings = [
   {
     id:'p1', icon:'🎵', label:'The Album',
-    title:'Fearjoy — The Album',
-    desc:'Debut album dropping soon. Straight to vinyl, drip-fed to streaming. MJ meets Tame Impala meets Jamiroquai meets Pink Floyd.',
+    title:'Fearjoy: The Album',
+    desc:'The debut album. Coming soon.',
     cta:'Stream / Pre-order', ctaHref:'#'
   },
   {
@@ -730,6 +730,75 @@ let currentView = 'walk';
 // ═══════════════════════════════════
 const torusInstances = {};
 
+// ── SHARED DRAG MANAGER ──
+// One set of window listeners handles rotation for ALL torus instances.
+// Works even after canvas replacement because we track by slot id, not canvas reference.
+// Also handles tap-to-open-detail and the canvas-touch-active flag.
+let _dragId   = null; // which instance is being dragged
+let _dragPX   = 0, _dragPY   = 0;
+let _tapStartX= 0, _tapStartY= 0;
+
+function _instanceAt(el) {
+  // Walk up from event target to find a .float-object, get its slot id
+  const fo = el.closest('.float-object');
+  if (!fo) return null;
+  const slot = fo.closest('.pillar-slot');
+  if (!slot) return null;
+  const s = slot.id.replace('slot-', '');
+  return torusInstances[`slot-${s}`] || torusInstances['detail'] || null;
+}
+
+function _startDrag(inst, cx, cy, isCanvas) {
+  if (!inst) return;
+  _dragId    = Object.keys(torusInstances).find(k => torusInstances[k] === inst);
+  inst.dragging = true;
+  _dragPX = cx; _dragPY = cy;
+  _tapStartX = cx; _tapStartY = cy;
+  if (isCanvas) window._canvasTouchActive = true;
+}
+
+function _moveDrag(cx, cy) {
+  if (!_dragId) return;
+  const inst = torusInstances[_dragId];
+  if (!inst) return;
+  inst.rotY += (cx - _dragPX) * 0.013;
+  inst.rotX += (cy - _dragPY) * 0.013;
+  _dragPX = cx; _dragPY = cy;
+}
+
+function _endDrag(cx, cy, isCanvas) {
+  if (_dragId) {
+    const inst = torusInstances[_dragId];
+    if (inst) {
+      inst.dragging = false;
+      const d = Math.sqrt((cx-_tapStartX)**2+(cy-_tapStartY)**2);
+      if (d < 12 && isCanvas && _dragId !== 'detail') openDetail(currentIdx);
+    }
+  }
+  _dragId = null;
+  if (isCanvas) setTimeout(()=>{ window._canvasTouchActive = false; }, 0);
+}
+
+// Mouse
+window.addEventListener('mousedown', e => {
+  const inst = _instanceAt(e.target);
+  if (inst) { _startDrag(inst, e.clientX, e.clientY, true); e.stopPropagation(); }
+});
+window.addEventListener('mousemove', e => { if (_dragId) _moveDrag(e.clientX, e.clientY); });
+window.addEventListener('mouseup',   e => { if (_dragId) _endDrag(e.clientX, e.clientY, true); });
+
+// Touch
+window.addEventListener('touchstart', e => {
+  const inst = _instanceAt(e.target);
+  if (inst) _startDrag(inst, e.touches[0].clientX, e.touches[0].clientY, true);
+}, {passive:true});
+window.addEventListener('touchmove', e => {
+  if (_dragId) _moveDrag(e.touches[0].clientX, e.touches[0].clientY);
+}, {passive:true});
+window.addEventListener('touchend', e => {
+  if (_dragId) _endDrag(e.changedTouches[0].clientX, e.changedTouches[0].clientY, true);
+}, {passive:true});
+
 function destroyTorus(id) {
   const t = torusInstances[id];
   if (!t) return;
@@ -753,8 +822,6 @@ function destroyTorus(id) {
   delete torusInstances[id];
 }
 window._canvasTouchActive = false;
-
-// ─────────────────────────────────────────────────────────────
 // TO SWAP IN REAL 3D FILES: replace makeTorus with an STL loader.
 // Each item in `items[]` has an `id` field — map item.id to your
 // STL file URL, load with THREE.STLLoader, call addMeshToScene().
@@ -809,56 +876,15 @@ function makeTorus(canvas, id, shape='torus') {
   mesh.rotation.x = Math.PI * 0.25;
   scene.add(mesh);
 
-  let dragging=false, pX=0, pY=0, rotY=0, rotX=0.25;
-  let tapStartX=0, tapStartY=0;
-
-  canvas.addEventListener('touchstart', e=>{
-    window._canvasTouchActive = true;
-    dragging=true;
-    pX=e.touches[0].clientX; pY=e.touches[0].clientY;
-    tapStartX=pX; tapStartY=pY;
-  },{passive:true});
-
-  canvas.addEventListener('touchend', e=>{
-    const ex=e.changedTouches[0].clientX, ey=e.changedTouches[0].clientY;
-    const d=Math.sqrt((ex-tapStartX)**2+(ey-tapStartY)**2);
-    if(d<12 && id!=='detail') openDetail(currentIdx);
-    dragging=false;
-    setTimeout(()=>{ window._canvasTouchActive=false; },0);
-  },{passive:true});
-
-  canvas.addEventListener('mousedown', e=>{
-    dragging=true; pX=e.clientX; pY=e.clientY;
-    canvas._mdX=e.clientX; canvas._mdY=e.clientY;
-    e.stopPropagation();
-  });
-  window.addEventListener('mousemove', e=>{
-    if(!dragging) return;
-    rotY+=(e.clientX-pX)*0.013; rotX+=(e.clientY-pY)*0.013;
-    pX=e.clientX; pY=e.clientY;
-  });
-  window.addEventListener('touchmove', e=>{
-    if(!dragging) return;
-    rotY+=(e.touches[0].clientX-pX)*0.013; rotX+=(e.touches[0].clientY-pY)*0.013;
-    pX=e.touches[0].clientX; pY=e.touches[0].clientY;
-  },{passive:true});
-  window.addEventListener('mouseup', e=>{
-    if(dragging){
-      const mdx=e.clientX-(canvas._mdX||e.clientX);
-      const mdy=e.clientY-(canvas._mdY||e.clientY);
-      if(Math.sqrt(mdx*mdx+mdy*mdy)<8 && id!=='detail') openDetail(currentIdx);
-    }
-    dragging=false;
-  });
-
-  const instance = {renderer, scene, camera, mesh, dead: false};
+  const instance = {renderer, scene, camera, mesh, dead: false, rotY:0, rotX:0.25, dragging:false, mdX:0, mdY:0, tapStartX:0, tapStartY:0};
   torusInstances[id] = instance;
 
   (function loop(){
     if(instance.dead) return;
     requestAnimationFrame(loop);
-    if(!dragging) rotY+=0.006;
-    mesh.rotation.y=rotY; mesh.rotation.x=rotX;
+    if(!instance.dragging) instance.rotY += 0.006;
+    mesh.rotation.y = instance.rotY;
+    mesh.rotation.x = instance.rotX;
     renderer.render(scene, camera);
   })();
 }
