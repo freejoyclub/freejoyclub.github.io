@@ -1,10 +1,10 @@
-<!-- LAB v10 -->
+<!-- LAB v10.1 -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
-<title>Jesse's Lab — Freejoy Club (v10)</title>
+<title>Jesse's Lab — Freejoy Club (v10.1)</title>
 <link rel="icon" type="image/png" href="favicon.png"/>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Bebas+Neue&family=DM+Sans:wght@300;400;500&display=swap');
@@ -937,9 +937,8 @@ function updatePaintings(animate) {
   paintingDefs.forEach((def, pi) => {
     const el = document.getElementById(`painting-${pi}`);
     if (!el) return;
-    // Screen X = center + (gapAfterItem + 0.5 - currentIdx) * H_SPACING
-    // Using virtualIdx offset for continuous position
-    const offset = (def.gapAfterItem + 0.5 - (virtualIdx - OFFSET)) * H_SPACING;
+    // Paintings move slower than pillars — parallax factor 0.4
+    const offset = (def.gapAfterItem + 0.5 - (virtualIdx - OFFSET)) * H_SPACING * 0.4;
     const screenX = centerX + offset;
     el.style.transition = animate ? 'left 0.58s cubic-bezier(0.4,0,0.2,1), opacity 0.3s' : 'none';
     el.style.left = screenX + 'px';
@@ -999,11 +998,15 @@ function buildGallery() {
       </div>`;
 
     slot.addEventListener('click', e=>{
-      if(e.target.closest('.cta-btn')) return; // CTA buttons handle themselves
-      if(e.target.closest('.float-canvas')) return; // canvas handles its own tap
-      // Clicking anything on the focused slot opens detail
+      if(e.target.closest('.cta-btn')) return;
+      if(e.target.closest('.float-canvas')) return;
       const dist = s - virtualIdx;
-      if(dist === 0) openDetail(itemIdx);
+      if(dist === 0){
+        openDetail(itemIdx);
+      } else {
+        // Snap to clicked slot
+        navigate(dist > 0 ? 1 : -1);
+      }
     });
 
     track.appendChild(slot);
@@ -1063,11 +1066,15 @@ function renderGallery(animate=true) {
     else                 { opacity=0.18; blur=2;   zIdx=4;  }
 
     slot.style.transition    = tr;
-    slot.style.transform     = `translateX(calc(-50% + ${x}px)) translateY(-50%) translateZ(${z}px) rotateY(${ry}deg)`;
+    // Focused slot gets an adaptive scale based on viewport — fills more on larger screens
+    const focusedScale = focused
+      ? `clamp(1.0, ${(Math.min(window.innerWidth, window.innerHeight) / 480).toFixed(2)}, 1.65)`
+      : '1';
+    slot.style.transform     = `translateX(calc(-50% + ${x}px)) translateY(-50%) translateZ(${z}px) rotateY(${ry}deg) scale(${focused ? focusedScale : 1})`;
     slot.style.opacity       = opacity;
     slot.style.filter        = blur>0?`blur(${blur}px)`:'none';
     slot.style.zIndex        = zIdx;
-    slot.style.pointerEvents = focused?'all':'none';
+    slot.style.pointerEvents = (focused || absDist <= 2) ? 'all' : 'none';
 
     // SLIDING WINDOW — debounced so we don't thrash contexts during fast scrolling
     // updateTorusWindow() is called after transition completes, not inline here
