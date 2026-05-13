@@ -1028,6 +1028,21 @@
     const TRACKLIST_INDICES=[4,8,10,15,18,25,27,28,37,44,47]; /* Maya (28) added — it IS tracklist */
     const GRAMMY_SPACE=30;
     const GATEKEEPER_SPACE=48;
+    /* Track number labels for tracklist spaces — index = space index */
+    const TRACKLIST_TRACK_NAMES={
+        4:'Track 1: Dayspring',
+        8:'Track 2: Figment',
+        10:'Track 3: The Remedy',
+        15:'Track 4: Dmitri',
+        25:'Track 5: It Happens',
+        18:'Track 6: Nightdrive',
+        27:'Track 7: Ghost 2',
+        28:'Track 8: Maya',
+        37:'Track 9: Tellus',
+        44:'Track 10: Void',
+        47:'Track 11: The Endless Smile',
+        59:'Track 12: Swimmin\' ✦ Hidden'
+    };
     const BLANK_INDICES=boardLayout.reduce((arr,n,i)=>{if(n==="blank")arr.push(i);return arr;},[]);
     let mysterySpaces=new Set();
 
@@ -2436,7 +2451,8 @@
     // ══════════════════════════════════════════════
     function handleSpaceClick(i){
         const r=rules[i]||{title:boardLayout[i],desc:"The road continues."};
-        showSidebar(r.title,(r.emoji?r.emoji+" ":"")+r.desc,getSpaceColor(i));
+        const trackLabel=TRACKLIST_TRACK_NAMES[i]||'';
+        showSidebar(r.title,(r.emoji?r.emoji+" ":"")+r.desc,getSpaceColor(i),trackLabel);
     }
     function updateUI(){
         const p=players[turnIdx];
@@ -2851,11 +2867,11 @@
         if(r.choice==='merch'&&p.isInvestor){showSidebar("ALREADY INVESTED","Inventory full.",spaceCol);endTurn();return;}
         if(r.isAuto){
             if(r.shift<0&&checkPlotArmor(capturedTurnIdx,true)){
-                showSidebar(r.title,(r.emoji||"")+" Blocked by Plot Armor! No penalty.",spaceCol);
+                showSidebar(r.title,(r.emoji||"")+" Blocked by Plot Armor! No penalty.",spaceCol,TRACKLIST_TRACK_NAMES[p.pos]||'');
                 endTurn();return;
             }
             if(p.pos===23)playSfx('1up.wav');
-            showSidebar(r.title,(r.emoji||"")+" "+(r.desc||"Moving..."),spaceCol);
+            showSidebar(r.title,(r.emoji||"")+" "+(r.desc||"Moving..."),spaceCol,TRACKLIST_TRACK_NAMES[p.pos]||'');
             setTimeout(()=>movePlayer(r.shift,false,capturedTurnIdx),1500);return;
         }
 
