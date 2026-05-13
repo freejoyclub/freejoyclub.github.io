@@ -2459,6 +2459,7 @@
         const capturedTurnIdx=turnIdx;
         const p=players[capturedTurnIdx];
         spacesTriggeredThisTurn=new Set(); /* fresh slate each roll */
+        p.wasPassivelyMoved=false; /* clear any leftover passive-move flag from Grammy swap etc */
         /* Mobile video activation bridge — prime media stack on user gesture */
         try{const _vp=document.createElement('video');_vp.src='trevortrim.mp4';_vp.muted=true;_vp.load();}catch(e){}
         /* Set both guards — isRolling stays true until endTurn */
