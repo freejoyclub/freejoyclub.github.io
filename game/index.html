@@ -3434,13 +3434,15 @@ function showStatusPopup(t,d,b1,c1,b2,c2,playerNameHtml=''){
     // ══════════════════════════════════════════════
     // ACCOLADES KEY
     // ══════════════════════════════════════════════
-    function showAccoladeKey(){
+    function showAccoladeKey(startTab='key'){
         const ol=document.createElement('div');
         ol.id='accolade-key-overlay';
         ol.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:9000;display:flex;align-items:center;justify-content:center;padding:16px;box-sizing:border-box;';
         const box=document.createElement('div');
-        box.style.cssText='background:linear-gradient(160deg,rgba(14,14,14,0.95),rgba(30,30,30,0.95));border:1px solid #444;border-radius:18px;padding:24px 28px;max-width:min(440px,90vw);max-height:85vh;overflow-y:auto;font-family:Courier New,monospace;color:white;';
-        box.innerHTML=`<h3 style="font-family:KCStrikerSans,Courier New,monospace;font-size:1.3rem;letter-spacing:2px;margin:0 0 16px;color:#ffd700;">🔑 Accolades & Status Key</h3>
+        box.style.cssText='background:linear-gradient(160deg,rgba(14,14,14,0.95),rgba(30,30,30,0.95));border:1px solid #444;border-radius:18px;padding:24px 28px;max-width:min(440px,90vw);max-height:85vh;overflow-y:auto;font-family:Courier New,monospace;color:white;position:relative;';
+
+        const keyContent=`
+<div id="ako-key">
 <div style="font-size:0.8rem;letter-spacing:1px;color:rgba(255,255,255,0.45);text-transform:uppercase;margin-bottom:8px;">Accolades</div>
 <div style="line-height:2.2;font-size:0.92rem;margin-bottom:16px;">
 <div>🏆 Grammy Won</div><div>📝 Label Contract Signed</div><div>👕 Merch Sold (Investor perk)</div>
@@ -3455,11 +3457,53 @@ function showStatusPopup(t,d,b1,c1,b2,c2,playerNameHtml=''){
 <div style="display:flex;align-items:center;gap:10px;"><span style="background:var(--mystery-glow);color:black;padding:2px 8px;border-radius:3px;font-size:0.75rem;font-weight:bold;letter-spacing:0.5px;">THRIFTY</span><span style="color:rgba(255,255,255,0.75);">Unlocked a merch discount code</span></div>
 <div style="display:flex;align-items:center;gap:10px;"><span style="background:var(--pitch-orange);color:black;padding:2px 8px;border-radius:3px;font-size:0.75rem;font-weight:bold;letter-spacing:0.5px;">PITCHED</span><span style="color:rgba(255,255,255,0.75);">Used Cold Pitch — label takes a cut</span></div>
 </div>
+</div>`;
+
+        const howtoContent=`
+<div id="ako-howto">
+<div style="font-size:0.8rem;letter-spacing:1px;color:rgba(255,255,255,0.45);text-transform:uppercase;margin-bottom:12px;">How to Play</div>
+<div style="line-height:1.9;font-size:0.88rem;color:rgba(255,255,255,0.85);">
+<div style="margin-bottom:8px;"><b style="color:white;">Roll</b> — Click, Space, or Enter. First to Swimmin' wins.</div>
+<div style="margin-bottom:8px;"><b style="color:white;">Choices</b> — Click buttons or use Arrow Keys + Enter. Esc = pass/penalty.</div>
+<div style="margin-bottom:8px;"><b style="color:white;">Spaces</b> — Click any space or Pass to learn its rule.</div>
+<div style="margin-bottom:8px;"><b style="color:white;">Tracklist Spaces</b> — Land on a vinyl to trigger a track event.</div>
+<div style="margin-bottom:8px;"><b style="color:white;">Mystery Spaces</b> — <span style="color:var(--mystery-glow);">?</span> spaces drop lore, photos, videos, or rewards.</div>
+<div style="margin-bottom:8px;"><b style="color:white;">All-Access Pass</b> — Tap your pass card for status, accolades, and label pitching.</div>
+<div style="margin-bottom:8px;"><b style="color:white;">Gatekeeper</b> — Blocks progress unless you're in last place or signed.</div>
+<div style="margin-bottom:8px;"><b style="color:white;">Plot Armor</b> 🛡️ — Rare. Absorbs the next bad outcome automatically.</div>
+<div style="margin-bottom:8px;"><b style="color:white;">Grammy</b> 🏆 — Win one by landing on space 30. Swap with the leader.</div>
+<div style="margin-bottom:8px;"><b style="color:white;">Sound</b> — Menu → Sound Options to toggle tracks, SFX, or mute.</div>
+</div>
+</div>`;
+
+        box.innerHTML=`
+<div style="display:flex;gap:6px;margin-bottom:18px;">
+    <button id="ako-tab-key" onclick="akoSwitch('key')" style="flex:1;padding:8px;border-radius:8px;border:1px solid #555;background:rgba(255,215,0,0.12);color:var(--gold);font-family:KCStrikerSans,Courier New,monospace;font-size:0.8rem;letter-spacing:1.5px;cursor:pointer;transition:all 0.2s;text-transform:uppercase;">🔑 Key</button>
+    <button id="ako-tab-howto" onclick="akoSwitch('howto')" style="flex:1;padding:8px;border-radius:8px;border:1px solid #333;background:transparent;color:rgba(255,255,255,0.5);font-family:KCStrikerSans,Courier New,monospace;font-size:0.8rem;letter-spacing:1.5px;cursor:pointer;transition:all 0.2s;text-transform:uppercase;">📋 How-To</button>
+</div>
+<div id="ako-content">${keyContent}</div>
 <button onclick="document.getElementById('accolade-key-overlay').remove()" style="margin-top:20px;width:100%;padding:10px;background:transparent;border:1px solid #555;color:rgba(255,255,255,0.7);border-radius:8px;font-family:Courier New,monospace;font-size:0.85rem;letter-spacing:2px;cursor:pointer;text-transform:uppercase;transition:all 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.08)'" onmouseout="this.style.background='transparent'">GOT IT</button>`;
+
         ol.appendChild(box);
-        /* Light-dismiss */
         ol.onclick=(e)=>{if(e.target===ol)ol.remove();};
         document.body.appendChild(ol);
+
+        /* Tab switcher — inline so it has closure over content strings */
+        window.akoSwitch=function(tab){
+            const keyTab=document.getElementById('ako-tab-key');
+            const howtoTab=document.getElementById('ako-tab-howto');
+            const content=document.getElementById('ako-content');
+            if(tab==='key'){
+                content.innerHTML=keyContent;
+                keyTab.style.background='rgba(255,215,0,0.12)';keyTab.style.color='var(--gold)';keyTab.style.borderColor='#555';
+                howtoTab.style.background='transparent';howtoTab.style.color='rgba(255,255,255,0.5)';howtoTab.style.borderColor='#333';
+            } else {
+                content.innerHTML=howtoContent;
+                howtoTab.style.background='rgba(255,255,255,0.08)';howtoTab.style.color='white';howtoTab.style.borderColor='#555';
+                keyTab.style.background='transparent';keyTab.style.color='rgba(255,255,255,0.5)';keyTab.style.borderColor='#333';
+            }
+        };
+        if(startTab==='howto')window.akoSwitch('howto');
     }
 
     // ══════════════════════════════════════════════
