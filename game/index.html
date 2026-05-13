@@ -1819,7 +1819,7 @@
         const _cap=()=>{
             if(!_caption)return;
             const c=document.createElement('div');
-            c.style.cssText='font-family:"Courier New",monospace;font-size:0.62rem;letter-spacing:1.5px;color:rgba(255,255,255,0.35);text-transform:lowercase;text-align:center;margin-top:5px;padding:0 4px;';
+            c.style.cssText='font-family:"Courier New",monospace;font-size:0.93rem;letter-spacing:1.5px;color:rgba(255,255,255,0.35);text-transform:lowercase;text-align:center;margin-top:5px;padding:0 4px;';
             c.innerText=_caption;container.appendChild(c);
         };
         if(item.type==='image'){
@@ -2248,13 +2248,16 @@
                 },50);
             },
             "Show Me",()=>{
-                showStatusPopup("📋 How to Play",
-                    "ROLL with Click, Spacebar, or Enter.\nClick (or Arrow Keys + Enter) for Choices.\n\nClick spaces / passes to discover rules.\nSound Options & Accolade Info in the Menu.\n\nFull rules will show as you go. See what happens!\nCollect accolades, band lore, and real-life rewards.\nOpen your All-Access Pass for more\n(hint: if you're falling behind!)",
-                    "Let's go!",()=>{},"",()=>{}
-                );
+                showStatusPopup("📋 How to Play","","Let's go!",()=>{},"",()=>{});
                 document.getElementById('event-btn-secondary').style.display='none';
-                /* 20% smaller text for How to Play card */
-                setTimeout(()=>{const d=document.getElementById('event-desc');if(d)d.style.fontSize='clamp(0.6rem,1.3vw,.8rem)';},30);
+                /* Inject smaller-text wrapper — bypasses !important on #event-desc */
+                const _htd=document.getElementById('event-desc');
+                if(_htd){
+                    const _htw=document.createElement('div');
+                    _htw.style.cssText='font-size:clamp(0.55rem,1.1vw,0.75rem);line-height:1.7;color:rgba(255,255,255,0.92);white-space:pre-line;';
+                    _htw.innerText="ROLL with Click, Spacebar, or Enter.\nClick (or Arrow Keys + Enter) for Choices.\n\nClick spaces / passes to discover rules.\nSound Options & Accolade Info in the Menu.\n\nFull rules will show as you go. See what happens!\nCollect accolades, band lore, and real-life rewards.\nOpen your All-Access Pass for more\n(hint: if you're falling behind!)";
+                    _htd.appendChild(_htw);
+                }
             }
         );
         /* Inject credits into the first popup immediately */
