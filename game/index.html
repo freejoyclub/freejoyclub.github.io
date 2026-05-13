@@ -235,13 +235,28 @@
         #nav-knob-btn:active { box-shadow:inset 0 2px 5px rgba(0,0,0,0.7); transform:scale(0.96); background:#111; }
         .knob-line { width:45%; height:2px; background:rgba(255,255,255,0.65); border-radius:2px; pointer-events:none; }
         #nav-menu {
-            display:none; flex-direction:column; gap:8px;
+            display:none; flex-direction:column; gap:6px;
             position:fixed; bottom:calc(var(--bar-h) + 8px); right:clamp(6px,2vw,16px);
             background:rgba(14,14,14,0.98); border:1px solid #333; border-radius:14px;
-            padding:12px; min-width:220px;
+            padding:10px; min-width:180px; max-width:210px;
             box-shadow:0 -10px 40px rgba(0,0,0,0.85);
             animation:menuBloom 0.2s ease forwards; z-index:999999;
         }
+        #sound-submenu {
+            display:none; flex-direction:column; gap:6px;
+            padding:8px; margin-top:2px;
+            background:rgba(0,0,0,0.4); border-radius:8px;
+            border:1px solid rgba(255,255,255,0.08);
+        }
+        #sound-submenu.open { display:flex; }
+        #sound-submenu-mute {
+            background:#1a1a1a; border:1.5px solid #660000; color:#bb1111;
+            font-family:sans-serif; font-size:0.6rem; font-weight:bold;
+            letter-spacing:1px; text-transform:uppercase; border-radius:6px;
+            padding:6px 10px; cursor:pointer; transition:all 0.15s ease;
+            display:flex; align-items:center; justify-content:center;
+        }
+        #sound-submenu-mute.muted { background:#880000; border-color:#cc0000; color:#000; }
         #nav-menu.open { display:flex; }
         .nav-menu-btn {
             display:flex; align-items:center; gap:12px; padding:10px 14px;
@@ -811,16 +826,20 @@
                 <div class="knob-line"></div><div class="knob-line"></div><div class="knob-line"></div>
             </button>
             <div id="nav-menu">
-                <button class="nav-menu-btn btn-tracks" id="tracks-btn" onclick="toggleTracks()"><span class="nav-icon" id="tracks-icon">🎵</span> TRACKS: <span id="tracks-status">ON</span></button>
-                <button class="nav-menu-btn btn-sfx" id="sfx-btn" onclick="toggleSfx()"><span class="nav-icon" id="sfx-icon">🔔</span> SFX: <span id="sfx-status">ON</span></button>
-                <button class="nav-menu-btn btn-accolade-key" onclick="showAccoladeKey();closeNavMenu()"><span class="nav-icon">🔑</span> Accolades Key</button>
+                <button class="nav-menu-btn" onclick="toggleSoundSubmenu()"><span class="nav-icon">🔊</span> Sound Options</button>
+                <div id="sound-submenu">
+                    <button id="sound-submenu-mute" onclick="toggleMute()">MUTE</button>
+                    <button class="nav-menu-btn btn-tracks" id="tracks-btn" onclick="toggleTracks()"><span class="nav-icon" id="tracks-icon">🎵</span> TRACKS: <span id="tracks-status">ON</span></button>
+                    <button class="nav-menu-btn btn-sfx" id="sfx-btn" onclick="toggleSfx()"><span class="nav-icon" id="sfx-icon">🔔</span> SFX: <span id="sfx-status">ON</span></button>
+                </div>
+                <button class="nav-menu-btn btn-accolade-key" onclick="showAccoladeKey();closeNavMenu()"><span class="nav-icon">🔑</span> Key / How-To</button>
                 <button class="nav-menu-btn btn-restart" onclick="confirmSoftRestart();closeNavMenu()"><span class="nav-icon">🔄</span> Restart Tour</button>
                 <button class="nav-menu-btn btn-newband" onclick="confirmHardReset();closeNavMenu()"><span class="nav-icon">💀</span> New Band</button>
                 <button class="nav-menu-btn btn-fullscreen" id="fullscreen-btn" onclick="toggleFullscreen()"><span class="nav-icon">⛶</span> <span id="fullscreen-label">Fullscreen</span></button>
-                <button class="nav-menu-btn btn-home"    onclick="window.open('https://freejoy.club','_blank')"><span class="nav-icon">🏠</span> Home</button>
-                <button class="nav-menu-btn btn-store"   onclick="window.open('https://freejoy.club','_blank')"><span class="nav-icon">👕</span> Store</button>
-                <button class="nav-menu-btn btn-album"   onclick="window.open('https://freejoy.club','_blank')"><span class="nav-icon">▶️</span> Play the Album</button>
-                <div style="font-family:'Courier New',monospace;font-size:0.55rem;letter-spacing:1.5px;color:rgba(255,255,255,0.25);text-align:center;padding:6px 4px 2px;text-transform:uppercase;">© 2026. Music/Game/Sound Design by Fearjoy</div>
+                <button class="nav-menu-btn btn-home" onclick="window.open('https://freejoy.club','_blank')"><span class="nav-icon">🏠</span> Fearjoy - Home</button>
+                <button class="nav-menu-btn btn-store" onclick="window.open('https://freejoy.club','_blank')"><span class="nav-icon">👕</span> Store</button>
+                <button class="nav-menu-btn btn-album" onclick="window.open('https://freejoy.club','_blank')"><span class="nav-icon">▶️</span> Play the Album</button>
+                <div style="font-family:'Courier New',monospace;font-size:0.5rem;letter-spacing:1px;color:rgba(255,255,255,0.25);text-align:center;padding:6px 4px 2px;text-transform:uppercase;white-space:normal;line-height:1.5;">© 2026. Music/Game/<br>Sound Design by Fearjoy</div>
             </div>
         </div>
     </div>
@@ -1238,6 +1257,12 @@
             muteBtn.innerText=masterMuted?'MUTED':'MUTE';
             muteBtn.classList.toggle('muted',masterMuted);
         }
+        /* Sync sound submenu mute button */
+        const subMute=document.getElementById('sound-submenu-mute');
+        if(subMute){
+            subMute.innerText=masterMuted?'MUTED':'MUTE';
+            subMute.classList.toggle('muted',masterMuted);
+        }
         /* Sync setup mute button */
         const setupMute=document.getElementById('setup-mute-btn');
         if(setupMute){
@@ -1561,7 +1586,13 @@
     // ══════════════════════════════════════════════
     
     function toggleNavMenu(){document.getElementById('nav-menu').classList.toggle('open');}
-    function closeNavMenu(){document.getElementById('nav-menu').classList.remove('open');}
+    function closeNavMenu(){
+        document.getElementById('nav-menu').classList.remove('open');
+        const ss=document.getElementById('sound-submenu');if(ss)ss.classList.remove('open');
+    }
+    function toggleSoundSubmenu(){
+        const ss=document.getElementById('sound-submenu');if(ss)ss.classList.toggle('open');
+    }
     document.addEventListener('click',e=>{if(!document.getElementById('nav-knob').contains(e.target))closeNavMenu();});
 
     function toggleSetupMenu(){
@@ -3341,8 +3372,9 @@ function showStatusPopup(t,d,b1,c1,b2,c2,playerNameHtml=''){
             <div style="display:flex;flex-direction:column;gap:10px;align-items:center;margin-top:20px;">
                 <a href="https://freejoy.club" target="_blank" class="win-link-btn win-cta" style="--btn-color:var(--joy-glow);color:var(--joy-glow);font-size:1.1rem;padding:14px 28px;">▶ PLAY THE ALBUM</a>
                 <a href="https://freejoy.club/store" target="_blank" class="win-link-btn" style="--btn-color:#ff00ff;color:#ff00ff;">${storeLbl}</a>
-                <a href="https://freejoy.club" target="_blank" class="win-link-btn" style="--btn-color:#ffffff;color:#ffffff;">HOME</a>
-                <div style="display:flex;gap:10px;width:min(400px,90%);margin-top:5px;">
+                <a href="https://freejoy.club/swimmin.mp3" target="_blank" class="win-link-btn" style="--btn-color:var(--blue-glow);color:var(--blue-glow);border-width:2px;">🌊 Download: Swimmin' (Secret Track)</a>
+                <a href="https://freejoy.club" target="_blank" class="win-link-btn" style="--btn-color:#ffffff;color:#ffffff;">Fearjoy - Home</a>
+                    <div style="display:flex;gap:10px;width:min(400px,90%);margin-top:5px;">
                     <button id="hard-reset-win" class="win-link-btn" style="--btn-color:var(--fear-glow);color:var(--fear-glow);flex:1;cursor:pointer;">NEW BAND</button>
                     <button id="soft-reset-win" class="win-link-btn" style="--btn-color:#ffa500;color:#ffa500;flex:1;cursor:pointer;">ANOTHER TOUR</button>
                 </div>
