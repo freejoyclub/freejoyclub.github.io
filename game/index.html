@@ -1,7 +1,7 @@
 <!DOCTYPE html><html lang="en"><head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Fearjoy - Game (v36)</title>
+    <title>Fearjoy - Game (v37)</title>
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
@@ -1756,8 +1756,9 @@
                 const p=players[playerIdx];
                 p.hasThrifty=true;p.merchdiscountPct=pct;p.accolades.push('🎫');
                 if(pct>highestDiscountPct)highestDiscountPct=pct;
-                p.pos=Math.min(59,p.pos+2);
-                updatePositions();flashSpaceLanding(p.pos);renderPasses();
+                renderPasses();
+                modal.style.display='none';
+                movePlayer(2,false,playerIdx);
             }
         };
         body.appendChild(codeEl);
@@ -1783,11 +1784,14 @@
                 const p=players[playerIdx];
                 p.hasThrifty=true;p.merchdiscountPct=pct;p.accolades.push('🎫');
                 if(pct>highestDiscountPct)highestDiscountPct=pct;
-                p.pos=Math.min(59,p.pos+2);
-                updatePositions();flashSpaceLanding(p.pos);renderPasses();
+                pBtn.style.background='';pBtn.style.color='';
+                renderPasses();
+                modal.style.display='none';
+                movePlayer(2,false,playerIdx);
+            } else {
+                pBtn.style.background='';pBtn.style.color='';
+                modal.style.display='none';
             }
-            pBtn.style.background='';pBtn.style.color='';
-            modal.style.display='none';
         };
         sBtn.style.display='inline-block';
         sBtn.innerText='Wow, nice try';
@@ -2242,6 +2246,7 @@
     // ══════════════════════════════════════════════
     function triggerColdPitch(){
         collapsePass();
+        spacesTriggeredThisTurn=new Set(); /* fresh slate — pitch replaces the roll */
         const p=players[turnIdx];
         const descEl=document.getElementById('event-desc');
         descEl.innerHTML='';
@@ -2413,15 +2418,15 @@
         if(p.nightDriveActive){
             isRolling=true;isMoving=true;
             const _ndIdx=turnIdx;
+            const _ndNameHtml=`<div style="font-family:'KCStrikerSans',monospace;font-size:1.4rem;color:${players[_ndIdx].avatar.color};margin-bottom:8px;letter-spacing:2px;">${players[_ndIdx].name},</div>`;
             showStatusPopup("🌙 NIGHTDRIVE CHECK","Did you keep your eyes closed?",
                 "YES - EYES SHUT",()=>{
-            setTimeout(()=>{const d=document.getElementById('event-desc');const h=document.createElement('div');h.style.cssText=`font-family:'KCStrikerSans',monospace;font-size:1.4rem;color:${players[_ndIdx].avatar.color};margin-bottom:8px;letter-spacing:2px;`;h.innerText=players[_ndIdx].name+',';d.insertBefore(h,d.firstChild);},0);
                     players[_ndIdx].nightDriveActive=false;
                     isRolling=false;isMoving=false;
                     document.getElementById('overlay-event').style.display='none';
                     document.getElementById('roll-btn').disabled=false;
                     performActualRoll();
-                },"NO - PEEKED",()=>{players[_ndIdx].nightDriveActive=false;movePlayer(-1,false,_ndIdx);});return;
+                },"NO - PEEKED",()=>{players[_ndIdx].nightDriveActive=false;movePlayer(-1,false,_ndIdx);},_ndNameHtml);return;
         }
         checkNextHonor(p);
     }
@@ -2429,28 +2434,27 @@
         const _hnIdx=turnIdx;
         if(p.ghostCounter>0){
             isRolling=true;isMoving=true;
+            const _ghNameHtml=`<div style="font-family:'KCStrikerSans',monospace;font-size:1.4rem;color:${players[_hnIdx].avatar.color};margin-bottom:8px;letter-spacing:2px;">${players[_hnIdx].name},</div>`;
             showStatusPopup("👻 GHOST CHECK","Did you stay quiet?",
                 "YES - I WAS SILENT",()=>{
-            setTimeout(()=>{const d=document.getElementById('event-desc');const h=document.createElement('div');h.style.cssText=`font-family:'KCStrikerSans',monospace;font-size:1.4rem;color:${players[_hnIdx].avatar.color};margin-bottom:8px;letter-spacing:2px;`;h.innerText=players[_hnIdx].name+',';d.insertBefore(h,d.firstChild);},0);
                     players[_hnIdx].ghostCounter=0;
                     isRolling=false;isMoving=false;
                     document.getElementById('overlay-event').style.display='none';
                     document.getElementById('roll-btn').disabled=false;
-                    /* Proceed directly to roll — same turn continues */
                     performActualRoll();
-                },"NO - I SLIPPED",()=>{players[_hnIdx].ghostCounter=0;movePlayer(-1,false,_hnIdx);});return;
+                },"NO - I SLIPPED",()=>{players[_hnIdx].ghostCounter=0;movePlayer(-1,false,_hnIdx);},_ghNameHtml);return;
         }
         if(p.smileActive){
             isRolling=true;isMoving=true;
+            const _smNameHtml=`<div style="font-family:'KCStrikerSans',monospace;font-size:1.4rem;color:${players[_hnIdx].avatar.color};margin-bottom:8px;letter-spacing:2px;">${players[_hnIdx].name},</div>`;
             showStatusPopup("💀 THE ENDLESS SMILE","Did you smile endlessly?",
                 "HELD IT",()=>{
-            setTimeout(()=>{const d=document.getElementById('event-desc');const h=document.createElement('div');h.style.cssText=`font-family:'KCStrikerSans',monospace;font-size:1.4rem;color:${players[_hnIdx].avatar.color};margin-bottom:8px;letter-spacing:2px;`;h.innerText=players[_hnIdx].name+',';d.insertBefore(h,d.firstChild);},0);
                     players[_hnIdx].smileActive=false;
                     isRolling=false;isMoving=false;
                     document.getElementById('overlay-event').style.display='none';
                     document.getElementById('roll-btn').disabled=false;
                     performActualRoll();
-                },"BROKE IT",()=>{players[_hnIdx].smileActive=false;movePlayer(-1,false,_hnIdx);});return;
+                },"BROKE IT",()=>{players[_hnIdx].smileActive=false;movePlayer(-1,false,_hnIdx);},_smNameHtml);return;
         }
         performActualRoll();
     }
@@ -3160,8 +3164,8 @@
     // ══════════════════════════════════════════════
     // STATUS POPUP
     // ══════════════════════════════════════════════
-    function showStatusPopup(t,d,b1,c1,b2,c2){
-        const fb=document.getElementById('maya-fear-btn');if(fb)fb.remove();
+function showStatusPopup(t,d,b1,c1,b2,c2,playerNameHtml=''){
+    const fb=document.getElementById('maya-fear-btn');if(fb)fb.remove();
         /* Hide space-popup mute btn on non-space popups */
         const _pmb=document.getElementById('popup-mute-btn');if(_pmb)_pmb.style.display='none';
         const modal=document.getElementById('overlay-event'),popupEl=document.getElementById('main-popup');
@@ -3169,7 +3173,9 @@
         popupEl.style.borderColor='#444';popupEl.style.boxShadow='none';
     
         document.getElementById('event-title').innerText=t;
-        document.getElementById('event-desc').innerText=d;
+        const _descEl=document.getElementById('event-desc');
+        if(playerNameHtml){_descEl.innerHTML=playerNameHtml+`<span>${d}</span>`;}
+        else{_descEl.innerText=d;}
         document.getElementById('coin').style.display='none';
         /* Clear any leftover timer state */
         const tu=document.getElementById('timer-ui');if(tu){tu.style.display='none';tu.innerText='';}
