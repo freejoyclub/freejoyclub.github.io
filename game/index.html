@@ -627,6 +627,7 @@
         #event-btn-secondary { display:none; background:#333; color:white; margin-left:clamp(8px,1.5vw,15px); }
         #event-btn-secondary:hover { transform:translateY(-2px) scale(1.04); background:#444; box-shadow:0 6px 20px rgba(0,0,0,0.4); }
         .btn-kb-focus { outline:2px solid white !important; animation:btnFocusPulse 1s ease-in-out infinite; }
+        .kb-hint { display:block; font-family:'Courier New',monospace; font-size:0.52rem; letter-spacing:1.5px; color:rgba(255,255,255,0.28); text-align:center; margin-top:5px; text-transform:uppercase; pointer-events:none; user-select:none; }
         .btn-fear {
             font-family:'KCStrikerSans','Courier New',monospace;
             padding:clamp(8px,1.2vh,14px) clamp(16px,2.5vw,32px);
@@ -866,8 +867,14 @@
             <div id="coin" style="width:140px;height:140px;background:var(--gold);border:8px solid #b8860b;border-radius:50%;margin:25px auto;display:none;align-items:center;justify-content:center;font-size:2.5rem;font-weight:bold;color:#5c4305;transform-style:preserve-3d;">?</div>
             <div id="timer-ui" style="display:none;"></div>
             <div id="action-bar">
-                <button id="event-btn-primary"></button>
-                <button id="event-btn-secondary"></button>
+                <div style="display:flex;flex-direction:column;align-items:center;">
+                    <button id="event-btn-primary"></button>
+                    <span class="kb-hint">[Space] / Enter</span>
+                </div>
+                <div style="display:flex;flex-direction:column;align-items:center;">
+                    <button id="event-btn-secondary"></button>
+                    <span class="kb-hint" id="kb-hint-secondary">[Esc]</span>
+                </div>
             </div>
         </div>
     </div>
@@ -1489,6 +1496,8 @@
         const modalOpen=modal&&modal.style.display==='flex';
         if(!modalOpen){
             if(e.code==='Space'||e.code==='Enter'){e.preventDefault();doRoll();}
+            /* Esc dismisses sidecard when no modal open */
+            if(e.code==='Escape'){const sb=document.getElementById('rule-sidebar');if(sb.classList.contains('active')){e.preventDefault();handleSidebarClick(e);}}
             return;
         }
         const btns=[...document.querySelectorAll('#action-bar button')].filter(b=>b.style.display!=='none'&&!b.disabled);
@@ -1500,9 +1509,23 @@
             btns[kbFocusIdx].classList.add('btn-kb-focus');
         }
         if(e.code==='Space'||e.code==='Enter'){e.preventDefault();btns[kbFocusIdx]?.click();}
+        /* Esc always fires secondary button if visible, otherwise primary */
+        if(e.code==='Escape'){
+            e.preventDefault();
+            const sBtn=document.getElementById('event-btn-secondary');
+            const pBtn=document.getElementById('event-btn-primary');
+            if(sBtn&&sBtn.style.display!=='none'&&!sBtn.disabled){sBtn.click();}
+            else if(pBtn&&pBtn.style.display!=='none'&&!pBtn.disabled){pBtn.click();}
+        }
     });
-    function resetKbFocus(){kbFocusIdx=0;document.querySelectorAll('.btn-kb-focus').forEach(b=>b.classList.remove('btn-kb-focus'));}
-
+    function resetKbFocus(){
+        kbFocusIdx=0;
+        document.querySelectorAll('.btn-kb-focus').forEach(b=>b.classList.remove('btn-kb-focus'));
+        /* Sync kb hint visibility with secondary button state */
+        const sBtn=document.getElementById('event-btn-secondary');
+        const hint=document.getElementById('kb-hint-secondary');
+        if(hint)hint.style.visibility=sBtn&&sBtn.style.display!=='none'?'visible':'hidden';
+    }
     // ══════════════════════════════════════════════
     // NAV + RESTART
     // ══════════════════════════════════════════════
