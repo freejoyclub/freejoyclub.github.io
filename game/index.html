@@ -1631,6 +1631,29 @@
         const minPos=Math.min(...players.map(p=>p.pos));
         return players.reduce((arr,p,i)=>{if(p.pos===minPos)arr.push(i);return arr;},[]);
     }
+
+    /* JS-driven space size — measures actual available board area and sets --space-size */
+    function updateSpaceSize(){
+        const isLandscape=detectLayout()==='landscape';
+        const bar=document.getElementById('ui-layer');
+        const passSidebar=document.getElementById('pass-sidebar');
+        const barH=bar?bar.offsetHeight:72;
+        /* Available height = full viewport minus bar, with small buffer */
+        const availH=window.innerHeight-barH-16;
+        /* Available width = full viewport minus pass sidebar in landscape */
+        const passW=(!isLandscape)?0:(passSidebar?passSidebar.offsetWidth:0);
+        const availW=window.innerWidth-passW-32;
+        /* Rows/cols for each layout */
+        const rows=isLandscape?6:10;
+        const cols=isLandscape?10:6;
+        /* Gap is roughly 0.85vw clamped 2-18px */
+        const gap=Math.max(2,Math.min(18,window.innerWidth*0.0085));
+        /* Max space size that fits height and width */
+        const byH=Math.floor((availH-(rows-1)*gap)/rows);
+        const byW=Math.floor((availW-(cols-1)*gap)/cols);
+        const size=Math.max(22,Math.min(85,byH,byW));
+        document.documentElement.style.setProperty('--space-size',size+'px');
+    }
     let _lastRefreshW=0,_lastRefreshH=0,_resizeTimer=null;
     window.addEventListener('resize',()=>{
         if(_resizeTimer)clearTimeout(_resizeTimer);
@@ -1643,6 +1666,7 @@
             if(!document.getElementById('s0')){updatePositions();drawTapePath();return;}
             if(newMode===layoutMode){
                 /* Same mode — redraw arrows, tape, positions */
+                updateSpaceSize();
                 drawArrows(layoutMode);drawTapePath();updatePositions();
             } else {
                 refreshLayout();
@@ -2042,9 +2066,11 @@
         const newMode=detectLayout();
         if(!force&&newMode===layoutMode&&document.getElementById('s0')){
             /* Mode unchanged — redraw arrows, tape, positions */
+            updateSpaceSize();
             drawArrows(layoutMode);drawTapePath();updatePositions();return;
         }
         layoutMode=newMode;
+        updateSpaceSize();
         applyLayout(layoutMode);
         setTimeout(()=>{
             applySpaceOffsets(layoutMode);
@@ -2103,6 +2129,7 @@
         });
         
             /* Apply grid placement */
+        updateSpaceSize();
         applyLayout(layoutMode);
         applySpaceOffsets(layoutMode);
         players.forEach((p,i)=>{
