@@ -463,7 +463,6 @@
         #board-outer {
             display:flex; align-items:center; justify-content:center;
             width:100%; height:100%; position:relative; z-index:1;
-            margin-left:calc(var(--pass-w) * -1);
         }
         #tape-svg { position:absolute; inset:0; width:100%; height:100%; pointer-events:none; z-index:2; overflow:visible; }
         #board-container {
@@ -1504,6 +1503,18 @@
     // ══════════════════════════════════════════════
     // TAPE PATH SVG — wider, smoother, curved corners
     // ══════════════════════════════════════════════
+    
+    /* Get element center in layout-space relative to ancestor — rotation-safe */
+    function getLayoutCenter(el,ancestor){
+        let x=el.offsetLeft+el.offsetWidth/2;
+        let y=el.offsetTop+el.offsetHeight/2;
+        let curr=el.offsetParent;
+        while(curr&&curr!==ancestor&&curr!==document.body){
+            x+=curr.offsetLeft;y+=curr.offsetTop;curr=curr.offsetParent;
+        }
+        return{x,y,w:el.offsetWidth,h:el.offsetHeight};
+    }
+
     function drawTapePath(){
         const svg=document.getElementById('tape-svg');
         const outer=document.getElementById('board-outer');
@@ -1511,24 +1522,18 @@
         svg.setAttribute('viewBox',`0 0 ${outer.offsetWidth} ${outer.offsetHeight}`);
         svg.setAttribute('width',outer.offsetWidth);
         svg.setAttribute('height',outer.offsetHeight);
-        const origin=outer.getBoundingClientRect();
         const pts=[];
         const isLandscape=layoutMode==='landscape';
         boardLayout.forEach((_,i)=>{
             const el=document.getElementById('s'+i);
             if(!el)return;
-            const r=el.getBoundingClientRect();
-            let cx=r.left-origin.left+r.width/2;
-            let cy=r.top-origin.top+r.height/2;
-            /* Offset reel space endpoints toward the board — safe starting value of 30% of space size */
-            const nudge=r.width*0.40;
-            if(i===0){
-                /* Start space: nudge toward board — up in landscape, right in portrait */
-                if(isLandscape)cy-=nudge; else cx+=nudge;
-            } else if(i===59){
-                /* End space: nudge toward board — down in landscape, left in portrait */
-                if(isLandscape)cy+=nudge; else cx-=nudge;
-            }
+            const lc=getLayoutCenter(el,outer);
+            let cx=lc.x;
+            let cy=lc.y;
+            /* Offset reel space endpoints toward the board */
+            const nudge=lc.w*0.40;    
+            if(i===0){ cy-=nudge; }
+            else if(i===59){ cy+=nudge; }
             pts.push({x:cx,y:cy});
         });
         if(pts.length<2)return;
@@ -1753,26 +1758,24 @@
         return players.reduce((arr,p,i)=>{if(p.pos===minPos)arr.push(i);return arr;},[]);
     }
 
-    /* JS-driven space size — always landscape 10×6, uses larger dim as width */
+    /* JS-driven space size — always landscape 10×6 */
     function updateSpaceSize(){
-        /* Always treat as landscape: larger dim = width, smaller = height */
-        const vw=Math.max(window.innerWidth,window.innerHeight);
         const vh=Math.min(window.innerWidth,window.innerHeight);
         const bar=document.getElementById('ui-layer');
         const barH=bar?bar.offsetHeight:68;
-        /* Drawer mode: no pass sidebar eating width */
-        const passEl=document.getElementById('pass-sidebar');
-        const passW=isMobileDrawer()?0:(passEl&&passEl.style.display!=='none'?passEl.offsetWidth:0);
+        /* Use actual board-scroll width — already accounts for sidebar */
+        const boardScroll=document.getElementById('board-scroll');
+        const availW=boardScroll?(boardScroll.offsetWidth-20):Math.max(window.innerWidth,window.innerHeight)-20;
         const availH=vh-barH-14;
-        const availW=vw-passW-20;
         const rows=6,cols=10;
+        const vw=Math.max(window.innerWidth,window.innerHeight);
         const gap=Math.max(2,Math.min(14,vw*0.007));
         const byH=Math.floor((availH-(rows-1)*gap)/rows);
         const byW=Math.floor((availW-(cols-1)*gap)/cols);
-        /* Cap at 110 on large screens */
         const size=Math.max(22,Math.min(110,byH,byW));
         document.documentElement.style.setProperty('--space-size',size+'px');
     }
+        
         
     let _lastRefreshW=0,_lastRefreshH=0,_resizeTimer=null;
     window.addEventListener('resize',()=>{
@@ -2129,10 +2132,8 @@
 
     /* Draw decoupled arrows on #board-outer after layout is applied */
     function drawArrows(mode){
-        /* Remove old arrows */
         document.querySelectorAll('.board-arrow').forEach(a=>a.remove());
         const outer=document.getElementById('board-outer');
-        const outerRect=outer.getBoundingClientRect();
         const COLS=mode==='landscape'?10:6;
         const ROWS=mode==='landscape'?6:10;
         const dirs=computeNextDirs(mode);
@@ -2141,16 +2142,16 @@
             const dir=dirs[i];if(!dir)continue;
             const s=document.getElementById('s'+i);
             if(!s)continue;
-            const sr=s.getBoundingClientRect();
-            const cx=sr.left-outerRect.left+sr.width/2;
-            const cy=sr.top-outerRect.top+sr.height/2;
+            const lc=getLayoutCenter(s,outer);
+            const cx=lc.x;
+            const cy=lc.y;
             const a=document.createElement('div');
             a.className='board-arrow';
             a.innerHTML='➜';
             let tx=cx,ty=cy,rot=0,ox=0,oy=0;
             /* Tracklist spaces are scaled 1.15x so arrows are visually farther — pull 25% closer */
             const isTracklist=TRACKLIST_INDICES.includes(i)||i===0;
-            const off=sr.width*(isTracklist?0.486:0.57);
+            const off=lc.w*(isTracklist?0.486:0.57);
             if(dir==='right'){ox=off;rot=0;}
             else if(dir==='left'){ox=-off;rot=180;}
             else if(dir==='down'){oy=off;rot=90;}
