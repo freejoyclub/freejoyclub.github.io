@@ -228,9 +228,9 @@
             width:clamp(38px,4.5vw,58px); height:clamp(26px,3.2vw,42px);
             border-radius:6px; background:#1a1a1a; border:1.5px solid #444;
             cursor:pointer; display:flex; align-items:center; justify-content:center;
-            color:rgba(255,255,255,0.7); font-family:'Courier New',monospace;
-            font-size:clamp(0.42rem,0.7vw,0.65rem); font-weight:bold;
-            letter-spacing:1px; text-transform:uppercase;
+            color:rgba(255,255,255,0.7); font-family:sans-serif;
+            font-size:clamp(0.42rem,0.7vw,0.65rem); font-weight:700;
+            letter-spacing:0.5px; text-transform:uppercase;
             transition:all 0.15s ease; padding:0;
             box-shadow:0 2px 5px rgba(0,0,0,0.6); flex-shrink:2;
         }
@@ -283,8 +283,8 @@
             width:clamp(28px,3.8vw,52px); height:clamp(26px,3.2vw,42px);
             border-radius:6px; background:#1a1a1a; border:1.5px solid #660000;
             cursor:pointer; color:#bb1111; font-family:sans-serif;
-            font-size:clamp(0.42rem,0.7vw,0.65rem); font-weight:bold;
-            letter-spacing:1px; text-transform:uppercase;
+            font-size:clamp(0.42rem,0.7vw,0.65rem); font-weight:700;
+            letter-spacing:0.5px; text-transform:uppercase;
             box-shadow:0 0 6px rgba(160,0,0,0.35); transition:all 0.15s ease;
             display:flex; align-items:center; justify-content:center; flex-shrink:2;
         }
@@ -969,9 +969,9 @@
             </div>
             <!-- Mini menu/mute for setup screen -->
             <div style="display:flex;justify-content:center;align-items:center;gap:8px;margin-top:18px;padding-top:14px;border-top:1px solid rgba(255,255,255,0.08);">
-                <button id="setup-mute-btn" onclick="toggleMute()" style="background:#1a1a1a;border:1.5px solid #660000;color:#bb1111;font-family:sans-serif;font-size:0.55rem;font-weight:bold;letter-spacing:1px;text-transform:uppercase;border-radius:6px;padding:5px 10px;cursor:pointer;transition:all 0.15s ease;">MUTE</button>
-                <button onclick="toggleFullscreen()" style="background:#1a1a1a;border:1.5px solid #444;color:rgba(255,255,255,0.7);font-family:'Courier New',monospace;font-size:0.55rem;font-weight:bold;letter-spacing:1px;text-transform:uppercase;border-radius:6px;padding:5px 10px;cursor:pointer;transition:all 0.15s ease;" title="Fullscreen">⛶</button>
-                <button onclick="toggleSetupMenu()" style="background:#1a1a1a;border:1.5px solid #444;color:rgba(255,255,255,0.7);font-family:'Courier New',monospace;font-size:0.55rem;font-weight:bold;letter-spacing:1px;text-transform:uppercase;border-radius:6px;padding:5px 10px;cursor:pointer;transition:all 0.15s ease;" title="Options">MENU</button>
+                <button id="setup-mute-btn" onclick="toggleMute()" style="background:#1a1a1a;border:1.5px solid #660000;color:#bb1111;font-family:sans-serif;font-size:0.82rem;font-weight:700;letter-spacing:0.5px;text-transform:uppercase;border-radius:6px;padding:8px 15px;cursor:pointer;transition:all 0.15s ease;">MUTE</button>
+                <button onclick="toggleFullscreen()" style="background:#1a1a1a;border:1.5px solid #444;color:rgba(255,255,255,0.7);font-family:sans-serif;font-size:0.82rem;font-weight:700;letter-spacing:0.5px;text-transform:uppercase;border-radius:6px;padding:8px 15px;cursor:pointer;transition:all 0.15s ease;" title="Fullscreen">⛶</button>
+                <button onclick="toggleSetupMenu()" style="background:#1a1a1a;border:1.5px solid #444;color:rgba(255,255,255,0.7);font-family:sans-serif;font-size:0.82rem;font-weight:700;letter-spacing:0.5px;text-transform:uppercase;border-radius:6px;padding:8px 15px;cursor:pointer;transition:all 0.15s ease;" title="Options">MENU</button>
                 <div id="setup-menu" style="display:none;position:fixed;inset:0;z-index:99999;align-items:center;justify-content:center;background:rgba(0,0,0,0.7);" onclick="if(event.target===this)closeSetupMenu()">
                     <div style="background:rgba(14,14,14,0.98);border:1px solid #333;border-radius:14px;padding:12px;min-width:200px;display:flex;flex-direction:column;gap:8px;animation:menuBloom 0.2s ease forwards;">
                         <button class="nav-menu-btn btn-fullscreen" onclick="toggleFullscreen()"><span class="nav-icon">⛶</span> <span id="setup-fullscreen-label">Fullscreen</span></button>
