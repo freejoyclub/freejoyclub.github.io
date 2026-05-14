@@ -1,7 +1,7 @@
 <!DOCTYPE html><html lang="en"><head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Fearjoy - Game (v37.7)</title>
+    <title>Fearjoy - Game (v38)</title>
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
@@ -740,47 +740,72 @@
         #selection-reminder-title { font-family:'KCStrikerSans','Courier New',monospace; font-size:0.9rem; letter-spacing:2px; color:white; margin-bottom:6px; text-transform:uppercase; }
 
         /* ── RESPONSIVE ── */
-        @media (max-width:900px),(orientation:portrait) {
-            :root {
-                --space-size:clamp(22px,7.8vw,70px);
-                --space-font:clamp(0.25rem,1.4vw,0.62rem);
-                --space-emoji:clamp(0.42rem,1.7vw,1rem);
-                --board-gap:clamp(2px,1.1vw,9px);
-                --board-pad:clamp(3px,1.1vw,12px);
-                --bar-h:clamp(48px,9vh,78px);
-                --pass-w:100%;
-            }
-            #main-area { flex-direction:column; }
-            #pass-sidebar {
-                width:100%; flex-direction:row;
-                height:clamp(80px,14vh,110px); min-height:clamp(80px,14vh,110px); max-height:clamp(80px,14vh,110px);
-                flex-shrink:0; justify-content:center; align-items:center;
-                padding:clamp(4px,1vw,10px) clamp(8px,2vw,16px);
-                overflow-x:auto; overflow-y:visible;
-                order:2; gap:clamp(6px,2vw,14px);
-                -webkit-mask-image:linear-gradient(to right,transparent 0%,black 7%,black 93%,transparent 100%);
-                mask-image:linear-gradient(to right,transparent 0%,black 7%,black 93%,transparent 100%);
-            }
-            #board-scroll { order:1; justify-content:center; }
-            #board-outer { margin-left:0; }
-            #lineup-label { writing-mode:horizontal-tb; margin-bottom:0; margin-right:8px; flex-shrink:0; font-size:clamp(0.7rem,2vw,0.95rem); letter-spacing:3px; }
-            .access-pass { width:clamp(72px,22vw,115px); flex-shrink:0; }
-            #rule-sidebar {
-                top:auto; bottom:calc(var(--bar-h) + 4px);
-                max-height:55vh; height:auto;
-                border-radius:20px 20px 0 0;
-                border-bottom:none; border-right:2px solid var(--joy-glow);
-                right:-100%; transition:right 0.55s cubic-bezier(0.175,0.885,0.32,1.275);
-            }
-            #rule-sidebar.active { right:0; }
-            #lore-peek-tab { left:50%; top:auto; bottom:calc(100% + 2px); transform:translateX(-50%) rotate(90deg); height:28px; width:60px; border-radius:10px 10px 0 0; }
+        /* ── FORCE LANDSCAPE ROTATION — applied by JS when innerWidth < innerHeight ── */
+        html.force-landscape { overflow:hidden; width:100vw; height:100vh; }
+        body.force-landscape {
+            position:fixed; top:50%; left:50%;
+            width:100vh; height:100vw;
+            transform:translate(-50%,-50%) rotate(90deg);
+            overflow:hidden;
         }
-        @media (min-width:1400px) {
-            :root { --space-size:clamp(60px,5.5vw,110px); }
+
+        /* ── PASS DRAWER — shown on mobile/tablet in place of sidebar ── */
+        @keyframes tabNudge {
+            0%,80%,100% { transform:translateY(-50%) translateX(0); }
+            87% { transform:translateY(-50%) translateX(10px); }
+            93% { transform:translateY(-50%) translateX(5px); }
         }
-        @media (min-width:1900px) {
-            :root { --space-size:clamp(80px,5.8vw,140px); }
+        #pass-drawer-tab {
+            display:none;
+            position:fixed; left:-54px; top:50%;
+            transform:translateY(-50%);
+            width:66px; min-height:110px;
+            z-index:150; cursor:pointer;
+            background:linear-gradient(160deg,#ede8dc 0%,#e2d9c4 55%,#d8ccb0 100%);
+            border-radius:0 14px 14px 0;
+            border:2px solid var(--p-color,#00ff88); border-left:none;
+            box-shadow:4px 0 18px var(--p-color,#00ff88);
+            flex-direction:column; align-items:center; justify-content:center; gap:6px;
+            padding:12px 4px 12px 8px;
+            animation:tabNudge 9s ease-in-out infinite;
+            transition:border-color 0.5s ease,box-shadow 0.5s ease;
         }
+        #pass-drawer-tab-label {
+            font-family:'KCStrikerSans','Courier New',monospace;
+            font-size:0.45rem; letter-spacing:2px; color:rgba(30,15,0,0.6);
+            text-transform:uppercase; writing-mode:vertical-rl;
+            text-orientation:mixed; transform:rotate(180deg);
+        }
+        #pass-drawer-tab-arrow {
+            font-size:1.1rem; color:var(--p-color,#00ff88);
+            filter:brightness(0.6); line-height:1;
+        }
+        #pass-drawer-tab-dots { display:flex; flex-direction:column; gap:3px; align-items:center; }
+        .drawer-dot { width:6px; height:6px; border-radius:50%; background:var(--p-color,#00ff88); opacity:0.5; }
+        #pass-drawer-backdrop {
+            display:none; position:fixed; inset:0;
+            z-index:299; background:rgba(0,0,0,0.55);
+        }
+        #pass-drawer-sheet {
+            display:none; position:fixed; left:0; top:0;
+            height:100%; width:min(300px,82%);
+            z-index:300;
+            background:linear-gradient(160deg,rgba(8,8,8,0.98) 0%,rgba(18,18,18,0.98) 100%);
+            border-right:2px solid rgba(255,255,255,0.12);
+            overflow-y:auto; padding:16px; box-sizing:border-box;
+            transform:translateX(-100%);
+            transition:transform 0.35s cubic-bezier(0.175,0.885,0.32,1.275);
+        }
+        #pass-drawer-sheet.open { transform:translateX(0); }
+        #pass-drawer-title {
+            font-family:'KCStrikerSans','Courier New',monospace;
+            font-size:0.75rem; letter-spacing:4px; color:rgba(255,255,255,0.55);
+            text-transform:uppercase; text-align:center;
+            margin-bottom:14px; padding-bottom:10px;
+            border-bottom:1px solid rgba(255,255,255,0.08);
+        }
+        #pass-drawer-inner { display:flex; flex-direction:column; gap:14px; align-items:center; }
+        #pass-drawer-inner .access-pass { width:clamp(120px,40vw,180px); }
     </style>
 
 </head>
@@ -963,6 +988,17 @@
 
     <div id="wood-bg"></div>
     <div id="screen-glow"></div>
+    <!-- ══ PASS DRAWER (mobile/tablet) ══ -->
+    <div id="pass-drawer-backdrop" onclick="closePassDrawer()"></div>
+    <div id="pass-drawer-tab" onclick="openPassDrawer()">
+        <div id="pass-drawer-tab-dots"><div class="drawer-dot"></div><div class="drawer-dot"></div><div class="drawer-dot"></div></div>
+        <div id="pass-drawer-tab-label">All-Access</div>
+        <div id="pass-drawer-tab-arrow">›</div>
+    </div>
+    <div id="pass-drawer-sheet">
+        <div id="pass-drawer-title">🎟 Lineup</div>
+        <div id="pass-drawer-inner"></div>
+    </div>
 
     <script>
     // ══════════════════════════════════════════════════════
@@ -1717,28 +1753,27 @@
         return players.reduce((arr,p,i)=>{if(p.pos===minPos)arr.push(i);return arr;},[]);
     }
 
-    /* JS-driven space size — measures actual available board area and sets --space-size */
+    /* JS-driven space size — always landscape 10×6, uses larger dim as width */
     function updateSpaceSize(){
-        const isLandscape=detectLayout()==='landscape';
+        /* Always treat as landscape: larger dim = width, smaller = height */
+        const vw=Math.max(window.innerWidth,window.innerHeight);
+        const vh=Math.min(window.innerWidth,window.innerHeight);
         const bar=document.getElementById('ui-layer');
-        const passSidebar=document.getElementById('pass-sidebar');
-        const barH=bar?bar.offsetHeight:72;
-        /* Available height = full viewport minus bar, with small buffer */
-        const availH=window.innerHeight-barH-16;
-        /* Available width = full viewport minus pass sidebar in landscape */
-        const passW=(!isLandscape)?0:(passSidebar?passSidebar.offsetWidth:0);
-        const availW=window.innerWidth-passW-32;
-        /* Rows/cols for each layout */
-        const rows=isLandscape?6:10;
-        const cols=isLandscape?10:6;
-        /* Gap is roughly 0.85vw clamped 2-18px */
-        const gap=Math.max(2,Math.min(18,window.innerWidth*0.0085));
-        /* Max space size that fits height and width */
+        const barH=bar?bar.offsetHeight:68;
+        /* Drawer mode: no pass sidebar eating width */
+        const passEl=document.getElementById('pass-sidebar');
+        const passW=isMobileDrawer()?0:(passEl&&passEl.style.display!=='none'?passEl.offsetWidth:0);
+        const availH=vh-barH-14;
+        const availW=vw-passW-20;
+        const rows=6,cols=10;
+        const gap=Math.max(2,Math.min(14,vw*0.007));
         const byH=Math.floor((availH-(rows-1)*gap)/rows);
         const byW=Math.floor((availW-(cols-1)*gap)/cols);
-        const size=Math.max(22,Math.min(85,byH,byW));
+        /* Cap at 110 on large screens */
+        const size=Math.max(22,Math.min(110,byH,byW));
         document.documentElement.style.setProperty('--space-size',size+'px');
     }
+        
     let _lastRefreshW=0,_lastRefreshH=0,_resizeTimer=null;
     window.addEventListener('resize',()=>{
         if(_resizeTimer)clearTimeout(_resizeTimer);
@@ -1747,27 +1782,23 @@
             const w=window.innerWidth,h=window.innerHeight;
             if(Math.abs(w-_lastRefreshW)<8&&Math.abs(h-_lastRefreshH)<8)return;
             _lastRefreshW=w;_lastRefreshH=h;
-            const newMode=detectLayout();
-            if(!document.getElementById('s0')){updatePositions();drawTapePath();return;}
-            if(newMode===layoutMode){
-                /* Same mode — redraw arrows, tape, positions */
-                updateSpaceSize();
-                drawArrows(layoutMode);drawTapePath();updatePositions();
-            } else {
+            checkOrientation(); /* handles rotation, drawer show/hide, space size, redraw */
+            if(document.getElementById('s0')){
                 refreshLayout();
             }
         },400);
     });
-        
     window.addEventListener('orientationchange',()=>{
         if(_resizeTimer)clearTimeout(_resizeTimer);
         _resizeTimer=setTimeout(()=>{
             _resizeTimer=null;
             _lastRefreshW=window.innerWidth;_lastRefreshH=window.innerHeight;
-            if(document.getElementById('s0')){refreshLayout();}
-            else{updatePositions();drawTapePath();}
+            checkOrientation();
+            if(document.getElementById('s0'))refreshLayout();
         },500);
     });
+    /* Initial orientation check on load */
+    window.addEventListener('DOMContentLoaded',()=>setTimeout(checkOrientation,50));
 
     // ══════════════════════════════════════════════
     // MYSTERY SPACE ASSIGNMENT
@@ -2018,10 +2049,30 @@
     // Arrows are board-level overlays, not space children — won't spin with vinyl
     // ══════════════════════════════════════════════
 
-    /* Detect layout from viewport dimensions */
-    function detectLayout(){
-        return (window.innerWidth > window.innerHeight && window.innerWidth >= 600)
-            ? 'landscape' : 'portrait';
+    /* Always landscape — portrait handled by CSS rotation */
+    function detectLayout(){ return 'landscape'; }
+
+    /* Drawer mode: physical screen smaller dimension < 1024 (phones + iPads) */
+    function isMobileDrawer(){
+        return Math.min(screen.width,screen.height)<1024;
+    }
+
+    /* Orientation check — rotates body when portrait, shows/hides drawer */
+    function checkOrientation(){
+        const portrait=window.innerWidth<window.innerHeight;
+        document.body.classList.toggle('force-landscape',portrait);
+        document.documentElement.classList.toggle('force-landscape',portrait);
+        const drawerMode=isMobileDrawer();
+        const tab=document.getElementById('pass-drawer-tab');
+        const sidebar=document.getElementById('pass-sidebar');
+        if(tab)tab.style.display=drawerMode?'flex':'none';
+        if(sidebar)sidebar.style.display=drawerMode?'none':'flex';
+        if(document.getElementById('s0')){
+            updateSpaceSize();
+            drawArrows('landscape');
+            drawTapePath();
+            updatePositions();
+        }
     }
 
     /* Pre-compute the next-direction for each space index in a given layout.
@@ -2292,9 +2343,9 @@
     // ══════════════════════════════════════════════
     const FLOAT_CLASSES=['pass-float-a','pass-float-b','pass-float-c'];
 
-    function renderPasses(){
-        const sidebar=document.getElementById('pass-sidebar');
-        sidebar.querySelectorAll('.access-pass').forEach(c=>c.remove());
+    function _renderPassesToContainer(container){
+        if(!container)return;
+        container.querySelectorAll('.access-pass').forEach(c=>c.remove());
         players.forEach((pl,i)=>{
             const isCurrent=(i===turnIdx);
             const tags=(!pl.isSellout&&!pl.isColdPitchSellout?`<span class="tag tag-indie">INDIE</span>`:'')
@@ -2332,10 +2383,31 @@
                 const bub=document.createElement('div');bub.className='pitch-bubble';bub.title='Pitch to Labels!';bub.innerText='🎤';
                 bub.onclick=(e)=>{e.stopPropagation();expandPass(i);};card.appendChild(bub);
             }
-            if(selectable){card.onclick=(e)=>{e.stopPropagation();handlePlayerClick(i);};}
+            if(selectable){card.onclick=(e)=>{e.stopPropagation();closePassDrawer();handlePlayerClick(i);};}
             else{card.onclick=()=>expandPass(i);}
-            sidebar.appendChild(card);
+            container.appendChild(card);
         });
+    }
+
+    function renderPasses(){
+        _renderPassesToContainer(document.getElementById('pass-sidebar'));
+        if(isMobileDrawer()){
+            _renderPassesToContainer(document.getElementById('pass-drawer-inner'));
+        }
+    }
+
+    function openPassDrawer(){
+        renderPasses(); /* refresh before showing */
+        const sheet=document.getElementById('pass-drawer-sheet');
+        const backdrop=document.getElementById('pass-drawer-backdrop');
+        if(sheet){sheet.style.display='block';requestAnimationFrame(()=>sheet.classList.add('open'));}
+        if(backdrop)backdrop.style.display='block';
+    }
+    function closePassDrawer(){
+        const sheet=document.getElementById('pass-drawer-sheet');
+        const backdrop=document.getElementById('pass-drawer-backdrop');
+        if(sheet){sheet.classList.remove('open');setTimeout(()=>{if(!sheet.classList.contains('open'))sheet.style.display='none';},360);}
+        if(backdrop)backdrop.style.display='none';
     }
 
     function expandPass(idx){
@@ -2461,8 +2533,15 @@
         const p=players[turnIdx];
         document.getElementById('status-text').innerHTML=`<span style="color:${p.avatar.color}">${p.name}'S TURN</span>`;
         document.getElementById('ui-layer-color-wash').style.background=`linear-gradient(90deg,${p.avatar.color} 0%,transparent 35%)`;
-        /* Update roll button color to current player */
         document.documentElement.style.setProperty('--roll-color',p.avatar.color);
+        /* Sync pass drawer tab to current player color */
+        const tab=document.getElementById('pass-drawer-tab');
+        if(tab){
+            tab.style.setProperty('--p-color',p.avatar.color);
+            tab.style.borderColor=p.avatar.color;
+            tab.style.boxShadow=`4px 0 18px ${p.avatar.color}`;
+        }
+        document.querySelectorAll('.drawer-dot').forEach(d=>d.style.background=p.avatar.color);
         /* Screen border glow */
         const sg=document.getElementById('screen-glow');
         if(sg){
