@@ -756,33 +756,35 @@
             87% { transform:translateY(-50%) translateX(10px); }
             93% { transform:translateY(-50%) translateX(5px); }
         }
+
         #pass-drawer-tab {
             display:none;
-            position:fixed; left:-54px; top:50%;
+            position:fixed; left:-44px; top:50%;
             transform:translateY(-50%);
-            width:66px; min-height:110px;
+            width:66px; min-height:120px;
             z-index:150; cursor:pointer;
             background:linear-gradient(160deg,#ede8dc 0%,#e2d9c4 55%,#d8ccb0 100%);
             border-radius:0 14px 14px 0;
             border:2px solid var(--p-color,#00ff88); border-left:none;
-            box-shadow:4px 0 18px var(--p-color,#00ff88);
-            flex-direction:column; align-items:center; justify-content:center; gap:6px;
-            padding:12px 4px 12px 8px;
+            box-shadow:4px 0 22px var(--p-color,#00ff88);
+            flex-direction:column; align-items:center; justify-content:center; gap:5px;
+            padding:12px 6px 12px 10px;
             animation:tabNudge 9s ease-in-out infinite;
             transition:border-color 0.5s ease,box-shadow 0.5s ease;
         }
         #pass-drawer-tab-label {
             font-family:'KCStrikerSans','Courier New',monospace;
-            font-size:0.45rem; letter-spacing:2px; color:rgba(30,15,0,0.6);
+            font-size:0.4rem; letter-spacing:2px; color:rgba(30,15,0,0.55);
             text-transform:uppercase; writing-mode:vertical-rl;
             text-orientation:mixed; transform:rotate(180deg);
         }
         #pass-drawer-tab-arrow {
-            font-size:1.1rem; color:var(--p-color,#00ff88);
-            filter:brightness(0.6); line-height:1;
+            font-size:1.4rem; font-weight:900;
+            color:var(--p-color,#00ff88);
+            line-height:1; text-shadow:0 0 8px var(--p-color,#00ff88);
         }
         #pass-drawer-tab-dots { display:flex; flex-direction:column; gap:3px; align-items:center; }
-        .drawer-dot { width:6px; height:6px; border-radius:50%; background:var(--p-color,#00ff88); opacity:0.5; }
+        .drawer-dot { width:5px; height:5px; border-radius:50%; background:var(--p-color,#00ff88); opacity:0.7; }
         #pass-drawer-backdrop {
             display:none; position:fixed; inset:0;
             z-index:299; background:rgba(0,0,0,0.55);
@@ -987,9 +989,9 @@
     <!-- ══ PASS DRAWER (mobile/tablet) ══ -->
     <div id="pass-drawer-backdrop" onclick="closePassDrawer()"></div>
     <div id="pass-drawer-tab" onclick="openPassDrawer()">
-        <div id="pass-drawer-tab-dots"><div class="drawer-dot"></div><div class="drawer-dot"></div><div class="drawer-dot"></div></div>
-        <div id="pass-drawer-tab-label">All-Access</div>
         <div id="pass-drawer-tab-arrow">›</div>
+        <div id="pass-drawer-tab-label">Passes</div>
+        <div id="pass-drawer-tab-dots"><div class="drawer-dot"></div><div class="drawer-dot"></div><div class="drawer-dot"></div></div>
     </div>
     <div id="pass-drawer-sheet">
         <div id="pass-drawer-title">🎟 Lineup</div>
