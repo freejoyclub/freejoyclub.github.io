@@ -1048,7 +1048,7 @@
     const DEFAULT_COLORS=['#00ccff','#00ff88','#ff00ff'];
 
     const boardLayout=[
-        "START","blank","blank","blank","DAYSPRING","blank","FEARJOY","blank","FIGMENT","JOY",
+        "START","blank","blank","DAYSPRING","blank","FEARJOY","blank","blank","FIGMENT","JOY",
         "THE REMEDY","FEAR","VAN BREAKS DOWN","JOY","blank","DMITRI","blank","FEARJOY","NIGHTDRIVE","JOY",
         "INVEST IN MERCH","FEAR","blank","5TH DIMENSION","blank","IT HAPPENS","blank","GHOST 2","MAYA","JOY",
         "WIN A GRAMMY","blank","blank","OPENING ACT","blank","FEAR","blank","TELLUS","FEARJOY","blank",
@@ -1057,12 +1057,12 @@
     ];
     
     const DISPLAY_NAMES={"VAN BREAKS DOWN":"VAN BREAKS","WIN A GRAMMY":"GRAMMY","5TH DIMENSION":"5D","OPENING ACT":"OPENER","LOST RECORDING":"LOST TAPE"};
-    const TRACKLIST_INDICES=[4,8,10,15,18,25,27,28,37,44,47]; /* Maya (28) added — it IS tracklist */
+    const TRACKLIST_INDICES=[3,8,10,15,18,25,27,28,37,44,47];  /* Maya (28) added — it IS tracklist */
     const GRAMMY_SPACE=30;
     const GATEKEEPER_SPACE=48;
     /* Track number labels for tracklist spaces — index = space index */
     const TRACKLIST_TRACK_NAMES={
-        4:'Track 1: Dayspring',
+        3:'Track 1: Dayspring',
         8:'Track 2: Figment',
         10:'Track 3: The Remedy',
         15:'Track 4: Dmitri',
@@ -1080,8 +1080,8 @@
 
     const rules={
         0:{title:"START",emoji:"▶️",desc:"Play the tape."},
-        4:{title:"DAYSPRING",emoji:"☀️",shift:3,isAuto:true,isTrack:true,desc:"The sun rises! Spring ahead 3.",sound:"dayclip.wav"},
-        6:{title:"FEARJOY",emoji:"☯️",isFearjoy:true,desc:"Flip the coin: JOY = +1, FEAR = -1.",sound:"coin.wav"},
+        3:{title:"DAYSPRING",emoji:"☀️",shift:3,isAuto:true,isTrack:true,desc:"The sun rises! Spring ahead 3.",sound:"dayclip.wav"},
+        5:{title:"FEARJOY",emoji:"☯️",isFearjoy:true,desc:"Flip the coin: JOY = +1, FEAR = -1.",sound:"coin.wav"},
         8:{title:"FIGMENT",emoji:"🛸",isFigment:true,isTrack:true,desc:"Step outside (1:00) for +2, or stay indoors for -1.",sound:"figclip.wav"},
         9:{title:"JOY",emoji:"😄",shift:1,isAuto:true,desc:"FREEJOY! Forward 1.",sound:"coinclip.wav"},
         10:{title:"THE REMEDY",emoji:"💊",choice:'remedy',isTrack:true,desc:"A major label offers a deal. Sign for +6 now, but every 6 you roll becomes -2. Sellouts pass the Gatekeeper freely.",sound:"remedyclip.wav"},
