@@ -613,16 +613,16 @@
         .floating-emoji-slow { position:absolute; font-size:7.2rem; animation:floatUpSlow 2.2s cubic-bezier(0.2,0.8,0.2,1) forwards; pointer-events:none; z-index:6000; }
 
         /* ── POPUPS & OVERLAYS ── */
-        .overlay { position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:2000; display:none; align-items:center; justify-content:center; padding:clamp(8px,2vw,20px); box-sizing:border-box; overflow-y:auto; }
+        .overlay { position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:2000; display:none; align-items:flex-start; justify-content:center; padding:clamp(8px,2vw,20px); box-sizing:border-box; overflow-y:auto; }
         .popup {
             background:linear-gradient(160deg,rgba(8,8,8,0.60) 0%,rgba(45,45,45,0.60) 100%);
             backdrop-filter:blur(10px); position:relative; overflow:hidden;
             padding:clamp(12px,2.5vw,45px); border-radius:30px;
             border:2px solid #444; width:min(680px,92vmin);
-            max-height:min(88vh,92vmin); overflow-y:auto;
+            max-height:none; overflow-y:visible;
             text-align:center; transition:0.4s; box-sizing:border-box;
             transform-style:preserve-3d; animation:popupFloat 8s ease-in-out infinite;
-            flex-shrink:0;
+            flex-shrink:0; margin:auto;
         }
         .popup::before {
             content:''; position:absolute; inset:0; pointer-events:none;
