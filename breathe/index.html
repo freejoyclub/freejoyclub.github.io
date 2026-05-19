@@ -21,32 +21,100 @@
     }
 
     @keyframes bgfade {
-      0% { background-color: #7a5d0b; }
-      25% { background-color: #741782; }
-      50% { background-color: #800000; }
-      75% { background-color: #4B1C1C; }
-      85% { background-color: #8B0000; }      
+      0%   { background-color: #7a5d0b; }
+      25%  { background-color: #741782; }
+      50%  { background-color: #800000; }
+      75%  { background-color: #4B1C1C; }
+      85%  { background-color: #8B0000; }
       100% { background-color: #7a5d0b; }
     }
 
+    h1 {
+      margin-bottom: 10px;
+      font-size: 2.5em;
+      animation: float 8s infinite ease-in-out;
+      display: inline-block;
+    }
+
+    @keyframes float {
+      0%   { transform: translate(0,0); }
+      25%  { transform: translate(3px, -3px); }
+      50%  { transform: translate(-2px, 3px); }
+      100% { transform: translate(0,0); }
+    }
+
+    /* ── TOGGLE ── */
+    .toggle-wrap {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 12px;
+      margin: 18px auto 28px;
+    }
+
+    .toggle-label {
+      font-size: 0.85em;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      opacity: 0.75;
+      transition: opacity 0.3s;
+    }
+
+    .toggle-label.active {
+      opacity: 1;
+      color: #FFD580;
+      text-shadow: 0 0 8px rgba(255,213,128,0.6);
+    }
+
+    .toggle-pill {
+      position: relative;
+      width: 52px;
+      height: 28px;
+      background: rgba(0,0,0,0.4);
+      border-radius: 14px;
+      border: 1px solid rgba(255,213,128,0.4);
+      cursor: pointer;
+      transition: background 0.3s;
+      flex-shrink: 0;
+    }
+
+    .toggle-pill::after {
+      content: '';
+      position: absolute;
+      top: 3px;
+      left: 3px;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: #FFD580;
+      transition: transform 0.3s cubic-bezier(0.175,0.885,0.32,1.275);
+      box-shadow: 0 0 8px rgba(255,213,128,0.6);
+    }
+
+    .toggle-pill.on::after {
+      transform: translateX(24px);
+    }
+
+    /* ── VIDEO ITEMS ── */
     .video-item {
       display: flex;
       align-items: center;
       justify-content: center;
-      margin: 12px auto;
+      margin: 10px auto;
       cursor: pointer;
       width: fit-content;
-      max-width: 90vw;
+      max-width: 92vw;
     }
 
     .bubble-container {
       display: flex;
       align-items: center;
-      background: rgba(0, 0, 0, 0.4);
+      background: rgba(0,0,0,0.4);
       border-radius: 50px;
-      padding: 6px 18px;
-      transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-      border: 1px solid rgba(255, 213, 128, 0.2);
+      padding: 8px 20px;
+      border: 1px solid rgba(255,213,128,0.2);
+      transition: all 0.35s cubic-bezier(0.175,0.885,0.32,1.275);
+      gap: 10px;
     }
 
     .timer-bubble {
@@ -55,49 +123,50 @@
       color: black;
       border-radius: 20px;
       padding: 2px 10px;
-      font-size: 0.9em;
-      margin-right: 12px;
+      font-size: 0.85em;
       text-shadow: none;
       flex-shrink: 0;
     }
 
-    .description {
+    .vid-label {
       color: #FFD580;
       white-space: nowrap;
-      overflow: hidden;
-      max-width: 0;
-      opacity: 0;
-      transition: all 0.4s ease;
-      text-align: left;
+      font-size: 0.95em;
     }
 
     .video-item:hover .bubble-container {
-      background: rgba(0, 0, 0, 0.8);
+      background: rgba(0,0,0,0.75);
       border-color: #FFD580;
       transform: scale(1.05);
+      box-shadow: 0 0 18px rgba(255,213,128,0.25);
     }
 
-    .video-item:hover .description {
-      max-width: 500px;
-      opacity: 1;
-      margin-left: 10px;
+    /* ── CATEGORY VIEW ── */
+    .category-section {
+      margin: 24px auto 8px;
+      width: fit-content;
     }
 
-    h1 {
-      margin-bottom: 25px;
-      font-size: 2.5em;
-      animation: float 8s infinite ease-in-out;
-      display: inline-block;
-      position: relative;
+    .category-title {
+      font-size: 0.75em;
+      letter-spacing: 2.5px;
+      text-transform: uppercase;
+      color: rgba(255,213,128,0.55);
+      margin-bottom: 10px;
+      padding-bottom: 4px;
+      border-bottom: 1px solid rgba(255,213,128,0.15);
     }
 
-    @keyframes float {
-      0% { transform: translate(0,0); }
-      25% { transform: translate(3px, -3px); }
-      50% { transform: translate(-2px, 3px); }
-      100% { transform: translate(0,0); }
+    /* ── TRANSITIONS ── */
+    #view-time, #view-category {
+      transition: opacity 0.35s ease;
     }
 
+    .hidden {
+      display: none !important;
+    }
+
+    /* ── BOTTOM BUTTONS ── */
     .move-button {
       background-color: black;
       color: #FFD580;
@@ -107,8 +176,6 @@
       display: inline-block;
       margin: 40px auto 20px;
       transition: all 0.4s ease;
-      animation: move-float 10s infinite ease-in-out;
-      position: relative;
       text-decoration: none;
     }
 
@@ -124,17 +191,14 @@
       display: block;
     }
 
-    /* MINI PLAYER / OVERLAY */
+    /* ── PLAYER OVERLAY ── */
     #player-container {
-      display: none;
       position: fixed;
-      top: 0;
-      left: 0;
-      width: 100vw;
-      height: 100vh;
-      background: rgba(0,0,0,0.85); /* The backdrop */
+      top: 0; left: 0;
+      width: 100vw; height: 100vh;
+      background: rgba(0,0,0,0.85);
       z-index: 1000;
-      display: none; /* Controlled by JS */
+      display: none;
       align-items: center;
       justify-content: center;
       flex-direction: column;
@@ -178,84 +242,63 @@
 
   <h1>🫁 BREATHE 🫁</h1>
 
-  <div id="video-list">
-    <div class="video-item" data-id="d3-K6FZAXLM">
-      <div class="bubble-container">
-        <span class="timer-bubble">4m</span> ✌️ <span class="description">2-inhale 🫁 ☮️</span>
-      </div>
+  <!-- TOGGLE -->
+  <div class="toggle-wrap">
+    <span class="toggle-label active" id="label-time">By Time</span>
+    <div class="toggle-pill" id="toggle" role="button" aria-label="Toggle view"></div>
+    <span class="toggle-label" id="label-cat">By Vibe</span>
+  </div>
+
+  <!-- BY TIME VIEW -->
+  <div id="view-time">
+    <div class="video-item" data-id="d3-K6FZAXLM"><div class="bubble-container"><span class="timer-bubble">4m</span><span class="vid-label">2-inhale 🫁 ☮️</span></div></div>
+    <div class="video-item" data-id="LFyVJIlSYkA"><div class="bubble-container"><span class="timer-bubble">5m</span><span class="vid-label">Sample Platter 📦🔥+</span></div></div>
+    <div class="video-item" data-id="Vi0_7idqcFI"><div class="bubble-container"><span class="timer-bubble">5m</span><span class="vid-label">HRV Coherence (Huberman/Rubin)</span></div></div>
+    <div class="video-item" data-id="iTiDZNhr1WI"><div class="bubble-container"><span class="timer-bubble">5m</span><span class="vid-label">Breathe w/ Arms</span></div></div>
+    <div class="video-item" data-id="5m2s8TTOKIA"><div class="bubble-container"><span class="timer-bubble">5m</span><span class="vid-label">Tummo - TT5</span></div></div>
+    <div class="video-item" data-id="61-mn1d5RIM"><div class="bubble-container"><span class="timer-bubble">7m</span><span class="vid-label">7 Up Then Down (Sandy)</span></div></div>
+    <div class="video-item" data-id="errP3gH9OlE"><div class="bubble-container"><span class="timer-bubble">8m</span><span class="vid-label">Energy 🔋 🐍 (Sandy)</span></div></div>
+    <div class="video-item" data-id="esr7Wug7-88"><div class="bubble-container"><span class="timer-bubble">8m</span><span class="vid-label">Fast Energy 🔋</span></div></div>
+    <div class="video-item" data-id="GwIqNs8wWyY"><div class="bubble-container"><span class="timer-bubble">10m</span><span class="vid-label">Chill (Tim) 🐌 3-part</span></div></div>
+    <div class="video-item" data-id="YtAD8pDUEzo"><div class="bubble-container"><span class="timer-bubble">10m</span><span class="vid-label">Energy 🔋 🫁 ☕️</span></div></div>
+    <div class="video-item" data-id="ThV8kV_mnz4"><div class="bubble-container"><span class="timer-bubble">10m</span><span class="vid-label">Tummo - TT10 Light</span></div></div>
+    <div class="video-item" data-id="cIApIwfQDm0"><div class="bubble-container"><span class="timer-bubble">11m</span><span class="vid-label">Multi ☕️ 🐌 11</span></div></div>
+  </div>
+
+  <!-- BY VIBE VIEW -->
+  <div id="view-category" class="hidden">
+
+    <div class="category-section">
+      <div class="category-title">🌊 Chill Out</div>
+      <div class="video-item" data-id="d3-K6FZAXLM"><div class="bubble-container"><span class="timer-bubble">4m</span><span class="vid-label">2-inhale 🫁 ☮️</span></div></div>
+      <div class="video-item" data-id="Vi0_7idqcFI"><div class="bubble-container"><span class="timer-bubble">5m</span><span class="vid-label">HRV Coherence (Huberman/Rubin)</span></div></div>
+      <div class="video-item" data-id="GwIqNs8wWyY"><div class="bubble-container"><span class="timer-bubble">10m</span><span class="vid-label">Chill (Tim) 🐌 3-part</span></div></div>
     </div>
 
-    <div class="video-item" data-id="LFyVJIlSYkA">
-      <div class="bubble-container">
-        <span class="timer-bubble">5m</span> 🔥 <span class="description">Sample Platter 📦🔥+</span>
-      </div>
+    <div class="category-section">
+      <div class="category-title">⚡ Power Up</div>
+      <div class="video-item" data-id="iTiDZNhr1WI"><div class="bubble-container"><span class="timer-bubble">5m</span><span class="vid-label">Breathe w/ Arms</span></div></div>
+      <div class="video-item" data-id="5m2s8TTOKIA"><div class="bubble-container"><span class="timer-bubble">5m</span><span class="vid-label">Tummo - TT5</span></div></div>
+      <div class="video-item" data-id="errP3gH9OlE"><div class="bubble-container"><span class="timer-bubble">8m</span><span class="vid-label">Energy 🔋 🐍 (Sandy)</span></div></div>
+      <div class="video-item" data-id="esr7Wug7-88"><div class="bubble-container"><span class="timer-bubble">8m</span><span class="vid-label">Fast Energy 🔋</span></div></div>
+      <div class="video-item" data-id="YtAD8pDUEzo"><div class="bubble-container"><span class="timer-bubble">10m</span><span class="vid-label">Energy 🔋 🫁 ☕️</span></div></div>
+      <div class="video-item" data-id="ThV8kV_mnz4"><div class="bubble-container"><span class="timer-bubble">10m</span><span class="vid-label">Tummo - TT10 Light</span></div></div>
     </div>
 
-    <div class="video-item" data-id="Vi0_7idqcFI">
-      <div class="bubble-container">
-        <span class="timer-bubble">5m</span> 🐌 <span class="description">HRV Coherence (Huberman/Rubin)</span>
-      </div>
+    <div class="category-section">
+      <div class="category-title">🌀 Various Vibes</div>
+      <div class="video-item" data-id="LFyVJIlSYkA"><div class="bubble-container"><span class="timer-bubble">5m</span><span class="vid-label">Sample Platter 📦🔥+</span></div></div>
+      <div class="video-item" data-id="61-mn1d5RIM"><div class="bubble-container"><span class="timer-bubble">7m</span><span class="vid-label">7 Up Then Down (Sandy)</span></div></div>
+      <div class="video-item" data-id="cIApIwfQDm0"><div class="bubble-container"><span class="timer-bubble">11m</span><span class="vid-label">Multi ☕️ 🐌 11</span></div></div>
     </div>
 
-    <div class="video-item" data-id="iTiDZNhr1WI">
-      <div class="bubble-container">
-        <span class="timer-bubble">5m</span> 💪 <span class="description">Breathe w/ Arms</span>
-      </div>
-    </div>
-
-    <div class="video-item" data-id="5m2s8TTOKIA">
-      <div class="bubble-container">
-        <span class="timer-bubble">5m</span> 🐍 <span class="description">Tummo - TT5</span>
-      </div>
-    </div>
-
-    <div class="video-item" data-id="61-mn1d5RIM">
-      <div class="bubble-container">
-        <span class="timer-bubble">7m</span> 🔋 <span class="description">7 Up Then Down (Sandy)</span>
-      </div>
-    </div>
-
-    <div class="video-item" data-id="errP3gH9OlE">
-      <div class="bubble-container">
-        <span class="timer-bubble">8m</span> ⚡ <span class="description">Energy 🔋 🐍 (Sandy)</span>
-      </div>
-    </div>
-
-    <div class="video-item" data-id="esr7Wug7-88">
-      <div class="bubble-container">
-        <span class="timer-bubble">8m</span> 🐇 <span class="description">Fast Energy 🔋</span>
-      </div>
-    </div>
-
-    <div class="video-item" data-id="GwIqNs8wWyY">
-      <div class="bubble-container">
-        <span class="timer-bubble">10m</span> 🧘 <span class="description">Chill (Tim) 🐌 3-part</span>
-      </div>
-    </div>
-
-    <div class="video-item" data-id="YtAD8pDUEzo">
-      <div class="bubble-container">
-        <span class="timer-bubble">10m</span> ☕ <span class="description">Energy 🔋 🫁 ☕️</span>
-      </div>
-    </div>
-
-    <div class="video-item" data-id="ThV8kV_mnz4">
-      <div class="bubble-container">
-        <span class="timer-bubble">10m</span> 🐍 <span class="description">Tummo - TT10 Light</span>
-      </div>
-    </div>
-
-    <div class="video-item" data-id="cIApIwfQDm0">
-      <div class="bubble-container">
-        <span class="timer-bubble">11m</span> 😄 <span class="description">Multi ☕️ 🐌 11</span>
-      </div>
-    </div>
   </div>
 
   <a class="move-button" href="https://freejoy.club/move">👉 MOVE 👈</a>
   <a class="home-link" href="https://freejoy.club" target="_blank">🏠</a>
 
-  <div id="player-container" style="display:none;">
+  <!-- PLAYER OVERLAY -->
+  <div id="player-container">
     <div id="player-content">
       <button id="close-btn">✕ CLOSE</button>
       <div class="iframe-wrapper">
@@ -265,12 +308,45 @@
   </div>
 
   <script>
+    // ── TOGGLE LOGIC ──
+    const toggle = document.getElementById('toggle');
+    const viewTime = document.getElementById('view-time');
+    const viewCat = document.getElementById('view-category');
+    const labelTime = document.getElementById('label-time');
+    const labelCat = document.getElementById('label-cat');
+
+    let isCatView = localStorage.getItem('breathe-view') === 'cat';
+
+    function applyView() {
+      if (isCatView) {
+        toggle.classList.add('on');
+        viewTime.classList.add('hidden');
+        viewCat.classList.remove('hidden');
+        labelTime.classList.remove('active');
+        labelCat.classList.add('active');
+      } else {
+        toggle.classList.remove('on');
+        viewCat.classList.add('hidden');
+        viewTime.classList.remove('hidden');
+        labelTime.classList.add('active');
+        labelCat.classList.remove('active');
+      }
+    }
+
+    applyView();
+
+    toggle.addEventListener('click', () => {
+      isCatView = !isCatView;
+      localStorage.setItem('breathe-view', isCatView ? 'cat' : 'time');
+      applyView();
+    });
+
+    // ── PLAYER LOGIC ──
     const container = document.getElementById('player-container');
     const frame = document.getElementById('video-frame');
     const closeBtn = document.getElementById('close-btn');
 
-    // Open Player
-    document.getElementById('video-list').addEventListener('click', (e) => {
+    document.body.addEventListener('click', (e) => {
       const item = e.target.closest('.video-item');
       if (item) {
         const vidId = item.getAttribute('data-id');
@@ -279,20 +355,15 @@
       }
     });
 
-    // Function to kill the video and hide
     const closePlayer = () => {
       container.style.display = 'none';
       frame.src = '';
     };
 
-    // Close on button click
     closeBtn.onclick = closePlayer;
 
-    // Close on click outside (targeting the backdrop container)
     container.onclick = (e) => {
-      if (e.target === container) {
-        closePlayer();
-      }
+      if (e.target === container) closePlayer();
     };
   </script>
 </body>
