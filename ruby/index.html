@@ -23,16 +23,13 @@
       --warm-wht: #fdfaf6;
     }
 
-    @keyframes bgShift {
-      0%   { background-position: 0% 50%; }
-      50%  { background-position: 100% 50%; }
-      100% { background-position: 0% 50%; }
+    @keyframes bgFade {
+      0%, 100% { opacity: 1; }
+      50%       { opacity: 0; }
     }
 
     body {
-      background: linear-gradient(135deg, var(--bg1), var(--bg2), var(--bg3), #2c2416);
-      background-size: 400% 400%;
-      animation: bgShift 18s ease infinite;
+      background-color: var(--bg1);
       color: var(--tan);
       font-family: 'Jost', sans-serif;
       font-weight: 300;
@@ -40,6 +37,27 @@
       display: flex;
       flex-direction: column;
       align-items: center;
+      position: relative;
+      isolation: isolate;
+    }
+
+    body::before,
+    body::after {
+      content: '';
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+      will-change: opacity;
+    }
+
+    body::before {
+      background-color: var(--bg2);
+      animation: bgFade 12s ease-in-out infinite;
+    }
+
+    body::after {
+      background-color: var(--bg3);
+      animation: bgFade 12s ease-in-out infinite 6s;
     }
 
     main {
@@ -70,7 +88,8 @@
       overflow: hidden;
       border: 2px solid var(--gold);
       flex-shrink: 0;
-      animation: fadeUp 0.65s ease both 0.05s, float 5s ease-in-out infinite 0.8s;
+      opacity: 0;
+      animation: fadeIn 0.65s ease forwards 0.05s, float 5s ease-in-out infinite 0.8s;
     }
 
     .photo-wrap:hover {
@@ -92,7 +111,13 @@
       display: flex;
       flex-direction: column;
       gap: 0.45rem;
-      animation: fadeUp 0.65s ease both 0.18s, floatSlow 6s ease-in-out infinite 1.2s;
+      opacity: 0;
+      animation: fadeIn 0.65s ease forwards 0.18s, floatSlow 6s ease-in-out infinite 1.2s;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to   { opacity: 1; }
     }
 
     h1 {
