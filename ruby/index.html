@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ruby Clementi — Yoga Instructor</title>
+  <link rel="icon" type="image/png" href="favicon.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet" />
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --brown:     #6b4c35;
+      --brown-lt:  #c4a882;
+      --forest:    #3d5c48;
+      --forest-lt: #7a9e88;
+      --cream:     #f5efe8;
+      --warm-wht:  #fdfaf6;
+      --ink:       #2a1f14;
+      --muted:     #7a6a58;
+    }
+
+    body {
+      background-color: var(--cream);
+      color: var(--ink);
+      font-family: 'Jost', sans-serif;
+      font-weight: 300;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    main {
+      width: 100%;
+      max-width: 500px;
+      padding: 4rem 2rem 2rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1.5rem;
+    }
+
+    /* ── Photo ── */
+    .photo-wrap {
+      width: 170px;
+      height: 170px;
+      border-radius: 28px;
+      overflow: hidden;
+      border: 2px solid var(--brown-lt);
+      flex-shrink: 0;
+    }
+
+    .photo-wrap img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center 10%;
+      display: block;
+    }
+
+    /* ── Header text ── */
+    .header-group {
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      gap: 0.45rem;
+    }
+
+    h1 {
+      font-family: 'Cormorant Garamond', serif;
+      font-weight: 400;
+      font-size: 2.5rem;
+      letter-spacing: 0.02em;
+      line-height: 1.1;
+      color: var(--ink);
+    }
+
+    .subtitle {
+      font-family: 'Jost', sans-serif;
+      font-weight: 300;
+      font-size: 0.75rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    /* ── Divider ── */
+    .divider {
+      width: 40px;
+      height: 1px;
+      background: var(--brown-lt);
+    }
+
+    /* ── Contact button ── */
+    .btn-contact {
+      display: inline-block;
+      padding: 0.7rem 2.2rem;
+      border: 1px solid var(--forest);
+      border-radius: 100px;
+      color: var(--forest);
+      font-family: 'Jost', sans-serif;
+      font-weight: 400;
+      font-size: 0.8rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      text-decoration: none;
+      transition: background 0.22s, color 0.22s;
+    }
+
+    .btn-contact:hover {
+      background: var(--forest);
+      color: var(--warm-wht);
+    }
+
+    /* ── Bio ── */
+    .bio {
+      font-family: 'Cormorant Garamond', serif;
+      font-weight: 400;
+      font-size: 1.13rem;
+      line-height: 1.9;
+      color: var(--ink);
+      text-align: center;
+      max-width: 420px;
+    }
+
+    /* ── Footer ── */
+    footer {
+      width: 100%;
+      max-width: 500px;
+      padding: 2rem 2rem 3.5rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.65rem;
+      margin-top: auto;
+      border-top: 1px solid #e0d6ca;
+    }
+
+    .footer-label {
+      font-size: 0.68rem;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--muted);
+      font-style: italic;
+    }
+
+    .footer-links {
+      display: flex;
+      gap: 2rem;
+    }
+
+    .footer-links a {
+      font-family: 'Jost', sans-serif;
+      font-weight: 400;
+      font-size: 0.85rem;
+      letter-spacing: 0.1em;
+      color: var(--brown);
+      text-decoration: none;
+      text-transform: uppercase;
+      transition: color 0.2s;
+    }
+
+    .footer-links a:hover {
+      color: var(--forest);
+    }
+
+    /* ── Animations ── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(16px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .photo-wrap   { animation: fadeUp 0.65s ease both; animation-delay: 0.05s; }
+    .header-group { animation: fadeUp 0.65s ease both; animation-delay: 0.18s; }
+    .divider      { animation: fadeUp 0.65s ease both; animation-delay: 0.25s; }
+    .btn-contact  { animation: fadeUp 0.65s ease both; animation-delay: 0.32s; }
+    .bio          { animation: fadeUp 0.65s ease both; animation-delay: 0.42s; }
+    footer        { animation: fadeUp 0.65s ease both; animation-delay: 0.52s; }
+
+    @media (max-width: 420px) {
+      h1 { font-size: 2rem; }
+      main { padding: 3rem 1.5rem 1.5rem; }
+      .bio { font-size: 1.05rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <main>
+
+    <div class="photo-wrap">
+      <img src="headshot.jpg" alt="Ruby Clementi" />
+    </div>
+
+    <div class="header-group">
+      <h1>Ruby Clementi</h1>
+      <p class="subtitle">RYT-200 Certified Yoga Instructor</p>
+    </div>
+
+    <div class="divider"></div>
+
+    <a class="btn-contact" href="mailto:rubyfclementi@gmail.com">Get in touch</a>
+
+    <p class="bio">
+      Ruby embarked on the path of yoga in 2017 in an effort to ease her depression and health issues. It worked! Since then, the practice has been an ally and sacred ritual to ground her to the present moment. Her mission is to share the tools of yoga to promote holistic healing on and off the mat. She encourages functional movement, strength training, play, breathwork, meditation, myofascial release, and creative expression.
+      <br /><br />
+      While working as an elementary school teacher, Ruby had a dream to continue teaching, but from her mat instead of the classroom. The dream came true when she went to Peru and got certified in 2023, specializing in vinyasa yoga. She loves traveling, gardening, art, outdoor activities, reading, writing, and spending time with her dog. Join her for mindful movement practices that seek to harmonize the body, mind, and spirit.
+    </p>
+
+  </main>
+
+  <footer>
+    <p class="footer-label">Free, no signup — get moving right now</p>
+    <nav class="footer-links">
+      <a href="/breathe">Breathe</a>
+      <a href="/flow">Flow</a>
+    </nav>
+  </footer>
+
+</body>
+</html>
