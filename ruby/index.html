@@ -168,6 +168,21 @@
       color: var(--forest);
     }
 
+    .social-links a {
+      color: var(--forest);
+    }
+
+    .social-links a:hover {
+      color: var(--brown);
+    }
+
+    .footer-divider {
+      width: 24px;
+      height: 1px;
+      background: #e0d6ca;
+      margin: 0.4rem 0;
+    }
+
     /* ── Animations ── */
     @keyframes fadeUp {
       from { opacity: 0; transform: translateY(16px); }
@@ -203,8 +218,9 @@
 
     <div class="divider"></div>
 
-    <a class="btn-contact" href="mailto:rubyfclementi@gmail.com">Get in touch</a>
-
+  <a class="btn-contact" href="mailto:rubyfclementi@gmail.com">Get in touch</a>
+  <p style="font-size: 0.78rem; color: var(--muted); letter-spacing: 0.05em;">rubyfclementi@gmail.com</p>
+    
     <p class="bio">
       Ruby embarked on the path of yoga in 2017 in an effort to ease her depression and health issues. It worked! Since then, the practice has been an ally and sacred ritual to ground her to the present moment. Her mission is to share the tools of yoga to promote holistic healing on and off the mat. She encourages functional movement, strength training, play, breathwork, meditation, myofascial release, and creative expression.
       <br /><br />
@@ -214,7 +230,12 @@
   </main>
 
   <footer>
-    <p class="footer-label">Free, no signup — get moving right now</p>
+    <nav class="footer-links social-links">
+      <a href="https://www.instagram.com/ruby.flows" target="_blank" rel="noopener">Instagram</a>
+      <a href="https://app.yogaalliance.org/teacherpublicprofile?id=003Kf00001cVD1gIAG" target="_blank" rel="noopener">Yoga Alliance</a>
+    </nav>
+    <div class="footer-divider"></div>
+    <p class="footer-label">Free, no signup — quick classes from my teachers:</p>
     <nav class="footer-links">
       <a href="/breathe">Breathe</a>
       <a href="/flow">Flow</a>
