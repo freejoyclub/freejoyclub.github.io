@@ -13,19 +13,27 @@
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-      --brown:     #6b4c35;
-      --brown-lt:  #c4a882;
-      --forest:    #3d5c48;
-      --forest-lt: #7a9e88;
-      --cream:     #f5efe8;
-      --warm-wht:  #fdfaf6;
-      --ink:       #2a1f14;
-      --muted:     #7a6a58;
+      --bg1:      #2a1f14;
+      --bg2:      #3b2a1a;
+      --bg3:      #1e2a22;
+      --tan:      #e8d9c4;
+      --tan-muted:#a8917a;
+      --gold:     #c4a882;
+      --forest:   #7a9e88;
+      --warm-wht: #fdfaf6;
+    }
+
+    @keyframes bgShift {
+      0%   { background-position: 0% 50%; }
+      50%  { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
     }
 
     body {
-      background-color: var(--cream);
-      color: var(--ink);
+      background: linear-gradient(135deg, var(--bg1), var(--bg2), var(--bg3), #2c2416);
+      background-size: 400% 400%;
+      animation: bgShift 18s ease infinite;
+      color: var(--tan);
       font-family: 'Jost', sans-serif;
       font-weight: 300;
       min-height: 100vh;
@@ -44,14 +52,30 @@
       gap: 1.5rem;
     }
 
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50%       { transform: translateY(-7px); }
+    }
+
+    @keyframes floatSlow {
+      0%, 100% { transform: translateY(0); }
+      50%       { transform: translateY(-4px); }
+    }
+
     /* ── Photo ── */
     .photo-wrap {
       width: 170px;
       height: 170px;
       border-radius: 28px;
       overflow: hidden;
-      border: 2px solid var(--brown-lt);
+      border: 2px solid var(--gold);
       flex-shrink: 0;
+      animation: fadeUp 0.65s ease both 0.05s, float 5s ease-in-out infinite 0.8s;
+    }
+
+    .photo-wrap:hover {
+      box-shadow: 0 16px 40px rgba(0,0,0,0.4);
+      transform: scale(1.04);
     }
 
     .photo-wrap img {
@@ -68,6 +92,7 @@
       display: flex;
       flex-direction: column;
       gap: 0.45rem;
+      animation: fadeUp 0.65s ease both 0.18s, floatSlow 6s ease-in-out infinite 1.2s;
     }
 
     h1 {
@@ -76,7 +101,7 @@
       font-size: 2.5rem;
       letter-spacing: 0.02em;
       line-height: 1.1;
-      color: var(--ink);
+      color: var(--warm-wht);
     }
 
     .subtitle {
@@ -85,19 +110,22 @@
       font-size: 0.75rem;
       letter-spacing: 0.2em;
       text-transform: uppercase;
-      color: var(--muted);
+      color: var(--tan-muted);
     }
 
     /* ── Divider ── */
     .divider {
       width: 40px;
       height: 1px;
-      background: var(--brown-lt);
+      background: var(--gold);
+      opacity: 0.5;
     }
 
-    /* ── Contact button ── */
+    /* ── Contact button — click to copy ── */
     .btn-contact {
-      display: inline-block;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
       padding: 0.7rem 2.2rem;
       border: 1px solid var(--forest);
       border-radius: 100px;
@@ -107,13 +135,37 @@
       font-size: 0.8rem;
       letter-spacing: 0.14em;
       text-transform: uppercase;
-      text-decoration: none;
-      transition: background 0.22s, color 0.22s;
+      cursor: pointer;
+      background: transparent;
+      transition: background 0.22s, color 0.22s, border-color 0.22s, transform 0.2s;
+      position: relative;
     }
 
     .btn-contact:hover {
       background: var(--forest);
       color: var(--warm-wht);
+      transform: scale(1.05);
+    }
+
+    .copy-confirm {
+      display: none;
+      position: absolute;
+      bottom: calc(100% + 8px);
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--gold);
+      color: var(--bg1);
+      font-size: 0.7rem;
+      letter-spacing: 0.1em;
+      padding: 0.3rem 0.8rem;
+      border-radius: 100px;
+      white-space: nowrap;
+      pointer-events: none;
+    }
+
+    .copy-confirm.show {
+      display: block;
+      animation: fadeUp 0.2s ease both;
     }
 
     /* ── Bio ── */
@@ -122,7 +174,7 @@
       font-weight: 400;
       font-size: 1.13rem;
       line-height: 1.9;
-      color: var(--ink);
+      color: var(--tan);
       text-align: center;
       max-width: 420px;
     }
@@ -137,15 +189,16 @@
       align-items: center;
       gap: 0.65rem;
       margin-top: auto;
-      border-top: 1px solid #e0d6ca;
+      border-top: 1px solid rgba(200,180,155,0.2);
     }
 
     .footer-label {
       font-size: 0.68rem;
-      letter-spacing: 0.16em;
+      letter-spacing: 0.14em;
       text-transform: uppercase;
-      color: var(--muted);
+      color: var(--tan-muted);
       font-style: italic;
+      text-align: center;
     }
 
     .footer-links {
@@ -158,14 +211,16 @@
       font-weight: 400;
       font-size: 0.85rem;
       letter-spacing: 0.1em;
-      color: var(--brown);
+      color: var(--gold);
       text-decoration: none;
       text-transform: uppercase;
-      transition: color 0.2s;
+      transition: color 0.2s, transform 0.2s;
+      display: inline-block;
     }
 
     .footer-links a:hover {
-      color: var(--forest);
+      color: var(--warm-wht);
+      transform: scale(1.1);
     }
 
     .social-links a {
@@ -173,13 +228,13 @@
     }
 
     .social-links a:hover {
-      color: var(--brown);
+      color: var(--warm-wht);
     }
 
     .footer-divider {
       width: 24px;
       height: 1px;
-      background: #e0d6ca;
+      background: rgba(200,180,155,0.2);
       margin: 0.4rem 0;
     }
 
@@ -189,8 +244,7 @@
       to   { opacity: 1; transform: translateY(0); }
     }
 
-    .photo-wrap   { animation: fadeUp 0.65s ease both; animation-delay: 0.05s; }
-    .header-group { animation: fadeUp 0.65s ease both; animation-delay: 0.18s; }
+    /* photo-wrap and header-group animations defined inline above */
     .divider      { animation: fadeUp 0.65s ease both; animation-delay: 0.25s; }
     .btn-contact  { animation: fadeUp 0.65s ease both; animation-delay: 0.32s; }
     .bio          { animation: fadeUp 0.65s ease both; animation-delay: 0.42s; }
@@ -218,9 +272,11 @@
 
     <div class="divider"></div>
 
-  <a class="btn-contact" href="mailto:rubyfclementi@gmail.com">Get in touch</a>
-  <p style="font-size: 0.78rem; color: var(--muted); letter-spacing: 0.05em;">rubyfclementi@gmail.com</p>
-    
+    <button class="btn-contact" onclick="copyEmail(this)">
+      Get in touch
+      <span class="copy-confirm">Email copied!</span>
+    </button>
+
     <p class="bio">
       Ruby embarked on the path of yoga in 2017 in an effort to ease her depression and health issues. It worked! Since then, the practice has been an ally and sacred ritual to ground her to the present moment. Her mission is to share the tools of yoga to promote holistic healing on and off the mat. She encourages functional movement, strength training, play, breathwork, meditation, myofascial release, and creative expression.
       <br /><br />
@@ -231,16 +287,26 @@
 
   <footer>
     <nav class="footer-links social-links">
-      <a href="https://www.instagram.com/ruby.flows" target="_blank" rel="noopener">Instagram</a>
       <a href="https://app.yogaalliance.org/teacherpublicprofile?id=003Kf00001cVD1gIAG" target="_blank" rel="noopener">Yoga Alliance</a>
+      <a href="https://www.instagram.com/ruby.flows" target="_blank" rel="noopener">Instagram</a>
     </nav>
     <div class="footer-divider"></div>
     <p class="footer-label">Free, no signup — quick classes from my teachers:</p>
     <nav class="footer-links">
       <a href="/breathe">Breathe</a>
-      <a href="/flow">Flow</a>
+      <a href="/move">Move</a>
     </nav>
   </footer>
+
+  <script>
+    function copyEmail(btn) {
+      navigator.clipboard.writeText('rubyfclementi@gmail.com').then(() => {
+        const tip = btn.querySelector('.copy-confirm');
+        tip.classList.add('show');
+        setTimeout(() => tip.classList.remove('show'), 2000);
+      });
+    }
+  </script>
 
 </body>
 </html>
