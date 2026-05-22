@@ -2297,9 +2297,8 @@
     // INSTRUCTIONS
     // ══════════════════════════════════════════════
 
-        /* ── SPACE PREVIEW — mini board-space examples for intro/howto cards ── */
+/* ── SPACE PREVIEW — mini board-space examples for intro/howto cards ── */
     function buildSpacePreview(forHowTo=false){
-        /* Carousel state */
         let _carouselIdx=0;
         const _specials=[
             {emoji:'☯️',label:'FEARJOY',cls:'hybrid'},
@@ -2311,9 +2310,8 @@
         const wrap=document.createElement('div');
         wrap.style.cssText='display:flex;flex-direction:'+(forHowTo?'column':'row')+';align-items:center;justify-content:center;gap:'+(forHowTo?'18px':'14px')+';margin:'+(forHowTo?'18px 0':'14px 0 10px');
 
-        /* Helper: build one mini space */
         function makeSpace(cls,html,onclick){
-            const size=forHowTo?'62px':'46px';
+            const size=forHowTo?'62px':'55px';
             const d=document.createElement('div');
             d.style.cssText=`width:${size};height:${size};border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;position:relative;box-sizing:border-box;flex-shrink:0;`;
             d.className='space '+cls;
@@ -2322,25 +2320,24 @@
             return d;
         }
 
-        /* ── TRACKLIST space ── */
+        /* ── TRACKLIST ── */
         const trackWrap=document.createElement('div');
         trackWrap.style.cssText='display:flex;flex-direction:column;align-items:center;gap:6px;';
         const trackSpace=makeSpace('tracklist-space',
             `<div class="sp-emoji" style="font-size:${forHowTo?'1.2rem':'0.9rem'};">☀️</div><div class="sp-text" style="font-size:${forHowTo?'0.55rem':'0.4rem'};">TRACKLIST</div>`,
-            ()=>_showPreviewTip('🎵 Tracklist Space','Land here to trigger a song from the album — with a special event to match.')
+            ()=>_showPreviewTip('🎵 Tracklist Space','A sample from the album plays when you land here — each track has its own event.')
         );
         trackWrap.appendChild(trackSpace);
         if(forHowTo){const l=document.createElement('div');l.style.cssText='font-family:"Courier New",monospace;font-size:0.7rem;color:rgba(255,255,255,0.5);letter-spacing:1px;text-align:center;';l.innerText='Songs from the album.\nEvents to match.';trackWrap.appendChild(l);}
         wrap.appendChild(trackWrap);
 
-        /* ── SPECIAL space carousel ── */
+        /* ── SPECIAL carousel ── */
         const specWrap=document.createElement('div');
         specWrap.style.cssText='display:flex;flex-direction:column;align-items:center;gap:6px;';
         const specSpace=makeSpace(_specials[0].cls||'',
-            `<div class="sp-emoji" style="font-size:${forHowTo?'1.2rem':'0.9rem'};">${_specials[0].emoji}</div><div class="sp-text" style="font-family:\'KCStrikerSans\',monospace;font-size:${forHowTo?'0.55rem':'0.4rem'};">${_specials[0].label}</div>`,
+            `<div class="sp-emoji" style="font-size:${forHowTo?'1.2rem':'0.9rem'};">${_specials[0].emoji}</div><div class="sp-text" style="font-family:'KCStrikerSans',monospace;font-size:${forHowTo?'0.55rem':'0.4rem'};">${_specials[0].label}</div>`,
             ()=>_showPreviewTip('⚡ Special Space','Each has a unique effect — good, bad, or both. Grammy, Merch, FearJoy and more.')
         );
-        /* Silent carousel loop */
         function _advanceCarousel(){
             _carouselIdx=(_carouselIdx+1)%_specials.length;
             const sp=_specials[_carouselIdx];
@@ -2352,7 +2349,7 @@
         if(forHowTo){const l=document.createElement('div');l.style.cssText='font-family:"Courier New",monospace;font-size:0.7rem;color:rgba(255,255,255,0.5);letter-spacing:1px;text-align:center;';l.innerText='Good, bad, or both.\nFearJoy, Grammy, Merch...';specWrap.appendChild(l);}
         wrap.appendChild(specWrap);
 
-        /* ── MYSTERY space ── */
+        /* ── MYSTERY ── */
         const mystWrap=document.createElement('div');
         mystWrap.style.cssText='display:flex;flex-direction:column;align-items:center;gap:6px;';
         const mystSpace=makeSpace('mystery-space',
@@ -2363,24 +2360,24 @@
         if(forHowTo){const l=document.createElement('div');l.style.cssText='font-family:"Courier New",monospace;font-size:0.7rem;color:rgba(255,255,255,0.5);letter-spacing:1px;text-align:center;';l.innerText='Hidden lore, photos,\nvideos, merch codes.';mystWrap.appendChild(l);}
         wrap.appendChild(mystWrap);
 
-        /* Tip popup — small floating label, auto-dismisses */
+        /* ── TOOLTIP ── */
         let _tipTimer=null;
         function _showPreviewTip(title,desc){
             let tip=document.getElementById('_preview-tip');
             if(!tip){
                 tip=document.createElement('div');tip.id='_preview-tip';
-                tip.style.cssText='position:fixed;bottom:calc(var(--bar-h,72px) + 14px);left:50%;transform:translateX(-50%);background:rgba(10,10,10,0.97);border:1px solid rgba(255,255,255,0.2);border-radius:12px;padding:10px 16px;max-width:min(280px,80vmin);z-index:8000;text-align:center;pointer-events:none;';
+                tip.style.cssText='position:fixed;bottom:calc(var(--bar-h,72px) + 14px);left:50%;transform:translateX(-50%);background:rgba(10,10,10,0.97);border:1px solid rgba(255,255,255,0.2);border-radius:12px;padding:12px 18px;max-width:min(300px,80vmin);z-index:8000;text-align:center;pointer-events:none;transition:opacity 0.4s ease;';
                 document.body.appendChild(tip);
             }
-            tip.innerHTML=`<div style="font-family:'KCStrikerSans',monospace;font-size:0.85rem;letter-spacing:1px;color:white;margin-bottom:4px;">${title}</div><div style="font-family:'Courier New',monospace;font-size:0.7rem;color:rgba(255,255,255,0.6);line-height:1.5;">${desc}</div>`;
+            tip.innerHTML=`<div style="font-family:'KCStrikerSans',monospace;font-size:1.1rem;letter-spacing:1px;color:white;margin-bottom:6px;">${title}</div><div style="font-family:'Courier New',monospace;font-size:0.91rem;color:rgba(255,255,255,0.85);line-height:1.6;">${desc}</div>`;
             tip.style.opacity='1';
             if(_tipTimer)clearTimeout(_tipTimer);
-            _tipTimer=setTimeout(()=>{if(tip)tip.style.opacity='0';},3200);
+            _tipTimer=setTimeout(()=>{if(tip)tip.style.opacity='0';},6400);
         }
 
-        /* Clean up carousel when popup closes */
         wrap._cleanup=()=>{
             clearInterval(_carouselTimer);
+            if(_tipTimer)clearTimeout(_tipTimer);
             const tip=document.getElementById('_preview-tip');
             if(tip)tip.remove();
         };
@@ -2390,20 +2387,20 @@
     function showInstructions(){
         showStatusPopup(
             "🎵 Fearjoy: The Game 🎲",
-            "Roll to move (Click or Spacebar).\nWinner gets the hidden bonus track.\nClick around for secrets.",
+            "Roll to move (Click or Spacebar).\nWinner gets the hidden bonus track.\nClick to learn:",
             "Let's Play",()=>{},
             "Show Me",()=>{
-                /* How-to card with vertical space previews + full text */
                 showStatusPopup("📋 How to Play","","Let's go!",()=>{},"",()=>{});
                 document.getElementById('event-btn-secondary').style.display='none';
                 setTimeout(()=>{
                     const d=document.getElementById('event-desc');
                     if(!d)return;
                     d.innerHTML='';
+                    d.style.overflow='auto';
                     const preview=buildSpacePreview(true);
                     d.appendChild(preview);
                     const txt=document.createElement('div');
-                    txt.style.cssText='font-size:clamp(0.55rem,1.1vw,0.75rem);line-height:1.7;color:rgba(255,255,255,0.92);white-space:pre-line;margin-top:10px;';
+                    txt.style.cssText='font-size:clamp(0.77rem,1.54vw,1.05rem);line-height:1.8;color:#ffffff;white-space:pre-line;margin-top:10px;';
                     txt.innerText="ROLL with Click, Spacebar, or Enter.\nClick (or Arrow Keys + Enter) for Choices.\n\nClick spaces / passes to discover rules.\nSound Options & Key in the Menu.\n\nCollect accolades, lore, and real-life rewards.\nOpen your All-Access Pass for more.";
                     d.appendChild(txt);
                     const c=document.createElement('div');c.className='credits-line';
@@ -2411,21 +2408,18 @@
                 },30);
             }
         );
-        /* Inject space previews + credits into first card */
         setTimeout(()=>{
             const desc=document.getElementById('event-desc');
             if(!desc)return;
-            /* Replace text with preview row + shorter text */
             desc.innerHTML='';
             const txt=document.createElement('div');
-            txt.style.cssText='font-size:clamp(0.8rem,1.8vw,1.1rem);line-height:1.7;color:rgba(255,255,255,0.92);white-space:pre-line;';
-            txt.innerText="Roll to move (Click or Spacebar).\nWinner gets the hidden bonus track.\nClick around for secrets.";
+            txt.style.cssText='font-size:clamp(0.96rem,2.2vw,1.32rem);line-height:1.7;color:#ffffff;white-space:pre-line;';
+            txt.innerText="Roll to move (Click or Spacebar).\nWinner gets the hidden bonus track.\nClick to learn:";
             desc.appendChild(txt);
             const preview=buildSpacePreview(false);
             desc.appendChild(preview);
             const c=document.createElement('div');c.className='credits-line';
             c.innerText='© 2026. Music/Game/Sound Design by Fearjoy';desc.appendChild(c);
-            /* Light-dismiss intro only */
             const ov=document.getElementById('overlay-event');
             const pu=document.getElementById('main-popup');
             window._introLightDismiss=function(e){
