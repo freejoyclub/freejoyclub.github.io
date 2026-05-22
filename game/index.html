@@ -771,11 +771,11 @@
 
         #pass-drawer-tab {
             display:none;
-            position:fixed; left:-44px; top:50%;
+            position:fixed; left:-58px; top:50%;
             transform:translateY(-50%);
-            width:66px; min-height:120px;
+            width:72px; min-height:120px;
             z-index:150; cursor:pointer;
-            background:linear-gradient(160deg,#ede8dc 0%,#e2d9c4 55%,#d8ccb0 100%);
+            background:linear-gradient(160deg,rgba(237,232,220,0.7) 0%,rgba(226,217,196,0.7) 55%,rgba(216,204,176,0.7) 100%);
             border-radius:0 14px 14px 0;
             border:2px solid var(--p-color,#00ff88); border-left:none;
             box-shadow:4px 0 22px var(--p-color,#00ff88);
@@ -786,7 +786,7 @@
         }
         #pass-drawer-tab-label {
             font-family:'KCStrikerSans','Courier New',monospace;
-            font-size:0.4rem; letter-spacing:2px; color:rgba(30,15,0,0.55);
+            font-size:0.55rem; letter-spacing:2px; color:rgba(30,15,0,0.65);
             text-transform:uppercase; writing-mode:vertical-rl;
             text-orientation:mixed; transform:rotate(180deg);
         }
@@ -795,8 +795,8 @@
             color:var(--p-color,#00ff88);
             line-height:1; text-shadow:0 0 8px var(--p-color,#00ff88);
         }
-        #pass-drawer-tab-dots { display:flex; flex-direction:column; gap:3px; align-items:center; }
-        .drawer-dot { width:5px; height:5px; border-radius:50%; background:var(--p-color,#00ff88); opacity:0.7; }
+        #pass-drawer-tab-dots { display:none; }
+        .drawer-dot { display:none; }
         #pass-drawer-backdrop {
             display:none; position:fixed; inset:0;
             z-index:299; background:rgba(0,0,0,0.55);
@@ -1004,7 +1004,6 @@
     <div id="pass-drawer-tab" onclick="openPassDrawer()">
         <div id="pass-drawer-tab-arrow">›</div>
         <div id="pass-drawer-tab-label">Passes</div>
-        <div id="pass-drawer-tab-dots"><div class="drawer-dot"></div><div class="drawer-dot"></div><div class="drawer-dot"></div></div>
     </div>
     <div id="pass-drawer-sheet">
         <div id="pass-drawer-title">🎟 Lineup</div>
