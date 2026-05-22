@@ -23,13 +23,15 @@
       --warm-wht: #fdfaf6;
     }
 
-    @keyframes bgFade {
-      0%, 100% { opacity: 1; }
-      50%       { opacity: 0; }
+    @keyframes bgCycle {
+      0%, 30%   { background-color: var(--bg3); }
+      40%, 70%  { background-color: var(--bg1); }
+      80%, 100% { background-color: var(--bg3); }
     }
 
     body {
-      background-color: var(--bg1);
+      background-color: var(--bg3);
+      animation: bgCycle 20s ease-in-out infinite;
       color: var(--tan);
       font-family: 'Jost', sans-serif;
       font-weight: 300;
@@ -37,32 +39,11 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      position: relative;
-      isolation: isolate;
-    }
-
-    body::before,
-    body::after {
-      content: '';
-      position: fixed;
-      inset: 0;
-      z-index: -1;
-      will-change: opacity;
-    }
-
-    body::before {
-      background-color: var(--bg2);
-      animation: bgFade 12s ease-in-out infinite;
-    }
-
-    body::after {
-      background-color: var(--bg3);
-      animation: bgFade 12s ease-in-out infinite 6s;
     }
 
     main {
       width: 100%;
-      max-width: 500px;
+      max-width: min(750px, 90vw);
       padding: 4rem 2rem 2rem;
       display: flex;
       flex-direction: column;
@@ -123,7 +104,7 @@
     h1 {
       font-family: 'Cormorant Garamond', serif;
       font-weight: 400;
-      font-size: 2.5rem;
+      font-size: clamp(2rem, 4vw, 3rem);
       letter-spacing: 0.02em;
       line-height: 1.1;
       color: var(--warm-wht);
@@ -197,17 +178,17 @@
     .bio {
       font-family: 'Cormorant Garamond', serif;
       font-weight: 400;
-      font-size: 1.13rem;
+      font-size: clamp(1.05rem, 1.5vw, 1.2rem);
       line-height: 1.9;
       color: var(--tan);
       text-align: center;
-      max-width: 420px;
+      max-width: 100%;
     }
 
     /* ── Footer ── */
     footer {
       width: 100%;
-      max-width: 500px;
+      max-width: min(750px, 90vw);
       padding: 2rem 2rem 3.5rem;
       display: flex;
       flex-direction: column;
@@ -277,8 +258,7 @@
 
     @media (max-width: 420px) {
       h1 { font-size: 2rem; }
-      main { padding: 3rem 1.5rem 1.5rem; }
-      .bio { font-size: 1.05rem; }
+      main { padding: 3rem 1.2rem 1.5rem; }
     }
   </style>
 </head>
