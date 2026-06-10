@@ -1,7 +1,7 @@
 <!DOCTYPE html><html lang="en"><head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Fearjoy - Game (v40.1)</title>
+    <title>Fearjoy - Game (v40.2)</title>
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
@@ -711,7 +711,8 @@
             font-weight:900; color:var(--joy-glow);
             margin:16px 0; display:none; line-height:1;
         }
-        #action-bar { display:flex; flex-wrap:wrap; justify-content:center; align-items:flex-start; gap:8px; width:100%; }
+        #action-bar { display:flex; flex-wrap:wrap; justify-content:center; align-items:flex-start; gap:14px; width:100%; margin-left:auto; margin-right:auto; }
+        #action-bar > div { display:flex; flex-direction:column; align-items:center; justify-content:center; }
         .popup > * { text-align:center; }
         .popup > #popup-mute-btn { text-align:initial; }
         #action-bar.timer-mode { flex-direction:column; align-items:center; gap:8px; }
@@ -2338,7 +2339,7 @@ function startVinylWiggles(){
         const trackWrap=document.createElement('div');
         trackWrap.style.cssText='display:flex;flex-direction:column;align-items:center;gap:6px;';
         const trackSpace=makeSpace('tracklist-space',
-            `<div class="sp-emoji" style="font-size:${forHowTo?'1.2rem':'0.9rem'};">☀️</div><div class="sp-text" style="font-size:${forHowTo?'0.55rem':'0.4rem'};">TRACKLIST</div>`,
+            `<div class="sp-emoji" style="font-size:${forHowTo?'1.7rem':'1.4rem'};">☀️</div><div class="sp-text" style="font-size:${forHowTo?'0.8rem':'0.6rem'};">TRACKLIST</div>`,
             ()=>_showPreviewTip('🎵 Tracklist Space','A sample from the album plays when you land here — each track has its own event.')
         );
         trackWrap.appendChild(trackSpace);
@@ -2349,14 +2350,14 @@ function startVinylWiggles(){
         const specWrap=document.createElement('div');
         specWrap.style.cssText='display:flex;flex-direction:column;align-items:center;gap:6px;';
         const specSpace=makeSpace(_specials[0].cls||'',
-            `<div class="sp-emoji" style="font-size:${forHowTo?'1.2rem':'0.9rem'};">${_specials[0].emoji}</div><div class="sp-text" style="font-family:'KCStrikerSans',monospace;font-size:${forHowTo?'0.55rem':'0.4rem'};">${_specials[0].label}</div>`,
+            `<div class="sp-emoji" style="font-size:${forHowTo?'1.7rem':'1.4rem'};">${_specials[0].emoji}</div><div class="sp-text" style="font-family:'KCStrikerSans',monospace;font-size:${forHowTo?'0.8rem':'0.6rem'};">${_specials[0].label}</div>`,
             ()=>_showPreviewTip('⚡ Special Space','Each has a unique effect — good, bad, or both. Grammy, Merch, FearJoy and more.')
         );
         function _advanceCarousel(){
             _carouselIdx=(_carouselIdx+1)%_specials.length;
             const sp=_specials[_carouselIdx];
             specSpace.className='space '+(sp.cls||'');
-            specSpace.innerHTML=`<div class="sp-emoji" style="font-size:${forHowTo?'1.2rem':'0.9rem'};">${sp.emoji}</div><div class="sp-text" style="font-family:'KCStrikerSans',monospace;font-size:${forHowTo?'0.55rem':'0.4rem'};">${sp.label}</div>`;
+            specSpace.innerHTML=`<div class="sp-emoji" style="font-size:${forHowTo?'1.7rem':'1.4rem'};">${sp.emoji}</div><div class="sp-text" style="font-family:'KCStrikerSans',monospace;font-size:${forHowTo?'0.8rem':'0.6rem'};">${sp.label}</div>`;
         }
         _carouselTimer=setInterval(_advanceCarousel,1800);
         specWrap.appendChild(specSpace);
@@ -2367,7 +2368,7 @@ function startVinylWiggles(){
         const mystWrap=document.createElement('div');
         mystWrap.style.cssText='display:flex;flex-direction:column;align-items:center;gap:6px;';
         const mystSpace=makeSpace('mystery-space',
-            `<span class="mystery-q" style="font-size:${forHowTo?'1.4rem':'1.1rem'};">?</span>`,
+            `<span class="mystery-q" style="font-size:${forHowTo?'2rem':'1.7rem'};">?</span>`,
             ()=>_showPreviewTip('? Mystery Space','Hidden lore drops — band photos, videos, real-life merch codes, and rare rewards.')
         );
         mystWrap.appendChild(mystSpace);
@@ -2376,15 +2377,17 @@ function startVinylWiggles(){
 
         /* ── TOOLTIP ── */
         let _tipTimer=null;
+        
         function _showPreviewTip(title,desc){
             let tip=document.getElementById('_preview-tip');
             if(!tip){
                 tip=document.createElement('div');tip.id='_preview-tip';
-                tip.style.cssText='position:fixed;bottom:calc(var(--bar-h,72px) + 14px);left:50%;transform:translateX(-50%);background:rgba(10,10,10,0.97);border:1px solid rgba(255,255,255,0.2);border-radius:12px;padding:12px 18px;max-width:min(300px,80vmin);z-index:8000;text-align:center;pointer-events:none;transition:opacity 0.4s ease;';
+                tip.style.cssText='position:fixed;bottom:calc(var(--bar-h,72px) + 14px);left:50%;transform:translateX(-50%);background:rgba(10,10,10,0.97);border:1px solid rgba(255,255,255,0.2);border-radius:12px;padding:12px 18px;max-width:min(300px,80vmin);z-index:8000;text-align:center;cursor:pointer;transition:opacity 0.4s ease;';
                 document.body.appendChild(tip);
             }
             tip.innerHTML=`<div style="font-family:'KCStrikerSans',monospace;font-size:1.1rem;letter-spacing:1px;color:white;margin-bottom:6px;">${title}</div><div style="font-family:'Courier New',monospace;font-size:0.91rem;color:rgba(255,255,255,0.85);line-height:1.6;">${desc}</div>`;
             tip.style.opacity='1';
+            tip.onclick=(e)=>{e.stopPropagation();tip.style.opacity='0';if(_tipTimer)clearTimeout(_tipTimer);};
             if(_tipTimer)clearTimeout(_tipTimer);
             _tipTimer=setTimeout(()=>{if(tip)tip.style.opacity='0';},6400);
         }
