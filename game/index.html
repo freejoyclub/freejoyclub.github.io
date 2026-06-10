@@ -1,7 +1,7 @@
 <!DOCTYPE html><html lang="en"><head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Fearjoy - Game (v40)</title>
+    <title>Fearjoy - Game (v40.1)</title>
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
@@ -96,14 +96,15 @@
         /* ── PAGE SHELL ── */
         html,body { margin:0; padding:0; width:100%; height:100%; overflow:hidden; }
         body.win-active::before { animation:none !important; }
-        body.win-active .space,
-        body.win-active .space::before,
-        body.win-active .space::after,
+        body.win-active .space:not(.tracklist-space):not(#s59):not(#s0)::before,
+        body.win-active .space:not(.tracklist-space):not(#s59):not(#s0)::after,
         body.win-active #board-bg,
+        body.win-active #tape-svg,
+        body.win-active .access-pass,
         body.win-active .player,
-        body.win-active #dice-box { animation:none !important; }
+        body.win-active #dice-box,
+        body.win-active .popup { animation:none !important; }
         body {
-            background:none;
             background:none;
             color:white; font-family:'Courier New',monospace;
             display:flex; flex-direction:column;
@@ -663,8 +664,8 @@
         #event-btn-secondary { display:none; background:#333; color:white; margin-left:clamp(8px,1.5vw,15px); }
         #event-btn-secondary:hover { transform:translateY(-2px) scale(1.04); background:#444; box-shadow:0 6px 20px rgba(0,0,0,0.4); }
         .btn-kb-focus { outline:2px solid white !important; animation:btnFocusPulse 1s ease-in-out infinite; }
-        .kb-hint { display:block; font-family:'Courier New',monospace; font-size:0.52rem; letter-spacing:1.5px; color:rgba(255,255,255,0.28); text-align:center; margin-top:5px; text-transform:uppercase; pointer-events:none; user-select:none; }
-        .btn-fear {
+        .kb-hint { display:block; font-family:'Courier New',monospace; font-size:0.72rem; letter-spacing:1.5px; color:rgba(255,255,255,0.6); text-align:center; margin-top:6px; text-transform:uppercase; pointer-events:none; user-select:none; }
+            .btn-fear {
             font-family:'KCStrikerSans','Courier New',monospace;
             padding:clamp(8px,1.2vh,14px) clamp(16px,2.5vw,32px);
             font-size:clamp(0.85rem,1.7vw,1.1rem);
@@ -710,7 +711,9 @@
             font-weight:900; color:var(--joy-glow);
             margin:16px 0; display:none; line-height:1;
         }
-        #action-bar { display:flex; flex-wrap:wrap; justify-content:center; gap:8px; width:100%; }
+        #action-bar { display:flex; flex-wrap:wrap; justify-content:center; align-items:flex-start; gap:8px; width:100%; }
+        .popup > * { text-align:center; }
+        .popup > #popup-mute-btn { text-align:initial; }
         #action-bar.timer-mode { flex-direction:column; align-items:center; gap:8px; }
         #popup-mute-btn.muted { background:#880000; border-color:#cc0000; color:#000; }
         .btn-nevermind {
@@ -935,7 +938,7 @@
             <div id="action-bar">
                 <div style="display:flex;flex-direction:column;align-items:center;">
                     <button id="event-btn-primary"></button>
-                    <span class="kb-hint">[Space] / Enter</span>
+                    <span class="kb-hint">[Space]</span>
                 </div>
                 <div style="display:flex;flex-direction:column;align-items:center;">
                     <button id="event-btn-secondary"></button>
