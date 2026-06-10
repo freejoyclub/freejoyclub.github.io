@@ -1,7 +1,7 @@
 <!DOCTYPE html><html lang="en"><head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Fearjoy - Game (v40.2)</title>
+    <title>Fearjoy - Game (v40.3)</title>
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
@@ -711,8 +711,9 @@
             font-weight:900; color:var(--joy-glow);
             margin:16px 0; display:none; line-height:1;
         }
-        #action-bar { display:flex; flex-wrap:wrap; justify-content:center; align-items:flex-start; gap:14px; width:100%; margin-left:auto; margin-right:auto; }
-        #action-bar > div { display:flex; flex-direction:column; align-items:center; justify-content:center; }
+        #action-bar { display:flex; flex-wrap:wrap; justify-content:center; align-items:flex-start; gap:14px; width:100%; }
+        #action-bar > div { display:inline-flex; flex-direction:column; align-items:center; justify-content:flex-start; text-align:center; }
+        #action-bar > div > button { margin:0 auto; }
         .popup > * { text-align:center; }
         .popup > #popup-mute-btn { text-align:initial; }
         #action-bar.timer-mode { flex-direction:column; align-items:center; gap:8px; }
@@ -3609,7 +3610,9 @@ function showStatusPopup(t,d,b1,c1,b2,c2,playerNameHtml=''){
         });
         statsHtml+=`</div>`;
         const popupEl=document.getElementById('main-popup');
-        popupEl.style.borderColor=p.avatar.color;popupEl.style.boxShadow=`0 0 80px ${p.avatar.color}`;
+        popupEl.style.transform='translateY(0)'; /* reset paused float position */
+        popupEl.style.borderColor=p.avatar.color;
+        popupEl.style.boxShadow=`0 0 24px ${p.avatar.color}30`;
         document.getElementById('event-title').innerText="The tour is over. Go Swimmin!";
         document.getElementById('event-desc').innerHTML=statsHtml;
         const storeLbl=highestDiscountPct>0?`STORE (${highestDiscountPct}% OFF)`:'STORE';
