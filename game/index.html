@@ -1,7 +1,7 @@
 <!DOCTYPE html><html lang="en"><head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Fearjoy - Game (v39)</title>
+    <title>Fearjoy - Game (v40)</title>
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
@@ -19,8 +19,8 @@
             --roll-color:#00ff88; /* updated each turn to current player color */
             --bar-h:clamp(46px,9vh,110px);
             --space-size:clamp(24px,min(5.8vw,calc((100dvh - var(--bar-h) - 32px) / 6.5)),85px);
-            --space-font:clamp(0.34rem,0.9vw,0.9rem);
-            --space-emoji:clamp(0.5rem,1.1vw,1.4rem);
+            --space-font:calc(var(--space-size) * 0.16);
+            --space-emoji:calc(var(--space-size) * 0.32);
             --board-gap:clamp(2px,0.85vw,18px);
             --board-pad:clamp(4px,0.8vw,24px);
             --pass-w:clamp(90px,12.5vw,175px);
@@ -95,7 +95,15 @@
 
         /* ── PAGE SHELL ── */
         html,body { margin:0; padding:0; width:100%; height:100%; overflow:hidden; }
+        body.win-active::before { animation:none !important; }
+        body.win-active .space,
+        body.win-active .space::before,
+        body.win-active .space::after,
+        body.win-active #board-bg,
+        body.win-active .player,
+        body.win-active #dice-box { animation:none !important; }
         body {
+            background:none;
             background:none;
             color:white; font-family:'Courier New',monospace;
             display:flex; flex-direction:column;
@@ -669,19 +677,19 @@
 
         /* ── RULE SIDEBAR ── */
         #rule-sidebar {
-            position:fixed; right:-400px; will-change:right;
-            top:calc(var(--bar-h) + 8px); width:min(260px,78vw);
-            max-height:calc(100dvh - var(--bar-h) - 16px); height:auto;
+            position:fixed; right:-440px; will-change:right;
+            top:calc(var(--bar-h) + 8px); width:min(300px,82vw);
+            max-height:calc(100dvh - var(--bar-h) - 24px); height:auto;
             background:linear-gradient(160deg,rgba(6,6,6,0.97) 0%,rgba(22,22,22,0.97) 100%);
-            padding:clamp(10px,2vw,26px);
+            padding:clamp(14px,2.2vw,26px); padding-right:calc(clamp(14px,2.2vw,26px) + 40px);
             border-radius:20px 0 0 20px; border:2px solid var(--joy-glow); border-right:none;
             transition:right 0.55s cubic-bezier(0.175,0.885,0.32,1.275);
             z-index:200; box-shadow:-10px 0 40px rgba(0,0,0,0.6); cursor:pointer;
-            display:flex; flex-direction:column; overflow:hidden;
+            display:flex; flex-direction:column; overflow-y:auto;
         }
-        #rule-sidebar.active { right:0; }
-        #rule-sidebar.mystery-sidebar { font-size:0.88em; width:min(240px,72vw); }
-        #side-sub   { font-size:0.75rem; letter-spacing:2px; color:rgba(255,255,255,0.4); text-transform:uppercase; margin-bottom:6px; font-family:'Courier New',monospace; }
+        #rule-sidebar.active { right:-40px; }
+        #rule-sidebar.mystery-sidebar { font-size:0.88em; width:min(280px,76vw); }
+        #side-sub   { font-size:0.78rem; letter-spacing:2px; color:rgba(255,255,255,0.7); text-transform:uppercase; margin-bottom:6px; font-family:'Courier New',monospace; }
         #side-title { font-family:'KCStrikerSans','Courier New',monospace; margin:0 0 8px; font-size:clamp(1rem,2.5vw,1.5rem); }
         #side-desc  { line-height:1.6; margin:0; font-size:clamp(0.85rem,1.6vw,1.05rem); font-family:'Courier New',monospace; }
         #side-bucket { flex:1; overflow-y:auto; min-height:0; }
@@ -1076,18 +1084,18 @@
     const GATEKEEPER_SPACE=48;
     /* Track number labels for tracklist spaces — index = space index */
     const TRACKLIST_TRACK_NAMES={
-        3:'Track 1: Dayspring',
-        8:'Track 2: Figment',
-        10:'Track 3: The Remedy',
-        15:'Track 4: Dmitri',
-        25:'Track 5: It Happens',
-        18:'Track 6: Nightdrive',
-        27:'Track 7: Ghost 2',
-        28:'Track 8: Maya',
-        37:'Track 9: Tellus',
-        44:'Track 10: Void',
-        47:'Track 11: The Endless Smile',
-        59:'Track 12: Swimmin\' ✦ Hidden'
+        3:'Track 1',
+        8:'Track 2',
+        10:'Track 3',
+        15:'Track 4',
+        25:'Track 5',
+        18:'Track 6',
+        27:'Track 7',
+        28:'Track 8',
+        37:'Track 9',
+        44:'Track 10',
+        47:'Track 11',
+        59:'Track 12 ✦ Hidden'
     };
     const BLANK_INDICES=boardLayout.reduce((arr,n,i)=>{if(n==="blank")arr.push(i);return arr;},[]);
     let mysterySpaces=new Set();
@@ -1497,18 +1505,19 @@
     // ══════════════════════════════════════════════
     // VINYL WIGGLE
     // ══════════════════════════════════════════════
-    function startVinylWiggles(){
+function startVinylWiggles(){
         function wiggleRandom(){
+            if(document.body.classList.contains('win-active'))return; /* halt on win */
             const el=TRACKLIST_INDICES[Math.floor(Math.random()*TRACKLIST_INDICES.length)];
             const s=document.getElementById('s'+el);
             if(s&&!s.classList.contains('vinyl-spinning')){
                 s.classList.remove('vinyl-wiggle');void s.offsetWidth;
                 s.classList.add('vinyl-wiggle');
-                setTimeout(()=>s.classList.remove('vinyl-wiggle'),950);
+                window._vinylClearTimer=setTimeout(()=>s.classList.remove('vinyl-wiggle'),950);
             }
-            setTimeout(wiggleRandom,2000+Math.random()*4000);
+            window._vinylWiggleTimer=setTimeout(wiggleRandom,2000+Math.random()*4000);
         }
-        setTimeout(wiggleRandom,1500+Math.random()*3000);
+        window._vinylWiggleTimer=setTimeout(wiggleRandom,1500+Math.random()*3000);
     }
 
     // ══════════════════════════════════════════════
@@ -1680,6 +1689,8 @@
         showStatusPopup("RESTART TOUR?","Resets scores but keeps your artists.",
             "YES, RESTART",()=>{
                 isRestart=true;
+                document.body.classList.remove('win-active');
+                if(!window._vinylWiggleTimer&&document.getElementById('s0'))startVinylWiggles();
                 players.forEach(p=>{
                     p.pos=0;p.skipCount=0;p.isInvestor=false;p.isSellout=false;p.isColdPitchSellout=false;
                     p.grammys=0;p.shirtsSold=0;p.pillsTaken=0;p.ghostCounter=0;
@@ -3567,6 +3578,10 @@ function showStatusPopup(t,d,b1,c1,b2,c2,playerNameHtml=''){
     function showWinScreen(){
         const p=players[turnIdx];
         playSpaceSfx('swimclip.wav');
+        document.body.classList.add('win-active');
+        if(window._vinylWiggleTimer){clearTimeout(window._vinylWiggleTimer);window._vinylWiggleTimer=null;}
+        if(window._vinylClearTimer){clearTimeout(window._vinylClearTimer);window._vinylClearTimer=null;}
+        document.querySelectorAll('.vinyl-wiggle').forEach(el=>el.classList.remove('vinyl-wiggle'));
         let statsHtml=`<h2 style="color:${p.avatar.color};animation:winPulse 2s infinite ease-in-out;font-family:'KCStrikerSans','Courier New',monospace;margin:5px 0;--p-color:${p.avatar.color};text-shadow:0 0 20px ${p.avatar.color};">${p.name} WINS!</h2>`;
         statsHtml+=`<div style="text-align:left;margin-top:15px;font-family:monospace;background:rgba(0,0,0,0.4);border-radius:12px;padding:12px;border:1px solid #333;">`;
         const sortedPlayers=[...players].sort((a,b)=>b.pos-a.pos);
