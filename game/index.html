@@ -1,7 +1,7 @@
 <!DOCTYPE html><html lang="en"><head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Fearjoy - Game (v100.1)</title>
+    <title>Fearjoy - Game (v100.2)</title>
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
@@ -97,6 +97,17 @@
             position:fixed; inset:0; z-index:-2; pointer-events:none;
             background:#ffffff;
         }
+        /* Event-color glow — solid-centered radial glow that originates from a space's
+           position (--glow-x/--glow-y, percent of viewport) and expands outward, fading
+           before it reaches the edges. Sits above the white background, below the board art. */
+        #page-glow {
+            position:fixed; inset:0; z-index:-1; pointer-events:none;
+            --glow-x:50%; --glow-y:50%; --glow-color:transparent;
+            background:radial-gradient(circle at var(--glow-x) var(--glow-y),
+                var(--glow-color) 0%, var(--glow-color) 8%, transparent 70%);
+            opacity:0; transition:opacity 1.1s ease;
+        }
+        #page-glow.active { opacity:1; }
 
         /* ── SCREEN BORDER GLOW — current player color ── */
         #screen-glow {
@@ -451,10 +462,6 @@
             margin:auto;
             /* width/height set in px by JS (sizeBoardOuter) — square, fills limiting dimension */
         }
-        #board-glow {
-            position:absolute; inset:0; z-index:2;
-            pointer-events:none; border-radius:10px; overflow:hidden;
-        }
         #board-png {
             position:absolute; inset:0; z-index:3;
             width:100%; height:100%; object-fit:contain;
@@ -501,7 +508,7 @@
         .player {
             position:absolute; z-index:100;
             transition:top 0.7s cubic-bezier(0.18,0.89,0.32,1.28),left 0.7s cubic-bezier(0.18,0.89,0.32,1.28),width 0.7s cubic-bezier(0.18,0.89,0.32,1.28),height 0.7s cubic-bezier(0.18,0.89,0.32,1.28);
-            background-size:contain; background-repeat:no-repeat; background-position:center bottom;
+            background-size:contain; background-repeat:no-repeat; background-position:center center;
             pointer-events:none; animation:pieceHover 4s infinite ease-in-out;
             will-change:top,left,width,height;
         }
@@ -716,7 +723,6 @@
         <div id="pass-sidebar"><div id="lineup-label">Lineup</div></div>
         <div id="board-scroll">
             <div id="board-outer">
-                <div id="board-glow"></div>
                 <img id="board-png" src="board-transp-1.png" alt="">
                 <div id="board-container"></div>
             </div>
@@ -884,6 +890,7 @@
     </div>
 
     <div id="page-bg"></div>
+    <div id="page-glow"></div>
     <div id="screen-glow"></div>
     <!-- ══ PASS DRAWER (mobile/tablet) ══ -->
     <div id="pass-drawer-backdrop" onclick="closePassDrawer()"></div>
@@ -1498,12 +1505,47 @@
         if(n==='JOY')return'var(--joy-glow)';
         return'#ffffff';
     }
+    /* Broader glow-color mapping for the page-level event glow — extends getSpaceColor's
+       FEAR/JOY-only palette with grammy gold, mystery purple, etc. Falls back to white. */
+    function getGlowColor(pos){
+        const n=boardLayout[pos];
+        if(n==='FEAR')return'#ff4444';
+        if(n==='JOY')return'#00ff88';
+        if(n==='WIN A GRAMMY')return'#ffd700';
+        if(n==='FEARJOY')return'#dd99ff';
+        if(mysterySpaces.has(pos))return'#dd99ff';
+        return'#ffffff';
+    }
+    let _glowFadeTimer=null;
+    /* Fire the page-level radial glow, originating from a space's board position.
+       Converts that space's SPACE_POS board-percent into viewport-percent using
+       #board-outer's live position, so the glow appears to emanate from the actual space. */
+    function pageGlowAt(pos,colorOverride){
+        const glowEl=document.getElementById('page-glow');
+        const outer=document.getElementById('board-outer');
+        const spacePos=SPACE_POS[pos];
+        if(!glowEl||!outer||!spacePos)return;
+        const rect=outer.getBoundingClientRect();
+        const vw=window.innerWidth,vh=window.innerHeight;
+        const px=rect.left+(spacePos.x/100)*rect.width;
+        const py=rect.top+(spacePos.y/100)*rect.height;
+        const xPct=(px/vw*100).toFixed(2);
+        const yPct=(py/vh*100).toFixed(2);
+        const color=colorOverride||getGlowColor(pos);
+        glowEl.style.setProperty('--glow-x',xPct+'%');
+        glowEl.style.setProperty('--glow-y',yPct+'%');
+        glowEl.style.setProperty('--glow-color',color);
+        if(_glowFadeTimer)clearTimeout(_glowFadeTimer);
+        glowEl.classList.add('active');
+        _glowFadeTimer=setTimeout(()=>{glowEl.classList.remove('active');_glowFadeTimer=null;},1400);
+    }
     function flashSpaceLanding(pos){
         const el=document.getElementById('s'+pos);if(!el)return;
         const color=getSpaceColor(pos);
         el.style.setProperty('--land-color',color==='#ffffff'?'rgba(255,255,255,0.8)':color);
         el.classList.remove('space-land');void el.offsetWidth;el.classList.add('space-land');
         setTimeout(()=>el.classList.remove('space-land'),1200);
+        pageGlowAt(pos);
     }
     function awardGrammyAccolade(playerIdx,nominatorName,fromSwap=false){
         const p=players[playerIdx];p.grammys++;p.accolades.push('🏆');
