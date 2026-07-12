@@ -1,7 +1,7 @@
 <!DOCTYPE html><html lang="en"><head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Fearjoy - Game (v100)</title>
+    <title>Fearjoy - Game (v100.1)</title>
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
@@ -76,10 +76,6 @@
         @keyframes barShine      { 0%{background-position:-400% center;}100%{background-position:400% center;} }
         @keyframes vuBounce      { 0%{transform:rotate(-45deg);}25%{transform:rotate(20deg);}50%{transform:rotate(-30deg);}75%{transform:rotate(35deg);}100%{transform:rotate(-45deg);} }
         @keyframes videoKeepAlive { 0%,100%{opacity:1;} 50%{opacity:0.99;} }
-        @keyframes bgRotate {
-            from { transform:translate(-50%,-50%) rotate(0deg); }
-            to   { transform:translate(-50%,-50%) rotate(360deg); }
-        }
 
         /* ── PAGE SHELL ── */
         html,body { margin:0; padding:0; width:100%; height:100%; overflow:hidden; }
@@ -95,27 +91,11 @@
             display:flex; flex-direction:column;
             height:100vh; height:100dvh; overflow:hidden; position:relative;
         }
-        /* Farthest-back layer: slow rotating gradient — GPU transform only, no repaint */
-        body::before {
-            content:''; position:fixed;
-            width:300vmax; height:300vmax;
-            top:50%; left:50%;
-            z-index:-2; pointer-events:none;
-            background:linear-gradient(0deg,#a85c2a 0%,#d18c58 25%,#b05019 50%,#b07b4d 75%,#a85c2a 100%);
-            animation:bgRotate 15s linear infinite;
-            will-change:transform;
-        }
-        /* Wood texture layer — above gradient, below vignette */
-        #wood-bg {
-            position:fixed; inset:0; z-index:-1; pointer-events:none;
-            background:url('wood-bg.jpg') center/cover no-repeat;
-            opacity:0.2;
-            filter:blur(2px)
-        }
-        /* Vignette layer */
-        body::after {
-            content:''; position:fixed; inset:0; z-index:0; pointer-events:none;
-            background:radial-gradient(ellipse 80% 75% at 50% 50%,transparent 30%,rgba(46,4,33,0.6) 100%);
+        /* Full-page white background layer — sits behind everything (sidebar, UI bar, board).
+           Hosts the ambient gold-shine sweep and event-color glows (see #page-glow / #page-shine). */
+        #page-bg {
+            position:fixed; inset:0; z-index:-2; pointer-events:none;
+            background:#ffffff;
         }
 
         /* ── SCREEN BORDER GLOW — current player color ── */
@@ -468,14 +448,8 @@
         }
         #board-outer {
             position:relative; z-index:1;
-            width:min(100%,100%); height:100%;
-            aspect-ratio:1/1;
-            max-width:100%; max-height:100%;
-        }
-        #board-backdrop {
-            position:absolute; inset:0; z-index:1;
-            background:#ffffff; border-radius:10px;
-            overflow:hidden;
+            margin:auto;
+            /* width/height set in px by JS (sizeBoardOuter) — square, fills limiting dimension */
         }
         #board-glow {
             position:absolute; inset:0; z-index:2;
@@ -497,11 +471,31 @@
             position:absolute; cursor:help; box-sizing:border-box;
             transform:translate(-50%,-50%);
         }
-        .space .sp-text,.space .sp-emoji,.mystery-q { text-shadow:0 0 3px rgba(0,0,0,0.5),0 0 1px rgba(0,0,0,0.7); }
+        .space .sp-text,.space .sp-emoji { text-shadow:0 0 3px rgba(0,0,0,0.5),0 0 1px rgba(0,0,0,0.7); }
         .sp-emoji { font-size:var(--space-emoji); margin-bottom:2px; }
         .sp-text  { padding:0 2px; font-family:'KCStrikerSans','Courier New',monospace; font-weight:bold; font-size:var(--space-font); }
-        .mystery-q { font-size:calc(clamp(0.98rem,1.9vw,1.8rem) * 1.1); font-weight:bold; opacity:0.9; color:var(--mystery-glow); }
         .space-land { animation:spaceLand 1.2s ease-out forwards; }
+
+        /* ── MYSTERY MARK — larger ?, slow pastel color-fade loop, gentle hover ── */
+        @keyframes mysteryColorFade {
+            0%   { color:#ffffff; }
+            20%  { color:#d9b8ff; } /* light purple */
+            40%  { color:#b8ffd9; } /* light green */
+            60%  { color:#b8e0ff; } /* light blue */
+            80%  { color:#ffb8ec; } /* light pink */
+            100% { color:#ffffff; }
+        }
+        @keyframes mysteryHover {
+            0%,100% { transform:translateY(0); }
+            50%     { transform:translateY(-4px); }
+        }
+        .mystery-q {
+            display:inline-block;
+            font-size:calc(var(--space-size) * 0.55);
+            font-weight:bold;
+            text-shadow:0 0 8px currentColor,0 0 16px rgba(255,255,255,0.5);
+            animation:mysteryColorFade 7s ease-in-out infinite,mysteryHover 3.4s ease-in-out infinite;
+        }
 
         /* ── PLAYER PIECES ── */
         .player {
@@ -722,7 +716,6 @@
         <div id="pass-sidebar"><div id="lineup-label">Lineup</div></div>
         <div id="board-scroll">
             <div id="board-outer">
-                <div id="board-backdrop"></div>
                 <div id="board-glow"></div>
                 <img id="board-png" src="board-transp-1.png" alt="">
                 <div id="board-container"></div>
@@ -890,7 +883,7 @@
         </div>
     </div>
 
-    <div id="wood-bg"></div>
+    <div id="page-bg"></div>
     <div id="screen-glow"></div>
     <!-- ══ PASS DRAWER (mobile/tablet) ══ -->
     <div id="pass-drawer-backdrop" onclick="closePassDrawer()"></div>
@@ -956,10 +949,10 @@
 
     const boardLayout=[
         "START","blank","blank","DAYSPRING","blank","FEARJOY","blank","blank","FIGMENT","JOY",
-        "THE REMEDY","FEAR","VAN BREAKS DOWN","JOY","blank","DMITRI","blank","FEARJOY","NIGHTDRIVE","JOY",
+        "THE REMEDY","FEAR","blank","JOY","blank","DMITRI","blank","FEARJOY","NIGHTDRIVE","JOY",
         "INVEST IN MERCH","FEAR","blank","5TH DIMENSION","blank","IT HAPPENS","blank","GHOST 2","MAYA","JOY",
         "WIN A GRAMMY","blank","blank","OPENING ACT","blank","FEAR","blank","TELLUS","FEARJOY","blank",
-        "blank","blank","ENCORE","blank","VOID","blank","JOY","THE ENDLESS SMILE","GATEKEEPER","blank",
+        "VAN BREAKS DOWN","blank","ENCORE","blank","VOID","blank","JOY","THE ENDLESS SMILE","GATEKEEPER","blank",
         "blank","FEARJOY","blank","VAN BREAKS DOWN","blank","LOST RECORDING","blank","FEARJOY","blank","SWIMMIN"
     ];
 
@@ -1009,7 +1002,6 @@
         9:{title:"JOY",emoji:"😄",shift:1,isAuto:true,desc:"FREEJOY! Forward 1.",sound:"coinclip.wav"},
         10:{title:"THE REMEDY",emoji:"💊",choice:'remedy',isTrack:true,desc:"A major label offers a deal. Sign for +6 now, but every 6 you roll becomes -2. Sellouts pass the Gatekeeper freely.",sound:"remedyclip.wav"},
         11:{title:"FEAR",emoji:"😱",shift:-1,isAuto:true,desc:"Get scared. Rewind 1.",sound:"spookyclip1.wav"},
-        12:{title:"VAN BREAKS DOWN",emoji:"🛠",skipTurns:1,desc:"Tour van breaks down! Skip a turn for repairs."},
         13:{title:"JOY",emoji:"😄",shift:1,isAuto:true,desc:"Choose JOY! Forward 1.",sound:"coinclip.wav"},
         15:{title:"DMITRI",emoji:"👨‍🚀",timer:15,isDmitri:true,isTrack:true,desc:"Take DEEP BREATHS (15 sec) for the 5D shortcut. Skip = Rewind 2.",sound:"dmitriclip.wav"},
         17:{title:"FEARJOY",emoji:"☯️",isFearjoy:true,desc:"Fear? Joy? Flip to find out.",sound:"coin.wav"},
@@ -1027,6 +1019,7 @@
         35:{title:"FEAR",emoji:"😱",shift:-1,isAuto:true,desc:"Fear of failure! Rewind 1.",sound:"spookyclip1.wav"},
         37:{title:"TELLUS",emoji:"📣",isTellus:true,isTrack:true,desc:"Swap positions with any artist.",sound:"tellusclip.wav"},
         38:{title:"FEARJOY",emoji:"☯️",isFearjoy:true,desc:"FEAR? JOY? Fate decides.",sound:"coin.wav"},
+        40:{title:"VAN BREAKS DOWN",emoji:"🛠",skipTurns:1,desc:"Tour van breaks down! Skip a turn for repairs."},
         42:{title:"ENCORE",emoji:"👏",shift:3,isAuto:true,desc:"Encore! Three more songs! Move forward 3.",sound:"coinclip.wav"},
         44:{title:"VOID",emoji:"🌀",shift:-3,isAuto:true,isTrack:true,desc:"Lost in the Void. Rewind 3.",sound:"voidclip.wav"},
         46:{title:"JOY",emoji:"😄",shift:1,isAuto:true,desc:"PUREJOY! Forward 1.",sound:"coinclip.wav"},
@@ -1811,6 +1804,29 @@
     }
 
     // ══════════════════════════════════════════════
+    // BOARD SIZING
+    // Board is a fixed square. This computes the largest square that fits
+    // inside #board-scroll (whichever dimension is the limiting factor),
+    // sets #board-outer's pixel size, and derives --space-size from it so
+    // hit-zones and player pieces scale evenly with the board art.
+    // ══════════════════════════════════════════════
+    function sizeBoardOuter(){
+        const scroll=document.getElementById('board-scroll');
+        const outer=document.getElementById('board-outer');
+        if(!scroll||!outer)return;
+        const cs=getComputedStyle(scroll);
+        const padX=parseFloat(cs.paddingLeft)+parseFloat(cs.paddingRight);
+        const padY=parseFloat(cs.paddingTop)+parseFloat(cs.paddingBottom);
+        const availW=scroll.clientWidth-padX;
+        const availH=scroll.clientHeight-padY;
+        const size=Math.max(0,Math.min(availW,availH));
+        outer.style.width=size+'px';
+        outer.style.height=size+'px';
+        /* Space size scales with the board itself, not the viewport directly */
+        document.documentElement.style.setProperty('--space-size',Math.max(20,Math.min(64,size*0.062))+'px');
+    }
+
+    // ══════════════════════════════════════════════
     // DRAWER MODE (mobile pass drawer)
     // (grid/tape/arrow layout system and rotation lock removed in v100 —
     //  board is a fixed-square PNG, no orientation rotation needed)
@@ -1821,13 +1837,14 @@
         return Math.min(screen.width,screen.height)<1024;
     }
 
-    /* Orientation check — shows/hides pass drawer, refreshes space positions */
+    /* Orientation check — shows/hides pass drawer, resizes board, refreshes space positions */
     function checkOrientation(){
         const drawerMode=isMobileDrawer();
         const tab=document.getElementById('pass-drawer-tab');
         const sidebar=document.getElementById('pass-sidebar');
         if(tab)tab.style.display=drawerMode?'flex':'none';
         if(sidebar)sidebar.style.display=drawerMode?'none':'flex';
+        sizeBoardOuter();
         if(document.getElementById('s0')){
             updatePositions();
         }
@@ -1850,6 +1867,7 @@
             if(gb){gb.style.display='block';gb.style.opacity='1';}
         }
         assignMysterySpaces();
+        sizeBoardOuter();
         const board=document.getElementById('board-container');
         boardLayout.forEach((name,i)=>{
             const s=document.createElement('div');s.id='s'+i;s.className='space';
@@ -1859,19 +1877,7 @@
                     s.innerHTML=`<span class="mystery-q">?</span>`;
                     s.onclick=()=>handleMysteryClick(i);
                 } else {s.classList.add('true-blank');}
-            } else if(i===0){
-                /* START — no text */
-                s.innerHTML='';
-                s.onclick=()=>handleSpaceClick(i);
-            } else if(i===59){
-                /* SWIMMIN — keeps text + emoji */
-                s.innerHTML=`<div class="sp-emoji">🌊</div><div class="sp-text">SWIMMIN'</div>`;
-                s.onclick=()=>handleSpaceClick(i);
             } else {
-                const r=rules[i];
-                const emojiHtml=(r&&r.emoji)?`<div class="sp-emoji">${r.emoji}</div>`:'';
-                const displayName=DISPLAY_NAMES[name]||name;
-                s.innerHTML=`${emojiHtml}<div class="sp-text">${displayName}</div>`;
                 s.onclick=()=>handleSpaceClick(i);
             }
             board.appendChild(s);
