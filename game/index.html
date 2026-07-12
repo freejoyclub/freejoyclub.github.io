@@ -1,7 +1,7 @@
 <!DOCTYPE html><html lang="en"><head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Fearjoy - Game (v40.3)</title>
+    <title>Fearjoy - Game (v100)</title>
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
@@ -18,7 +18,7 @@
             --pink-glow:#ff00ff; --mystery-glow:#dd99ff; --pitch-orange:#ff8800;
             --roll-color:#00ff88; /* updated each turn to current player color */
             --bar-h:clamp(46px,9vh,110px);
-            --space-size:clamp(24px,min(5.8vw,calc((100dvh - var(--bar-h) - 32px) / 6.5)),85px);
+            --space-size:clamp(20px,6.2vmin,64px);
             --space-font:calc(var(--space-size) * 0.16);
             --space-emoji:calc(var(--space-size) * 0.32);
             --board-gap:clamp(2px,0.85vw,18px);
@@ -56,22 +56,10 @@
         @keyframes fearPulse    { 0%,100%{filter:brightness(1);}    50%{filter:brightness(1.55);} }
         /* Special spaces — white border static, subtle brightness breath */
         @keyframes specialPulse { 0%,100%{filter:brightness(0.9);}  50%{filter:brightness(1.3);} }
-        /* Mystery — hue-rotate cycles through colors, approximating the original multi-color pulse */
-        @keyframes mysteryShift {
-            0%  { filter:hue-rotate(0deg)   brightness(0.85); }
-            20% { filter:hue-rotate(-80deg) brightness(1.1);  }
-            40% { filter:hue-rotate(-40deg) brightness(0.9);  }
-            60% { filter:hue-rotate(40deg)  brightness(1.05); }
-            80% { filter:hue-rotate(-60deg) brightness(1.0);  }
-            100%{ filter:hue-rotate(0deg)   brightness(0.85); }
-        }
         /* Named special spaces — static colored glow + brightness pulse */
         @keyframes namedPulse   { 0%,100%{filter:brightness(0.95);} 50%{filter:brightness(1.4);} }
 
         @keyframes passNotify    { 0%,100%{box-shadow:0 0 5px var(--pitch-orange);}50%{box-shadow:0 0 20px var(--pitch-orange),0 0 40px var(--pitch-orange);} }
-        @keyframes reelSpin      { from{transform:rotate(0deg);}to{transform:rotate(360deg);} }
-        @keyframes vinylSpin     { 0%{transform:var(--space-translate,translate(0,0)) scale(1.15) rotate(0deg);animation-timing-function:ease-in;}30%{transform:var(--space-translate,translate(0,0)) scale(1.15) rotate(540deg);animation-timing-function:linear;}70%{transform:var(--space-translate,translate(0,0)) scale(1.15) rotate(1440deg);animation-timing-function:ease-out;}100%{transform:var(--space-translate,translate(0,0)) scale(1.15) rotate(1800deg);} }
-        @keyframes vinylWiggle   { 0%,100%{transform:var(--space-translate,translate(0,0)) scale(1.15) rotate(0deg);}20%{transform:var(--space-translate,translate(0,0)) scale(1.15) rotate(-3.5deg);}50%{transform:var(--space-translate,translate(0,0)) scale(1.15) rotate(3deg);}75%{transform:var(--space-translate,translate(0,0)) scale(1.15) rotate(-2deg);} }
         @keyframes spaceLand     { 0%{box-shadow:0 0 0px var(--land-color,white);}40%{box-shadow:0 0 30px var(--land-color,white),0 0 60px var(--land-color,white);}100%{box-shadow:0 0 0px var(--land-color,white);} }
         @keyframes diceRiseOut   { 0%{opacity:1;transform:translate(0,0) scale(1);}100%{opacity:0;transform:translate(0,-60px) scale(0.5);} }
         @keyframes diceFallIn    { 0%{opacity:0;transform:translate(0,-80px) scale(0.4);}100%{opacity:1;transform:translate(0,0) scale(1);} }
@@ -96,10 +84,7 @@
         /* ── PAGE SHELL ── */
         html,body { margin:0; padding:0; width:100%; height:100%; overflow:hidden; }
         body.win-active::before { animation:none !important; }
-        body.win-active .space:not(.tracklist-space):not(#s59):not(#s0)::before,
-        body.win-active .space:not(.tracklist-space):not(#s59):not(#s0)::after,
         body.win-active #board-bg,
-        body.win-active #tape-svg,
         body.win-active .access-pass,
         body.win-active .player,
         body.win-active #dice-box,
@@ -477,145 +462,46 @@
         /* ── BOARD SCROLL ── */
         #board-scroll {
             flex:1; display:flex; align-items:center; justify-content:center;
-            overflow:hidden; padding:clamp(12px,1.5vw,20px);
-            padding-left:clamp(28px,3vw,20px);
+            overflow:hidden; padding:clamp(6px,1vw,14px);
             box-sizing:border-box; min-height:0; min-width:0;
             z-index:5; position:relative;
         }
         #board-outer {
-            display:flex; align-items:center; justify-content:center;
-            width:100%; height:100%; position:relative; z-index:1;
+            position:relative; z-index:1;
+            width:min(100%,100%); height:100%;
+            aspect-ratio:1/1;
+            max-width:100%; max-height:100%;
         }
-        #tape-svg { position:absolute; inset:0; width:100%; height:100%; pointer-events:none; z-index:2; overflow:visible; }
+        #board-backdrop {
+            position:absolute; inset:0; z-index:1;
+            background:#ffffff; border-radius:10px;
+            overflow:hidden;
+        }
+        #board-glow {
+            position:absolute; inset:0; z-index:2;
+            pointer-events:none; border-radius:10px; overflow:hidden;
+        }
+        #board-png {
+            position:absolute; inset:0; z-index:3;
+            width:100%; height:100%; object-fit:contain;
+            pointer-events:none; user-select:none;
+        }
         #board-container {
-            display:grid; gap:var(--board-gap); padding:var(--board-pad);
-            position:relative; z-index:3; flex-shrink:0;
-        }
-        #board-container.layout-landscape {
-            grid-template-columns:repeat(10,var(--space-size));
-            grid-template-rows:repeat(6,var(--space-size));
-        }
-        #board-container.layout-portrait {
-            grid-template-columns:repeat(6,var(--space-size));
-            grid-template-rows:repeat(10,var(--space-size));
-        }
-        .board-arrow {
-            position:absolute; font-size:clamp(0.7rem,1.4vw,1.9rem);
-            color:rgba(230,200,155,0.95); font-weight:900; pointer-events:none;
-            z-index:4; text-shadow:0 0 6px rgba(0,0,0,0.7);
-            transform-origin:center center;
+            position:absolute; inset:0; z-index:4;
         }
 
-        /* ── SPACES ── */
+        /* ── SPACES (v100: invisible position-mapped hit zones over board PNG) ── */
         .space {
             width:var(--space-size); height:var(--space-size);
-            border-radius:50%; border:1px solid var(--tape-white);
             display:flex; flex-direction:column; align-items:center; justify-content:center;
-            font-weight:bold; font-size:var(--space-font); line-height:1.1;
-            background:rgba(255,255,255,0.1); text-align:center;
-            position:relative; transition:transform 0.18s ease,box-shadow 0.18s ease;
-            cursor:help; box-sizing:border-box;
+            position:absolute; cursor:help; box-sizing:border-box;
+            transform:translate(-50%,-50%);
         }
-        .space:hover { transform:translate(var(--ox,0px),var(--oy,0px)) scale(1.06); box-shadow:0 0 14px rgba(255,255,255,0.3); z-index:6; will-change:transform; }
         .space .sp-text,.space .sp-emoji,.mystery-q { text-shadow:0 0 3px rgba(0,0,0,0.5),0 0 1px rgba(0,0,0,0.7); }
-        .space:not(.blank):not(.mystery-space):not(.true-blank) { font-family:'KCStrikerSans','Courier New',monospace; }
         .sp-emoji { font-size:var(--space-emoji); margin-bottom:2px; }
-        .sp-text  { padding:0 2px; }
-        .space:not(.true-blank):not(.mystery-space):not(.reel-space):not(.tracklist-space) {
-            background:radial-gradient(ellipse at center,rgba(200,180,169,0.1) 10%,rgba(69,50,40,0.3) 100%) !important;
-        }
-        .mystery-space { background:radial-gradient(ellipse at center,rgba(60,20,80,0.15) 0%,rgba(20,10,30,0.25) 100%) !important; }
-        .true-blank {
-            background: none !important;
-            border: 1.2px dashed rgba(200,180,169,0.6) !important;
-            transform: scale(0.6);
-        }
-        .space:not(.blank):not(.mystery-space):not(.true-blank) { font-size:calc(var(--space-font) * 1.3); }
-        .mystery-q { font-size:calc(clamp(0.98rem,1.9vw,1.8rem) * 1.1); font-weight:bold; opacity:0.9; }
-        .tracklist-space {
-            background: url('vinyl.png?v=24') center/115% no-repeat !important;
-            border:3px double #666 !important; box-shadow:inset 0 0 15px #000;
-            transform:scale(1.15); z-index:5; font-size:calc(var(--space-font)*1.2) !important; color:white !important;
-        }
-        .tracklist-space:hover { transform:scale(1.22) !important; box-shadow:inset 0 0 15px #000,0 0 14px rgba(255,255,255,0.25) !important; }
-        .win-track:hover { transform:scale(1.05) !important; box-shadow:0 0 14px var(--blue-glow) !important; }
-        .tracklist-space.vinyl-spinning { animation:vinylSpin 3.2s ease forwards !important; transform-origin:center center !important; }
-        .tracklist-space.vinyl-wiggle   { animation:vinylWiggle 1.2s ease-in-out !important; transform-origin:center center !important; }
-
-        /* ── SPACE ANIMATIONS — all GPU-compositable filter, no box-shadow repaints ── */
-        /* Joy — static green border glow, brightness pulse */
-        .joy-space {
-            border-color:var(--joy-glow) !important; color:white !important;
-            box-shadow:0 0 8px var(--joy-glow);
-            animation:joyPulse 2.5s ease-in-out infinite;
-        }
-        /* Fear — static red border glow, brightness pulse */
-        .fear-space {
-            border-color:var(--fear-glow) !important; color:white !important;
-            box-shadow:0 0 8px var(--fear-glow);
-            animation:fearPulse 2.8s ease-in-out infinite;
-        }
-        /* Regular special spaces — static white glow, brightness pulse */
-        .space:not(.joy-space):not(.fear-space):not(.tracklist-space):not(.mystery-space):not(.true-blank):not(.reel-space):not(.hybrid) {
-            border-color:rgba(255,255,255,0.8) !important;
-            box-shadow:0 0 6px rgba(255,255,255,0.5);
-            animation:specialPulse 3s ease-in-out infinite;
-        }
-        /* FEARJOY — static dotted border, brightness pulse; rotating ::after handles the split glow */
-        .hybrid { border-style:dotted; border-width:3px; border-color:white; animation:specialPulse 3.2s ease-in-out infinite; }
-        .hybrid { position:relative; overflow:visible; }
-        .hybrid::after {
-            content:''; position:absolute; inset:-6px; border-radius:50%; z-index:-1;
-            background:conic-gradient(
-                var(--joy-glow) 0deg, var(--joy-glow) 150deg,
-                var(--fear-glow) 210deg, var(--fear-glow) 360deg
-            );
-            filter:blur(8px); opacity:0.55;
-            animation:fearjoyRotate 5s linear infinite;
-        }
-        @keyframes fearjoyRotate { from{transform:rotate(0deg);} to{transform:rotate(360deg);} }
-
-        /* Mystery — hue-rotate shifts border + ? color through spectrum, no box-shadow repaint */
-        .mystery-space {
-            border-style:dashed !important;
-            cursor:help; font-family:'Courier New',monospace !important;
-            opacity:0.58; transform:scale(0.8);
-            border-color:var(--mystery-glow) !important; color:var(--mystery-glow) !important;
-            border-width:2px !important;
-        }
-        .mystery-space:hover { transform:scale(0.9) !important; }
-        .mystery-space { animation:mysteryShift var(--mystery-speed,4s) ease-in-out infinite; }
-
-        .reel-space {
-            border:3px solid rgba(255,255,255,0.4) !important;
-            transform:scale(1.15); z-index:5;
-            background:rgba(0,0,0,0.5) !important; position:relative;
-        }
-        .reel-space::before {
-            content:''; position:absolute; inset:0;
-            background:url('reel1.png?v=24') center/cover no-repeat;
-            border-radius:50%; transition:none;
-        }
-        .reel-space.reel-spinning::before { animation:reelSpin 12s linear infinite !important; transform-origin:center center !important; }
-        #s0.reel-spinning::before { animation:reelSpin 6s linear infinite !important; }
-        .win-track.reel-spinning::before { animation:reelSpin 5s linear infinite !important; }
-        .win-track {
-            border:4px solid var(--blue-glow) !important;
-            box-shadow:0 0 30px var(--blue-glow);
-            transform:scale(1.2) !important; z-index:10 !important;
-            background:rgba(0,0,0,0.5) !important;
-        }
-        .win-track::before { background:url('reel1.png?v=24') center/cover no-repeat; }
-        .win-track.reel-spinning::before { animation:reelSpin 13.2s linear infinite !important; }
-        .reel-space .sp-text,.reel-space .sp-emoji { position:relative; z-index:1; }
+        .sp-text  { padding:0 2px; font-family:'KCStrikerSans','Courier New',monospace; font-weight:bold; font-size:var(--space-font); }
+        .mystery-q { font-size:calc(clamp(0.98rem,1.9vw,1.8rem) * 1.1); font-weight:bold; opacity:0.9; color:var(--mystery-glow); }
         .space-land { animation:spaceLand 1.2s ease-out forwards; }
-
-        /* ── NAMED SPACE GLOWS — static colored box-shadow for identity + brightness pulse ── */
-        #s55 { box-shadow:0 0 12px #ff5522;        animation:namedPulse 2.6s ease-in-out infinite; }
-        #s30 { box-shadow:0 0 12px var(--gold), 0 0 28px var(--gold); animation:namedPulse 2s ease-in-out infinite; }
-        #s20 { box-shadow:0 0 12px #3399ff;         animation:namedPulse 2.7s ease-in-out infinite; }
-        #s42 { box-shadow:0 0 12px #88ffaa;         animation:namedPulse 2.3s ease-in-out infinite; }
-        #s12, #s53 { box-shadow:0 0 8px #de5b33;   animation:namedPulse 2.9s ease-in-out infinite; }
 
         /* ── PLAYER PIECES ── */
         .player {
@@ -766,14 +652,6 @@
         #selection-reminder-title { font-family:'KCStrikerSans','Courier New',monospace; font-size:0.9rem; letter-spacing:2px; color:white; margin-bottom:6px; text-transform:uppercase; }
 
         /* ── RESPONSIVE ── */
-        /* ── FORCE LANDSCAPE ROTATION — applied by JS when innerWidth < innerHeight ── */
-        html.force-landscape { overflow:hidden; width:100vw; height:100vh; }
-        body.force-landscape {
-            position:fixed; top:50%; left:50%;
-            width:100vh; height:100vw;
-            transform:translate(-50%,-50%) rotate(90deg);
-            overflow:hidden;
-        }
 
         /* ── PASS DRAWER — shown on mobile/tablet in place of sidebar ── */
         @keyframes tabNudge {
@@ -844,7 +722,9 @@
         <div id="pass-sidebar"><div id="lineup-label">Lineup</div></div>
         <div id="board-scroll">
             <div id="board-outer">
-                <svg id="tape-svg" xmlns="http://www.w3.org/2000/svg"></svg>
+                <div id="board-backdrop"></div>
+                <div id="board-glow"></div>
+                <img id="board-png" src="board-transp-1.png" alt="">
                 <div id="board-container"></div>
             </div>
         </div>
@@ -1082,7 +962,23 @@
         "blank","blank","ENCORE","blank","VOID","blank","JOY","THE ENDLESS SMILE","GATEKEEPER","blank",
         "blank","FEARJOY","blank","VAN BREAKS DOWN","blank","LOST RECORDING","blank","FEARJOY","blank","SWIMMIN"
     ];
-    
+
+    /* v100 LOCKED DATA — percent x/y coordinates (board-transp-1.png space centers, P0-P59) */
+    const SPACE_POS=[
+        {x:6.3,y:93.31},{x:16.92,y:92.13},{x:26.8,y:91.49},{x:37.53,y:92.88},{x:48.75,y:93.41},
+        {x:56.38,y:87.27},{x:52.32,y:81.08},{x:45.01,y:81.35},{x:36.04,y:77.93},{x:27.55,y:80.12},
+        {x:19.59,y:78.46},{x:9.24,y:75.58},{x:5.45,y:67.36},{x:9.56,y:59.83},{x:17.3,y:60.26},
+        {x:26.7,y:61.59},{x:36.41,y:66.02},{x:46.45,y:65.28},{x:56.91,y:71.04},{x:64.6,y:64.64},
+        {x:60.6,y:55.77},{x:49.97,y:53.69},{x:40.26,y:53.16},{x:29.04,y:51.98},{x:19.91,y:49.31},
+        {x:11.27,y:42.27},{x:6.78,y:35.64},{x:14.47,y:30.95},{x:25.84,y:36.82},{x:36.57,y:39.86},
+        {x:47.3,y:39.97},{x:57.71,y:40.82},{x:67.97,y:44.35},{x:76.35,y:53.1},{x:75.12,y:67.63},
+        {x:70.85,y:78.14},{x:76.83,y:87.97},{x:88.2,y:81.29},{x:89.11,y:69.92},{x:91.62,y:60.15},
+        {x:94.18,y:49.15},{x:90.34,y:40.08},{x:81.31,y:33.72},{x:70.8,y:31.48},{x:61.24,y:32.49},
+        {x:49.01,y:29.02},{x:39.14,y:26.35},{x:26.75,y:23.74},{x:12.87,y:17.55},{x:13.45,y:7.08},
+        {x:21.78,y:6.81},{x:30.11,y:11.83},{x:38.76,y:14.4},{x:47.68,y:13.06},{x:56.22,y:11.89},
+        {x:64.39,y:13.54},{x:70.15,y:16.42},{x:77.95,y:19.63},{x:84.73,y:18.61},{x:90.87,y:8.36}
+    ];
+
     const DISPLAY_NAMES={"VAN BREAKS DOWN":"VAN BREAKS","WIN A GRAMMY":"GRAMMY","5TH DIMENSION":"5D","OPENING ACT":"OPENER","LOST RECORDING":"LOST TAPE"};
     const TRACKLIST_INDICES=[3,8,10,15,18,25,27,28,37,44,47];  /* Maya (28) added — it IS tracklist */
     const GRAMMY_SPACE=30;
@@ -1148,7 +1044,6 @@
     // ══════════════════════════════════════════════
     let players=[],turnIdx=0,isMoving=false,isRolling=false,totalP=0,currentSetupP=0;
     let spacesTriggeredThisTurn=new Set(); /* prevents same space firing twice in one turn */
-    let spaceOffsets=[]; /* perpendicular nudge per space, generated once per session */
     let selectedAvatar=null,selectedColor=null;
     let isSwapping=false,isMayaPartner=false;
     let sidebarTimer=null,expandedPassIdx=null;
@@ -1157,10 +1052,7 @@
     let lastBucketFile=null,activeLoreVid=null;
     let loreDoneResolver=null;
     let isInLoreDrop=false;
-    /* layoutMode: 'landscape' (10×6) or 'portrait' (6×10) */
-    let layoutMode='landscape';
     let preloadDoneBeforeGame=false;
-    let reelSpinning=false; /* true once first movement begins */
     let metronomeInterval=null; /* click-track for timers */
 
     // ══════════════════════════════════════════════
@@ -1247,17 +1139,6 @@
     function playCoinSfx(){playSfx('coin.wav',0.707);}
     function playSlide(){
         const n=Math.floor(Math.random()*4)+1;playSfx(`slide${n}.wav`);
-        startReelSpin();
-    }
-
-    function startReelSpin(){
-        if(reelSpinning)return;
-        const s0=document.getElementById('s0');
-        const s59=document.getElementById('s59');
-        if(!s0||!s59)return;
-        reelSpinning=true;
-        s0.classList.add('reel-spinning');
-        s59.classList.add('reel-spinning');
     }
 
     /* Metronome click track — MetronomeUp beat 1, Metronome x3 beats 2-4, repeats each second */
@@ -1508,122 +1389,6 @@
     }
 
     // ══════════════════════════════════════════════
-    // VINYL WIGGLE
-    // ══════════════════════════════════════════════
-function startVinylWiggles(){
-        function wiggleRandom(){
-            if(document.body.classList.contains('win-active'))return; /* halt on win */
-            const el=TRACKLIST_INDICES[Math.floor(Math.random()*TRACKLIST_INDICES.length)];
-            const s=document.getElementById('s'+el);
-            if(s&&!s.classList.contains('vinyl-spinning')){
-                s.classList.remove('vinyl-wiggle');void s.offsetWidth;
-                s.classList.add('vinyl-wiggle');
-                window._vinylClearTimer=setTimeout(()=>s.classList.remove('vinyl-wiggle'),950);
-            }
-            window._vinylWiggleTimer=setTimeout(wiggleRandom,2000+Math.random()*4000);
-        }
-        window._vinylWiggleTimer=setTimeout(wiggleRandom,1500+Math.random()*3000);
-    }
-
-    // ══════════════════════════════════════════════
-    // TAPE PATH SVG — wider, smoother, curved corners
-    // ══════════════════════════════════════════════
-    
-    /* Get element center in layout-space relative to ancestor — rotation-safe */
-    function getLayoutCenter(el,ancestor){
-        let x=el.offsetLeft+el.offsetWidth/2;
-        let y=el.offsetTop+el.offsetHeight/2;
-        let curr=el.offsetParent;
-        while(curr&&curr!==ancestor&&curr!==document.body){
-            x+=curr.offsetLeft;y+=curr.offsetTop;curr=curr.offsetParent;
-        }
-        return{x,y,w:el.offsetWidth,h:el.offsetHeight};
-    }
-
-    function drawTapePath(){
-        const svg=document.getElementById('tape-svg');
-        const outer=document.getElementById('board-outer');
-        if(!svg||!outer)return;
-        svg.setAttribute('viewBox',`0 0 ${outer.offsetWidth} ${outer.offsetHeight}`);
-        svg.setAttribute('width',outer.offsetWidth);
-        svg.setAttribute('height',outer.offsetHeight);
-        const pts=[];
-        const isLandscape=layoutMode==='landscape';
-        boardLayout.forEach((_,i)=>{
-            const el=document.getElementById('s'+i);
-            if(!el)return;
-            const lc=getLayoutCenter(el,outer);
-            let cx=lc.x;
-            let cy=lc.y;
-            /* Offset reel space endpoints toward the board */
-            const nudge=lc.w*0.40;    
-            if(i===0){ cy-=nudge; }
-            else if(i===59){ cy+=nudge; }
-            pts.push({x:cx,y:cy});
-        });
-        if(pts.length<2)return;
-
-        /* Build a smooth Catmull-Rom inspired path — wider curves, curved corners */
-        let d=`M${pts[0].x},${pts[0].y}`;
-        for(let i=1;i<pts.length;i++){
-            const prev=pts[i-2]||pts[0];
-            const p=pts[i-1];
-            const c=pts[i];
-            const next=pts[i+1]||c;
-            /* Tension-controlled tangents for smooth curves */
-            const t=0.35;
-            const cp1x=p.x+(c.x-prev.x)*t;
-            const cp1y=p.y+(c.y-prev.y)*t;
-            const cp2x=c.x-(next.x-p.x)*t;
-            const cp2y=c.y-(next.y-p.y)*t;
-            d+=` C${cp1x.toFixed(1)},${cp1y.toFixed(1)} ${cp2x.toFixed(1)},${cp2y.toFixed(1)} ${c.x.toFixed(1)},${c.y.toFixed(1)}`;
-        }
-
-        svg.innerHTML='';
-        const filt=document.createElementNS('http://www.w3.org/2000/svg','filter');
-        filt.setAttribute('id','tapeBlur');
-        filt.setAttribute('x','-5%');filt.setAttribute('y','-5%');
-        filt.setAttribute('width','110%');filt.setAttribute('height','110%');
-        const fe=document.createElementNS('http://www.w3.org/2000/svg','feTurbulence');
-        fe.setAttribute('type','turbulence');fe.setAttribute('baseFrequency','0.01 0.015');
-        fe.setAttribute('numOctaves','2');fe.setAttribute('seed','7');
-        const disp=document.createElementNS('http://www.w3.org/2000/svg','feDisplacementMap');
-        disp.setAttribute('in','SourceGraphic');disp.setAttribute('scale','3');
-        disp.setAttribute('xChannelSelector','R');disp.setAttribute('yChannelSelector','G');
-        filt.appendChild(fe);filt.appendChild(disp);svg.appendChild(filt);
-
-        /* Wide base tape with variable-width effect via two paths */
-        const base=document.createElementNS('http://www.w3.org/2000/svg','path');
-        base.setAttribute('d',d);base.setAttribute('fill','none');
-        base.setAttribute('stroke','rgba(80,45,10,0.7)');
-        /* Responsive stroke-width based on screen size */
-        const tapeW=Math.max(4,Math.min(12,window.innerWidth*0.006)).toFixed(1);
-        base.setAttribute('stroke-width',tapeW);
-        base.setAttribute('stroke-linecap','round');base.setAttribute('stroke-linejoin','round');
-        base.setAttribute('filter','url(#tapeBlur)');svg.appendChild(base);
-
-        /* Inner highlight for tape depth */
-        const inner=document.createElementNS('http://www.w3.org/2000/svg','path');
-        inner.setAttribute('d',d);inner.setAttribute('fill','none');
-        inner.setAttribute('stroke','rgba(60,30,5,0.35)');
-        inner.setAttribute('stroke-width','3');
-        inner.setAttribute('stroke-linecap','round');inner.setAttribute('stroke-linejoin','round');
-        svg.appendChild(inner);
-
-        /* Shine sweep — slower, random-feeling, less frequent */
-        const shine=document.createElementNS('http://www.w3.org/2000/svg','path');
-        shine.setAttribute('d',d);shine.setAttribute('fill','none');
-        shine.setAttribute('stroke','rgba(255,220,150,0.6)');
-        shine.setAttribute('stroke-width','2');
-        shine.setAttribute('stroke-linecap','round');
-        shine.setAttribute('stroke-dasharray','40 5000');
-        shine.setAttribute('stroke-dashoffset','5000');
-        /* Random-ish shine via varying cubic-bezier + longer duration */
-        shine.setAttribute('style','animation:tapeShine 11s cubic-bezier(0.4,0,0.6,1) infinite;animation-delay:-3s;');
-        shine.setAttribute('filter','url(#tapeBlur)');svg.appendChild(shine);
-    }
-
-    // ══════════════════════════════════════════════
     // KEYBOARD
     // ══════════════════════════════════════════════
     let kbFocusIdx=0;
@@ -1695,7 +1460,6 @@ function startVinylWiggles(){
             "YES, RESTART",()=>{
                 isRestart=true;
                 document.body.classList.remove('win-active');
-                if(!window._vinylWiggleTimer&&document.getElementById('s0'))startVinylWiggles();
                 players.forEach(p=>{
                     p.pos=0;p.skipCount=0;p.isInvestor=false;p.isSellout=false;p.isColdPitchSellout=false;
                     p.grammys=0;p.shirtsSold=0;p.pillsTaken=0;p.ghostCounter=0;
@@ -1706,12 +1470,7 @@ function startVinylWiggles(){
                     p.hasPlotArmor=false;p.wasPassivelyMoved=false;
                 });
                 highestDiscountPct=0;globalTurnCount=0;lastBucketFile=null;
-                /* Stop reel spinning until movement resumes */
-                reelSpinning=false;
-                [0,59].forEach(idx=>{const s=document.getElementById('s'+idx);if(s)s.classList.remove('reel-spinning');});
-                
                 assignMysterySpaces();
-                spaceOffsets=[];
                 spacesTriggeredThisTurn=new Set();
                 turnIdx=0;isMoving=false;isRolling=false;isSwapping=false;isInLoreDrop=false;loreDoneResolver=null;
                 stopMetronome();stopActiveLoreVid();
@@ -1753,11 +1512,6 @@ function startVinylWiggles(){
         el.classList.remove('space-land');void el.offsetWidth;el.classList.add('space-land');
         setTimeout(()=>el.classList.remove('space-land'),1200);
     }
-    function triggerVinylSpin(pos){
-        const el=document.getElementById('s'+pos);if(!el)return;
-        el.classList.remove('vinyl-spinning','vinyl-wiggle');void el.offsetWidth;el.classList.add('vinyl-spinning');
-        setTimeout(()=>el.classList.remove('vinyl-spinning'),3200);
-    }
     function awardGrammyAccolade(playerIdx,nominatorName,fromSwap=false){
         const p=players[playerIdx];p.grammys++;p.accolades.push('🏆');
         if(!fromSwap)p.grammyNominator=nominatorName;
@@ -1785,25 +1539,9 @@ function startVinylWiggles(){
         return players.reduce((arr,p,i)=>{if(p.pos===minPos)arr.push(i);return arr;},[]);
     }
 
-    /* JS-driven space size — always landscape 10×6 */
-    function updateSpaceSize(){
-        const vh=Math.min(window.innerWidth,window.innerHeight);
-        const bar=document.getElementById('ui-layer');
-        const barH=bar?bar.offsetHeight:68;
-        /* Use actual board-scroll width — already accounts for sidebar */
-        const boardScroll=document.getElementById('board-scroll');
-        const availW=boardScroll?(boardScroll.offsetWidth-20):Math.max(window.innerWidth,window.innerHeight)-20;
-        const availH=vh-barH-14;
-        const rows=6,cols=10;
-        const vw=Math.max(window.innerWidth,window.innerHeight);
-        const gap=Math.max(2,Math.min(14,vw*0.007));
-        const byH=Math.floor((availH-(rows-1)*gap)/rows);
-        const byW=Math.floor((availW-(cols-1)*gap)/cols);
-        const size=Math.max(22,Math.min(110,byH,byW));
-        document.documentElement.style.setProperty('--space-size',size+'px');
-    }
-        
-        
+    /* NOTE: v100 board-sizing logic (sizing the square board PNG to fit the viewport,
+       and deriving --space-size from it) is not yet written. This is a build-phase task. */
+
     let _lastRefreshW=0,_lastRefreshH=0,_resizeTimer=null;
     window.addEventListener('resize',()=>{
         if(_resizeTimer)clearTimeout(_resizeTimer);
@@ -1812,7 +1550,7 @@ function startVinylWiggles(){
             const w=window.innerWidth,h=window.innerHeight;
             if(Math.abs(w-_lastRefreshW)<8&&Math.abs(h-_lastRefreshH)<8)return;
             _lastRefreshW=w;_lastRefreshH=h;
-            checkOrientation(); /* handles rotation, drawer show/hide, space size, redraw */
+            checkOrientation(); /* handles rotation lock, drawer show/hide, position refresh */
             if(document.getElementById('s0')){
                 refreshLayout();
             }
@@ -2073,177 +1811,34 @@ function startVinylWiggles(){
     }
 
     // ══════════════════════════════════════════════
-    // ADAPTIVE BOARD LAYOUT
-    // landscape: 10 cols × 6 rows (boustrophedon, rows bottom-to-top)
-    // portrait:  6 cols × 10 rows (boustrophedon, cols left-to-right)
-    // Arrows are board-level overlays, not space children — won't spin with vinyl
+    // DRAWER MODE (mobile pass drawer)
+    // (grid/tape/arrow layout system and rotation lock removed in v100 —
+    //  board is a fixed-square PNG, no orientation rotation needed)
     // ══════════════════════════════════════════════
-
-    /* Always landscape — portrait handled by CSS rotation */
-    function detectLayout(){ return 'landscape'; }
 
     /* Drawer mode: physical screen smaller dimension < 1024 (phones + iPads) */
     function isMobileDrawer(){
         return Math.min(screen.width,screen.height)<1024;
     }
 
-    /* Orientation check — rotates body when portrait, shows/hides drawer */
+    /* Orientation check — shows/hides pass drawer, refreshes space positions */
     function checkOrientation(){
-        const portrait=window.innerWidth<window.innerHeight;
-        document.body.classList.toggle('force-landscape',portrait);
-        document.documentElement.classList.toggle('force-landscape',portrait);
         const drawerMode=isMobileDrawer();
         const tab=document.getElementById('pass-drawer-tab');
         const sidebar=document.getElementById('pass-sidebar');
         if(tab)tab.style.display=drawerMode?'flex':'none';
         if(sidebar)sidebar.style.display=drawerMode?'none':'flex';
         if(document.getElementById('s0')){
-            updateSpaceSize();
-            drawArrows('landscape');
-            drawTapePath();
             updatePositions();
         }
     }
 
-    /* Pre-compute the next-direction for each space index in a given layout.
-       Returns an array of 'right'|'left'|'up'|'down' per space (null for last space). */
-    function computeNextDirs(mode){
-        const dirs=[];
-        const COLS=mode==='landscape'?10:6;
-        const ROWS=mode==='landscape'?6:10;
-        for(let i=0;i<60;i++){
-            if(i===59){dirs.push(null);continue;}
-            const next=i+1;
-            const [cr,cc]=spaceToGridCell(i,mode,COLS,ROWS);
-            const [nr,nc]=spaceToGridCell(next,mode,COLS,ROWS);
-            const dr=nr-cr,dc=nc-cc;
-            if(dc>0)dirs.push('right');
-            else if(dc<0)dirs.push('left');
-            else if(dr>0)dirs.push('down');
-            else dirs.push('up');
-        }
-        return dirs;
-    }
-
-    /* Map space index → [gridRow, gridCol] (1-based) for a given layout.
-       Landscape: rows numbered bottom-up (row 1 at top of grid = visual bottom row).
-       Portrait: cols numbered left-to-right. Both use boustrophedon snake. */
-    function spaceToGridCell(i,mode,COLS,ROWS){
-        if(mode==='landscape'){
-            const row=Math.floor(i/COLS);
-            const col=(row%2===0)?(i%COLS):(COLS-1-(i%COLS));
-            /* grid row 1 = top, but board reads bottom-up visually */
-            return [ROWS-row, col+1];
-        } else {
-            /* Portrait: 6 cols × 10 rows. Snake goes down col 0, up col 1, down col 2... */
-            const col=Math.floor(i/ROWS);
-            const rowInCol=(col%2===0)?(i%ROWS):(ROWS-1-(i%ROWS));
-            return [rowInCol+1, col+1];
-        }
-    }
-
-    /* Place all spaces according to current layoutMode */
-    function applyLayout(mode){
-        const COLS=mode==='landscape'?10:6;
-        const ROWS=mode==='landscape'?6:10;
-        const board=document.getElementById('board-container');
-        board.className='';
-        board.classList.add(mode==='landscape'?'layout-landscape':'layout-portrait');
-        boardLayout.forEach((_,i)=>{
-            const s=document.getElementById('s'+i);
-            if(!s)return;
-            const[r,c]=spaceToGridCell(i,mode,COLS,ROWS);
-            s.style.gridRow=r;s.style.gridColumn=c;
-        });
-    }
-
-    /* Draw decoupled arrows on #board-outer after layout is applied */
-    function drawArrows(mode){
-        document.querySelectorAll('.board-arrow').forEach(a=>a.remove());
-        const outer=document.getElementById('board-outer');
-        const COLS=mode==='landscape'?10:6;
-        const ROWS=mode==='landscape'?6:10;
-        const dirs=computeNextDirs(mode);
-        for(let i=0;i<59;i++){
-            if(boardLayout[i]==="START")continue;
-            const dir=dirs[i];if(!dir)continue;
-            const s=document.getElementById('s'+i);
-            if(!s)continue;
-            const lc=getLayoutCenter(s,outer);
-            const cx=lc.x;
-            const cy=lc.y;
-            const a=document.createElement('div');
-            a.className='board-arrow';
-            a.innerHTML='➜';
-            let tx=cx,ty=cy,rot=0,ox=0,oy=0;
-            /* Tracklist spaces are scaled 1.15x so arrows are visually farther — pull 25% closer */
-            const isTracklist=TRACKLIST_INDICES.includes(i)||i===0;
-            const off=lc.w*(isTracklist?0.486:0.57);
-            if(dir==='right'){ox=off;rot=0;}
-            else if(dir==='left'){ox=-off;rot=180;}
-            else if(dir==='down'){oy=off;rot=90;}
-            else{oy=-off;rot=-90;}
-            a.style.cssText=`left:${(tx+ox).toFixed(1)}px;top:${(ty+oy).toFixed(1)}px;transform:translate(-50%,-50%) rotate(${rot}deg);position:absolute;`;
-            outer.appendChild(a);
-        }
-    }
-
-    
-        function generateSpaceOffsets(){
-        spaceOffsets=[];
-        for(let i=0;i<60;i++){
-            if(i===0||i===59){spaceOffsets.push(0);continue;}
-            /* Vary magnitude per space — some nudge more, some less */
-            const mag=(Math.random()*16-6)*(0.4+Math.random()*0.7);
-            spaceOffsets.push(parseFloat(mag.toFixed(1)));
-        }
-    }
-
-    function applySpaceOffsets(mode){
-        if(!spaceOffsets.length)generateSpaceOffsets();
-        const dirs=computeNextDirs(mode);
-        boardLayout.forEach((_,i)=>{
-            const s=document.getElementById('s'+i);
-            if(!s)return;
-            if(i===0||i===59){return;}
-            const mag=spaceOffsets[i];
-            const dir=dirs[i]||(i>0?dirs[i-1]:null)||'right';
-            let ox=0,oy=0;
-            if(dir==='right'||dir==='left'){oy=mag;}
-            else{ox=mag;}
-            s.style.setProperty('--space-translate',`translate(${ox}px,${oy}px)`);
-            if(s.classList.contains('tracklist-space')){
-                s.style.transform=`scale(1.15) translate(${ox}px,${oy}px)`;
-            } else if(s.classList.contains('win-track')){
-                s.style.transform=`scale(1.2) translate(${ox}px,${oy}px)`;
-            } else {
-                s.style.transform='';
-                s.style.marginLeft=ox+'px';
-                s.style.marginTop=oy+'px';
-            }
-            
-        });
-    }
-
-    /* Full layout refresh — call on init and resize */
+    /* Full layout refresh — call on init and resize.
+       v100: spaces are percent-positioned against the board PNG and scale with it via
+       CSS/board sizing, so all that's needed here is to re-run updatePositions(). */
     function refreshLayout(force=false){
-        const newMode=detectLayout();
-        if(!force&&newMode===layoutMode&&document.getElementById('s0')){
-            /* Mode unchanged — redraw arrows, tape, positions */
-            updateSpaceSize();
-            drawArrows(layoutMode);drawTapePath();updatePositions();return;
-        }
-        layoutMode=newMode;
-        updateSpaceSize();
-        applyLayout(layoutMode);
-        setTimeout(()=>{
-            applySpaceOffsets(layoutMode);
-            drawArrows(layoutMode);
-            drawTapePath();
-            updatePositions();
-        },50);
+        if(document.getElementById('s0'))updatePositions();
     }
-        
 
     // ══════════════════════════════════════════════
     // BOARD INIT
@@ -2255,47 +1850,35 @@ function startVinylWiggles(){
             if(gb){gb.style.display='block';gb.style.opacity='1';}
         }
         assignMysterySpaces();
-        layoutMode=detectLayout();
         const board=document.getElementById('board-container');
-        board.classList.add(layoutMode==='landscape'?'layout-landscape':'layout-portrait');
         boardLayout.forEach((name,i)=>{
             const s=document.createElement('div');s.id='s'+i;s.className='space';
             if(name==="blank"){
                 if(mysterySpaces.has(i)){
                     s.classList.add('mystery-space');
-                    const _spd=(5.5+Math.random()*3.5).toFixed(2)+'s';
-                    s.style.setProperty('--mystery-speed',_spd);
                     s.innerHTML=`<span class="mystery-q">?</span>`;
                     s.onclick=()=>handleMysteryClick(i);
                 } else {s.classList.add('true-blank');}
             } else if(i===0){
-                /* START — reel space only, no text, originates the tape */
-                s.classList.add('reel-space');
-                s.innerHTML=''; /* no text on space 0 */
+                /* START — no text */
+                s.innerHTML='';
                 s.onclick=()=>handleSpaceClick(i);
             } else if(i===59){
-                /* SWIMMIN — reel space, keeps SWIMMIN text + 🌊 emoji, reel PNG spins via ::before */
-                s.classList.add('reel-space','win-track');
-                s.innerHTML=`<div class="sp-emoji" style="position:relative;z-index:1;">🌊</div><div class="sp-text" style="position:relative;z-index:1;">SWIMMIN'</div>`;
+                /* SWIMMIN — keeps text + emoji */
+                s.innerHTML=`<div class="sp-emoji">🌊</div><div class="sp-text">SWIMMIN'</div>`;
                 s.onclick=()=>handleSpaceClick(i);
             } else {
                 const r=rules[i];
                 const emojiHtml=(r&&r.emoji)?`<div class="sp-emoji">${r.emoji}</div>`:'';
                 const displayName=DISPLAY_NAMES[name]||name;
                 s.innerHTML=`${emojiHtml}<div class="sp-text">${displayName}</div>`;
-                if(TRACKLIST_INDICES.includes(i))s.classList.add('tracklist-space');
-                if(name==="FEAR")s.classList.add('fear-space');
-                if(name==="JOY")s.classList.add('joy-space');
-                if(name==="FEARJOY")s.classList.add('hybrid');
                 s.onclick=()=>handleSpaceClick(i);
             }
             board.appendChild(s);
+            const pos=SPACE_POS[i];
+            if(pos){s.style.left=pos.x+'%';s.style.top=pos.y+'%';}
         });
-        
-            /* Apply grid placement */
-        updateSpaceSize();
-        applyLayout(layoutMode);
-        applySpaceOffsets(layoutMode);
+
         players.forEach((p,i)=>{
             const el=document.createElement('div');el.id='p'+i;el.className='player';
             el.style.backgroundImage=`url('${p.avatar.img}')`;
@@ -2304,8 +1887,6 @@ function startVinylWiggles(){
         });
         updateUI();
         document.getElementById('roll-btn').disabled=false;
-        startVinylWiggles();
-        setTimeout(()=>{drawArrows(layoutMode);drawTapePath();updatePositions();},250);
         if(!isRestart)setTimeout(showInstructions,400);
     }
 
@@ -2693,30 +2274,33 @@ function startVinylWiggles(){
     // UPDATE POSITIONS
     // ══════════════════════════════════════════════
     function updatePositions(){
+        const boardEl=document.getElementById('board-container');
+        const boardSize=boardEl?boardEl.offsetWidth:0; /* square board — width===height */
+        const spacePx=parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--space-size'))||(boardSize*0.08);
         const stackMap={};
         players.forEach((p,i)=>{if(!stackMap[p.pos])stackMap[p.pos]=[];stackMap[p.pos].push(i);});
         players.forEach((p,i)=>{
-            const target=document.getElementById('s'+p.pos);
+            const pos=SPACE_POS[p.pos];
             const el=document.getElementById('p'+i);
-            if(!target||!el)return;
+            if(!pos||!el||!boardSize)return;
             const stack=stackMap[p.pos];const stackSize=stack.length;const myStackIdx=stack.indexOf(i);
-            const spaceW=target.offsetWidth;const spaceH=target.offsetHeight;
             const isActive=(i===turnIdx);
-            /* Active player piece is 20% larger (was 50%, reduced per feedback) */
             const sizeScale=isActive?1.2:1;
+            const centerXpct=pos.x, centerYpct=pos.y; /* % of board */
             if(stackSize>1){
-                const scale=0.72*sizeScale;const pieceW=spaceW*scale;const pieceH=spaceH*scale;
-                const offsets=[{x:-spaceW*0.18,y:-spaceH*0.12},{x:spaceW*0.18,y:-spaceH*0.12},{x:0,y:spaceH*0.14}];
+                const scale=0.72*sizeScale;const pieceW=spacePx*scale;const pieceH=spacePx*scale;
+                const offsets=[{x:-spacePx*0.18,y:-spacePx*0.12},{x:spacePx*0.18,y:-spacePx*0.12},{x:0,y:spacePx*0.14}];
                 const off=offsets[myStackIdx]||{x:0,y:0};
-                el.style.left=(target.offsetLeft+(spaceW-pieceW)/2+off.x)+'px';
-                el.style.top=(target.offsetTop+(spaceH-pieceH)/2+off.y)+'px';
+                el.style.left=`calc(${centerXpct}% + ${off.x}px)`;
+                el.style.top=`calc(${centerYpct}% + ${off.y}px)`;
                 el.style.width=pieceW+'px';el.style.height=pieceH+'px';
             } else {
-                const pieceW=spaceW*sizeScale;const pieceH=spaceH*sizeScale;
-                el.style.left=(target.offsetLeft-(pieceW-spaceW)/2)+'px';
-                el.style.top=(target.offsetTop-(pieceH-spaceH)/2)+'px';
+                const pieceW=spacePx*sizeScale;const pieceH=spacePx*sizeScale;
+                el.style.left=centerXpct+'%';
+                el.style.top=centerYpct+'%';
                 el.style.width=pieceW+'px';el.style.height=pieceH+'px';
             }
+            el.style.transform='translate(-50%,-50%)';
             el.style.zIndex=(isActive?150:100+myStackIdx);
             if(isActive){el.classList.add('active-turn');el.style.setProperty('--p-color',p.avatar.color);}
             else el.classList.remove('active-turn');
@@ -2919,7 +2503,6 @@ function startVinylWiggles(){
         
         if(skipSpaceCheck){updatePositions();return;}
         flashSpaceLanding(p.pos);
-        if(TRACKLIST_INDICES.includes(p.pos))triggerVinylSpin(p.pos);
 
         /* ── MYSTERY LORE DROP ── */
         if(mysterySpaces.has(p.pos)){
@@ -3019,7 +2602,7 @@ function startVinylWiggles(){
             nmBtn=document.createElement('button');
             nmBtn.id='timer-nevermind';
             nmBtn.className='btn-nevermind';
-            nmBtn.innerText='nevermind - take penalty';
+            nmBtn.innerText='nevermind - take penalty';
             actionBar.appendChild(nmBtn);
         }
         nmBtn.style.display='block';
@@ -3322,7 +2905,6 @@ function startVinylWiggles(){
                     movePlayerDirect(capturedTurnIdx,targetPos);
                     await new Promise(res=>setTimeout(res,400));
                     flashSpaceLanding(players[capturedTurnIdx].pos);
-                    if(TRACKLIST_INDICES.includes(players[capturedTurnIdx].pos))triggerVinylSpin(players[capturedTurnIdx].pos);
                     if(mysterySpaces.has(players[capturedTurnIdx].pos)){
                         const item=getRandomBucketItem(capturedTurnIdx);
                         renderBucketItem(item,document.getElementById('side-bucket'),capturedTurnIdx);
@@ -3586,9 +3168,6 @@ function showStatusPopup(t,d,b1,c1,b2,c2,playerNameHtml=''){
         const p=players[turnIdx];
         playSpaceSfx('swimclip.wav');
         document.body.classList.add('win-active');
-        if(window._vinylWiggleTimer){clearTimeout(window._vinylWiggleTimer);window._vinylWiggleTimer=null;}
-        if(window._vinylClearTimer){clearTimeout(window._vinylClearTimer);window._vinylClearTimer=null;}
-        document.querySelectorAll('.vinyl-wiggle').forEach(el=>el.classList.remove('vinyl-wiggle'));
         let statsHtml=`<h2 style="color:${p.avatar.color};animation:winPulse 2s infinite ease-in-out;font-family:'KCStrikerSans','Courier New',monospace;margin:5px 0;--p-color:${p.avatar.color};text-shadow:0 0 20px ${p.avatar.color};">${p.name} WINS!</h2>`;
         statsHtml+=`<div style="text-align:left;margin-top:15px;font-family:monospace;background:rgba(0,0,0,0.4);border-radius:12px;padding:12px;border:1px solid #333;">`;
         const sortedPlayers=[...players].sort((a,b)=>b.pos-a.pos);
