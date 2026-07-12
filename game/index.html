@@ -1,7 +1,7 @@
 <!DOCTYPE html><html lang="en"><head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Fearjoy - Game (v100.3)</title>
+    <title>Fearjoy - Game (v100.4)</title>
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
@@ -60,7 +60,6 @@
         @keyframes namedPulse   { 0%,100%{filter:brightness(0.95);} 50%{filter:brightness(1.4);} }
 
         @keyframes passNotify    { 0%,100%{box-shadow:0 0 5px var(--pitch-orange);}50%{box-shadow:0 0 20px var(--pitch-orange),0 0 40px var(--pitch-orange);} }
-        @keyframes spaceLand     { 0%{box-shadow:0 0 0px var(--land-color,white);}40%{box-shadow:0 0 30px var(--land-color,white),0 0 60px var(--land-color,white);}100%{box-shadow:0 0 0px var(--land-color,white);} }
         @keyframes diceRiseOut   { 0%{opacity:1;transform:translate(0,0) scale(1);}100%{opacity:0;transform:translate(0,-60px) scale(0.5);} }
         @keyframes diceFallIn    { 0%{opacity:0;transform:translate(0,-80px) scale(0.4);}100%{opacity:1;transform:translate(0,0) scale(1);} }
         @keyframes diceReturnOut { 0%{opacity:1;transform:translate(0,0) scale(1);}100%{opacity:0;transform:translate(60px,-60px) scale(0.3);} }
@@ -96,7 +95,9 @@
         #page-bg {
             position:fixed; inset:0; z-index:-2; pointer-events:none;
             background:#ffffff;
+            transition:background 0.5s ease;
         }
+        body.dark-mode #page-bg { background:#1a1a1a; }
         /* Event-color glow — solid-centered radial glow that originates from a space's
            position (--glow-x/--glow-y, percent of viewport) and expands outward, fading
            before it reaches the edges. Sits above the white background, below the board art. */
@@ -267,6 +268,7 @@
         .nav-icon { font-size:1.2rem; }
         .btn-tracks:hover     { border-color:var(--joy-glow);  color:var(--joy-glow);  box-shadow:0 0 12px var(--joy-glow); }
         .btn-sfx:hover        { border-color:var(--blue-glow); color:var(--blue-glow); box-shadow:0 0 12px var(--blue-glow); }
+        .btn-darkmode:hover   { border-color:#9c9cff;          color:#9c9cff;          box-shadow:0 0 12px #9c9cff; }
         .btn-accolade-key:hover { border-color:var(--gold);    color:var(--gold);      box-shadow:0 0 12px var(--gold); }
         .btn-restart:hover    { border-color:#ff4500;           color:#ff4500;          box-shadow:0 0 12px #ff4500; }
         .btn-newband:hover    { border-color:var(--fear-glow);  color:var(--fear-glow); box-shadow:0 0 12px var(--fear-glow); }
@@ -477,12 +479,10 @@
             display:flex; flex-direction:column; align-items:center; justify-content:center;
             position:absolute; cursor:help; box-sizing:border-box;
             transform:translate(-50%,-50%);
-            border-radius:50%; /* keeps .space-land's box-shadow glow round, not square */
         }
         .space .sp-text,.space .sp-emoji { text-shadow:0 0 3px rgba(0,0,0,0.5),0 0 1px rgba(0,0,0,0.7); }
         .sp-emoji { font-size:var(--space-emoji); margin-bottom:2px; }
         .sp-text  { padding:0 2px; font-family:'KCStrikerSans','Courier New',monospace; font-weight:bold; font-size:var(--space-font); }
-        .space-land { animation:spaceLand 1.2s ease-out forwards; }
 
         /* ── MYSTERY MARK — larger ?, slow pastel color-fade loop, gentle hover ── */
         @keyframes mysteryColorFade {
@@ -764,6 +764,7 @@
                     <button class="nav-menu-btn btn-tracks" id="tracks-btn" onclick="toggleTracks()"><span class="nav-icon" id="tracks-icon">🎵</span> TRACKS: <span id="tracks-status">ON</span></button>
                     <button class="nav-menu-btn btn-sfx" id="sfx-btn" onclick="toggleSfx()"><span class="nav-icon" id="sfx-icon">🔔</span> SFX: <span id="sfx-status">ON</span></button>
                 </div>
+                <button class="nav-menu-btn btn-darkmode" id="darkmode-btn" onclick="toggleDarkMode()"><span class="nav-icon" id="darkmode-icon">☀️</span> DARK MODE: <span id="darkmode-status">OFF</span></button>
                 <button class="nav-menu-btn btn-accolade-key" onclick="showAccoladeKey();closeNavMenu()"><span class="nav-icon">🔑</span> Key / How-To</button>
                 <button class="nav-menu-btn btn-restart" onclick="confirmSoftRestart();closeNavMenu()"><span class="nav-icon">🔄</span> Restart Tour</button>
                 <button class="nav-menu-btn btn-newband" onclick="confirmHardReset();closeNavMenu()"><span class="nav-icon">💀</span> New Band</button>
@@ -1029,7 +1030,7 @@
         38:{title:"FEARJOY",emoji:"☯️",isFearjoy:true,desc:"FEAR? JOY? Fate decides.",sound:"coin.wav"},
         40:{title:"VAN BREAKS DOWN",emoji:"🛠",skipTurns:1,desc:"Tour van breaks down! Skip a turn for repairs."},
         42:{title:"ENCORE",emoji:"👏",shift:3,isAuto:true,desc:"Encore! Three more songs! Move forward 3.",sound:"coinclip.wav"},
-        44:{title:"VOID",emoji:"🌀",shift:-3,isAuto:true,isTrack:true,desc:"Lost in the Void. Rewind 3.",sound:"voidclip.wav"},
+        44:{title:"VOID",emoji:"🌀",shift:-3,isAuto:true,isTrack:true,isVoidJump:true,desc:"Lost in the Void. Rewind 3.",sound:"voidclip.wav"},
         46:{title:"JOY",emoji:"😄",shift:1,isAuto:true,desc:"PUREJOY! Forward 1.",sound:"coinclip.wav"},
         47:{title:"THE ENDLESS SMILE",emoji:"💀",isSmile:true,isTrack:true,desc:"Remain smiling until your next turn. Break it = Rewind 1.",sound:"smileclip.wav"},
         48:{title:"GATEKEEPER",emoji:"🚪",isGate:true,desc:"Industry Gatekeeper. Stop here unless you're in last place, or you've signed with a major label."},
@@ -1269,6 +1270,16 @@
         syncAudioUI();
     }
     function toggleSfx(){sfxEnabled=!sfxEnabled;syncAudioUI();}
+
+    let darkModeOn=false;
+    function toggleDarkMode(){
+        darkModeOn=!darkModeOn;
+        document.body.classList.toggle('dark-mode',darkModeOn);
+        const icon=document.getElementById('darkmode-icon');
+        const status=document.getElementById('darkmode-status');
+        if(icon)icon.innerText=darkModeOn?'🌙':'☀️';
+        if(status)status.innerText=darkModeOn?'ON':'OFF';
+    }
 
     /* Lore video audio fades — also crossfade with active track */
     function fadeVideoAudioIn(vid){
@@ -1541,11 +1552,6 @@
         _glowFadeTimer=setTimeout(()=>{glowEl.classList.remove('active');_glowFadeTimer=null;},1400);
     }
     function flashSpaceLanding(pos){
-        const el=document.getElementById('s'+pos);if(!el)return;
-        const color=getSpaceColor(pos);
-        el.style.setProperty('--land-color',color==='#ffffff'?'rgba(255,255,255,0.8)':color);
-        el.classList.remove('space-land');void el.offsetWidth;el.classList.add('space-land');
-        setTimeout(()=>el.classList.remove('space-land'),1200);
         pageGlowAt(pos);
     }
     function awardGrammyAccolade(playerIdx,nominatorName,fromSwap=false){
@@ -2322,6 +2328,51 @@
     // ══════════════════════════════════════════════
     // UPDATE POSITIONS
     // ══════════════════════════════════════════════
+    /* Animate one player's piece along a smooth arc directly from its current position to
+       destPos, bypassing the road (no per-space walking/sliding). Used for Void's rewind.
+       The curve bows slightly downward (toward the bottom of the screen), like a soft smile. */
+    async function arcJumpPlayer(destPos,capturedIdx){
+        const idx=(capturedIdx!==undefined)?capturedIdx:turnIdx;
+        const p=players[idx];
+        const el=document.getElementById('p'+idx);
+        const startPos=SPACE_POS[p.pos];
+        const endPos=SPACE_POS[destPos];
+        if(!el||!startPos||!endPos){p.pos=destPos;updatePositions();return;}
+
+        playSlide();
+
+        /* Control point: midpoint between start/end, nudged downward for a slight smile-curve */
+        const midX=(startPos.x+endPos.x)/2;
+        const midY=(startPos.y+endPos.y)/2+4; /* +4% of board height, downward — very slight */
+
+        /* Temporarily disable the CSS transition so we can drive left/top manually per frame */
+        el.style.transition='none';
+        el.style.zIndex=200;
+
+        const duration=650; /* ms */
+        const start=performance.now();
+        await new Promise(resolve=>{
+            function step(now){
+                const t=Math.min(1,(now-start)/duration);
+                /* Quadratic Bezier: (1-t)^2*P0 + 2(1-t)t*P1 + t^2*P2 */
+                const it=1-t;
+                const x=it*it*startPos.x + 2*it*t*midX + t*t*endPos.x;
+                const y=it*it*startPos.y + 2*it*t*midY + t*t*endPos.y;
+                el.style.left=x+'%';
+                el.style.top=y+'%';
+                el.style.transform='translate(-50%,-50%)';
+                if(t<1){requestAnimationFrame(step);}
+                else{resolve();}
+            }
+            requestAnimationFrame(step);
+        });
+
+        /* Restore normal transition behavior and hand off to updatePositions for final settle */
+        el.style.transition='';
+        p.pos=destPos;
+        updatePositions();
+    }
+
     function updatePositions(){
         const boardEl=document.getElementById('board-container');
         const boardSize=boardEl?boardEl.offsetWidth:0; /* square board — width===height */
@@ -2724,6 +2775,14 @@
             }
             if(p.pos===23)playSfx('1up.wav');
             showSidebar(r.title,(r.emoji||"")+" "+(r.desc||"Moving..."),spaceCol,TRACKLIST_TRACK_NAMES[p.pos]||'');
+            if(r.isVoidJump){
+                const destPos=Math.max(0,p.pos+r.shift);
+                setTimeout(async()=>{
+                    await arcJumpPlayer(destPos,capturedTurnIdx);
+                    movePlayer(0,false,capturedTurnIdx);
+                },1500);
+                return;
+            }
             setTimeout(()=>movePlayer(r.shift,false,capturedTurnIdx),1500);return;
         }
 
