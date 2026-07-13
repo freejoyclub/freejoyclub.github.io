@@ -17,7 +17,7 @@ src: url('/KCStrikerSans.otf') format('opentype');
 }
 
 :root {
---glow-color: rgba(255, 255, 255, 0.7);
+--glow-color: rgba(255, 215, 130, 0.75);
 --btn-tan-start: #e8dcc4;
 --btn-tan-end: #d2b48c;
 }
@@ -27,15 +27,15 @@ margin: 0;
 padding: 0;
 width: 100%;
 min-height: 100vh;
-color: #000;
+color: #fff;
 text-align: center;
 overflow-x: hidden;
 position: relative;
 }
 
-/* Lightened Warm Sweeping Gradient */
+/* Darker Sweeping Gradient, dipping to black */
 body {
-background: linear-gradient(45deg, #a65a4e, #7a3e34, #945d42, #5c2b2b);
+background: linear-gradient(45deg, #3a1f1a, #1a0d0b, #2a1512, #000000);
 background-size: 400% 400%;
 animation: sweep 20s ease infinite;
 }
@@ -59,12 +59,12 @@ z-index: 1;
 100% { background-position: 0% 50%; }
 }
 
-/* Increased Float Animation Distance */
+/* Slowed / reduced Float Animation Distance */
 @keyframes subtleFloat {
 0% { transform: translate(0, 0) rotate(0deg); }
-25% { transform: translate(6px, -12px) rotate(1.5deg); }
-50% { transform: translate(-3px, -6px) rotate(-1.5deg); }
-75% { transform: translate(-8px, 4px) rotate(0.8deg); }
+25% { transform: translate(3px, -6px) rotate(0.8deg); }
+50% { transform: translate(-1.5px, -3px) rotate(-0.8deg); }
+75% { transform: translate(-4px, 2px) rotate(0.4deg); }
 100% { transform: translate(0, 0) rotate(0deg); }
 }
 
@@ -96,7 +96,8 @@ h1 {
 font-family: 'KCOraleSans', sans-serif;
 font-size: 4.2rem;
 margin: 0;
-animation: flicker 4s infinite, subtleFloat 6s ease-in-out infinite;
+color: #fff;
+animation: flicker 6s infinite, subtleFloat 10s ease-in-out infinite;
 letter-spacing: 4px;
 text-transform: uppercase;
 }
@@ -105,10 +106,11 @@ text-transform: uppercase;
 font-family: 'KCStrikerSans', sans-serif;
 font-size: 1.6rem;
 margin: 20px 0 40px 0;
+color: #fff;
 text-shadow: 0 0 10px var(--glow-color);
 letter-spacing: 1px;
 line-height: 1.6;
-animation: subtleFloat 8s ease-in-out infinite reverse;
+animation: subtleFloat 13s ease-in-out infinite reverse;
 }
 
 /* Button Styling */
@@ -118,6 +120,8 @@ flex-direction: column;
 gap: 15px;
 align-items: center;
 margin-top: 2rem;
+width: 100%;
+max-width: 400px;
 }
 
 .btn {
@@ -129,7 +133,8 @@ color: #000;
 border: 1.5px solid #000;
 padding: 16px 20px;
 border-radius: 50px;
-width: 310px;
+width: 100%;
+max-width: 372px;
 background: linear-gradient(135deg, var(--btn-tan-start), var(--btn-tan-end));
 box-shadow: 0 0 12px var(--glow-color);
 transition: all 0.3s ease;
@@ -137,10 +142,13 @@ display: flex;
 justify-content: center;
 align-items: center;
 cursor: pointer;
-font-size: 1.6rem;
-animation: subtleFloat 7s ease-in-out infinite;
+font-size: clamp(1.1rem, 4.5vw, 1.6rem);
 box-sizing: border-box;
 }
+
+.btn:nth-child(1) { animation: subtleFloat 8s ease-in-out infinite; }
+.btn:nth-child(2) { animation: subtleFloat 9.5s ease-in-out infinite reverse; }
+.btn:nth-child(3) { animation: subtleFloat 11s ease-in-out infinite; }
 
 /* Shine Effect */
 .btn::after {
@@ -198,25 +206,7 @@ text-shadow: 0 0 10px green;
 font-size: 1.2rem;
 }
 
-.logo-group {
-display: flex;
-justify-content: center;
-gap: 24px;
-margin: 40px 0;
-}
-
-.floating-logo {
-width: 60px;
-height: 60px;
-transition: transform 0.3s ease;
-animation: subtleFloat 5s ease-in-out infinite alternate;
-}
-
-.floating-logo:hover {
-transform: scale(1.2) rotate(10deg);
-}
-
-/* Nav Cluster centered */
+/* Nav Cluster centered, adaptive */
 .nav-cluster {
 position: fixed;
 bottom: 40px;
@@ -230,7 +220,8 @@ border-radius: 100px;
 padding: 8px 15px;
 box-shadow: 0 10px 40px rgba(0,0,0,0.6);
 z-index: 100;
-white-space: nowrap;
+max-width: 94vw;
+box-sizing: border-box;
 }
 
 .nav-cluster a {
@@ -242,6 +233,7 @@ font-size: 0.8rem;
 text-transform: uppercase;
 letter-spacing: 1.5px;
 transition: all 0.3s;
+white-space: nowrap;
 }
 
 .nav-cluster a:hover {
@@ -260,13 +252,23 @@ margin: 0 4px;
 
 @media (max-width: 600px) {
 .nav-cluster {
-padding: 6px 10px;
-width: 90%;
-justify-content: center;
+padding: 6px 8px;
+width: 94%;
+justify-content: space-between;
 }
 .nav-cluster a {
-font-size: 0.65rem;
-padding: 8px 6px;
+font-size: 0.62rem;
+padding: 8px 4px;
+}
+.nav-divider {
+margin: 0 2px;
+}
+}
+
+@media (max-width: 400px) {
+.nav-cluster a {
+font-size: 0.55rem;
+padding: 6px 3px;
 }
 }
 </style>
@@ -274,34 +276,24 @@ padding: 8px 6px;
 <body>
 
 <div class="content">
-<h1>We're Fearjoy</h1>
+<h1>FEARJOY</h1>
 
 <p class="floating-text">
-Our debut album is on the way.<br>
-Here's a preview:
+THE DEBUT ALBUM: COMING 2026.<br>
+HERE'S A PREVIEW:
 </p>
 
 <iframe 
 src="https://samply.app/embed/347SJuDJQmYf8BWVJWvf" 
 frameborder="0"
 allowtransparency="true"
-style="width: 85%; max-width: 500px; height: 270px; border-radius: 25px; border: 10px solid rgba(255, 255, 255, 0.12); box-shadow: 0 0 25px rgba(0,0,0,0.4); animation: subtleFloat 9s ease-in-out infinite;"
+style="width: 85%; max-width: 500px; height: 256px; border-radius: 25px; border: 10px solid rgba(255, 255, 255, 0.12); box-shadow: 0 0 25px rgba(0,0,0,0.4); animation: subtleFloat 12s ease-in-out infinite;"
 ></iframe>
 
-<div class="logo-group">
-<a href="https://www.instagram.com/fearjoymusic" target="_blank">
-<img src="images/instagram-logo.png" alt="Instagram" class="floating-logo">
-</a>
-<a href="https://www.twitch.tv/fearjoymusic" target="_blank">
-<img src="images/twitch-logo2.png" alt="Twitch" class="floating-logo">
-</a>
-</div>
-
 <div class="button-stack">
-<a href="/game" class="btn" style="width: 372px; font-size: 1.92rem; padding: 19px 24px;">🎲 Play The Game 🏆</a>
-<a href="mailto:grant@freejoy.club" class="btn">Contact Us</a>
-<button class="btn" id="mailingListButton">Get the Album</button>
-<a href="/store" class="btn">Store (coming soon)</a>
+<a href="/game" class="btn">🎲 PLAY THE GAME (FREE)</a>
+<a href="mailto:grant@freejoy.club" class="btn">📧 CONTACT US</a>
+<button class="btn" id="mailingListButton">🎧 RESERVE YOUR COPY</button>
 </div>
 
 <form id="emailForm">
