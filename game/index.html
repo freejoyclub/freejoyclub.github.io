@@ -1,7 +1,7 @@
 <!DOCTYPE html><html lang="en"><head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Fearjoy - Game (v100.4)</title>
+    <title>Fearjoy - Game (v100.5)</title>
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
@@ -499,9 +499,10 @@
         }
         .mystery-q {
             display:inline-block;
-            font-size:calc(var(--space-size) * 0.55);
+            font-family:'Courier New',monospace;
+            font-size:calc(var(--space-size) * 0.8);
             font-weight:bold;
-            text-shadow:0 0 8px currentColor,0 0 16px rgba(255,255,255,0.5);
+            text-shadow:0 2px 6px rgba(0,0,0,0.75),0 0 12px rgba(0,0,0,0.5),0 0 10px currentColor,0 0 22px currentColor;
             animation:mysteryColorFade 7s ease-in-out infinite,mysteryHover 3.4s ease-in-out infinite;
         }
 
@@ -577,6 +578,7 @@
             display:flex; flex-direction:column; overflow-y:auto;
         }
         #rule-sidebar.active { right:-40px; }
+        #rule-sidebar.sidebar-low { top:auto; bottom:calc(var(--bar-h) + 12px); }
         #rule-sidebar.mystery-sidebar { font-size:0.88em; width:min(280px,76vw); }
         #side-sub   { font-size:0.78rem; letter-spacing:2px; color:rgba(255,255,255,0.7); text-transform:uppercase; margin-bottom:6px; font-family:'Courier New',monospace; }
         #side-title { font-family:'KCStrikerSans','Courier New',monospace; margin:0 0 8px; font-size:clamp(1rem,2.5vw,1.5rem); }
@@ -600,6 +602,9 @@
             margin:16px 0; display:none; line-height:1;
         }
         #action-bar { display:flex; flex-wrap:wrap; justify-content:center; align-items:flex-start; gap:14px; width:100%; }
+        /* Hide a button's wrapper (button + kb-hint) when the button itself is hidden —
+           otherwise the empty wrapper still takes up width and pushes siblings off-center */
+        #action-bar > div:has(> button[style*="display: none"]) { display:none !important; }
         #action-bar > div { display:inline-flex; flex-direction:column; align-items:center; justify-content:flex-start; text-align:center; }
         #action-bar > div > button { margin:0 auto; }
         .popup > * { text-align:center; }
@@ -622,7 +627,7 @@
         .intro-header { font-size:clamp(1.6rem,5vw,3.5rem); color:var(--gold); animation:introGlow 2s ease-in-out infinite alternate; margin-bottom:16px; font-family:'KCStrikerSans','Courier New',monospace; letter-spacing:4px; }
 
         /* ── SETUP ── */
-        .setup-btn-large  { padding:clamp(10px,2vh,20px) clamp(20px,4vw,45px); font-size:clamp(1.4rem,4vw,2.5rem); font-weight:bold; background:transparent; color:white; border:2px solid white; border-radius:12px; cursor:pointer; transition:all 0.2s ease; }
+        .setup-btn-large  { font-family:'KCStrikerSans','Courier New',monospace; padding:clamp(10px,2vh,20px) clamp(20px,4vw,45px); font-size:clamp(1.4rem,4vw,2.5rem); font-weight:bold; background:transparent; color:white; border:2px solid white; border-radius:12px; cursor:pointer; transition:all 0.2s ease; }
         .setup-btn-large:hover { background:white; color:black; transform:scale(1.1); }
         .setup-avatar     { width:clamp(55px,11vw,90px); height:clamp(55px,11vw,90px); opacity:0.3; cursor:pointer; transition:all 0.3s ease; filter:grayscale(100%); border:3px solid transparent; border-radius:10px; }
         .setup-avatar:hover { opacity:0.7; }
@@ -635,7 +640,7 @@
         .color-swatch:hover { transform:scale(1.15); }
         .color-swatch.swatch-selected { border-color:white; transform:scale(1.2); box-shadow:0 0 10px currentColor; }
         .color-swatch.swatch-taken { opacity:0.2; cursor:not-allowed; pointer-events:none; }
-        #preload-bar-wrap { position:absolute; bottom:12px; left:50%; transform:translateX(-50%); width:min(240px,70%); text-align:center; opacity:0; transition:opacity 0.5s; }
+        #preload-bar-wrap { width:min(240px,70%); margin:14px auto 0; text-align:center; opacity:0; transition:opacity 0.5s; }
         #preload-bar-wrap.visible { opacity:1; }
         #preload-bar-track { width:100%; height:4px; background:rgba(255,255,255,0.12); border-radius:4px; overflow:hidden; margin-bottom:4px; }
         #preload-bar-fill  { height:100%; width:0%; background:var(--joy-glow); border-radius:4px; transition:width 0.3s ease; animation:progressPulse 1.5s ease-in-out infinite; }
@@ -836,7 +841,7 @@
         <div class="popup" style="max-width:500px;width:92vw;position:relative;">
             <h1 class="intro-header">Fearjoy: The Game</h1>
             <div id="setup-step-1">
-                <h2>HOW MANY ARTISTS?</h2>
+                <h2 style="font-family:'KCStrikerSans','Courier New',monospace;letter-spacing:3px;font-weight:normal;">HOW MANY ARTISTS?</h2>
                 <div style="display:flex;justify-content:center;gap:clamp(8px,2vw,15px);margin-top:16px;flex-wrap:wrap;">
                     <button class="setup-btn-large" onclick="setPlayerCount(1)">1</button>
                     <button class="setup-btn-large" onclick="setPlayerCount(2)">2</button>
@@ -844,19 +849,17 @@
                 </div>
                     <div style="font-family:'Courier New',monospace; font-size:0.75rem; line-height:1.5; letter-spacing:1.2px; color:rgba(255,255,255,0.65); text-align:center; padding:25px 7px 4px;text-transform:uppercase;">
                     Made by Fearjoy<br>
-                    Best with friends + on desktop<br>
                     (try 2+ artists, even if solo)<br>
                     Enjoy the tour!
                 </div>
             </div>
             <div id="setup-step-2" style="display:none;margin-top:16px;">
-                <button onclick="goBackToPlayerCount()" style="background:transparent;border:none;color:rgba(255,255,255,0.4);font-family:'Courier New',monospace;font-size:0.8rem;cursor:pointer;letter-spacing:2px;padding:0;margin-bottom:12px;transition:color 0.2s;" onmouseover="this.style.color='white'" onmouseout="this.style.color='rgba(255,255,255,0.4)'">← BACK</button>
-                <h2 id="setup-prompt" style="font-size:clamp(0.8rem,2.5vw,1rem);color:#888;">ARTIST 1: DETAILS</h2>
+                <h2 id="setup-prompt" style="font-family:'KCStrikerSans','Courier New',monospace;letter-spacing:2px;font-weight:normal;font-size:clamp(0.85rem,2.5vw,1.05rem);color:#999;">ARTIST 1: DETAILS</h2>
                 <input type="text" id="name-input" placeholder="ARTIST NAME"
-                    style="padding:clamp(10px,2vw,20px);width:90%;text-align:center;border-radius:8px;border:3px solid #333;background:#000;color:white;font-size:clamp(1rem,3vw,1.5rem);transition:all 0.3s ease;outline:none;box-sizing:border-box;">
-                <div id="name-error" style="color:var(--fear-glow);font-weight:bold;margin-top:10px;font-size:0.9rem;display:none;">NAME & PIC REQUIRED</div>
+                    style="font-family:'Courier New',monospace;padding:clamp(10px,2vw,20px);width:90%;text-align:center;border-radius:8px;border:3px solid #333;background:#000;color:white;font-size:clamp(1rem,3vw,1.5rem);transition:all 0.3s ease;outline:none;box-sizing:border-box;">
+                <div id="name-error" style="font-family:'Courier New',monospace;color:var(--fear-glow);font-weight:bold;margin-top:10px;font-size:0.9rem;display:none;">NAME & PIC REQUIRED</div>
                 <div style="margin:16px 0 8px;">
-                    <div style="font-size:0.65rem;letter-spacing:2px;color:#888;margin-bottom:8px;">PICK A COLOR (OPTIONAL)</div>
+                    <div style="font-family:'Courier New',monospace;font-size:0.65rem;letter-spacing:2px;color:#888;margin-bottom:8px;">PICK A COLOR (OPTIONAL)</div>
                     <div id="swatch-row" style="display:flex;justify-content:center;gap:clamp(6px,1.5vw,12px);flex-wrap:wrap;"></div>
                 </div>
                 <div style="display:flex;justify-content:center;gap:clamp(12px,3vw,25px);margin:20px 0;">
@@ -864,9 +867,9 @@
                     <img id="sel-marco" src="marco.png" class="setup-avatar" onclick="pickAvatar('marco')">
                     <img id="sel-grant" src="grant.png" class="setup-avatar" onclick="pickAvatar('grant')">
                 </div>
-                <button onclick="confirmArtist()" class="confirm-btn">ADD TO TOUR</button>
+                <button onclick="confirmArtist()" class="confirm-btn" style="font-family:'KCStrikerSans','Courier New',monospace;letter-spacing:2px;">ADD TO TOUR</button>
                 <div id="tour-roster" style="margin-top:24px;border-top:1px solid #444;padding-top:15px;display:none;">
-                    <div style="font-size:0.7rem;letter-spacing:2px;color:#888;margin-bottom:10px;">CURRENT ROSTER</div>
+                    <div style="font-family:'Courier New',monospace;font-size:0.7rem;letter-spacing:2px;color:#888;margin-bottom:10px;">CURRENT ROSTER</div>
                     <div id="roster-list" style="display:flex;justify-content:center;gap:15px;flex-wrap:wrap;"></div>
                 </div>
             </div>
@@ -874,16 +877,20 @@
                 <div id="preload-bar-track"><div id="preload-bar-fill"></div></div>
                 <div id="preload-bar-label">Loading assets...</div>
             </div>
-            <!-- Mini menu/mute for setup screen -->
-            <div style="display:flex;justify-content:center;align-items:center;gap:8px;margin-top:18px;padding-top:14px;border-top:1px solid rgba(255,255,255,0.08);">
-                <button id="setup-mute-btn" onclick="toggleMute()" style="background:#1a1a1a;border:1.5px solid #660000;color:#bb1111;font-family:sans-serif;font-size:0.82rem;font-weight:700;letter-spacing:0.5px;text-transform:uppercase;border-radius:6px;padding:8px 15px;cursor:pointer;transition:all 0.15s ease;">MUTE</button>
-                <button onclick="toggleFullscreen()" style="background:#1a1a1a;border:1.5px solid #444;color:rgba(255,255,255,0.7);font-family:sans-serif;font-size:0.82rem;font-weight:700;letter-spacing:0.5px;text-transform:uppercase;border-radius:6px;padding:8px 15px;cursor:pointer;transition:all 0.15s ease;" title="Fullscreen">⛶</button>
-                <button onclick="toggleSetupMenu()" style="background:#1a1a1a;border:1.5px solid #444;color:rgba(255,255,255,0.7);font-family:sans-serif;font-size:0.82rem;font-weight:700;letter-spacing:0.5px;text-transform:uppercase;border-radius:6px;padding:8px 15px;cursor:pointer;transition:all 0.15s ease;" title="Options">MENU</button>
+            <!-- Mini menu row for setup screen -->
+            <div style="display:flex;justify-content:center;align-items:center;gap:8px;margin-top:18px;padding-top:14px;border-top:1px solid rgba(255,255,255,0.08);flex-wrap:wrap;">
+                <button id="setup-back-btn" onclick="goBackToPlayerCount()" title="Back" style="display:none;background:#1a1a1a;border:1.5px solid #444;color:rgba(255,255,255,0.7);font-family:'Courier New',monospace;font-size:0.95rem;font-weight:700;border-radius:6px;padding:8px 13px;cursor:pointer;transition:all 0.15s ease;">←</button>
+                <button id="setup-darkmode-btn" onclick="toggleDarkMode()" title="Dark / Light mode" style="background:#1a1a1a;border:1.5px solid #444;font-size:0.95rem;border-radius:6px;padding:8px 13px;cursor:pointer;transition:all 0.15s ease;">☀️</button>
+                <button id="setup-mute-btn" onclick="toggleMute()" style="background:#1a1a1a;border:1.5px solid #660000;color:#bb1111;font-family:'Courier New',monospace;font-size:0.82rem;font-weight:700;letter-spacing:0.5px;text-transform:uppercase;border-radius:6px;padding:8px 15px;cursor:pointer;transition:all 0.15s ease;">MUTE</button>
+                <button onclick="toggleFullscreen()" style="background:#1a1a1a;border:1.5px solid #444;color:rgba(255,255,255,0.7);font-family:'Courier New',monospace;font-size:0.82rem;font-weight:700;letter-spacing:0.5px;text-transform:uppercase;border-radius:6px;padding:8px 15px;cursor:pointer;transition:all 0.15s ease;" title="Fullscreen">⛶</button>
+                <button onclick="toggleSetupMenu()" style="background:#1a1a1a;border:1.5px solid #444;color:rgba(255,255,255,0.7);font-family:'Courier New',monospace;font-size:0.82rem;font-weight:700;letter-spacing:0.5px;text-transform:uppercase;border-radius:6px;padding:8px 15px;cursor:pointer;transition:all 0.15s ease;" title="Options">MENU</button>
                 <div id="setup-menu" style="display:none;position:fixed;inset:0;z-index:99999;align-items:center;justify-content:center;background:rgba(0,0,0,0.7);" onclick="if(event.target===this)closeSetupMenu()">
                     <div style="background:rgba(14,14,14,0.98);border:1px solid #333;border-radius:14px;padding:12px;min-width:200px;display:flex;flex-direction:column;gap:8px;animation:menuBloom 0.2s ease forwards;">
                         <button class="nav-menu-btn btn-fullscreen" onclick="toggleFullscreen()"><span class="nav-icon">⛶</span> <span id="setup-fullscreen-label">Fullscreen</span></button>
                         <button class="nav-menu-btn btn-tracks" onclick="toggleTracks()"><span class="nav-icon" id="setup-tracks-icon">🎵</span> TRACKS: <span id="setup-tracks-status">ON</span></button>
                         <button class="nav-menu-btn btn-sfx" onclick="toggleSfx()"><span class="nav-icon" id="setup-sfx-icon">🔔</span> SFX: <span id="setup-sfx-status">ON</span></button>
+                        <button class="nav-menu-btn btn-darkmode" onclick="toggleDarkMode()"><span class="nav-icon" id="setup-darkmode-menu-icon">☀️</span> DARK MODE: <span id="setup-darkmode-menu-status">OFF</span></button>
+                        <button class="nav-menu-btn btn-home" onclick="window.open('https://freejoy.club','_blank')"><span class="nav-icon">🏠</span> Fearjoy - Home</button>
                         <button class="nav-menu-btn" onclick="closeSetupMenu()" style="border-color:#555;color:rgba(255,255,255,0.5);">✕ Close</button>
                     </div>
                 </div>
@@ -958,8 +965,8 @@
 
     const boardLayout=[
         "START","blank","blank","DAYSPRING","blank","FEARJOY","blank","blank","FIGMENT","JOY",
-        "THE REMEDY","FEAR","blank","JOY","blank","DMITRI","blank","FEARJOY","NIGHTDRIVE","JOY",
-        "INVEST IN MERCH","FEAR","blank","5TH DIMENSION","blank","IT HAPPENS","blank","GHOST 2","MAYA","JOY",
+        "THE REMEDY","FEAR","blank","JOY","blank","DMITRI","blank","FEARJOY","IT HAPPENS","JOY",
+        "INVEST IN MERCH","FEAR","blank","5TH DIMENSION","blank","NIGHTDRIVE","blank","GHOST 2","MAYA","JOY",
         "WIN A GRAMMY","blank","blank","OPENING ACT","blank","FEAR","blank","TELLUS","FEARJOY","blank",
         "VAN BREAKS DOWN","blank","ENCORE","blank","VOID","blank","JOY","THE ENDLESS SMILE","GATEKEEPER","blank",
         "blank","FEARJOY","blank","VAN BREAKS DOWN","blank","LOST RECORDING","blank","FEARJOY","blank","SWIMMIN"
@@ -991,8 +998,8 @@
         8:'Track 2',
         10:'Track 3',
         15:'Track 4',
-        25:'Track 5',
-        18:'Track 6',
+        18:'Track 5',
+        25:'Track 6',
         27:'Track 7',
         28:'Track 8',
         37:'Track 9',
@@ -1014,12 +1021,12 @@
         13:{title:"JOY",emoji:"😄",shift:1,isAuto:true,desc:"Choose JOY! Forward 1.",sound:"coinclip.wav"},
         15:{title:"DMITRI",emoji:"👨‍🚀",timer:15,isDmitri:true,isTrack:true,desc:"Take DEEP BREATHS (15 sec) for the 5D shortcut. Skip = Rewind 2.",sound:"dmitriclip.wav"},
         17:{title:"FEARJOY",emoji:"☯️",isFearjoy:true,desc:"Fear? Joy? Flip to find out.",sound:"coin.wav"},
-        18:{title:"NIGHTDRIVE",emoji:"🌙",isNightDrive:true,isTrack:true,desc:"Fall asleep at the wheel! EYES CLOSED until next turn.",sound:"nightclip.wav"},
+        18:{title:"IT HAPPENS",emoji:"🔔",isItHappens:true,isTrack:true,desc:"Suddenly, instantly, take an extra turn!",sound:"happensclip.wav"},
         19:{title:"JOY",emoji:"😄",shift:1,isAuto:true,desc:"PUREJOY! Forward 1.",sound:"coinclip.wav"},
         20:{title:"INVEST IN MERCH",emoji:"👕",choice:'merch',desc:"Do you INVEST by rewinding -4 now? Every 1 or 2 you roll later will be doubled."},
         21:{title:"FEAR",emoji:"😱",shift:-1,isAuto:true,desc:"Self-doubt and vices. Rewind 1.",sound:"spookyclip1.wav"},
         23:{title:"5TH DIMENSION",emoji:"✨",shift:3,isAuto:true,desc:"You have transcended. Forward!.",sound:"coinclip.wav"},
-        25:{title:"IT HAPPENS",emoji:"🔔",isItHappens:true,isTrack:true,desc:"Suddenly, instantly, take an extra turn!",sound:"happensclip.wav"},
+        25:{title:"NIGHTDRIVE",emoji:"🌙",isNightDrive:true,isTrack:true,desc:"Fall asleep at the wheel! EYES CLOSED until next turn.",sound:"nightclip.wav"},
         27:{title:"GHOST 2",emoji:"👻",isGhost:true,isTrack:true,desc:"Paralyzed in fear: Stay silent for one turn. Make a sound = Rewind 1.",sound:"ghostclip.wav"},
         28:{title:"MAYA",emoji:"👁️",isMaya:true,isTrack:true,desc:"Hold 10s of eye contact for Both +2, or avoid for -1.",sound:"mayaclip.wav"},
         29:{title:"JOY",emoji:"😄",shift:1,isAuto:true,desc:"PUREJOY! Forward 1.",sound:"coinclip.wav"},
@@ -1245,16 +1252,22 @@
         }
     }
 
+    /* Videos (remedy, lore drops) count as TRACKS — muted when master mute is on,
+       when audio is disabled, or when tracks are toggled off. */
+    function videoShouldBeMuted(){return masterMuted||!audioEnabled||!tracksEnabled;}
+    function syncVideoMute(){
+        const m=videoShouldBeMuted();
+        if(activeLoreVid)activeLoreVid.muted=m;
+        const rv=document.getElementById('remedy-video');if(rv)rv.muted=m;
+    }
     function toggleMute(){
         masterMuted=!masterMuted;
-        /* Mute/unmute any active lore video */
-        if(activeLoreVid){activeLoreVid.muted=masterMuted;}
-        /* Also mute remedy video if playing */
-        const rv=document.getElementById('remedy-video');if(rv)rv.muted=masterMuted;
+        syncVideoMute();
         syncAudioUI();
     }
     function toggleAudio(){
         audioEnabled=!audioEnabled;
+        syncVideoMute();
         syncAudioUI();
     }
     function toggleTracks(){
@@ -1267,6 +1280,7 @@
             }catch(e){}
             activeTrackSrc=null;activeTrackGain=null;
         }
+        syncVideoMute();
         syncAudioUI();
     }
     function toggleSfx(){sfxEnabled=!sfxEnabled;syncAudioUI();}
@@ -1279,6 +1293,13 @@
         const status=document.getElementById('darkmode-status');
         if(icon)icon.innerText=darkModeOn?'🌙':'☀️';
         if(status)status.innerText=darkModeOn?'ON':'OFF';
+        /* Sync setup screen toggles */
+        const sBtn=document.getElementById('setup-darkmode-btn');
+        if(sBtn)sBtn.innerText=darkModeOn?'🌙':'☀️';
+        const smIcon=document.getElementById('setup-darkmode-menu-icon');
+        const smStatus=document.getElementById('setup-darkmode-menu-status');
+        if(smIcon)smIcon.innerText=darkModeOn?'🌙':'☀️';
+        if(smStatus)smStatus.innerText=darkModeOn?'ON':'OFF';
     }
 
     /* Lore video audio fades — also crossfade with active track */
@@ -1293,7 +1314,7 @@
             }catch(e){}
             activeTrackSrc=null;activeTrackGain=null;
         }
-        vid.muted=false;vid.volume=0;
+        vid.muted=videoShouldBeMuted();vid.volume=0;
         let v=0;const step=setInterval(()=>{v=Math.min(0.5,v+0.05);vid.volume=v;if(v>=0.5)clearInterval(step);},100);
     }
     function fadeVideoAudioOut(vid,thenPause=false){
@@ -1478,7 +1499,7 @@
                     p.totalRollValue=0;p.smileActive=false;p.nightDriveActive=false;
                     p.accolades=[];p.grammyNominator=null;
                     p.usedColdPitch=false;p.hasSeenGatekeeperHint=false;p.hasThrifty=false;
-                    p.merchdiscountPct=0;p.pitchBubbleShown=false;p.coldPitchRollCount=0;
+                    p.merchdiscountPct=0;p.pitchBubbleShown=false;p.phoneIntroShown=false;p.coldPitchRollCount=0;
                     p.hasPlotArmor=false;p.wasPassivelyMoved=false;
                 });
                 highestDiscountPct=0;globalTurnCount=0;lastBucketFile=null;
@@ -1486,6 +1507,7 @@
                 spacesTriggeredThisTurn=new Set();
                 turnIdx=0;isMoving=false;isRolling=false;isSwapping=false;isInLoreDrop=false;loreDoneResolver=null;
                 stopMetronome();stopActiveLoreVid();
+                players.forEach((_,i)=>{const el=document.getElementById('p'+i);if(el)el.style.transition='';});
                 updateUI();updatePositions();
                 document.getElementById('roll-btn').disabled=false;
             },"CANCEL",()=>{}
@@ -1623,7 +1645,7 @@
             const el=document.getElementById('s'+i);if(!el)return;
             if(mysterySpaces.has(i)){
                 el.className='space mystery-space';
-                el.innerHTML=`<span class="mystery-q">?</span>`;
+                el.innerHTML=`<span class="mystery-q" style="animation-delay:-${(Math.random()*7).toFixed(2)}s,-${(Math.random()*3.4).toFixed(2)}s;">?</span>`;
                 el.onclick=()=>handleMysteryClick(i);el.style.cursor='help';
             } else {
                 el.className='space true-blank';
@@ -1670,7 +1692,7 @@
         } else if(item.type==='video'){
             const vid=document.createElement('video');
             vid.src=item.file;vid.className='bucket-video';
-            vid.autoplay=true;vid.loop=false;vid.muted=false;vid.volume=0;vid.playsInline=true;
+            vid.autoplay=true;vid.loop=false;vid.muted=videoShouldBeMuted();vid.volume=0;vid.playsInline=true;
             vid.setAttribute('playsinline','');
             container.appendChild(vid);_cap();
             activeLoreVid=vid;
@@ -1793,6 +1815,7 @@
         totalP=num;
         document.getElementById('setup-step-1').style.display='none';
         document.getElementById('setup-step-2').style.display='block';
+        const backBtn=document.getElementById('setup-back-btn');if(backBtn)backBtn.style.display='inline-block';
         selectedColor=DEFAULT_COLORS[currentSetupP]||DEFAULT_COLORS[0];
         renderSwatches();updateSetupPrompt();startPreload();
     }
@@ -1802,6 +1825,7 @@
         selectedAvatar=null;selectedColor=null;
         document.getElementById('setup-step-2').style.display='none';
         document.getElementById('setup-step-1').style.display='block';
+        const backBtn=document.getElementById('setup-back-btn');if(backBtn)backBtn.style.display='none';
         document.getElementById('tour-roster').style.display='none';
         document.getElementById('roster-list').innerHTML='';
         document.getElementById('name-input').value='';
@@ -1834,7 +1858,7 @@
             coldPitchRollCount:0,grammys:0,shirtsSold:0,pillsTaken:0,accolades:[],
             ghostCounter:0,totalRollValue:0,smileActive:false,nightDriveActive:false,
             grammyNominator:null,usedColdPitch:false,hasSeenGatekeeperHint:false,
-            hasThrifty:false,merchdiscountPct:0,pitchBubbleShown:false,
+            hasThrifty:false,merchdiscountPct:0,pitchBubbleShown:false,phoneIntroShown:false,
             hasPlotArmor:false,  /* 🛡️ — shields next detrimental action */
             wasPassivelyMoved:false  /* set when moved on another player's turn — skips space rule once */
         });
@@ -1923,7 +1947,7 @@
             if(name==="blank"){
                 if(mysterySpaces.has(i)){
                     s.classList.add('mystery-space');
-                    s.innerHTML=`<span class="mystery-q">?</span>`;
+                    s.innerHTML=`<span class="mystery-q" style="animation-delay:-${(Math.random()*7).toFixed(2)}s,-${(Math.random()*3.4).toFixed(2)}s;">?</span>`;
                     s.onclick=()=>handleMysteryClick(i);
                 } else {s.classList.add('true-blank');}
             } else {
@@ -1949,101 +1973,28 @@
     // INSTRUCTIONS
     // ══════════════════════════════════════════════
 
-/* ── SPACE PREVIEW — mini board-space examples for intro/howto cards ── */
-    function buildSpacePreview(forHowTo=false){
-        let _carouselIdx=0;
-        const _specials=[
-            {emoji:'☯️',label:'FEARJOY',cls:'hybrid'},
-            {emoji:'🏆',label:'GRAMMY',cls:''},
-            {emoji:'👕',label:'MERCH',cls:''},
-        ];
-        let _carouselTimer=null;
-
+    /* ── SPACE LEGEND — three simple headers with explanations, no dummy spaces ── */
+    function buildSpaceLegend(){
         const wrap=document.createElement('div');
-        wrap.style.cssText='display:flex;flex-direction:'+(forHowTo?'column':'row')+';align-items:center;justify-content:center;gap:'+(forHowTo?'18px':'14px')+';margin:'+(forHowTo?'18px 0':'14px 0 10px');
-
-        function makeSpace(cls,html,onclick){
-            const size=forHowTo?'93px':'83px';
+        wrap.style.cssText='display:flex;flex-direction:column;gap:16px;margin:18px 0;text-align:center;';
+        function mk(headerHtml,desc){
             const d=document.createElement('div');
-            d.style.cssText=`width:${size};height:${size};border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;position:relative;box-sizing:border-box;flex-shrink:0;`;
-            d.className='space '+cls;
-            d.innerHTML=html;
-            d.onclick=onclick;
+            d.innerHTML=`<div style="font-family:'KCStrikerSans','Courier New',monospace;font-size:1.2rem;letter-spacing:2px;margin-bottom:4px;">${headerHtml}</div>
+<div style="font-family:'Courier New',monospace;font-size:0.85rem;color:rgba(255,255,255,0.78);line-height:1.6;">${desc}</div>`;
             return d;
         }
-
-        /* ── TRACKLIST ── */
-        const trackWrap=document.createElement('div');
-        trackWrap.style.cssText='display:flex;flex-direction:column;align-items:center;gap:6px;';
-        const trackSpace=makeSpace('tracklist-space',
-            `<div class="sp-emoji" style="font-size:${forHowTo?'1.7rem':'1.4rem'};">☀️</div><div class="sp-text" style="font-size:${forHowTo?'0.8rem':'0.6rem'};">TRACKLIST</div>`,
-            ()=>_showPreviewTip('🎵 Tracklist Space','A sample from the album plays when you land here — each track has its own event.')
-        );
-        trackWrap.appendChild(trackSpace);
-        if(forHowTo){const l=document.createElement('div');l.style.cssText='font-family:"Courier New",monospace;font-size:0.7rem;color:rgba(255,255,255,0.5);letter-spacing:1px;text-align:center;';l.innerText='Songs from the album.\nEvents to match.';trackWrap.appendChild(l);}
-        wrap.appendChild(trackWrap);
-
-        /* ── SPECIAL carousel ── */
-        const specWrap=document.createElement('div');
-        specWrap.style.cssText='display:flex;flex-direction:column;align-items:center;gap:6px;';
-        const specSpace=makeSpace(_specials[0].cls||'',
-            `<div class="sp-emoji" style="font-size:${forHowTo?'1.7rem':'1.4rem'};">${_specials[0].emoji}</div><div class="sp-text" style="font-family:'KCStrikerSans',monospace;font-size:${forHowTo?'0.8rem':'0.6rem'};">${_specials[0].label}</div>`,
-            ()=>_showPreviewTip('⚡ Special Space','Each has a unique effect — good, bad, or both. Grammy, Merch, FearJoy and more.')
-        );
-        function _advanceCarousel(){
-            _carouselIdx=(_carouselIdx+1)%_specials.length;
-            const sp=_specials[_carouselIdx];
-            specSpace.className='space '+(sp.cls||'');
-            specSpace.innerHTML=`<div class="sp-emoji" style="font-size:${forHowTo?'1.7rem':'1.4rem'};">${sp.emoji}</div><div class="sp-text" style="font-family:'KCStrikerSans',monospace;font-size:${forHowTo?'0.8rem':'0.6rem'};">${sp.label}</div>`;
-        }
-        _carouselTimer=setInterval(_advanceCarousel,1800);
-        specWrap.appendChild(specSpace);
-        if(forHowTo){const l=document.createElement('div');l.style.cssText='font-family:"Courier New",monospace;font-size:0.7rem;color:rgba(255,255,255,0.5);letter-spacing:1px;text-align:center;';l.innerText='Good, bad, or both.\nFearJoy, Grammy, Merch...';specWrap.appendChild(l);}
-        wrap.appendChild(specWrap);
-
-        /* ── MYSTERY ── */
-        const mystWrap=document.createElement('div');
-        mystWrap.style.cssText='display:flex;flex-direction:column;align-items:center;gap:6px;';
-        const mystSpace=makeSpace('mystery-space',
-            `<span class="mystery-q" style="font-size:${forHowTo?'2rem':'1.7rem'};">?</span>`,
-            ()=>_showPreviewTip('? Mystery Space','Hidden lore drops — band photos, videos, real-life merch codes, and rare rewards.')
-        );
-        mystWrap.appendChild(mystSpace);
-        if(forHowTo){const l=document.createElement('div');l.style.cssText='font-family:"Courier New",monospace;font-size:0.7rem;color:rgba(255,255,255,0.5);letter-spacing:1px;text-align:center;';l.innerText='Hidden lore, photos,\nvideos, merch codes.';mystWrap.appendChild(l);}
-        wrap.appendChild(mystWrap);
-
-        /* ── TOOLTIP ── */
-        let _tipTimer=null;
-        
-        function _showPreviewTip(title,desc){
-            let tip=document.getElementById('_preview-tip');
-            if(!tip){
-                tip=document.createElement('div');tip.id='_preview-tip';
-                tip.style.cssText='position:fixed;bottom:calc(var(--bar-h,72px) + 14px);left:50%;transform:translateX(-50%);background:rgba(10,10,10,0.97);border:1px solid rgba(255,255,255,0.2);border-radius:12px;padding:12px 18px;max-width:min(300px,80vmin);z-index:8000;text-align:center;cursor:pointer;transition:opacity 0.4s ease;';
-                document.body.appendChild(tip);
-            }
-            tip.innerHTML=`<div style="font-family:'KCStrikerSans',monospace;font-size:1.1rem;letter-spacing:1px;color:white;margin-bottom:6px;">${title}</div><div style="font-family:'Courier New',monospace;font-size:0.91rem;color:rgba(255,255,255,0.85);line-height:1.6;">${desc}</div>`;
-            tip.style.opacity='1';
-            tip.onclick=(e)=>{e.stopPropagation();tip.style.opacity='0';if(_tipTimer)clearTimeout(_tipTimer);};
-            if(_tipTimer)clearTimeout(_tipTimer);
-            _tipTimer=setTimeout(()=>{if(tip)tip.style.opacity='0';},6400);
-        }
-
-        wrap._cleanup=()=>{
-            clearInterval(_carouselTimer);
-            if(_tipTimer)clearTimeout(_tipTimer);
-            const tip=document.getElementById('_preview-tip');
-            if(tip)tip.remove();
-        };
+        wrap.appendChild(mk(`<span style="color:var(--fear-glow);">TRACKLIST</span>`,'Songs from the album. Land on one to trigger its event.'));
+        wrap.appendChild(mk(`<span style="color:#ffffff;">SPECIAL</span>`,'Good, bad, or both. Grammy, Merch, FearJoy and more.'));
+        wrap.appendChild(mk(`<span class="mystery-q" style="font-size:1.6rem;">?</span>`,'Mystery. Hidden lore, photos, videos, and real-life rewards.'));
         return wrap;
     }
 
     function showInstructions(){
         showStatusPopup(
             "🎵 Fearjoy: The Game 🎲",
-            "Roll to move (Click or Spacebar).\nWinner gets the hidden bonus track.\nClick to learn:",
+            "Roll to move (Click or Spacebar).\nWinner gets the hidden bonus track.",
             "Let's Play",()=>{},
-            "Show Me",()=>{
+            "How To",()=>{
                 showStatusPopup("📋 How to Play","","Let's go!",()=>{},"",()=>{});
                 document.getElementById('event-btn-secondary').style.display='none';
                 setTimeout(()=>{
@@ -2051,11 +2002,10 @@
                     if(!d)return;
                     d.innerHTML='';
                     d.style.overflow='auto';
-                    const preview=buildSpacePreview(true);
-                    d.appendChild(preview);
+                    d.appendChild(buildSpaceLegend());
                     const txt=document.createElement('div');
-                    txt.style.cssText='font-size:clamp(0.77rem,1.54vw,1.05rem);line-height:1.8;color:#ffffff;white-space:pre-line;margin-top:10px;';
-                    txt.innerText="ROLL with Click, Spacebar, or Enter.\nClick (or Arrow Keys + Enter) for Choices.\n\nClick spaces / passes to discover rules.\nSound Options & Key in the Menu.\n\nCollect accolades, lore, and real-life rewards.\nOpen your All-Access Pass for more.";
+                    txt.style.cssText="font-family:'Courier New',monospace;font-size:clamp(0.77rem,1.54vw,1rem);line-height:1.8;color:#ffffff;white-space:pre-line;margin-top:10px;";
+                    txt.innerText="ROLL with Click, Spacebar, or Enter.\nClick (or Arrow Keys + Enter) for choices.\n\nClick spaces / passes to discover rules.\nSound Options & Key in the Menu.\n\nCollect accolades, lore, and real-life rewards.\nOpen your All-Access Pass for more.";
                     d.appendChild(txt);
                     const c=document.createElement('div');c.className='credits-line';
                     c.innerText='© 2026. Music/Game/Sound Design by Fearjoy';d.appendChild(c);
@@ -2067,11 +2017,9 @@
             if(!desc)return;
             desc.innerHTML='';
             const txt=document.createElement('div');
-            txt.style.cssText='font-size:clamp(0.96rem,2.2vw,1.32rem);line-height:1.7;color:#ffffff;white-space:pre-line;';
-            txt.innerText="Roll to move (Click or Spacebar).\nWinner gets the hidden bonus track.\nClick to learn:";
+            txt.style.cssText="font-family:'Courier New',monospace;font-size:clamp(0.96rem,2.2vw,1.32rem);line-height:1.7;color:#ffffff;white-space:pre-line;";
+            txt.innerText="Roll to move (Click or Spacebar).\nWinner gets the hidden bonus track.";
             desc.appendChild(txt);
-            const preview=buildSpacePreview(false);
-            desc.appendChild(preview);
             const c=document.createElement('div');c.className='credits-line';
             c.innerText='© 2026. Music/Game/Sound Design by Fearjoy';desc.appendChild(c);
             const ov=document.getElementById('overlay-event');
@@ -2079,7 +2027,6 @@
             window._introLightDismiss=function(e){
                 if(!pu.contains(e.target)){
                     ov.style.display='none';
-                    if(preview._cleanup)preview._cleanup();
                     ov.removeEventListener('click',window._introLightDismiss);
                     window._introLightDismiss=null;
                 }
@@ -2099,7 +2046,7 @@
 
     // ══════════════════════════════════════════════
     // PASSES
-    // Pitch bubble only after space 30 (halfway), current player only
+    // Pitch phone/bubble after the player passes space 40, current player only
     // ══════════════════════════════════════════════
     const FLOAT_CLASSES=['pass-float-a','pass-float-b','pass-float-c'];
 
@@ -2118,8 +2065,7 @@
             const selectable=(isSwapping||isMayaPartner)&&i!==turnIdx;
             /* Pitch bubble: show on current player's pass once ANY player hits pos>=30 */
             const pitchEligibleNow=!pl.isSellout&&!pl.isColdPitchSellout&&!pl.usedColdPitch&&pl.pos>2&&pl.pos<=GATEKEEPER_SPACE;
-            const anyPastHalf=players.some(pp=>pp.pos>=30);
-            const showBubble=isCurrent&&anyPastHalf&&pitchEligibleNow&&!pl.pitchBubbleShown;
+            const showBubble=isCurrent&&pl.pos>40&&pitchEligibleNow&&!pl.pitchBubbleShown;
             const card=document.createElement('div');
             card.className='access-pass '+FLOAT_CLASSES[i%3]
                 +(isCurrent?' pass-active':'')+(notify?' pass-notify':'')+(selectable?' pass-selectable':'');
@@ -2140,7 +2086,7 @@
                 <div class="pass-accolades">${pl.accolades.join('')||'—'}</div>
                 <div class="pass-stripe"></div>`;
             if(showBubble){
-                const bub=document.createElement('div');bub.className='pitch-bubble';bub.title='Pitch to Labels!';bub.innerText='🎤';
+                const bub=document.createElement('div');bub.className='pitch-bubble';bub.title='Pitch to Labels!';bub.innerText='📱';
                 bub.onclick=(e)=>{e.stopPropagation();expandPass(i);};card.appendChild(bub);
             }
             if(selectable){card.onclick=(e)=>{e.stopPropagation();closePassDrawer();handlePlayerClick(i);};}
@@ -2187,7 +2133,7 @@
     function expandPass(idx){
         expandedPassIdx=idx;
         const pl=players[idx];const isCurrent=(idx===turnIdx);
-        if(pl.pitchBubbleShown===false&&pl.pos>=30)pl.pitchBubbleShown=true;
+        if(pl.pitchBubbleShown===false&&pl.pos>40)pl.pitchBubbleShown=true;
         const tags=(!pl.isSellout&&!pl.isColdPitchSellout?`<span class="tag tag-indie" style="font-size:0.75rem;padding:3px 8px;">INDIE</span>`:'')
             +(pl.isSellout||pl.isColdPitchSellout?`<span class="tag tag-sellout" style="font-size:0.75rem;padding:3px 8px;">SELLOUT</span>`:'')
             +(pl.isInvestor?`<span class="tag tag-investor" style="font-size:0.75rem;padding:3px 8px;">INVESTOR</span>`:'')
@@ -2303,6 +2249,29 @@
         const trackLabel=TRACKLIST_TRACK_NAMES[i]||'';
         showSidebar(r.title,(r.emoji?r.emoji+" ":"")+r.desc,getSpaceColor(i),trackLabel);
     }
+    /* Ringing phone intro — appears large center-screen, rings, then shrinks onto the
+       player's pass card. Plays once per player, at the start of their first turn past
+       space 40 (if still unsigned/eligible). Falls back to the drawer tab on mobile. */
+    function playPitchPhoneIntro(passIdx){
+        const phone=document.createElement('div');
+        phone.style.cssText='position:fixed;left:50%;top:42%;transform:translate(-50%,-50%);font-size:4.6rem;z-index:7000;pointer-events:none;transition:left 1.1s cubic-bezier(0.5,0,0.6,1),top 1.1s cubic-bezier(0.5,0,0.6,1),font-size 1.1s ease,opacity 1.1s ease;filter:drop-shadow(0 0 18px var(--pitch-orange));';
+        const inner=document.createElement('span');
+        inner.style.cssText='display:inline-block;animation:phoneWiggle 0.9s ease-in-out infinite;';
+        inner.innerText='📱';
+        phone.appendChild(inner);
+        document.body.appendChild(phone);
+        setTimeout(()=>{
+            let target=document.getElementById('pass-'+passIdx);
+            if(!target||target.offsetParent===null)target=document.getElementById('pass-drawer-tab');
+            let tx=window.innerWidth*0.08,ty=window.innerHeight*0.35;
+            if(target){const r=target.getBoundingClientRect();tx=r.left+r.width/2;ty=r.top+r.height/2;}
+            phone.style.left=tx+'px';phone.style.top=ty+'px';
+            phone.style.fontSize='0.9rem';
+            phone.style.opacity='0.15';
+        },1500);
+        setTimeout(()=>{phone.remove();renderPasses();},2800);
+    }
+
     function updateUI(){
         const p=players[turnIdx];
         document.getElementById('status-text').innerHTML=`<span style="color:${p.avatar.color}">${p.name}'S TURN</span>`;
@@ -2323,6 +2292,12 @@
             sg.style.boxShadow=`inset 0 0 0 2px ${col}55, inset 0 0 60px ${col}22`;
         }
         renderPasses();updatePositions();
+        /* Pitch phone intro — first turn past space 40, unsigned, once per game */
+        if(p&&!p.phoneIntroShown&&p.pos>40&&p.pos<GATEKEEPER_SPACE+1&&p.pos<59
+           &&!p.isSellout&&!p.isColdPitchSellout&&!p.usedColdPitch){
+            p.phoneIntroShown=true;
+            setTimeout(()=>playPitchPhoneIntro(turnIdx),600);
+        }
     }
 
     // ══════════════════════════════════════════════
@@ -2385,7 +2360,7 @@
             if(!pos||!el||!boardSize)return;
             const stack=stackMap[p.pos];const stackSize=stack.length;const myStackIdx=stack.indexOf(i);
             const isActive=(i===turnIdx);
-            const sizeScale=isActive?1.2:1;
+            const sizeScale=isActive?1.8:1.5;
             const centerXpct=pos.x, centerYpct=pos.y; /* % of board */
             if(stackSize>1){
                 const scale=0.72*sizeScale;const pieceW=spacePx*scale;const pieceH=spacePx*scale;
@@ -2591,13 +2566,30 @@
                     /* Armor absorbed — stop moving, don't advance further backward */
                     break;
                 }
+                /* Final step into SWIMMIN — slow the move so the shrink-to-horizon reads */
+                if(dir>0&&p.pos+dir>=59){
+                    const winEl=document.getElementById('p'+idx);
+                    if(winEl)winEl.style.transition='top 1.8s ease-in,left 1.8s ease-in,width 1.8s ease-in,height 1.8s ease-in';
+                }
                 playSlide();p.pos+=dir;updatePositions();
                 /* Stop non-exempt players at Gatekeeper */
                 if(dir>0&&p.pos===GATEKEEPER_SPACE&&!isLast&&!anyLabelDeal&&i<Math.abs(n)-1){break;}
                 /* Fire gateexec the exact moment a player steps from 48 to 49 */
                 if(dir>0&&p.pos===GATEKEEPER_SPACE+1)playSfx('gateexec.wav');
                 await new Promise(r=>setTimeout(r,240));
-                if(p.pos>=59){showWinScreen();return;}
+                if(p.pos>=59){
+                    /* Landed on SWIMMIN — play track immediately, shrink piece into the horizon */
+                    playSpaceSfx('swimclip.wav');
+                    const winEl=document.getElementById('p'+idx);
+                    if(winEl){
+                        const spacePx=parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--space-size'))||40;
+                        winEl.style.width=(spacePx*0.15)+'px';
+                        winEl.style.height=(spacePx*0.15)+'px';
+                    }
+                    await new Promise(r=>setTimeout(r,1800)); /* shrink+drift completes */
+                    await new Promise(r=>setTimeout(r,2000)); /* 2s pause before win screen */
+                    showWinScreen();return;
+                }
             }
         }
         
@@ -2908,8 +2900,8 @@
                     if(vid){
                         vid.load();
                         vid.play().then(()=>{
-                            /* Unmute after successful play — user gesture already captured */
-                            vid.muted=false;vid.volume=0.8;
+                            /* Respect master mute + tracks toggle — videos are tracks */
+                            vid.muted=videoShouldBeMuted();vid.volume=0.8;
                         }).catch(()=>{vid.muted=true;vid.play().catch(()=>{});});
                         const _rnudge=setInterval(()=>{if(vid&&!vid.paused){}else if(vid&&!vid.ended){vid.load();vid.play().catch(()=>{});}},2000);
                         vid.addEventListener('ended',()=>clearInterval(_rnudge),{once:true});
@@ -3196,10 +3188,20 @@
     // SIDEBAR
     // ══════════════════════════════════════════════
 /* Persistent sidecard — no auto-dismiss, not click-dismissable, white border */
+    /* Spaces where the sidecard (top-right) would cover the current player's piece:
+       the spaces surrounding Encore (41,42,43) and the last four up to Swimmin (56-59).
+       Only the CURRENT player's position matters. */
+    const TOPRIGHT_AVOID=new Set([41,42,43,56,57,58,59]);
+    function sidebarAvoidTopRight(){
+        const p=players[turnIdx];
+        return !!p&&TOPRIGHT_AVOID.has(p.pos);
+    }
+
     function showPersistentSidecard(title,desc){
         if(sidebarTimer)clearTimeout(sidebarTimer);
         const sb=document.getElementById('rule-sidebar');
         sb.style.right='';sb.style.transition='';
+        sb.classList.toggle('sidebar-low',sidebarAvoidTopRight());
         sb.style.borderColor='rgba(255,255,255,0.8)';
         sb.style.boxShadow='-10px 0 40px rgba(255,255,255,0.25)';
         document.getElementById('side-sub').innerText='';
@@ -3221,6 +3223,7 @@
         if(sidebarTimer)clearTimeout(sidebarTimer);
         const sb=document.getElementById('rule-sidebar');
         sb.style.right='';sb.style.transition='';
+        sb.classList.toggle('sidebar-low',sidebarAvoidTopRight());
         sb.style.borderColor=color;sb.style.boxShadow=`-10px 0 40px ${color}`;
         document.getElementById('side-sub').innerText=subtext;
         document.getElementById('side-title').innerText=title;
@@ -3274,7 +3277,6 @@ function showStatusPopup(t,d,b1,c1,b2,c2,playerNameHtml=''){
     // ══════════════════════════════════════════════
     function showWinScreen(){
         const p=players[turnIdx];
-        playSpaceSfx('swimclip.wav');
         document.body.classList.add('win-active');
         let statsHtml=`<h2 style="color:${p.avatar.color};animation:winPulse 2s infinite ease-in-out;font-family:'KCStrikerSans','Courier New',monospace;margin:5px 0;--p-color:${p.avatar.color};text-shadow:0 0 20px ${p.avatar.color};">${p.name} WINS!</h2>`;
         statsHtml+=`<div style="text-align:left;margin-top:15px;font-family:monospace;background:rgba(0,0,0,0.4);border-radius:12px;padding:12px;border:1px solid #333;">`;
@@ -3401,7 +3403,7 @@ function showStatusPopup(t,d,b1,c1,b2,c2,playerNameHtml=''){
 <div style="margin-bottom:8px;"><b style="color:white;">Roll</b> — Click, Space, or Enter. First to Swimmin' wins.</div>
 <div style="margin-bottom:8px;"><b style="color:white;">Choices</b> — Click buttons or use Arrow Keys + Enter. Esc = pass/penalty.</div>
 <div style="margin-bottom:8px;"><b style="color:white;">Spaces</b> — Click any space or Pass to learn its rule.</div>
-<div style="margin-bottom:8px;"><b style="color:white;">Tracklist Spaces</b> — Land on a vinyl to trigger a track event.</div>
+<div style="margin-bottom:8px;"><b style="color:white;">Tracklist Spaces</b> — Land on a tracklist space to trigger its track event.</div>
 <div style="margin-bottom:8px;"><b style="color:white;">Mystery Spaces</b> — <span style="color:var(--mystery-glow);">?</span> spaces drop lore, photos, videos, or rewards.</div>
 <div style="margin-bottom:8px;"><b style="color:white;">All-Access Pass</b> — Tap your pass card for status, accolades, and label pitching.</div>
 <div style="margin-bottom:8px;"><b style="color:white;">Gatekeeper</b> — Blocks progress unless you're in last place or signed.</div>
