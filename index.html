@@ -147,6 +147,21 @@ box-sizing: border-box;
 }
 
 .btn:nth-child(1) { animation: subtleFloat 8s ease-in-out infinite; }
+
+.btn-game {
+flex-direction: column;
+gap: 10px;
+padding: 16px 20px 20px 20px;
+height: auto;
+}
+
+.btn-game-img {
+width: 90%;
+max-width: 335px;
+height: auto;
+display: block;
+border-radius: 12px;
+}
 .btn:nth-child(2) { animation: subtleFloat 9.5s ease-in-out infinite reverse; }
 .btn:nth-child(3) { animation: subtleFloat 11s ease-in-out infinite; }
 
@@ -291,7 +306,10 @@ style="width: 85%; max-width: 500px; height: 256px; border-radius: 25px; border:
 ></iframe>
 
 <div class="button-stack">
-<a href="/game" class="btn">🎲 PLAY THE GAME (FREE)</a>
+<a href="/game" class="btn btn-game">
+  🎲 PLAY THE GAME (FREE)
+  <img src="/images/board-transp-1.png" alt="" class="btn-game-img">
+</a>
 <a href="mailto:grant@freejoy.club" class="btn">📧 CONTACT US</a>
 <button class="btn" id="mailingListButton">🎧 RESERVE YOUR COPY</button>
 </div>
