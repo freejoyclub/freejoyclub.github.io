@@ -1,7 +1,7 @@
 <!DOCTYPE html><html lang="en"><head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Fearjoy - Game (v100.9)</title>
+    <title>Fearjoy - Game (v100.10)</title>
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
@@ -23,7 +23,7 @@
             --space-emoji:calc(var(--space-size) * 0.32);
             --board-gap:clamp(2px,0.85vw,18px);
             --board-pad:clamp(4px,0.8vw,24px);
-            --pass-w:clamp(90px,12.5vw,175px);
+            --pass-w:clamp(78px,9.5vw,140px);
         }
 
         @keyframes woodFade      { 0%,100%{background-color:var(--wood-dark);}50%{background-color:var(--wood-mid);} }
@@ -32,7 +32,7 @@
         @keyframes introGlow     { from{text-shadow:0 0 10px var(--gold),0 0 20px var(--gold);}to{text-shadow:0 0 20px var(--gold),0 0 40px #fffad1;} }
         @keyframes pieceHover    { 0%{transform:translate(-50%,-50%) translate(0,0);}33%{transform:translate(-50%,-50%) translate(3px,-3px);}66%{transform:translate(-50%,-50%) translate(-2px,1px);}100%{transform:translate(-50%,-50%) translate(0,0);} }
         @keyframes turnPulse     { 0%{filter:drop-shadow(0 0 5px var(--p-color));transform:translate(-50%,-50%) scale(1);}50%{filter:drop-shadow(0 0 20px var(--p-color));transform:translate(-50%,-50%) translate(0,-4px) scale(1.15);}100%{filter:drop-shadow(0 0 5px var(--p-color));transform:translate(-50%,-50%) scale(1);} }
-        @keyframes winPulse      { 0%{transform:scale(1);filter:drop-shadow(0 0 5px var(--p-color));}50%{transform:scale(1.1);filter:drop-shadow(0 0 20px var(--p-color));}100%{transform:scale(1);filter:drop-shadow(0 0 5px var(--p-color));} }
+        @keyframes winPulse      { 0%{filter:drop-shadow(0 0 5px var(--p-color));}50%{filter:drop-shadow(0 0 22px var(--p-color));}100%{filter:drop-shadow(0 0 5px var(--p-color));} }
         @keyframes flipping      { 0%{transform:rotateY(0);}100%{transform:rotateY(1800deg);} }
         @keyframes rollPulse     { 0%,100%{box-shadow:0 0 8px var(--roll-color,#00ff88),0 0 16px var(--roll-color,#00ff88);}50%{box-shadow:0 0 18px var(--roll-color,#00ff88),0 0 36px var(--roll-color,#00ff88);} }
         @keyframes rollHoverPulse{ 0%,100%{box-shadow:0 0 14px var(--roll-color,#00ff88),0 0 28px var(--roll-color,#00ff88);}50%{box-shadow:0 0 22px var(--roll-color,#00ff88),0 0 44px var(--roll-color,#00ff88),0 0 8px rgba(255,255,255,0.3);} }
@@ -157,7 +157,7 @@
         }
         .rack-dial { display:flex; flex-direction:column; align-items:center; gap:2px; user-select:none; }
         .rack-dial .dial-knob {
-            width:clamp(26px,3.4vw,34px); height:clamp(26px,3.4vw,34px);
+            width:clamp(23px,3vw,30px); height:clamp(23px,3vw,30px);
             border-radius:50%; position:relative; cursor:grab; touch-action:none;
             background:radial-gradient(circle at 35% 30%,#4c4c4c,#1a1a1a 72%);
             border:2px solid #111;
@@ -168,9 +168,17 @@
             width:3px; height:36%; background:#f2f2ec; border-radius:2px;
         }
         .rack-dial .dial-label {
-            font-family:'Courier New',monospace; font-size:0.5rem; font-weight:700;
+            font-family:'Courier New',monospace; font-size:0.75rem; font-weight:700;
             letter-spacing:1px; color:#22221f; text-transform:uppercase;
-            text-shadow:0 1px 0 rgba(255,255,255,0.3);
+            text-shadow:0 1px 0 rgba(255,255,255,0.3); white-space:nowrap;
+        }
+        /* Thin screens (folded phones): tighten the rack before shrinking content */
+        @media (max-width:480px){
+            #la2a { gap:5px; padding:0 4px; }
+            .rack-dial .dial-label { font-size:0.6rem; letter-spacing:0.5px; }
+            #la2a .dl-toggle { width:72px !important; }
+            #mute-btn, #nav-knob-btn { width:34px; font-size:0.38rem; }
+            #fullscreen-standalone-btn { width:26px; }
         }
         #ui-layer::after {
             content:''; position:absolute; inset:0; pointer-events:none;
@@ -178,7 +186,7 @@
             background:linear-gradient(105deg,transparent 30%,rgba(255,255,255,0.025) 50%,transparent 65%);
             background-size:400% 100%; animation:barShine 8s ease-in-out infinite;
         }
-        #ui-layer::before, #la2a::before {
+        #la2a::before {
             content:''; position:absolute; inset:0; pointer-events:none;
             border-radius:inherit;
             background-image:
@@ -186,6 +194,18 @@
                 url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14'%3E%3Ccircle cx='7' cy='7' r='5.5' fill='url(%23d2)'/%3E%3Cdefs%3E%3CradialGradient id='d2' cx='40%25' cy='35%25'%3E%3Cstop offset='0' stop-color='%23555'/%3E%3Cstop offset='60%25' stop-color='%23222'/%3E%3Cstop offset='100%25' stop-color='%23000'/%3E%3C/radialGradient%3E%3C/defs%3E%3Cg stroke='%23000' stroke-width='1' stroke-linecap='round' transform='rotate(40,7,7)'%3E%3Cline x1='7' y1='3.5' x2='7' y2='10.5'/%3E%3Cline x1='3.5' y1='7' x2='10.5' y2='7'/%3E%3C/g%3E%3C/svg%3E"),
                 url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14'%3E%3Ccircle cx='7' cy='7' r='5.5' fill='url(%23d3)'/%3E%3Cdefs%3E%3CradialGradient id='d3' cx='40%25' cy='35%25'%3E%3Cstop offset='0' stop-color='%23555'/%3E%3Cstop offset='60%25' stop-color='%23222'/%3E%3Cstop offset='100%25' stop-color='%23000'/%3E%3C/radialGradient%3E%3C/defs%3E%3Cg stroke='%23000' stroke-width='1' stroke-linecap='round' transform='rotate(65,7,7)'%3E%3Cline x1='7' y1='3.5' x2='7' y2='10.5'/%3E%3Cline x1='3.5' y1='7' x2='10.5' y2='7'/%3E%3C/g%3E%3C/svg%3E"),
                 url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14'%3E%3Ccircle cx='7' cy='7' r='5.5' fill='url(%23d4)'/%3E%3Cdefs%3E%3CradialGradient id='d4' cx='40%25' cy='35%25'%3E%3Cstop offset='0' stop-color='%23555'/%3E%3Cstop offset='60%25' stop-color='%23222'/%3E%3Cstop offset='100%25' stop-color='%23000'/%3E%3C/radialGradient%3E%3C/defs%3E%3Cg stroke='%23000' stroke-width='1' stroke-linecap='round' transform='rotate(10,7,7)'%3E%3Cline x1='7' y1='3.5' x2='7' y2='10.5'/%3E%3Cline x1='3.5' y1='7' x2='10.5' y2='7'/%3E%3C/g%3E%3C/svg%3E");
+            background-repeat:no-repeat,no-repeat,no-repeat,no-repeat;
+            background-position:8px 12%,8px 88%,calc(100% - 8px) 12%,calc(100% - 8px) 88%;
+            background-size:16px 16px,16px 16px,16px 16px,16px 16px;
+        }
+        #ui-layer::before {
+            content:''; position:absolute; inset:0; pointer-events:none;
+            border-radius:inherit;
+            background-image:
+                url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14'%3E%3Ccircle cx='7' cy='7' r='5.5' fill='url(%23d1)'/%3E%3Cdefs%3E%3CradialGradient id='d1' cx='40%25' cy='35%25'%3E%3Cstop offset='0' stop-color='%23c8c8c4'/%3E%3Cstop offset='60%25' stop-color='%23918f8a'/%3E%3Cstop offset='100%25' stop-color='%235a5a55'/%3E%3C/radialGradient%3E%3C/defs%3E%3Cg stroke='%23444440' stroke-width='1' stroke-linecap='round' transform='rotate(15,7,7)'%3E%3Cline x1='7' y1='3.5' x2='7' y2='10.5'/%3E%3Cline x1='3.5' y1='7' x2='10.5' y2='7'/%3E%3C/g%3E%3C/svg%3E"),
+                url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14'%3E%3Ccircle cx='7' cy='7' r='5.5' fill='url(%23d2)'/%3E%3Cdefs%3E%3CradialGradient id='d2' cx='40%25' cy='35%25'%3E%3Cstop offset='0' stop-color='%23c8c8c4'/%3E%3Cstop offset='60%25' stop-color='%23918f8a'/%3E%3Cstop offset='100%25' stop-color='%235a5a55'/%3E%3C/radialGradient%3E%3C/defs%3E%3Cg stroke='%23444440' stroke-width='1' stroke-linecap='round' transform='rotate(40,7,7)'%3E%3Cline x1='7' y1='3.5' x2='7' y2='10.5'/%3E%3Cline x1='3.5' y1='7' x2='10.5' y2='7'/%3E%3C/g%3E%3C/svg%3E"),
+                url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14'%3E%3Ccircle cx='7' cy='7' r='5.5' fill='url(%23d3)'/%3E%3Cdefs%3E%3CradialGradient id='d3' cx='40%25' cy='35%25'%3E%3Cstop offset='0' stop-color='%23c8c8c4'/%3E%3Cstop offset='60%25' stop-color='%23918f8a'/%3E%3Cstop offset='100%25' stop-color='%235a5a55'/%3E%3C/radialGradient%3E%3C/defs%3E%3Cg stroke='%23444440' stroke-width='1' stroke-linecap='round' transform='rotate(65,7,7)'%3E%3Cline x1='7' y1='3.5' x2='7' y2='10.5'/%3E%3Cline x1='3.5' y1='7' x2='10.5' y2='7'/%3E%3C/g%3E%3C/svg%3E"),
+                url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14'%3E%3Ccircle cx='7' cy='7' r='5.5' fill='url(%23d4)'/%3E%3Cdefs%3E%3CradialGradient id='d4' cx='40%25' cy='35%25'%3E%3Cstop offset='0' stop-color='%23c8c8c4'/%3E%3Cstop offset='60%25' stop-color='%23918f8a'/%3E%3Cstop offset='100%25' stop-color='%235a5a55'/%3E%3C/radialGradient%3E%3C/defs%3E%3Cg stroke='%23444440' stroke-width='1' stroke-linecap='round' transform='rotate(10,7,7)'%3E%3Cline x1='7' y1='3.5' x2='7' y2='10.5'/%3E%3Cline x1='3.5' y1='7' x2='10.5' y2='7'/%3E%3C/g%3E%3C/svg%3E");
             background-repeat:no-repeat,no-repeat,no-repeat,no-repeat;
             background-position:8px 12%,8px 88%,calc(100% - 8px) 12%,calc(100% - 8px) 88%;
             background-size:16px 16px,16px 16px,16px 16px,16px 16px;
@@ -544,7 +564,7 @@
 
         /* ── PLAYER PIECES ── */
         .player {
-            position:absolute; z-index:100;
+            position:absolute; z-index:100; opacity:0.8;
             transition:top 0.7s cubic-bezier(0.18,0.89,0.32,1.28),left 0.7s cubic-bezier(0.18,0.89,0.32,1.28),width 0.7s cubic-bezier(0.18,0.89,0.32,1.28),height 0.7s cubic-bezier(0.18,0.89,0.32,1.28);
             background-size:contain; background-repeat:no-repeat; background-position:center center;
             pointer-events:none; animation:pieceHover 4s infinite ease-in-out;
@@ -675,22 +695,23 @@
         /* ── DARK/LIGHT TOGGLE SWITCH ── */
         .dl-toggle {
             position:relative; display:inline-flex; align-items:center;
-            height:38px; width:100px; border-radius:6px; border:1.5px solid #444;
+            height:clamp(26px,3.2vw,42px); width:100px; border-radius:6px; border:1.5px solid #444;
             background:#e8e4dc; cursor:pointer; box-sizing:border-box; overflow:hidden;
             font-family:'Courier New',monospace; font-size:0.56rem; font-weight:700;
             letter-spacing:1px; text-transform:uppercase; user-select:none;
             transition:background 0.3s ease;
         }
         .dl-toggle .dl-knob {
-            position:absolute; top:3px; left:3px; width:29px; height:29px;
+            position:absolute; top:50%; left:3px; transform:translateY(-50%);
+            width:clamp(18px,2.4vw,30px); height:clamp(18px,2.4vw,30px);
             border-radius:5px; background:#ffffff;
-            display:flex; align-items:center; justify-content:center; font-size:0.95rem;
+            display:flex; align-items:center; justify-content:center; font-size:clamp(0.7rem,1.2vw,0.95rem);
             box-shadow:0 1px 4px rgba(0,0,0,0.4);
             transition:left 0.3s cubic-bezier(0.175,0.885,0.32,1.275),background 0.3s ease;
         }
         .dl-toggle .dl-label { position:absolute; right:9px; color:#3a3428; transition:color 0.3s ease; }
         .dl-toggle.dark { background:#222; }
-        .dl-toggle.dark .dl-knob { left:calc(100% - 32px); background:#0d0d0d; }
+        .dl-toggle.dark .dl-knob { left:calc(100% - clamp(18px,2.4vw,30px) - 3px); background:#0d0d0d; }
         .dl-toggle.dark .dl-label { left:9px; right:auto; color:rgba(255,255,255,0.75); }
         .setup-btn-large:hover { background:white; color:black; transform:scale(1.1); }
         .setup-avatar     { width:clamp(55px,11vw,90px); height:clamp(55px,11vw,90px); opacity:0.3; cursor:pointer; transition:all 0.3s ease; filter:grayscale(100%); border:3px solid transparent; border-radius:10px; }
@@ -724,14 +745,24 @@
 
         /* ── RESPONSIVE ── */
 
-        /* ── PASS STRIP — mobile: passes lined up below the board, above the bottom bar ── */
+        /* ── PASS STRIP — vertical screens: passes lined up below the board, above the bottom bar ── */
         #pass-strip {
             display:none; flex-shrink:0;
-            justify-content:center; align-items:flex-start; gap:8px;
-            padding:4px 8px 6px; overflow-x:auto; overflow-y:hidden;
+            justify-content:center; align-items:flex-start; gap:6px;
+            padding:10px 8px 6px; overflow-x:auto; overflow-y:hidden;
             z-index:6; position:relative;
+            /* soft fade at the top edge — safety between strip and board */
+            -webkit-mask-image:linear-gradient(to bottom,transparent 0%,black 22%,black 100%);
+            mask-image:linear-gradient(to bottom,transparent 0%,black 22%,black 100%);
         }
-        #pass-strip .access-pass { width:clamp(62px,21vw,110px); flex-shrink:0; }
+        /* Board size wins — passes stay small (tap to enlarge); width adapts to screen */
+        #pass-strip .access-pass { width:auto; min-width:clamp(46px,12vw,78px); max-width:44vw; flex-shrink:0; }
+        /* No float bobbing in the strip — it clipped against the container edge */
+        #pass-strip .access-pass, #pass-strip .pass-float-b, #pass-strip .pass-float-c { animation:none !important; }
+        /* On the lower row, cards grow HORIZONTALLY as accolades accumulate */
+        #pass-strip .pass-accolades { white-space:nowrap; }
+        /* On the side, cards grow VERTICALLY — accolades wrap */
+        #pass-sidebar .pass-accolades { white-space:normal; word-break:break-all; }
     </style>
 
 </head>
@@ -778,10 +809,6 @@
     <!-- ══ LA-2A RACK UNIT — settings + dials, below the 1176 ══ -->
     <div id="la2a">
         <div class="rack-dial">
-            <div class="dial-knob" id="dial-size"></div>
-            <div class="dial-label">SIZE</div>
-        </div>
-        <div class="rack-dial">
             <div class="dial-knob" id="dial-bgmusic"></div>
             <div class="dial-label">BG MUSIC</div>
         </div>
@@ -812,6 +839,7 @@
                 <button class="nav-menu-btn btn-home" onclick="window.open('https://freejoy.club','_blank')"><span class="nav-icon">🏠</span> Fearjoy - Home</button>
                 <button class="nav-menu-btn btn-store" onclick="window.open('https://freejoy.club','_blank')"><span class="nav-icon">👕</span> Store</button>
                 <button class="nav-menu-btn btn-album" onclick="window.open('https://freejoy.club','_blank')"><span class="nav-icon">▶️</span> Play the Album</button>
+                <div class="nav-menu-btn" style="pointer-events:none;border-color:rgba(255,255,255,0.12);color:rgba(255,255,255,0.55);cursor:default;text-align:center;"><span class="nav-icon">🎶</span> Now Playing: Unreleased Fearjoy Jam</div>
                 <div style="font-family:'Courier New',monospace;font-size:0.5rem;letter-spacing:1px;color:rgba(255,255,255,0.25);text-align:center;padding:6px 4px 2px;text-transform:uppercase;white-space:normal;line-height:1.5;">© 2026. Music/Game/<br>Sound Design by Fearjoy</div>
             </div>
         </div>
@@ -915,7 +943,7 @@
             <div style="display:flex;justify-content:center;align-items:center;gap:8px;margin-top:18px;padding-top:14px;border-top:1px solid rgba(255,255,255,0.08);flex-wrap:wrap;">
                 <button id="setup-back-btn" class="setup-mini-btn" onclick="goBackToPlayerCount()" title="Back" style="display:none;font-size:1rem;">⬅️</button>
                 <button id="setup-fwd-btn" class="setup-mini-btn" onclick="goForwardToDetails()" title="Forward" style="display:none;font-size:1rem;">➡️</button>
-                <div id="setup-darkmode-toggle" class="dl-toggle" onclick="toggleDarkMode()" title="Dark / Light mode" style="width:80px;"><span class="dl-knob">☀️</span><span class="dl-label">LIGHT</span></div>
+                <div id="setup-darkmode-toggle" class="dl-toggle" onclick="toggleDarkMode()" title="Dark / Light mode" style="width:80px;height:38px;"><span class="dl-knob">☀️</span><span class="dl-label">LIGHT</span></div>
                 <button id="setup-mute-btn" class="setup-mini-btn" onclick="toggleMute()" style="border-color:#660000;color:#bb1111;width:80px;padding:0;">MUTE</button>
                 <button class="setup-mini-btn" onclick="toggleSetupMenu()" title="Options" style="width:80px;padding:0;">MENU</button>
                 <button class="setup-mini-btn" onclick="toggleFullscreen()" title="Fullscreen">⛶</button>
@@ -1150,7 +1178,10 @@
             activeSources.add(src);
             src.onended=()=>{activeSources.delete(src);if(activeTrackSrc===src){activeTrackSrc=null;activeTrackGain=null;}};
             src.start();
-            duckAmbientFor(decoded.duration+0.5); /* ambient silent for the track's exact length */
+            /* Ambient ducks for the track's exact length — some tracks release early
+               (trailing silence): dayspring -3s, endless smile -6s */
+            const _early={'dayclip.wav':3,'smileclip.wav':6}[url]||0;
+            duckAmbientFor(Math.max(0.3,decoded.duration+0.5-_early));
             /* Fade in over 1s */
             gainNode.gain.setValueAtTime(0,ctx.currentTime);
             gainNode.gain.linearRampToValueAtTime(1,ctx.currentTime+1.0);
@@ -1331,7 +1362,6 @@
     // ══════════════════════════════════════════════
     // LA-2A DIALS — click-drag up/right to increase (VST-style), 8:00 → 4:00 sweep
     // ══════════════════════════════════════════════
-    let playerSizeFactor=1;
     function makeDial(knobId,initT,onChange){
         const knob=document.getElementById(knobId);
         if(!knob)return;
@@ -1385,14 +1415,14 @@
     function amb2Target(){return amb2Active?bgMusicVol*ambientMuteFactor()*(_ambDuck>0?0:1):0;}
     function updateAmbientGain(){
         if(amb2)_rampVol(amb2,amb2Target(),0.3);
-        if(amb1&&_amb1On)_rampVol(amb1,0.5*ambientMuteFactor(),0.3);
+        if(amb1&&_amb1On)_rampVol(amb1,0.35*ambientMuteFactor(),0.3);
     }
     function startAmbient1(){
         if(_amb1Started||amb2Active)return;
         _amb1Started=true;_amb1On=true;
         try{
             amb1=_mkAmb('ambient-1.mp3');
-            amb1.play().then(()=>_rampVol(amb1,0.5*ambientMuteFactor(),1.5)).catch(()=>{});
+            amb1.play().then(()=>_rampVol(amb1,0.35*ambientMuteFactor(),1.5)).catch(()=>{});
         }catch(e){}
     }
     function startAmbient2(){
@@ -1433,15 +1463,15 @@
     document.addEventListener('touchend',unlockAudioOnce);
     document.addEventListener('keydown',unlockAudioOnce);
 
-    /* Init the LA-2A dials once the DOM is ready */
+    /* Init the LA-2A dials once the DOM is ready.
+       Clock-position starts on the 8:00→4:00 sweep: BG MUSIC 1:30, SFX 10:00, TRACKS 10:30 */
     window.addEventListener('DOMContentLoaded',()=>{
-        makeDial('dial-size',0,t=>{playerSizeFactor=1+t;if(document.getElementById('p0'))updatePositions();});
-        makeDial('dial-bgmusic',0.4,t=>{bgMusicVol=t;updateAmbientGain();});
-        makeDial('dial-sfx',0.8,t=>{
+        makeDial('dial-bgmusic',0.6875,t=>{bgMusicVol=t;updateAmbientGain();});
+        makeDial('dial-sfx',0.25,t=>{
             sfxVol=t*1.25;
             if(sfxBus)sfxBus.gain.value=sfxVol;
         });
-        makeDial('dial-tracks',0.8,t=>{
+        makeDial('dial-tracks',0.3125,t=>{
             trackVol=t*1.25;
             if(trackBus)trackBus.gain.value=trackVol;
             /* videos are tracks — live-adjust any playing video */
@@ -1665,6 +1695,10 @@
                 turnIdx=0;isMoving=false;isRolling=false;isSwapping=false;isInLoreDrop=false;loreDoneResolver=null;
                 stopMetronome();stopActiveLoreVid();
                 players.forEach((_,i)=>{const el=document.getElementById('p'+i);if(el)el.style.transition='';});
+                const _mp=document.getElementById('main-popup');
+                if(_mp){_mp.style.overflowX='';_mp.style.maxWidth='';}
+                const _et=document.getElementById('event-title');
+                if(_et)_et.style.fontSize='';
                 updateUI();updatePositions();
                 document.getElementById('roll-btn').disabled=false;
             },"CANCEL",()=>{}
@@ -2141,20 +2175,20 @@
     //  board is a fixed-square PNG, no orientation rotation needed)
     // ══════════════════════════════════════════════
 
-    /* Mobile layout: physical screen smaller dimension < 1024 (phones + iPads).
-       On mobile the left pass sidebar hides and the horizontal pass strip
-       (below the board, above the bottom bar) shows instead. */
-    function isMobileLayout(){
-        return Math.min(screen.width,screen.height)<1024;
+    /* Pass placement by ORIENTATION: vertical screens (taller than wide) put passes in
+       the strip below the board; horizontal screens put them in the left sidebar.
+       Square-ish screens (opened foldables) count as horizontal. */
+    function isVerticalLayout(){
+        return window.innerHeight>window.innerWidth;
     }
 
     /* Layout check — toggles sidebar vs strip, resizes board, refreshes space positions */
     function checkOrientation(){
-        const mobile=isMobileLayout();
+        const vertical=isVerticalLayout();
         const strip=document.getElementById('pass-strip');
         const sidebar=document.getElementById('pass-sidebar');
-        if(strip)strip.style.display=mobile?'flex':'none';
-        if(sidebar)sidebar.style.display=mobile?'none':'flex';
+        if(strip)strip.style.display=vertical?'flex':'none';
+        if(sidebar)sidebar.style.display=vertical?'none':'flex';
         sizeBoardOuter();
         if(document.getElementById('s0')){
             renderPasses();
@@ -2166,7 +2200,7 @@
        v100: spaces are percent-positioned against the board PNG and scale with it via
        CSS/board sizing, so all that's needed here is to re-run updatePositions(). */
     function refreshLayout(force=false){
-        if(document.getElementById('s0'))updatePositions();
+        checkOrientation(); /* re-evaluates strip vs sidebar, board size, and positions */
     }
 
     // ══════════════════════════════════════════════
@@ -2321,7 +2355,7 @@
 
     function renderPasses(){
         /* Render to exactly one container — the visible one — so pass-N ids stay unique */
-        const mobile=isMobileLayout();
+        const mobile=isVerticalLayout();
         const sidebar=document.getElementById('pass-sidebar');
         const strip=document.getElementById('pass-strip');
         if(mobile){
@@ -2386,7 +2420,7 @@
 
         const body=document.createElement('div');
         body.innerHTML=`<div style="margin-bottom:6px;">Pitch your demo tape to major labels.</div>
-<div style="margin-bottom:14px;"><b style="color:var(--joy-glow);">1 in 3 chance of getting SIGNED (+5 spaces now!)</b></div>
+<div style="margin-bottom:14px;"><b style="color:var(--joy-glow);">50% chance of getting SIGNED (+3 spaces now!)</b></div>
 <div style="font-family:'Courier New',monospace;font-size:0.9rem;color:rgba(255,255,255,0.85);margin-bottom:8px;"><span style="display:inline-block;animation:phoneWiggle 1.8s ease-in-out infinite;">📱</span> Hey! It's your lawyer! I suggest...</div>`;
 
         const fpBtn=document.createElement('button');
@@ -2398,7 +2432,7 @@
         fp.innerHTML=`<div style="font-weight:bold;letter-spacing:1px;color:rgba(255,255,255,0.9);margin-bottom:8px;">FearVices Records: Artist Deal</div>`+
         `<div style="color:#ff4444;">If DECLINED: -2 NOW</div>`+
         `<div style="height:10px;"></div>`+
-        `<div style="color:#00ff88;">If SIGNED: +5 NOW</div>`+
+        `<div style="color:#00ff88;">If SIGNED: +3 NOW</div>`+
         `<div style="color:#ff4444;">Label takes -1 from half of future rolls.</div>`+
         `<div>Pass the <span style="color:#00ff88;">Gatekeeper</span> freely once signed.</div>`+
         `<div style="height:10px;"></div>`+
@@ -2423,7 +2457,7 @@
                     "LET'S GO",async()=>{
                         document.getElementById('overlay-event').style.display='none';
                         spawnEmoji('📝',true);renderPasses();
-                        await new Promise(r=>setTimeout(r,400));movePlayer(5,false,_cpIdx);
+                        await new Promise(r=>setTimeout(r,400));movePlayer(3,false,_cpIdx);
                     },"",()=>{}
                 );
                 document.getElementById('event-btn-secondary').style.display='none';
@@ -2558,7 +2592,7 @@
             if(!pos||!el||!boardSize)return;
             const stack=stackMap[p.pos];const stackSize=stack.length;const myStackIdx=stack.indexOf(i);
             const isActive=(i===turnIdx);
-            const sizeScale=(isActive?1.8:1.5)*playerSizeFactor;
+            const sizeScale=isActive?1.8:1.5;
             const centerXpct=pos.x, centerYpct=pos.y; /* % of board */
             if(stackSize>1){
                 const scale=0.72*sizeScale;const pieceW=spacePx*scale;const pieceH=spacePx*scale;
@@ -2781,7 +2815,7 @@
                         winEl.style.height=(spacePx*0.15)+'px';
                     }
                     await new Promise(r=>setTimeout(r,1800)); /* move+shrink complete together */
-                    await new Promise(r=>setTimeout(r,1800)); /* pause before win screen */
+                    await new Promise(r=>setTimeout(r,1500)); /* pause before win screen */
                     showWinScreen();return;
                 }
                 /* Stop non-exempt players at Gatekeeper */
@@ -3513,7 +3547,11 @@ function showStatusPopup(t,d,b1,c1,b2,c2,playerNameHtml=''){
         popupEl.style.transform='translateY(0)'; /* reset paused float position */
         popupEl.style.borderColor=p.avatar.color;
         popupEl.style.boxShadow=`0 0 24px ${p.avatar.color}30`;
-        document.getElementById('event-title').innerText="The tour is over. Go Swimmin!";
+        popupEl.style.overflowX='hidden'; /* win content stays adaptive, never scrolls sideways */
+        popupEl.style.maxWidth='min(560px,94vw)';
+        const et=document.getElementById('event-title');
+        et.innerText="The tour is over. Go Swimmin!";
+        et.style.fontSize='clamp(0.95rem,3vw,1.4rem)';
         document.getElementById('event-desc').innerHTML=statsHtml;
         const storeLbl=highestDiscountPct>0?`STORE (${highestDiscountPct}% OFF)`:'STORE';
         const linkStack=`
