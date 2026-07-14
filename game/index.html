@@ -1,7 +1,7 @@
 <!DOCTYPE html><html lang="en"><head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Fearjoy - Game (v100.8)</title>
+    <title>Fearjoy - Game (v100.9)</title>
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
@@ -136,7 +136,7 @@
             border:1px solid rgba(255,255,255,0.1);
             width:100%; box-sizing:border-box;
             z-index:20; position:relative; flex-shrink:0;
-            background:linear-gradient(180deg,#111 0%,#0f0f0f 40%,#0a0a0a 70%,#1b1c1c 100%);
+            background:linear-gradient(180deg,#1e1e1e 0%,#1a1a1a 40%,#151515 70%,#282929 100%);
             box-shadow:0 -2px 16px rgba(0,0,0,0.9),inset 0 1px 0 rgba(255,255,255,0.05);
             overflow:visible;
             margin-bottom:3px;
@@ -144,8 +144,8 @@
         /* ── LA-2A RACK UNIT — settings rack below the 1176, lighter gray ── */
         #la2a {
             display:flex; align-items:center; justify-content:center;
-            gap:clamp(10px,2.4vw,26px);
-            padding:0 clamp(115px,22vw,185px) 0 clamp(20px,3vw,50px);
+            gap:clamp(6px,1.8vw,22px);
+            padding:0 clamp(10px,2vw,40px);
             height:var(--bar-h); min-height:var(--bar-h); max-height:var(--bar-h);
             border-radius:12px;
             border:1px solid rgba(255,255,255,0.14);
@@ -154,14 +154,6 @@
             background:linear-gradient(180deg,#9c9c98 0%,#8d8d89 40%,#82827e 70%,#a3a39f 100%);
             box-shadow:0 -2px 12px rgba(0,0,0,0.6),inset 0 1px 0 rgba(255,255,255,0.25);
             overflow:visible;
-        }
-        #la2a-badge {
-            font-family:'KCStrikerSans','Courier New',monospace;
-            font-size:clamp(0.62rem,1.4vw,0.85rem); letter-spacing:3px;
-            color:#2c2c28; text-shadow:0 1px 0 rgba(255,255,255,0.35);
-            border:1.5px solid #55554f; border-radius:4px; padding:2px 8px;
-            background:linear-gradient(180deg,rgba(255,255,255,0.25),rgba(0,0,0,0.06));
-            user-select:none;
         }
         .rack-dial { display:flex; flex-direction:column; align-items:center; gap:2px; user-select:none; }
         .rack-dial .dial-knob {
@@ -253,9 +245,7 @@
 
         /* ── NAV KNOB + MUTE ── */
         #nav-knob {
-            position:fixed;
-            right:clamp(18px,4vw,40px); bottom:0; height:var(--bar-h);
-            z-index:999999; display:flex; align-items:center; gap:clamp(3px,0.5vw,6px); flex-shrink:2;
+            display:flex; align-items:center; gap:clamp(3px,0.5vw,6px); flex-shrink:2;
         }
         #fullscreen-standalone-btn {
             width:clamp(28px,3.8vw,52px); height:clamp(26px,3.2vw,42px);
@@ -670,7 +660,7 @@
             letter-spacing:1.5px; color:rgba(255,255,255,0.7);
             text-align:center; margin-top:16px; text-transform:uppercase; white-space:pre-line;
         }
-        .intro-header { font-size:clamp(1.6rem,5vw,3.5rem); color:var(--gold); animation:introGlow 2s ease-in-out infinite alternate; margin-bottom:16px; font-family:'KCStrikerSans','Courier New',monospace; letter-spacing:4px; }
+        .intro-header { font-size:clamp(1.6rem,5vw,3.5rem); color:var(--gold); animation:introGlow 2s ease-in-out infinite alternate; padding-top:12px; margin-top:0; margin-bottom:16px; font-family:'KCStrikerSans','Courier New',monospace; letter-spacing:4px; }
 
         /* ── SETUP ── */
         .setup-btn-large  { font-family:'KCStrikerSans','Courier New',monospace; padding:clamp(10px,2vh,20px) clamp(20px,4vw,45px); font-size:clamp(1.4rem,4vw,2.5rem); font-weight:bold; background:transparent; color:white; border:2px solid white; border-radius:12px; cursor:pointer; transition:all 0.2s ease; }
@@ -687,7 +677,7 @@
             position:relative; display:inline-flex; align-items:center;
             height:38px; width:100px; border-radius:6px; border:1.5px solid #444;
             background:#e8e4dc; cursor:pointer; box-sizing:border-box; overflow:hidden;
-            font-family:'Courier New',monospace; font-size:0.62rem; font-weight:700;
+            font-family:'Courier New',monospace; font-size:0.56rem; font-weight:700;
             letter-spacing:1px; text-transform:uppercase; user-select:none;
             transition:background 0.3s ease;
         }
@@ -787,7 +777,6 @@
 
     <!-- ══ LA-2A RACK UNIT — settings + dials, below the 1176 ══ -->
     <div id="la2a">
-        <div id="la2a-badge">LA-2A</div>
         <div class="rack-dial">
             <div class="dial-knob" id="dial-size"></div>
             <div class="dial-label">SIZE</div>
@@ -796,7 +785,15 @@
             <div class="dial-knob" id="dial-bgmusic"></div>
             <div class="dial-label">BG MUSIC</div>
         </div>
-        <div id="darkmode-toggle" class="dl-toggle" onclick="toggleDarkMode()" title="Dark / Light mode"><span class="dl-knob">☀️</span><span class="dl-label">LIGHT</span></div>
+        <div class="rack-dial">
+            <div class="dial-knob" id="dial-sfx"></div>
+            <div class="dial-label">SFX</div>
+        </div>
+        <div class="rack-dial">
+            <div class="dial-knob" id="dial-tracks"></div>
+            <div class="dial-label">TRACKS</div>
+        </div>
+        <div id="darkmode-toggle" class="dl-toggle" onclick="toggleDarkMode()" title="Dark / Light mode" style="width:88px;"><span class="dl-knob">☀️</span><span class="dl-label">LIGHT</span></div>
         <div id="nav-knob">
             <button id="mute-btn" onclick="toggleMute()" title="Mute">MUTE</button>
             <button id="nav-knob-btn" onclick="toggleNavMenu()" aria-label="Menu">MENU</button>
@@ -807,6 +804,7 @@
                     <button id="sound-submenu-mute" onclick="toggleMute()">MUTE</button>
                     <button class="nav-menu-btn btn-tracks" id="tracks-btn" onclick="toggleTracks()"><span class="nav-icon" id="tracks-icon">🎵</span> TRACKS: <span id="tracks-status">ON</span></button>
                     <button class="nav-menu-btn btn-sfx" id="sfx-btn" onclick="toggleSfx()"><span class="nav-icon" id="sfx-icon">🔔</span> SFX: <span id="sfx-status">ON</span></button>
+                    <button class="nav-menu-btn btn-tracks" id="bgmusic-btn" onclick="toggleBgMusic()"><span class="nav-icon">🎧</span> BG MUSIC: <span id="bgmusic-status">ON</span></button>
                 </div>
                 <button class="nav-menu-btn btn-accolade-key" onclick="showAccoladeKey();closeNavMenu()"><span class="nav-icon">🔑</span> Key / How-To</button>
                 <button class="nav-menu-btn btn-restart" onclick="confirmSoftRestart();closeNavMenu()"><span class="nav-icon">🔄</span> Restart Tour</button>
@@ -886,25 +884,24 @@
                 </div>
                     <div style="font-family:'Courier New',monospace; font-size:0.75rem; line-height:1.5; letter-spacing:1.2px; color:rgba(255,255,255,0.65); text-align:center; padding:25px 7px 4px;text-transform:uppercase;">
                     Made by Fearjoy<br>
-                    (try 2+ artists, even if solo)<br>
-                    Enjoy the tour!
+                    Try with friends!
                 </div>
             </div>
             <div id="setup-step-2" style="display:none;margin-top:16px;">
-                <h2 id="setup-prompt" style="font-family:'KCStrikerSans','Courier New',monospace;letter-spacing:2px;font-weight:normal;font-size:clamp(0.85rem,2.5vw,1.05rem);color:#999;">ARTIST 1: DETAILS</h2>
+                <h2 id="setup-prompt" style="font-family:'KCStrikerSans','Courier New',monospace;letter-spacing:2px;font-weight:normal;font-size:clamp(0.85rem,2.5vw,1.05rem);color:#999;">ARTIST 1</h2>
                 <input type="text" id="name-input" placeholder="ARTIST NAME"
                     style="font-family:'Courier New',monospace;padding:clamp(10px,2vw,20px);width:90%;text-align:center;border-radius:8px;border:3px solid #333;background:#000;color:white;font-size:clamp(1rem,3vw,1.5rem);transition:all 0.3s ease;outline:none;box-sizing:border-box;">
                 <div id="name-error" style="font-family:'Courier New',monospace;color:var(--fear-glow);font-weight:bold;margin-top:10px;font-size:0.9rem;display:none;">NAME & PIC REQUIRED</div>
-                <div style="margin:16px 0 8px;">
-                    <div style="font-family:'Courier New',monospace;font-size:0.65rem;letter-spacing:2px;color:#888;margin-bottom:8px;">PICK A COLOR (OPTIONAL)</div>
-                    <div id="swatch-row" style="display:flex;justify-content:center;gap:clamp(6px,1.5vw,12px);flex-wrap:wrap;"></div>
-                </div>
                 <div style="display:flex;justify-content:center;gap:clamp(12px,3vw,25px);margin:20px 0;">
                     <img id="sel-jesse" src="jesse.png" class="setup-avatar" onclick="pickAvatar('jesse')">
                     <img id="sel-marco" src="marco.png" class="setup-avatar" onclick="pickAvatar('marco')">
                     <img id="sel-grant" src="grant.png" class="setup-avatar" onclick="pickAvatar('grant')">
                 </div>
                 <button onclick="confirmArtist()" class="confirm-btn" style="font-family:'KCStrikerSans','Courier New',monospace;letter-spacing:2px;">ADD TO TOUR</button>
+                <div style="margin:16px 0 8px;">
+                    <div style="font-family:'Courier New',monospace;font-size:0.65rem;letter-spacing:2px;color:#888;margin-bottom:8px;">PICK A COLOR (OPTIONAL)</div>
+                    <div id="swatch-row" style="display:flex;justify-content:center;gap:clamp(6px,1.5vw,12px);flex-wrap:wrap;"></div>
+                </div>
                 <div id="tour-roster" style="margin-top:24px;border-top:1px solid #444;padding-top:15px;display:none;">
                     <div style="font-family:'Courier New',monospace;font-size:0.7rem;letter-spacing:2px;color:#888;margin-bottom:10px;">CURRENT ROSTER</div>
                     <div id="roster-list" style="display:flex;justify-content:center;gap:15px;flex-wrap:wrap;"></div>
@@ -916,11 +913,11 @@
             </div>
             <!-- Mini menu row for setup screen -->
             <div style="display:flex;justify-content:center;align-items:center;gap:8px;margin-top:18px;padding-top:14px;border-top:1px solid rgba(255,255,255,0.08);flex-wrap:wrap;">
-                <button id="setup-back-btn" class="setup-mini-btn" onclick="goBackToPlayerCount()" title="Back" style="display:none;">⬅️</button>
-                <button id="setup-fwd-btn" class="setup-mini-btn" onclick="goForwardToDetails()" title="Forward" style="display:none;">➡️</button>
-                <div id="setup-darkmode-toggle" class="dl-toggle" onclick="toggleDarkMode()" title="Dark / Light mode" style="width:76px;"><span class="dl-knob">☀️</span><span class="dl-label">LIGHT</span></div>
-                <button id="setup-mute-btn" class="setup-mini-btn" onclick="toggleMute()" style="border-color:#660000;color:#bb1111;width:76px;padding:0;">MUTE</button>
-                <button class="setup-mini-btn" onclick="toggleSetupMenu()" title="Options" style="width:76px;padding:0;">MENU</button>
+                <button id="setup-back-btn" class="setup-mini-btn" onclick="goBackToPlayerCount()" title="Back" style="display:none;font-size:1rem;">⬅️</button>
+                <button id="setup-fwd-btn" class="setup-mini-btn" onclick="goForwardToDetails()" title="Forward" style="display:none;font-size:1rem;">➡️</button>
+                <div id="setup-darkmode-toggle" class="dl-toggle" onclick="toggleDarkMode()" title="Dark / Light mode" style="width:80px;"><span class="dl-knob">☀️</span><span class="dl-label">LIGHT</span></div>
+                <button id="setup-mute-btn" class="setup-mini-btn" onclick="toggleMute()" style="border-color:#660000;color:#bb1111;width:80px;padding:0;">MUTE</button>
+                <button class="setup-mini-btn" onclick="toggleSetupMenu()" title="Options" style="width:80px;padding:0;">MENU</button>
                 <button class="setup-mini-btn" onclick="toggleFullscreen()" title="Fullscreen">⛶</button>
                 <div id="setup-menu" style="display:none;position:fixed;inset:0;z-index:99999;align-items:center;justify-content:center;background:rgba(0,0,0,0.7);" onclick="if(event.target===this)closeSetupMenu()">
                     <div style="background:rgba(14,14,14,0.98);border:1px solid #333;border-radius:14px;padding:12px;min-width:200px;display:flex;flex-direction:column;gap:8px;animation:menuBloom 0.2s ease forwards;">
@@ -1097,6 +1094,7 @@
     // Tracklist sounds use activeTrackSrc/Gain — crossfade 1s on new tracklist/lore-video
     // ══════════════════════════════════════════════
     let audioCtx=null,masterGain=null,limiter=null;
+    let sfxBus=null,trackBus=null,sfxVol=1,trackVol=1; /* dial-controlled channel gains */
     let audioEnabled=true,tracksEnabled=true,sfxEnabled=true,masterMuted=false;
     const activeSources=new Set();
     const diceRollSources=new Set();
@@ -1112,6 +1110,9 @@
             limiter.threshold.value=-3;limiter.knee.value=3;limiter.ratio.value=12;
             limiter.attack.value=0.001;limiter.release.value=0.1;
             masterGain.connect(limiter);limiter.connect(audioCtx.destination);
+            /* Channel buses — the LA-2A SFX / TRACKS dials set these gains live */
+            sfxBus=audioCtx.createGain();sfxBus.gain.value=sfxVol;sfxBus.connect(masterGain);
+            trackBus=audioCtx.createGain();trackBus.gain.value=trackVol;trackBus.connect(masterGain);
         }
         return audioCtx;
     }
@@ -1122,7 +1123,7 @@
         const ctx=getAudioCtx();
         if(ctx.state==='suspended')ctx.resume();
         fetch(url).then(r=>r.arrayBuffer()).then(buf=>ctx.decodeAudioData(buf)).then(decoded=>{
-            const gainNode=ctx.createGain();gainNode.gain.value=volume;gainNode.connect(masterGain);
+            const gainNode=ctx.createGain();gainNode.gain.value=volume;gainNode.connect(sfxBus||masterGain);
             const src=ctx.createBufferSource();src.buffer=decoded;src.connect(gainNode);
             activeSources.add(src);src.onended=()=>activeSources.delete(src);src.start();
         }).catch(()=>{});
@@ -1144,7 +1145,7 @@
             activeTrackSrc=null;activeTrackGain=null;
         }
         fetch(url).then(r=>r.arrayBuffer()).then(buf=>ctx.decodeAudioData(buf)).then(decoded=>{
-            const gainNode=ctx.createGain();gainNode.gain.value=0;gainNode.connect(masterGain);
+            const gainNode=ctx.createGain();gainNode.gain.value=0;gainNode.connect(trackBus||masterGain);
             const src=ctx.createBufferSource();src.buffer=decoded;src.connect(gainNode);
             activeSources.add(src);
             src.onended=()=>{activeSources.delete(src);if(activeTrackSrc===src){activeTrackSrc=null;activeTrackGain=null;}};
@@ -1198,7 +1199,7 @@
         const n=Math.floor(Math.random()*4)+1;
         const ctx=getAudioCtx();if(ctx.state==='suspended')ctx.resume();
         fetch(`dice${n}.wav`).then(r=>r.arrayBuffer()).then(buf=>ctx.decodeAudioData(buf)).then(decoded=>{
-            const gainNode=ctx.createGain();gainNode.gain.value=1;gainNode.connect(masterGain);
+            const gainNode=ctx.createGain();gainNode.gain.value=1;gainNode.connect(sfxBus||masterGain);
             const src=ctx.createBufferSource();src.buffer=decoded;src.connect(gainNode);
             diceRollSources.add(src);activeSources.add(src);
             src.onended=()=>{diceRollSources.delete(src);activeSources.delete(src);};
@@ -1219,7 +1220,7 @@
         if(masterMuted||!audioEnabled||!sfxEnabled)return;
         const ctx=getAudioCtx();if(ctx.state==='suspended')ctx.resume();
         fetch('remedyclip.wav').then(r=>r.arrayBuffer()).then(buf=>ctx.decodeAudioData(buf)).then(decoded=>{
-            const gainNode=ctx.createGain();gainNode.gain.value=.8;gainNode.connect(masterGain);
+            const gainNode=ctx.createGain();gainNode.gain.value=.8;gainNode.connect(sfxBus||masterGain);
             const src=ctx.createBufferSource();src.buffer=decoded;src.connect(gainNode);
             activeSources.add(src);src.onended=()=>activeSources.delete(src);src.start();
             setTimeout(()=>{
@@ -1362,7 +1363,13 @@
     // (duration-aware: track clips report their exact length, videos hold the
     // duck until they end), then fades back up slowly. SFX never duck it.
     // ══════════════════════════════════════════════
-    let amb1=null,amb2=null,bgMusicVol=0.4,_ambDuck=0,amb2Active=false,_amb1Started=false,_amb1On=false;
+    let amb1=null,amb2=null,bgMusicVol=0.4,_ambDuck=0,amb2Active=false,_amb1Started=false,_amb1On=false,bgMusicEnabled=true;
+    function toggleBgMusic(){
+        bgMusicEnabled=!bgMusicEnabled;
+        const st=document.getElementById('bgmusic-status');
+        if(st)st.innerText=bgMusicEnabled?'ON':'OFF';
+        updateAmbientGain();
+    }
     function _mkAmb(src){const a=new Audio(src);a.loop=true;a.preload='auto';a.volume=0;return a;}
     function _rampVol(a,target,secs){
         if(!a)return;
@@ -1374,7 +1381,7 @@
             if(i>=steps){clearInterval(a._ramp);a._ramp=null;}
         },50);
     }
-    function ambientMuteFactor(){return (masterMuted||!audioEnabled)?0:1;}
+    function ambientMuteFactor(){return (masterMuted||!audioEnabled||!bgMusicEnabled)?0:1;}
     function amb2Target(){return amb2Active?bgMusicVol*ambientMuteFactor()*(_ambDuck>0?0:1):0;}
     function updateAmbientGain(){
         if(amb2)_rampVol(amb2,amb2Target(),0.3);
@@ -1430,6 +1437,18 @@
     window.addEventListener('DOMContentLoaded',()=>{
         makeDial('dial-size',0,t=>{playerSizeFactor=1+t;if(document.getElementById('p0'))updatePositions();});
         makeDial('dial-bgmusic',0.4,t=>{bgMusicVol=t;updateAmbientGain();});
+        makeDial('dial-sfx',0.8,t=>{
+            sfxVol=t*1.25;
+            if(sfxBus)sfxBus.gain.value=sfxVol;
+        });
+        makeDial('dial-tracks',0.8,t=>{
+            trackVol=t*1.25;
+            if(trackBus)trackBus.gain.value=trackVol;
+            /* videos are tracks — live-adjust any playing video */
+            if(activeLoreVid&&!activeLoreVid.paused)activeLoreVid.volume=Math.min(1,0.5*trackVol);
+            const rv=document.getElementById('remedy-video');
+            if(rv&&!rv.paused)rv.volume=Math.min(1,0.8*trackVol);
+        });
     });
 
     /* Lore video audio fades — also crossfade with active track */
@@ -2041,7 +2060,7 @@
         document.querySelectorAll('.setup-avatar').forEach(img=>img.classList.remove('selected'));
     }
     function updateSetupPrompt(){
-        document.getElementById('setup-prompt').innerText=`ARTIST ${currentSetupP+1}: DETAILS`;
+        document.getElementById('setup-prompt').innerText=`ARTIST ${currentSetupP+1}`;
         selectedColor=DEFAULT_COLORS[currentSetupP]||AVAILABLE_COLORS[currentSetupP%AVAILABLE_COLORS.length].hex;
         renderSwatches();
         const ni=document.getElementById('name-input');ni.style.borderColor=selectedColor;ni.style.boxShadow=`0 0 15px ${selectedColor}`;
@@ -2209,7 +2228,7 @@
                     d.innerHTML='';
                     d.style.overflow='auto';
                     const txt=document.createElement('div');
-                    txt.style.cssText="font-family:'Courier New',monospace;font-size:clamp(0.77rem,1.54vw,1rem);line-height:1.8;color:#ffffff;white-space:pre-line;margin-top:10px;";
+                    txt.style.cssText="font-family:'Courier New',monospace;font-size:clamp(1rem,2vw,1.3rem);line-height:1.8;color:#ffffff;white-space:pre-line;margin-top:10px;";
                     txt.innerText="ROLL with Click, Spacebar, or Enter.\nClick (or Arrow Keys + Enter) for choices.\n\nClick spaces / passes to discover rules.\nSound Options & Key in the Menu.\n\nCollect accolades, lore, and real-life rewards.\nOpen your All-Access Pass for more.";
                     d.appendChild(txt);
                     const c=document.createElement('div');c.className='credits-line';
