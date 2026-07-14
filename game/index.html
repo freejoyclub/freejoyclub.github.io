@@ -1,7 +1,7 @@
 <!DOCTYPE html><html lang="en"><head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Fearjoy - Game (v100.6)</title>
+    <title>Fearjoy - Game (v100.7)</title>
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
@@ -111,6 +111,11 @@
         @property --fj-angle { syntax:'<angle>'; initial-value:0deg; inherits:false; }
         @keyframes fjSpin { from { --fj-angle:0deg; } to { --fj-angle:360deg; } }
         #page-glow.glow-spin { animation:fjSpin 4s linear infinite; }
+        /* Expanding glow radius — starts tight behind the space, keeps growing through fade-out */
+        @property --glow-r { syntax:'<percentage>'; initial-value:70%; inherits:false; }
+        @keyframes glowExpand { 0% { --glow-r:18%; } 100% { --glow-r:135%; } }
+        #page-glow.glow-anim { animation:glowExpand 2.7s ease-out forwards; }
+        #page-glow.glow-anim.glow-spin { animation:glowExpand 2.7s ease-out forwards, fjSpin 4s linear infinite; }
 
         /* ── SCREEN BORDER GLOW — current player color ── */
         #screen-glow {
@@ -270,7 +275,6 @@
         .nav-icon { font-size:1.2rem; }
         .btn-tracks:hover     { border-color:var(--joy-glow);  color:var(--joy-glow);  box-shadow:0 0 12px var(--joy-glow); }
         .btn-sfx:hover        { border-color:var(--blue-glow); color:var(--blue-glow); box-shadow:0 0 12px var(--blue-glow); }
-        .btn-darkmode:hover   { border-color:#9c9cff;          color:#9c9cff;          box-shadow:0 0 12px #9c9cff; }
         .btn-accolade-key:hover { border-color:var(--gold);    color:var(--gold);      box-shadow:0 0 12px var(--gold); }
         .btn-restart:hover    { border-color:#ff4500;           color:#ff4500;          box-shadow:0 0 12px #ff4500; }
         .btn-newband:hover    { border-color:var(--fear-glow);  color:var(--fear-glow); box-shadow:0 0 12px var(--fear-glow); }
@@ -638,6 +642,26 @@
             padding:0 15px; cursor:pointer; transition:all 0.15s ease; box-sizing:border-box;
         }
         .setup-mini-btn:hover { border-color:rgba(255,255,255,0.4); color:white; }
+        /* ── DARK/LIGHT TOGGLE SWITCH ── */
+        .dl-toggle {
+            position:relative; display:inline-flex; align-items:center;
+            height:38px; width:100px; border-radius:6px; border:1.5px solid #444;
+            background:#e8e4dc; cursor:pointer; box-sizing:border-box; overflow:hidden;
+            font-family:'Courier New',monospace; font-size:0.62rem; font-weight:700;
+            letter-spacing:1px; text-transform:uppercase; user-select:none;
+            transition:background 0.3s ease;
+        }
+        .dl-toggle .dl-knob {
+            position:absolute; top:3px; left:3px; width:29px; height:29px;
+            border-radius:5px; background:#ffffff;
+            display:flex; align-items:center; justify-content:center; font-size:0.95rem;
+            box-shadow:0 1px 4px rgba(0,0,0,0.4);
+            transition:left 0.3s cubic-bezier(0.175,0.885,0.32,1.275),background 0.3s ease;
+        }
+        .dl-toggle .dl-label { position:absolute; right:9px; color:#3a3428; transition:color 0.3s ease; }
+        .dl-toggle.dark { background:#222; }
+        .dl-toggle.dark .dl-knob { left:calc(100% - 32px); background:#0d0d0d; }
+        .dl-toggle.dark .dl-label { left:9px; right:auto; color:rgba(255,255,255,0.75); }
         .setup-btn-large:hover { background:white; color:black; transform:scale(1.1); }
         .setup-avatar     { width:clamp(55px,11vw,90px); height:clamp(55px,11vw,90px); opacity:0.3; cursor:pointer; transition:all 0.3s ease; filter:grayscale(100%); border:3px solid transparent; border-radius:10px; }
         .setup-avatar:hover { opacity:0.7; }
@@ -670,65 +694,14 @@
 
         /* ── RESPONSIVE ── */
 
-        /* ── PASS DRAWER — shown on mobile/tablet in place of sidebar ── */
-        @keyframes tabNudge {
-            0%,80%,100% { transform:translateY(-50%) translateX(0); }
-            87% { transform:translateY(-50%) translateX(10px); }
-            93% { transform:translateY(-50%) translateX(5px); }
+        /* ── PASS STRIP — mobile: passes lined up below the board, above the bottom bar ── */
+        #pass-strip {
+            display:none; flex-shrink:0;
+            justify-content:center; align-items:flex-start; gap:8px;
+            padding:4px 8px 6px; overflow-x:auto; overflow-y:hidden;
+            z-index:6; position:relative;
         }
-
-        #pass-drawer-tab {
-            display:none;
-            position:fixed; left:-58px; top:50%;
-            transform:translateY(-50%);
-            width:72px; min-height:120px;
-            z-index:150; cursor:pointer;
-            background:linear-gradient(160deg,rgba(237,232,220,0.7) 0%,rgba(226,217,196,0.7) 55%,rgba(216,204,176,0.7) 100%);
-            border-radius:0 14px 14px 0;
-            border:2px solid var(--p-color,#00ff88); border-left:none;
-            box-shadow:4px 0 22px var(--p-color,#00ff88);
-            flex-direction:column; align-items:flex-end; justify-content:center; gap:5px;
-            padding:12px 8px 12px 6px;
-            animation:tabNudge 9s ease-in-out infinite;
-            transition:border-color 0.5s ease,box-shadow 0.5s ease;
-        }
-        #pass-drawer-tab-label {
-            font-family:'KCStrikerSans','Courier New',monospace;
-            font-size:0.55rem; letter-spacing:2px; color:rgba(30,15,0,0.65);
-            text-transform:uppercase; writing-mode:vertical-rl;
-            text-orientation:mixed; transform:rotate(180deg);
-        }
-        #pass-drawer-tab-arrow {
-            font-size:1.4rem; font-weight:900;
-            color:var(--p-color,#00ff88);
-            line-height:1; text-shadow:0 0 8px var(--p-color,#00ff88);
-        }
-        #pass-drawer-tab-dots { display:none; }
-        .drawer-dot { display:none; }
-        #pass-drawer-backdrop {
-            display:none; position:fixed; inset:0;
-            z-index:299; background:rgba(0,0,0,0.55);
-        }
-        #pass-drawer-sheet {
-            display:none; position:fixed; left:0; top:0;
-            height:100%; width:min(300px,82%);
-            z-index:300;
-            background:linear-gradient(160deg,rgba(8,8,8,0.98) 0%,rgba(18,18,18,0.98) 100%);
-            border-right:2px solid rgba(255,255,255,0.12);
-            overflow-y:auto; padding:16px; box-sizing:border-box;
-            transform:translateX(-100%);
-            transition:transform 0.35s cubic-bezier(0.175,0.885,0.32,1.275);
-        }
-        #pass-drawer-sheet.open { transform:translateX(0); }
-        #pass-drawer-title {
-            font-family:'KCStrikerSans','Courier New',monospace;
-            font-size:0.75rem; letter-spacing:4px; color:rgba(255,255,255,0.55);
-            text-transform:uppercase; text-align:center;
-            margin-bottom:14px; padding-bottom:10px;
-            border-bottom:1px solid rgba(255,255,255,0.08);
-        }
-        #pass-drawer-inner { display:flex; flex-direction:column; gap:14px; align-items:center; }
-        #pass-drawer-inner .access-pass { width:clamp(120px,40vw,180px); }
+        #pass-strip .access-pass { width:clamp(62px,21vw,110px); flex-shrink:0; }
     </style>
 
 </head>
@@ -744,6 +717,9 @@
             </div>
         </div>
     </div>
+
+    <!-- ══ PASS STRIP (mobile: passes below board, above bottom bar) ══ -->
+    <div id="pass-strip"></div>
 
     <!-- ══ PERSISTENT PRELOAD BAR (above roll bar, hidden once done) ══ -->
     <div id="game-preload-bar" style="display:none;width:100%;background:#111;border-top:1px solid #333;padding:4px 0;flex-shrink:0;z-index:25;position:relative;">
@@ -779,7 +755,7 @@
                     <button class="nav-menu-btn btn-tracks" id="tracks-btn" onclick="toggleTracks()"><span class="nav-icon" id="tracks-icon">🎵</span> TRACKS: <span id="tracks-status">ON</span></button>
                     <button class="nav-menu-btn btn-sfx" id="sfx-btn" onclick="toggleSfx()"><span class="nav-icon" id="sfx-icon">🔔</span> SFX: <span id="sfx-status">ON</span></button>
                 </div>
-                <button class="nav-menu-btn btn-darkmode" id="darkmode-btn" onclick="toggleDarkMode()"><span class="nav-icon" id="darkmode-icon">☀️</span> DARK MODE: <span id="darkmode-status">OFF</span></button>
+                <div style="display:flex;justify-content:center;padding:2px 0;"><div id="darkmode-toggle" class="dl-toggle" onclick="toggleDarkMode()" title="Dark / Light mode"><span class="dl-knob">☀️</span><span class="dl-label">LIGHT</span></div></div>
                 <button class="nav-menu-btn btn-accolade-key" onclick="showAccoladeKey();closeNavMenu()"><span class="nav-icon">🔑</span> Key / How-To</button>
                 <button class="nav-menu-btn btn-restart" onclick="confirmSoftRestart();closeNavMenu()"><span class="nav-icon">🔄</span> Restart Tour</button>
                 <button class="nav-menu-btn btn-newband" onclick="confirmHardReset();closeNavMenu()"><span class="nav-icon">💀</span> New Band</button>
@@ -891,16 +867,16 @@
             <!-- Mini menu row for setup screen -->
             <div style="display:flex;justify-content:center;align-items:center;gap:8px;margin-top:18px;padding-top:14px;border-top:1px solid rgba(255,255,255,0.08);flex-wrap:wrap;">
                 <button id="setup-back-btn" class="setup-mini-btn" onclick="goBackToPlayerCount()" title="Back" style="display:none;">⬅️</button>
-                <button id="setup-darkmode-btn" class="setup-mini-btn" onclick="toggleDarkMode()" title="Dark / Light mode">☀️</button>
-                <button id="setup-mute-btn" class="setup-mini-btn" onclick="toggleMute()" style="border-color:#660000;color:#bb1111;min-width:88px;">MUTE</button>
+                <button id="setup-fwd-btn" class="setup-mini-btn" onclick="goForwardToDetails()" title="Forward" style="display:none;">➡️</button>
+                <div id="setup-darkmode-toggle" class="dl-toggle" onclick="toggleDarkMode()" title="Dark / Light mode"><span class="dl-knob">☀️</span><span class="dl-label">LIGHT</span></div>
+                <button id="setup-mute-btn" class="setup-mini-btn" onclick="toggleMute()" style="border-color:#660000;color:#bb1111;min-width:84px;">MUTE</button>
+                <button class="setup-mini-btn" onclick="toggleSetupMenu()" title="Options" style="min-width:84px;">MENU</button>
                 <button class="setup-mini-btn" onclick="toggleFullscreen()" title="Fullscreen">⛶</button>
-                <button class="setup-mini-btn" onclick="toggleSetupMenu()" title="Options">MENU</button>
                 <div id="setup-menu" style="display:none;position:fixed;inset:0;z-index:99999;align-items:center;justify-content:center;background:rgba(0,0,0,0.7);" onclick="if(event.target===this)closeSetupMenu()">
                     <div style="background:rgba(14,14,14,0.98);border:1px solid #333;border-radius:14px;padding:12px;min-width:200px;display:flex;flex-direction:column;gap:8px;animation:menuBloom 0.2s ease forwards;">
                         <button class="nav-menu-btn btn-fullscreen" onclick="toggleFullscreen()"><span class="nav-icon">⛶</span> <span id="setup-fullscreen-label">Fullscreen</span></button>
                         <button class="nav-menu-btn btn-tracks" onclick="toggleTracks()"><span class="nav-icon" id="setup-tracks-icon">🎵</span> TRACKS: <span id="setup-tracks-status">ON</span></button>
                         <button class="nav-menu-btn btn-sfx" onclick="toggleSfx()"><span class="nav-icon" id="setup-sfx-icon">🔔</span> SFX: <span id="setup-sfx-status">ON</span></button>
-                        <button class="nav-menu-btn btn-darkmode" onclick="toggleDarkMode()"><span class="nav-icon" id="setup-darkmode-menu-icon">☀️</span> DARK MODE: <span id="setup-darkmode-menu-status">OFF</span></button>
                         <button class="nav-menu-btn btn-home" onclick="window.open('https://freejoy.club','_blank')"><span class="nav-icon">🏠</span> Fearjoy - Home</button>
                         <button class="nav-menu-btn" onclick="closeSetupMenu()" style="border-color:#555;color:rgba(255,255,255,0.5);">✕ Close</button>
                     </div>
@@ -912,16 +888,6 @@
     <div id="page-bg"></div>
     <div id="page-glow"></div>
     <div id="screen-glow"></div>
-    <!-- ══ PASS DRAWER (mobile/tablet) ══ -->
-    <div id="pass-drawer-backdrop" onclick="closePassDrawer()"></div>
-    <div id="pass-drawer-tab" onclick="openPassDrawer()">
-        <div id="pass-drawer-tab-arrow">›</div>
-        <div id="pass-drawer-tab-label">Passes</div>
-    </div>
-    <div id="pass-drawer-sheet">
-        <div id="pass-drawer-title">🎟 Lineup</div>
-        <div id="pass-drawer-inner"></div>
-    </div>
 
     <script>
     // ══════════════════════════════════════════════════════
@@ -1302,17 +1268,13 @@
     function toggleDarkMode(){
         darkModeOn=!darkModeOn;
         document.body.classList.toggle('dark-mode',darkModeOn);
-        const icon=document.getElementById('darkmode-icon');
-        const status=document.getElementById('darkmode-status');
-        if(icon)icon.innerText=darkModeOn?'🌙':'☀️';
-        if(status)status.innerText=darkModeOn?'ON':'OFF';
-        /* Sync setup screen toggles */
-        const sBtn=document.getElementById('setup-darkmode-btn');
-        if(sBtn)sBtn.innerText=darkModeOn?'🌙':'☀️';
-        const smIcon=document.getElementById('setup-darkmode-menu-icon');
-        const smStatus=document.getElementById('setup-darkmode-menu-status');
-        if(smIcon)smIcon.innerText=darkModeOn?'🌙':'☀️';
-        if(smStatus)smStatus.innerText=darkModeOn?'ON':'OFF';
+        document.querySelectorAll('.dl-toggle').forEach(t=>{
+            t.classList.toggle('dark',darkModeOn);
+            const knob=t.querySelector('.dl-knob');
+            const label=t.querySelector('.dl-label');
+            if(knob)knob.innerText=darkModeOn?'🌙':'☀️';
+            if(label)label.innerText=darkModeOn?'DARK':'LIGHT';
+        });
     }
 
     /* Lore video audio fades — also crossfade with active track */
@@ -1565,7 +1527,7 @@
         if(n==='5TH DIMENSION')return{type:'solid',color:'#0fffaf'};
         if(n==='DMITRI')return{type:'solid',color:'#3d1a6e'};     /* dark purple */
         if(n==='FIGMENT')return{type:'solid',color:'#0a2a6e'};    /* dark blue */
-        if(n==='THE REMEDY')return{type:'split',colors:['#2266ff','#00cc66']}; /* half blue / half green */
+        if(n==='THE REMEDY')return{type:'split',colors:['#2266ff','#ff4444']}; /* half blue / half red */
         if(n==='NIGHTDRIVE')return{type:'solid',color:'#060d33'}; /* black / dark blue */
         if(n==='GHOST 2')return{type:'solid',color:'#cccccc'};    /* light gray */
         if(n==='MAYA')return{type:'rainbow'};
@@ -1580,7 +1542,7 @@
         if(n==='SWIMMIN')return{type:'solid',color:'#591aed'};
         if(n==='INVEST IN MERCH')return{type:'solid',color:'#2266ff'}; /* blue */
         if(mysterySpaces.has(pos))return{type:'mystery'};
-        return{type:'solid',color:'#ffffff'};
+        return{type:'solid',color:'rgba(150,150,150,0.4)'}; /* blanks: medium gray, mostly transparent */
     }
     /* Endless Smile — blurred skull expanding from the space, mostly transparent, behind the road */
     function spawnSkullGlow(px,py){
@@ -1595,11 +1557,11 @@
         });});
         setTimeout(()=>s.remove(),1800);
     }
-    let _glowFadeTimer=null;
     /* Fire the page-level glow, originating from a space's board position.
        Converts that space's SPACE_POS board-percent into viewport-percent using
        #board-outer's live position. Background carries the color/gradient; a radial
        CSS mask provides the circular fade so gradients keep the same soft shape. */
+    let _glowFadeTimer=null,_glowCleanTimer=null;
     function pageGlowAt(pos,colorOverride){
         const glowEl=document.getElementById('page-glow');
         const outer=document.getElementById('board-outer');
@@ -1613,23 +1575,45 @@
         const yPct=(py/vh*100).toFixed(2);
         const spec=colorOverride?{type:'solid',color:colorOverride}:getGlowSpec(pos);
         if(spec.type==='skull'){spawnSkullGlow(px,py);return;}
-        const mask=`radial-gradient(circle at ${xPct}% ${yPct}%, rgba(0,0,0,1) 0%, rgba(0,0,0,1) 8%, rgba(0,0,0,0) 70%)`;
-        glowEl.style.webkitMaskImage=mask;
-        glowEl.style.maskImage=mask;
-        glowEl.classList.remove('glow-spin');
-        let bg;
-        if(spec.type==='solid')bg=spec.color;
-        else if(spec.type==='split')bg=`linear-gradient(90deg, ${spec.colors[0]} 0%, ${spec.colors[0]} 50%, ${spec.colors[1]} 50%, ${spec.colors[1]} 100%)`;
-        else if(spec.type==='rainbow')bg=`conic-gradient(from 0deg at ${xPct}% ${yPct}%, #ff4444,#ff9900,#ffee00,#33dd66,#3399ff,#8844ff,#ff44cc,#ff4444)`;
-        else if(spec.type==='mystery')bg=`conic-gradient(from 0deg at ${xPct}% ${yPct}%, #ffffff,#d9b8ff,#b8ffd9,#b8e0ff,#ffb8ec,#ffffff)`;
-        else if(spec.type==='fearjoy'){
-            bg=`conic-gradient(from var(--fj-angle,0deg) at ${xPct}% ${yPct}%, var(--joy-glow) 0deg 180deg, var(--fear-glow) 180deg 360deg)`;
-            glowEl.classList.add('glow-spin');
+
+        function applyGlow(){
+            /* Expanding mask — --glow-r animates from small to past-screen via .glow-anim */
+            const mask=`radial-gradient(circle at ${xPct}% ${yPct}%, rgba(0,0,0,1) 0%, rgba(0,0,0,0.9) calc(var(--glow-r,70%) * 0.14), rgba(0,0,0,0) var(--glow-r,70%))`;
+            glowEl.style.webkitMaskImage=mask;
+            glowEl.style.maskImage=mask;
+            glowEl.classList.remove('glow-spin','glow-anim');
+            let bg;
+            if(spec.type==='solid')bg=spec.color;
+            else if(spec.type==='split')bg=`linear-gradient(90deg, ${spec.colors[0]} 0%, ${spec.colors[0]} 35%, ${spec.colors[1]} 65%, ${spec.colors[1]} 100%)`;
+            else if(spec.type==='rainbow')bg=`conic-gradient(from 0deg at ${xPct}% ${yPct}%, #ff4444,#ff9900,#ffee00,#33dd66,#3399ff,#8844ff,#ff44cc,#ff4444)`;
+            else if(spec.type==='mystery')bg=`conic-gradient(from 0deg at ${xPct}% ${yPct}%, #ffffff,#d9b8ff,#b8ffd9,#b8e0ff,#ffb8ec,#ffffff)`;
+            else if(spec.type==='fearjoy'){
+                /* soft blend zones between the joy and fear halves */
+                bg=`conic-gradient(from var(--fj-angle,0deg) at ${xPct}% ${yPct}%, var(--joy-glow) 0deg, var(--joy-glow) 140deg, var(--fear-glow) 220deg, var(--fear-glow) 320deg, var(--joy-glow) 360deg)`;
+                glowEl.classList.add('glow-spin');
+            }
+            glowEl.style.background=bg;
+            void glowEl.offsetWidth; /* restart the expand animation */
+            glowEl.classList.add('active','glow-anim');
+            if(_glowFadeTimer)clearTimeout(_glowFadeTimer);
+            if(_glowCleanTimer)clearTimeout(_glowCleanTimer);
+            _glowFadeTimer=setTimeout(()=>{
+                glowEl.classList.remove('active'); /* opacity fades out while expansion continues */
+                _glowFadeTimer=null;
+                _glowCleanTimer=setTimeout(()=>{glowEl.classList.remove('glow-anim','glow-spin');_glowCleanTimer=null;},1200);
+            },1400);
         }
-        glowEl.style.background=bg;
-        if(_glowFadeTimer)clearTimeout(_glowFadeTimer);
-        glowEl.classList.add('active');
-        _glowFadeTimer=setTimeout(()=>{glowEl.classList.remove('active','glow-spin');_glowFadeTimer=null;},1400);
+
+        /* If a glow is still showing, kill it fast (0.12s) before the new one — no overlap */
+        if(glowEl.classList.contains('active')){
+            if(_glowFadeTimer)clearTimeout(_glowFadeTimer);
+            if(_glowCleanTimer)clearTimeout(_glowCleanTimer);
+            glowEl.style.transition='opacity 0.12s ease';
+            glowEl.classList.remove('active','glow-spin','glow-anim');
+            setTimeout(()=>{glowEl.style.transition='';applyGlow();},140);
+        } else {
+            applyGlow();
+        }
     }
     function flashSpaceLanding(pos){
         pageGlowAt(pos);
@@ -1757,7 +1741,7 @@
             const _tryPlay=()=>{if(vid.paused&&!vid.ended)vid.play().catch(()=>{});};
             vid.play().then(()=>fadeVideoAudioIn(vid)).catch(()=>{vid.muted=true;vid.play().catch(()=>{});});
             /* Mobile buffering fix: nudge playback on orientation change and periodic check */
-            const _vidNudge=setInterval(()=>{if(vid&&!vid.paused&&!vid.ended){}else if(vid&&!vid.ended)_tryPlay();},2000);
+            const _vidNudge=setInterval(()=>{if(document.hidden)return;if(vid&&!vid.paused&&!vid.ended){}else if(vid&&!vid.ended)_tryPlay();},2000);
             const _orientFn=()=>{if(vid&&!vid.ended&&vid.paused){vid.load();vid.play().catch(()=>{});}};
             window.addEventListener('orientationchange',_orientFn);
             screen.orientation&&screen.orientation.addEventListener('change',_orientFn);
@@ -1783,7 +1767,7 @@
         const _pmb=document.getElementById('popup-mute-btn');if(_pmb)_pmb.style.display='none';
         popupEl.style.borderColor='var(--mystery-glow)';
         popupEl.style.boxShadow=`0 0 30px var(--mystery-glow)`;
-        document.getElementById('event-title').innerText='🎫 Merch Discount Drop!';
+        document.getElementById('event-title').innerText='🎫 Merch Discount Drop';
         const tu=document.getElementById('timer-ui');if(tu){tu.style.display='none';tu.innerText='';}
         const ab=document.getElementById('action-bar');if(ab)ab.classList.remove('timer-mode');
         const nm=document.getElementById('timer-nevermind');if(nm)nm.style.display='none';
@@ -1794,17 +1778,15 @@
         const body=document.createElement('div');
         body.style.cssText='text-align:center;';
         body.innerHTML=`<div style="font-size:clamp(1rem,2.2vw,1.3rem);margin-bottom:6px;">${pct}% off Fearjoy merch — in real life!</div>`+
-            (isMax?`<div style="font-size:0.78rem;color:rgba(255,255,255,0.5);letter-spacing:1px;margin-bottom:10px;">(Max discount — best we offer!)</div>`:'<div style="height:6px;"></div>')+
-            `<div style="font-size:0.78rem;letter-spacing:1.5px;color:rgba(255,255,255,0.45);text-transform:uppercase;margin-bottom:6px;">Tap to copy — then claim +2 spaces</div>`;
-        const codeEl=document.createElement('div');
-        codeEl.className='bucket-code';
-        codeEl.innerText=item.code||'';
-        codeEl.style.cssText+='display:inline-block;margin:0 auto 14px;cursor:pointer;';
-        codeEl.onclick=()=>{
-            navigator.clipboard.writeText(item.code).then(()=>{
-                const orig=codeEl.innerText;codeEl.innerText='COPIED!';
-                setTimeout(()=>codeEl.innerText=orig,2000);
-            }).catch(()=>{});
+            (isMax?`<div style="font-size:0.78rem;color:rgba(255,255,255,0.5);letter-spacing:1px;margin-bottom:10px;">(Max discount — best we offer!)</div>`:'<div style="height:6px;"></div>');
+        const pBtn=document.getElementById('event-btn-primary');
+        const sBtn=document.getElementById('event-btn-secondary');
+        /* Reset the mystery-purple button styling on EVERY exit path —
+           previously the code-tap path skipped this and stained later modals purple */
+        const resetBtn=()=>{pBtn.style.background='';pBtn.style.color='';};
+        const award=()=>{
+            navigator.clipboard.writeText(item.code).catch(()=>{});
+            resetBtn();
             if(playerIdx!==undefined&&players[playerIdx]&&!players[playerIdx].hasThrifty){
                 const p=players[playerIdx];
                 p.hasThrifty=true;p.merchdiscountPct=pct;p.accolades.push('🎫');
@@ -1812,8 +1794,15 @@
                 renderPasses();
                 modal.style.display='none';
                 movePlayer(2,false,playerIdx);
+            } else {
+                modal.style.display='none';
             }
         };
+        const codeEl=document.createElement('div');
+        codeEl.className='bucket-code';
+        codeEl.innerText=item.code||'';
+        codeEl.style.cssText+='display:inline-block;margin:0 auto 14px;cursor:pointer;';
+        codeEl.onclick=award;
         body.appendChild(codeEl);
         if(item.url){
             const storeBtn=document.createElement('a');
@@ -1826,29 +1815,21 @@
         }
         desc.appendChild(body);
         const coin=document.getElementById('coin');coin.style.display='none';
-        const pBtn=document.getElementById('event-btn-primary');
-        const sBtn=document.getElementById('event-btn-secondary');
         pBtn.style.display='inline-block';
         pBtn.style.background='var(--mystery-glow)';pBtn.style.color='black';
-        pBtn.innerText='NICE — COPIED!';
-        pBtn.onclick=()=>{
-            navigator.clipboard.writeText(item.code).catch(()=>{});
-            if(playerIdx!==undefined&&players[playerIdx]&&!players[playerIdx].hasThrifty){
-                const p=players[playerIdx];
-                p.hasThrifty=true;p.merchdiscountPct=pct;p.accolades.push('🎫');
-                if(pct>highestDiscountPct)highestDiscountPct=pct;
-                pBtn.style.background='';pBtn.style.color='';
-                renderPasses();
-                modal.style.display='none';
-                movePlayer(2,false,playerIdx);
-            } else {
-                pBtn.style.background='';pBtn.style.color='';
-                modal.style.display='none';
-            }
-        };
+        pBtn.innerText='COPY (+2 SPACES)';
+        pBtn.onclick=award;
         sBtn.style.display='inline-block';
         sBtn.innerText='Wow, nice try';
-        sBtn.onclick=()=>{sBtn.style.display='none';pBtn.style.background='';pBtn.style.color='';modal.style.display='none';};
+        sBtn.onclick=()=>{
+            resetBtn();
+            modal.style.display='none';
+            /* Declined the homies — back one space, no space-rule re-trigger */
+            if(playerIdx!==undefined&&players[playerIdx]){
+                movePlayerDirect(playerIdx,players[playerIdx].pos-1);
+                showSidebar('🎫 No Merch',"Didn't support the homies 😭",'var(--mystery-glow)');
+            }
+        };
         modal.style.display='flex';resetKbFocus();
     }
 
@@ -1869,13 +1850,18 @@
         const ni=document.getElementById('name-input');ni.style.borderColor=hex;ni.style.boxShadow=`0 0 15px ${hex}`;
         if(selectedAvatar){const img=document.getElementById('sel-'+selectedAvatar.id);if(img)img.style.border=`3px solid ${hex}`;}
     }
+    let _lastPlayerCount=0;
     function setPlayerCount(num){
-        totalP=num;
+        totalP=num;_lastPlayerCount=num;
         document.getElementById('setup-step-1').style.display='none';
         document.getElementById('setup-step-2').style.display='block';
         const backBtn=document.getElementById('setup-back-btn');if(backBtn)backBtn.style.display='inline-flex';
+        const fwdBtn=document.getElementById('setup-fwd-btn');if(fwdBtn)fwdBtn.style.display='none';
         selectedColor=DEFAULT_COLORS[currentSetupP]||DEFAULT_COLORS[0];
         renderSwatches();updateSetupPrompt();startPreload();
+    }
+    function goForwardToDetails(){
+        if(_lastPlayerCount)setPlayerCount(_lastPlayerCount);
     }
     function goBackToPlayerCount(){
         /* Reset setup state and show player count picker again */
@@ -1884,6 +1870,7 @@
         document.getElementById('setup-step-2').style.display='none';
         document.getElementById('setup-step-1').style.display='block';
         const backBtn=document.getElementById('setup-back-btn');if(backBtn)backBtn.style.display='none';
+        const fwdBtn=document.getElementById('setup-fwd-btn');if(fwdBtn&&_lastPlayerCount)fwdBtn.style.display='inline-flex';
         document.getElementById('tour-roster').style.display='none';
         document.getElementById('roster-list').innerHTML='';
         document.getElementById('name-input').value='';
@@ -1953,6 +1940,15 @@
         const size=Math.max(0,Math.min(availW,availH));
         outer.style.width=size+'px';
         outer.style.height=size+'px';
+        /* Center the board on the SCREEN (not just within board-scroll) when width allows.
+           Shift is clamped by the free slack inside board-scroll so the board never
+           slides under the pass sidebar. */
+        const scrollRect=scroll.getBoundingClientRect();
+        const scrollCenter=scrollRect.left+scrollRect.width/2;
+        const viewCenter=window.innerWidth/2;
+        const slack=Math.max(0,(availW-size)/2);
+        const shift=Math.max(-slack,Math.min(slack,viewCenter-scrollCenter));
+        outer.style.transform=shift?`translateX(${shift.toFixed(1)}px)`:'';
         /* Space size scales with the board itself, not the viewport directly */
         document.documentElement.style.setProperty('--space-size',Math.max(20,Math.min(64,size*0.062))+'px');
     }
@@ -1963,20 +1959,23 @@
     //  board is a fixed-square PNG, no orientation rotation needed)
     // ══════════════════════════════════════════════
 
-    /* Drawer mode: physical screen smaller dimension < 1024 (phones + iPads) */
-    function isMobileDrawer(){
+    /* Mobile layout: physical screen smaller dimension < 1024 (phones + iPads).
+       On mobile the left pass sidebar hides and the horizontal pass strip
+       (below the board, above the bottom bar) shows instead. */
+    function isMobileLayout(){
         return Math.min(screen.width,screen.height)<1024;
     }
 
-    /* Orientation check — shows/hides pass drawer, resizes board, refreshes space positions */
+    /* Layout check — toggles sidebar vs strip, resizes board, refreshes space positions */
     function checkOrientation(){
-        const drawerMode=isMobileDrawer();
-        const tab=document.getElementById('pass-drawer-tab');
+        const mobile=isMobileLayout();
+        const strip=document.getElementById('pass-strip');
         const sidebar=document.getElementById('pass-sidebar');
-        if(tab)tab.style.display=drawerMode?'flex':'none';
-        if(sidebar)sidebar.style.display=drawerMode?'none':'flex';
+        if(strip)strip.style.display=mobile?'flex':'none';
+        if(sidebar)sidebar.style.display=mobile?'none':'flex';
         sizeBoardOuter();
         if(document.getElementById('s0')){
+            renderPasses();
             updatePositions();
         }
     }
@@ -2148,45 +2147,24 @@
                 const bub=document.createElement('div');bub.className='pitch-bubble';bub.title='Pitch to Labels!';bub.innerText='📱';
                 bub.onclick=(e)=>{e.stopPropagation();expandPass(i);};card.appendChild(bub);
             }
-            if(selectable){card.onclick=(e)=>{e.stopPropagation();closePassDrawer();handlePlayerClick(i);};}
+            if(selectable){card.onclick=(e)=>{e.stopPropagation();handlePlayerClick(i);};}
             else{card.onclick=()=>expandPass(i);}
             container.appendChild(card);
         });
     }
 
     function renderPasses(){
-        _renderPassesToContainer(document.getElementById('pass-sidebar'));
-        if(isMobileDrawer()){
-            _renderPassesToContainer(document.getElementById('pass-drawer-inner'));
+        /* Render to exactly one container — the visible one — so pass-N ids stay unique */
+        const mobile=isMobileLayout();
+        const sidebar=document.getElementById('pass-sidebar');
+        const strip=document.getElementById('pass-strip');
+        if(mobile){
+            if(sidebar)sidebar.querySelectorAll('.access-pass').forEach(c=>c.remove());
+            _renderPassesToContainer(strip);
+        } else {
+            if(strip)strip.querySelectorAll('.access-pass').forEach(c=>c.remove());
+            _renderPassesToContainer(sidebar);
         }
-    }
-
-
-    function openPassDrawer(){
-        renderPasses();
-        const sheet=document.getElementById('pass-drawer-sheet');
-        const backdrop=document.getElementById('pass-drawer-backdrop');
-        if(sheet){sheet.style.display='block';requestAnimationFrame(()=>sheet.classList.add('open'));}
-        if(backdrop)backdrop.style.display='block';
-    }
-
-    /* Swipe right on tab to open drawer */
-    (function(){
-        let _tx=0,_ty=0;
-        const tab=document.getElementById('pass-drawer-tab');
-        if(!tab)return;
-        tab.addEventListener('touchstart',e=>{_tx=e.touches[0].clientX;_ty=e.touches[0].clientY;},{passive:true});
-        tab.addEventListener('touchend',e=>{
-            const dx=e.changedTouches[0].clientX-_tx;
-            const dy=Math.abs(e.changedTouches[0].clientY-_ty);
-            if(dx>30&&dy<40)openPassDrawer(); /* swipe right ≥30px, not too vertical */
-        },{passive:true});
-    })();
-    function closePassDrawer(){
-        const sheet=document.getElementById('pass-drawer-sheet');
-        const backdrop=document.getElementById('pass-drawer-backdrop');
-        if(sheet){sheet.classList.remove('open');setTimeout(()=>{if(!sheet.classList.contains('open'))sheet.style.display='none';},360);}
-        if(backdrop)backdrop.style.display='none';
     }
 
     function expandPass(idx){
@@ -2320,10 +2298,11 @@
         phone.appendChild(inner);
         document.body.appendChild(phone);
         setTimeout(()=>{
-            let target=document.getElementById('pass-'+passIdx);
-            if(!target||target.offsetParent===null)target=document.getElementById('pass-drawer-tab');
-            let tx=window.innerWidth*0.08,ty=window.innerHeight*0.35;
-            if(target){const r=target.getBoundingClientRect();tx=r.left+r.width/2;ty=r.top+r.height/2;}
+            const target=document.getElementById('pass-'+passIdx);
+            /* Passes live in the sidebar (desktop) or strip (mobile) — either way the id exists.
+               If somehow missing, fall back to fading toward the lower-left. */
+            let tx=window.innerWidth*0.15,ty=window.innerHeight*0.8;
+            if(target&&target.offsetParent!==null){const r=target.getBoundingClientRect();tx=r.left+r.width/2;ty=r.top+r.height/2;}
             phone.style.left=tx+'px';phone.style.top=ty+'px';
             phone.style.fontSize='0.9rem';
             phone.style.opacity='0.15';
@@ -2336,14 +2315,6 @@
         document.getElementById('status-text').innerHTML=`<span style="color:${p.avatar.color}">${p.name}'S TURN</span>`;
         document.getElementById('ui-layer-color-wash').style.background=`linear-gradient(90deg,${p.avatar.color} 0%,transparent 35%)`;
         document.documentElement.style.setProperty('--roll-color',p.avatar.color);
-        /* Sync pass drawer tab to current player color */
-        const tab=document.getElementById('pass-drawer-tab');
-        if(tab){
-            tab.style.setProperty('--p-color',p.avatar.color);
-            tab.style.borderColor=p.avatar.color;
-            tab.style.boxShadow=`4px 0 18px ${p.avatar.color}`;
-        }
-        document.querySelectorAll('.drawer-dot').forEach(d=>d.style.background=p.avatar.color);
         /* Screen border glow */
         const sg=document.getElementById('screen-glow');
         if(sg){
@@ -2373,7 +2344,7 @@
         const endPos=SPACE_POS[destPos];
         if(!el||!startPos||!endPos){p.pos=destPos;updatePositions();return;}
 
-        playSlide();
+        /* No slide sound — the Void pulls you back silently */
 
         /* Control point: midpoint between start/end, nudged downward for a slight smile-curve */
         const midX=(startPos.x+endPos.x)/2;
@@ -2394,7 +2365,8 @@
                 const y=it*it*startPos.y + 2*it*t*midY + t*t*endPos.y;
                 el.style.left=x+'%';
                 el.style.top=y+'%';
-                el.style.transform='translate(-50%,-50%)';
+                /* Spin as the Void drags the piece backward — two full rotations over the arc */
+                el.style.transform=`translate(-50%,-50%) rotate(${(t*720).toFixed(1)}deg)`;
                 if(t<1){requestAnimationFrame(step);}
                 else{resolve();}
             }
@@ -2403,6 +2375,7 @@
 
         /* Restore normal transition behavior and hand off to updatePositions for final settle */
         el.style.transition='';
+        el.style.transform='translate(-50%,-50%)';
         p.pos=destPos;
         updatePositions();
     }
@@ -2663,7 +2636,9 @@
             /* Small chance to award Plot Armor instead of regular lore */
             let item;
             if(tryAwardPlotArmor(idx)){
-                /* Show armor award as sidebar */
+                /* Clear any previous drop's media — the 'Space X' subtext skips the auto-clear */
+                stopActiveLoreVid();
+                document.getElementById('side-bucket').innerHTML='';
                 document.getElementById('rule-sidebar').classList.add('mystery-sidebar');
                 showSidebar('🛡️ Plot Armor!',`${p.name} is protected from the next bad outcome!`,'var(--mystery-glow)',`Space ${p.pos}`);
                 hideLoreBackdrop();
@@ -2857,6 +2832,7 @@
         coin.style.cssText='width:140px;height:140px;background:var(--gold);border:8px solid #b8860b;border-radius:50%;margin:25px auto;display:none;align-items:center;justify-content:center;font-size:2.5rem;font-weight:bold;color:#5c4305;transform-style:preserve-3d;';
         coin.style.display='none';
         pBtn.style.display='inline-block';pBtn.disabled=false;
+        pBtn.style.background='';pBtn.style.color=''; /* clear any leftover custom styling (e.g. merch purple) */
         title.innerText=(r.emoji||"")+" "+r.title;
         desc.innerText=r.desc||"";pBtn.innerText="CONTINUE";sBtn.style.display='none';
         /* Hard-reset timer state on every new modal — clears any mid-count leftovers */
@@ -2964,7 +2940,7 @@
                             /* Respect master mute + tracks toggle — videos are tracks */
                             vid.muted=videoShouldBeMuted();vid.volume=0.8;
                         }).catch(()=>{vid.muted=true;vid.play().catch(()=>{});});
-                        const _rnudge=setInterval(()=>{if(vid&&!vid.paused){}else if(vid&&!vid.ended){vid.load();vid.play().catch(()=>{});}},2000);
+                        const _rnudge=setInterval(()=>{if(document.hidden)return;if(vid&&!vid.paused){}else if(vid&&!vid.ended){vid.load();vid.play().catch(()=>{});}},2000);
                         vid.addEventListener('ended',()=>clearInterval(_rnudge),{once:true});
                     }
                     setTimeout(()=>playSfx('remedyclip.wav'),150);
@@ -3123,6 +3099,8 @@
                 await new Promise(res=>setTimeout(res,800));movePlayer(-rl,false,capturedTurnIdx);
             };
         } else {pBtn.onclick=()=>{modal.style.display='none';endTurn();};}
+        /* Branches above may have shown/hidden the secondary button — re-sync kb hints */
+        resetKbFocus();
     }
 
     // ══════════════════════════════════════════════
@@ -3326,6 +3304,7 @@ function showStatusPopup(t,d,b1,c1,b2,c2,playerNameHtml=''){
         stopMetronome();
         const pBtn=document.getElementById('event-btn-primary');
         pBtn.style.display='inline-block';pBtn.innerText=b1;
+        pBtn.style.background='';pBtn.style.color='';
         pBtn.onclick=async()=>{modal.style.display='none';await new Promise(r=>setTimeout(r,200));c1();};
         const sBtn=document.getElementById('event-btn-secondary');
         if(b2){sBtn.style.display='inline-block';sBtn.innerText=b2;sBtn.onclick=async()=>{modal.style.display='none';await new Promise(r=>setTimeout(r,200));c2();};}
@@ -3549,6 +3528,18 @@ function showStatusPopup(t,d,b1,c1,b2,c2,playerNameHtml=''){
     // ══════════════════════════════════════════════
     /* Deferred so DOM is ready */
     setTimeout(syncAudioUI,100);
+
+    /* Stop all audio when the tab is hidden; resume the context when visible again */
+    document.addEventListener('visibilitychange',()=>{
+        if(document.hidden){
+            if(audioCtx)audioCtx.suspend().catch(()=>{});
+            if(activeLoreVid&&!activeLoreVid.paused)activeLoreVid.pause();
+            const rv=document.getElementById('remedy-video');
+            if(rv&&!rv.paused)rv.pause();
+        } else {
+            if(audioCtx&&!masterMuted&&audioEnabled)audioCtx.resume().catch(()=>{});
+        }
+    });
 
     </script>
 </body>
