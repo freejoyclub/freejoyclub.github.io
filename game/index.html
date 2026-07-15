@@ -1,7 +1,7 @@
 <!DOCTYPE html><html lang="en"><head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Fearjoy - Game (v100.10)</title>
+    <title>Fearjoy - Game (v100.11)</title>
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
@@ -23,7 +23,7 @@
             --space-emoji:calc(var(--space-size) * 0.32);
             --board-gap:clamp(2px,0.85vw,18px);
             --board-pad:clamp(4px,0.8vw,24px);
-            --pass-w:clamp(78px,9.5vw,140px);
+            --pass-w:clamp(64px,7.5vw,112px);
         }
 
         @keyframes woodFade      { 0%,100%{background-color:var(--wood-dark);}50%{background-color:var(--wood-mid);} }
@@ -48,6 +48,7 @@
         @keyframes popupFloat    { 0%{transform:translateY(0);}25%{transform:translateY(-4px);}50%{transform:translateY(-2px);}75%{transform:translateY(-5px);}100%{transform:translateY(0);} }
         @keyframes popupShine    { 0%{background-position:-300% center;opacity:0;}40%{opacity:1;}60%{opacity:1;}100%{background-position:300% center;opacity:0;} }
         @keyframes menuBloom     { 0%{opacity:0;transform:scale(0.7);}100%{opacity:1;transform:scale(1);} }
+        @keyframes nowPlayingScroll { 0%{transform:translateX(105%);}100%{transform:translateX(-105%);} }
 
         /* ── SPACE PULSE ANIMATIONS — GPU-compositable filter:brightness/hue-rotate, zero repaint ── */
         /* Joy — green border stays static, whole space breathes brighter */
@@ -168,17 +169,18 @@
             width:3px; height:36%; background:#f2f2ec; border-radius:2px;
         }
         .rack-dial .dial-label {
-            font-family:'Courier New',monospace; font-size:0.75rem; font-weight:700;
-            letter-spacing:1px; color:#22221f; text-transform:uppercase;
+            font-family:sans-serif; font-size:0.68rem; font-weight:700;
+            letter-spacing:0.5px; color:#22221f; text-transform:uppercase;
             text-shadow:0 1px 0 rgba(255,255,255,0.3); white-space:nowrap;
         }
-        /* Thin screens (folded phones): tighten the rack before shrinking content */
+        /* Thin screens (folded phones): tighten the rack, keep content inside the screws */
         @media (max-width:480px){
-            #la2a { gap:5px; padding:0 4px; }
-            .rack-dial .dial-label { font-size:0.6rem; letter-spacing:0.5px; }
-            #la2a .dl-toggle { width:72px !important; }
-            #mute-btn, #nav-knob-btn { width:34px; font-size:0.38rem; }
-            #fullscreen-standalone-btn { width:26px; }
+            #la2a { gap:3px; padding:0 16px; }
+            .rack-dial .dial-label { font-size:0.5rem; letter-spacing:0; }
+            .rack-dial .dial-knob { width:20px; height:20px; }
+            #la2a .dl-toggle { width:62px !important; font-size:0.48rem; }
+            #mute-btn, #nav-knob-btn { width:32px; font-size:0.36rem; }
+            #fullscreen-standalone-btn { width:24px; }
         }
         #ui-layer::after {
             content:''; position:absolute; inset:0; pointer-events:none;
@@ -186,29 +188,23 @@
             background:linear-gradient(105deg,transparent 30%,rgba(255,255,255,0.025) 50%,transparent 65%);
             background-size:400% 100%; animation:barShine 8s ease-in-out infinite;
         }
-        #la2a::before {
+        #ui-layer::before, #la2a::before {
             content:''; position:absolute; inset:0; pointer-events:none;
             border-radius:inherit;
             background-image:
-                url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14'%3E%3Ccircle cx='7' cy='7' r='5.5' fill='url(%23d1)'/%3E%3Cdefs%3E%3CradialGradient id='d1' cx='40%25' cy='35%25'%3E%3Cstop offset='0' stop-color='%23555'/%3E%3Cstop offset='60%25' stop-color='%23222'/%3E%3Cstop offset='100%25' stop-color='%23000'/%3E%3C/radialGradient%3E%3C/defs%3E%3Cg stroke='%23000' stroke-width='1' stroke-linecap='round' transform='rotate(15,7,7)'%3E%3Cline x1='7' y1='3.5' x2='7' y2='10.5'/%3E%3Cline x1='3.5' y1='7' x2='10.5' y2='7'/%3E%3C/g%3E%3C/svg%3E"),
-                url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14'%3E%3Ccircle cx='7' cy='7' r='5.5' fill='url(%23d2)'/%3E%3Cdefs%3E%3CradialGradient id='d2' cx='40%25' cy='35%25'%3E%3Cstop offset='0' stop-color='%23555'/%3E%3Cstop offset='60%25' stop-color='%23222'/%3E%3Cstop offset='100%25' stop-color='%23000'/%3E%3C/radialGradient%3E%3C/defs%3E%3Cg stroke='%23000' stroke-width='1' stroke-linecap='round' transform='rotate(40,7,7)'%3E%3Cline x1='7' y1='3.5' x2='7' y2='10.5'/%3E%3Cline x1='3.5' y1='7' x2='10.5' y2='7'/%3E%3C/g%3E%3C/svg%3E"),
-                url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14'%3E%3Ccircle cx='7' cy='7' r='5.5' fill='url(%23d3)'/%3E%3Cdefs%3E%3CradialGradient id='d3' cx='40%25' cy='35%25'%3E%3Cstop offset='0' stop-color='%23555'/%3E%3Cstop offset='60%25' stop-color='%23222'/%3E%3Cstop offset='100%25' stop-color='%23000'/%3E%3C/radialGradient%3E%3C/defs%3E%3Cg stroke='%23000' stroke-width='1' stroke-linecap='round' transform='rotate(65,7,7)'%3E%3Cline x1='7' y1='3.5' x2='7' y2='10.5'/%3E%3Cline x1='3.5' y1='7' x2='10.5' y2='7'/%3E%3C/g%3E%3C/svg%3E"),
-                url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14'%3E%3Ccircle cx='7' cy='7' r='5.5' fill='url(%23d4)'/%3E%3Cdefs%3E%3CradialGradient id='d4' cx='40%25' cy='35%25'%3E%3Cstop offset='0' stop-color='%23555'/%3E%3Cstop offset='60%25' stop-color='%23222'/%3E%3Cstop offset='100%25' stop-color='%23000'/%3E%3C/radialGradient%3E%3C/defs%3E%3Cg stroke='%23000' stroke-width='1' stroke-linecap='round' transform='rotate(10,7,7)'%3E%3Cline x1='7' y1='3.5' x2='7' y2='10.5'/%3E%3Cline x1='3.5' y1='7' x2='10.5' y2='7'/%3E%3C/g%3E%3C/svg%3E");
+                url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14'%3E%3Ccircle cx='7' cy='7' r='5.5' fill='url(%23d1)'/%3E%3Cdefs%3E%3CradialGradient id='d1' cx='40%25' cy='35%25'%3E%3Cstop offset='0' stop-color='%238e8e8a'/%3E%3Cstop offset='60%25' stop-color='%235a5a56'/%3E%3Cstop offset='100%25' stop-color='%232d2d2a'/%3E%3C/radialGradient%3E%3C/defs%3E%3Cg stroke='%232d2d2a' stroke-width='1' stroke-linecap='round' transform='rotate(15,7,7)'%3E%3Cline x1='7' y1='3.5' x2='7' y2='10.5'/%3E%3Cline x1='3.5' y1='7' x2='10.5' y2='7'/%3E%3C/g%3E%3C/svg%3E"),
+                url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14'%3E%3Ccircle cx='7' cy='7' r='5.5' fill='url(%23d2)'/%3E%3Cdefs%3E%3CradialGradient id='d2' cx='40%25' cy='35%25'%3E%3Cstop offset='0' stop-color='%238e8e8a'/%3E%3Cstop offset='60%25' stop-color='%235a5a56'/%3E%3Cstop offset='100%25' stop-color='%232d2d2a'/%3E%3C/radialGradient%3E%3C/defs%3E%3Cg stroke='%232d2d2a' stroke-width='1' stroke-linecap='round' transform='rotate(40,7,7)'%3E%3Cline x1='7' y1='3.5' x2='7' y2='10.5'/%3E%3Cline x1='3.5' y1='7' x2='10.5' y2='7'/%3E%3C/g%3E%3C/svg%3E"),
+                url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14'%3E%3Ccircle cx='7' cy='7' r='5.5' fill='url(%23d3)'/%3E%3Cdefs%3E%3CradialGradient id='d3' cx='40%25' cy='35%25'%3E%3Cstop offset='0' stop-color='%238e8e8a'/%3E%3Cstop offset='60%25' stop-color='%235a5a56'/%3E%3Cstop offset='100%25' stop-color='%232d2d2a'/%3E%3C/radialGradient%3E%3C/defs%3E%3Cg stroke='%232d2d2a' stroke-width='1' stroke-linecap='round' transform='rotate(65,7,7)'%3E%3Cline x1='7' y1='3.5' x2='7' y2='10.5'/%3E%3Cline x1='3.5' y1='7' x2='10.5' y2='7'/%3E%3C/g%3E%3C/svg%3E"),
+                url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14'%3E%3Ccircle cx='7' cy='7' r='5.5' fill='url(%23d4)'/%3E%3Cdefs%3E%3CradialGradient id='d4' cx='40%25' cy='35%25'%3E%3Cstop offset='0' stop-color='%238e8e8a'/%3E%3Cstop offset='60%25' stop-color='%235a5a56'/%3E%3Cstop offset='100%25' stop-color='%232d2d2a'/%3E%3C/radialGradient%3E%3C/defs%3E%3Cg stroke='%232d2d2a' stroke-width='1' stroke-linecap='round' transform='rotate(10,7,7)'%3E%3Cline x1='7' y1='3.5' x2='7' y2='10.5'/%3E%3Cline x1='3.5' y1='7' x2='10.5' y2='7'/%3E%3C/g%3E%3C/svg%3E");
             background-repeat:no-repeat,no-repeat,no-repeat,no-repeat;
             background-position:8px 12%,8px 88%,calc(100% - 8px) 12%,calc(100% - 8px) 88%;
             background-size:16px 16px,16px 16px,16px 16px,16px 16px;
         }
-        #ui-layer::before {
-            content:''; position:absolute; inset:0; pointer-events:none;
-            border-radius:inherit;
-            background-image:
-                url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14'%3E%3Ccircle cx='7' cy='7' r='5.5' fill='url(%23d1)'/%3E%3Cdefs%3E%3CradialGradient id='d1' cx='40%25' cy='35%25'%3E%3Cstop offset='0' stop-color='%23c8c8c4'/%3E%3Cstop offset='60%25' stop-color='%23918f8a'/%3E%3Cstop offset='100%25' stop-color='%235a5a55'/%3E%3C/radialGradient%3E%3C/defs%3E%3Cg stroke='%23444440' stroke-width='1' stroke-linecap='round' transform='rotate(15,7,7)'%3E%3Cline x1='7' y1='3.5' x2='7' y2='10.5'/%3E%3Cline x1='3.5' y1='7' x2='10.5' y2='7'/%3E%3C/g%3E%3C/svg%3E"),
-                url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14'%3E%3Ccircle cx='7' cy='7' r='5.5' fill='url(%23d2)'/%3E%3Cdefs%3E%3CradialGradient id='d2' cx='40%25' cy='35%25'%3E%3Cstop offset='0' stop-color='%23c8c8c4'/%3E%3Cstop offset='60%25' stop-color='%23918f8a'/%3E%3Cstop offset='100%25' stop-color='%235a5a55'/%3E%3C/radialGradient%3E%3C/defs%3E%3Cg stroke='%23444440' stroke-width='1' stroke-linecap='round' transform='rotate(40,7,7)'%3E%3Cline x1='7' y1='3.5' x2='7' y2='10.5'/%3E%3Cline x1='3.5' y1='7' x2='10.5' y2='7'/%3E%3C/g%3E%3C/svg%3E"),
-                url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14'%3E%3Ccircle cx='7' cy='7' r='5.5' fill='url(%23d3)'/%3E%3Cdefs%3E%3CradialGradient id='d3' cx='40%25' cy='35%25'%3E%3Cstop offset='0' stop-color='%23c8c8c4'/%3E%3Cstop offset='60%25' stop-color='%23918f8a'/%3E%3Cstop offset='100%25' stop-color='%235a5a55'/%3E%3C/radialGradient%3E%3C/defs%3E%3Cg stroke='%23444440' stroke-width='1' stroke-linecap='round' transform='rotate(65,7,7)'%3E%3Cline x1='7' y1='3.5' x2='7' y2='10.5'/%3E%3Cline x1='3.5' y1='7' x2='10.5' y2='7'/%3E%3C/g%3E%3C/svg%3E"),
-                url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14'%3E%3Ccircle cx='7' cy='7' r='5.5' fill='url(%23d4)'/%3E%3Cdefs%3E%3CradialGradient id='d4' cx='40%25' cy='35%25'%3E%3Cstop offset='0' stop-color='%23c8c8c4'/%3E%3Cstop offset='60%25' stop-color='%23918f8a'/%3E%3Cstop offset='100%25' stop-color='%235a5a55'/%3E%3C/radialGradient%3E%3C/defs%3E%3Cg stroke='%23444440' stroke-width='1' stroke-linecap='round' transform='rotate(10,7,7)'%3E%3Cline x1='7' y1='3.5' x2='7' y2='10.5'/%3E%3Cline x1='3.5' y1='7' x2='10.5' y2='7'/%3E%3C/g%3E%3C/svg%3E");
-            background-repeat:no-repeat,no-repeat,no-repeat,no-repeat;
-            background-position:8px 12%,8px 88%,calc(100% - 8px) 12%,calc(100% - 8px) 88%;
-            background-size:16px 16px,16px 16px,16px 16px,16px 16px;
+        @media (max-width:480px){
+            #ui-layer::before, #la2a::before {
+                background-position:3px 12%,3px 88%,calc(100% - 3px) 12%,calc(100% - 3px) 88%;
+                background-size:10px 10px,10px 10px,10px 10px,10px 10px;
+            }
         }
         #ui-layer-color-wash {
             position:absolute; inset:0; pointer-events:none;
@@ -404,12 +400,12 @@
 
         /* ── PASS SIDEBAR ── */
         #pass-sidebar {
-            z-index:2; width:var(--pass-w); flex-shrink:0;
+            z-index:2; width:calc(var(--pass-w) + clamp(30px,3.2vw,48px)); flex-shrink:0;
             display:flex; flex-direction:column;
             justify-content:flex-start; align-items:center;
             gap:clamp(8px,1.4vh,18px);
-            padding:clamp(12px,1.6vw,24px) clamp(12px,1.5vw,20px);
-            overflow:hidden; position:relative; background:transparent;
+            padding:clamp(14px,1.8vw,26px) clamp(14px,1.7vw,24px);
+            overflow-y:auto; overflow-x:hidden; position:relative; background:transparent;
             -webkit-mask-image:linear-gradient(to bottom,transparent 0%,black 8%,black 92%,transparent 100%),
                                linear-gradient(to right,transparent 0%,black 8%,black 100%);
             -webkit-mask-composite:destination-in;
@@ -419,7 +415,7 @@
         }
         #lineup-label {
             font-size:clamp(0.75rem,1.2vw,1.1rem);
-            letter-spacing:4px; color:rgba(255,255,255,0.65);
+            letter-spacing:4px; color:#999;
             text-transform:uppercase; text-align:center;
             flex-shrink:0; margin-bottom:4px;
             font-family:'KCStrikerSans','Courier New',monospace; font-weight:bold;
@@ -697,7 +693,7 @@
             position:relative; display:inline-flex; align-items:center;
             height:clamp(26px,3.2vw,42px); width:100px; border-radius:6px; border:1.5px solid #444;
             background:#e8e4dc; cursor:pointer; box-sizing:border-box; overflow:hidden;
-            font-family:'Courier New',monospace; font-size:0.56rem; font-weight:700;
+            font-family:sans-serif; font-size:0.56rem; font-weight:700;
             letter-spacing:1px; text-transform:uppercase; user-select:none;
             transition:background 0.3s ease;
         }
@@ -715,6 +711,7 @@
         .dl-toggle.dark .dl-label { left:9px; right:auto; color:rgba(255,255,255,0.75); }
         .setup-btn-large:hover { background:white; color:black; transform:scale(1.1); }
         .setup-avatar     { width:clamp(55px,11vw,90px); height:clamp(55px,11vw,90px); opacity:0.3; cursor:pointer; transition:all 0.3s ease; filter:grayscale(100%); border:3px solid transparent; border-radius:10px; }
+        .setup-avatar:focus-visible, .color-swatch:focus-visible { outline:2px solid #fff; outline-offset:3px; }
         .setup-avatar:hover { opacity:0.7; }
         .setup-avatar.selected { opacity:1; filter:grayscale(0%); transform:scale(1.1); }
         .confirm-btn { padding:clamp(12px,2vh,20px) 40px; width:90%; background:white; color:black; font-size:clamp(1rem,2.5vw,1.3rem); font-weight:bold; border-radius:8px; border:none; cursor:pointer; transition:all 0.2s ease; }
@@ -749,14 +746,14 @@
         #pass-strip {
             display:none; flex-shrink:0;
             justify-content:center; align-items:flex-start; gap:6px;
-            padding:10px 8px 6px; overflow-x:auto; overflow-y:hidden;
+            padding:14px 14px 10px; overflow-x:auto; overflow-y:hidden;
             z-index:6; position:relative;
             /* soft fade at the top edge — safety between strip and board */
             -webkit-mask-image:linear-gradient(to bottom,transparent 0%,black 22%,black 100%);
             mask-image:linear-gradient(to bottom,transparent 0%,black 22%,black 100%);
         }
         /* Board size wins — passes stay small (tap to enlarge); width adapts to screen */
-        #pass-strip .access-pass { width:auto; min-width:clamp(46px,12vw,78px); max-width:44vw; flex-shrink:0; }
+        #pass-strip .access-pass { width:auto; min-width:clamp(38px,9vw,64px); max-width:40vw; flex-shrink:0; }
         /* No float bobbing in the strip — it clipped against the container edge */
         #pass-strip .access-pass, #pass-strip .pass-float-b, #pass-strip .pass-float-c { animation:none !important; }
         /* On the lower row, cards grow HORIZONTALLY as accolades accumulate */
@@ -809,10 +806,6 @@
     <!-- ══ LA-2A RACK UNIT — settings + dials, below the 1176 ══ -->
     <div id="la2a">
         <div class="rack-dial">
-            <div class="dial-knob" id="dial-bgmusic"></div>
-            <div class="dial-label">BG MUSIC</div>
-        </div>
-        <div class="rack-dial">
             <div class="dial-knob" id="dial-sfx"></div>
             <div class="dial-label">SFX</div>
         </div>
@@ -820,7 +813,11 @@
             <div class="dial-knob" id="dial-tracks"></div>
             <div class="dial-label">TRACKS</div>
         </div>
-        <div id="darkmode-toggle" class="dl-toggle" onclick="toggleDarkMode()" title="Dark / Light mode" style="width:88px;"><span class="dl-knob">☀️</span><span class="dl-label">LIGHT</span></div>
+        <div class="rack-dial">
+            <div class="dial-knob" id="dial-bgmusic"></div>
+            <div class="dial-label">BG MUSIC</div>
+        </div>
+        <div id="darkmode-toggle" class="dl-toggle" onclick="toggleDarkMode()" title="Dark / Light mode" style="width:80px;"><span class="dl-knob">☀️</span><span class="dl-label">LIGHT</span></div>
         <div id="nav-knob">
             <button id="mute-btn" onclick="toggleMute()" title="Mute">MUTE</button>
             <button id="nav-knob-btn" onclick="toggleNavMenu()" aria-label="Menu">MENU</button>
@@ -839,7 +836,7 @@
                 <button class="nav-menu-btn btn-home" onclick="window.open('https://freejoy.club','_blank')"><span class="nav-icon">🏠</span> Fearjoy - Home</button>
                 <button class="nav-menu-btn btn-store" onclick="window.open('https://freejoy.club','_blank')"><span class="nav-icon">👕</span> Store</button>
                 <button class="nav-menu-btn btn-album" onclick="window.open('https://freejoy.club','_blank')"><span class="nav-icon">▶️</span> Play the Album</button>
-                <div class="nav-menu-btn" style="pointer-events:none;border-color:rgba(255,255,255,0.12);color:rgba(255,255,255,0.55);cursor:default;text-align:center;"><span class="nav-icon">🎶</span> Now Playing: Unreleased Fearjoy Jam</div>
+                <div class="nav-menu-btn" style="pointer-events:none;border-color:rgba(255,255,255,0.12);color:rgba(255,255,255,0.55);cursor:default;overflow:hidden;position:relative;padding-left:0;padding-right:0;"><span style="display:inline-block;white-space:nowrap;animation:nowPlayingScroll 9s linear infinite;">🎶 Now Playing: Unreleased Fearjoy Jam</span></div>
                 <div style="font-family:'Courier New',monospace;font-size:0.5rem;letter-spacing:1px;color:rgba(255,255,255,0.25);text-align:center;padding:6px 4px 2px;text-transform:uppercase;white-space:normal;line-height:1.5;">© 2026. Music/Game/<br>Sound Design by Fearjoy</div>
             </div>
         </div>
@@ -857,6 +854,10 @@
             <div class="exp-tags" id="exp-tags"></div>
             <div class="exp-section-label">Accolades <span onclick="showAccoladeKey()" style="cursor:pointer;opacity:0.55;font-size:0.7rem;letter-spacing:0;background:rgba(0,0,0,0.12);border-radius:50%;width:14px;height:14px;display:inline-flex;align-items:center;justify-content:center;vertical-align:middle;font-family:sans-serif;transition:opacity 0.2s;" title="Accolades key" onmouseover="this.style.opacity='0.9'" onmouseout="this.style.opacity='0.55'">?</span></div>
             <div class="exp-accolades" id="exp-accolades"></div>
+            <div id="exp-label-deal" style="display:none;text-align:center;margin-top:8px;font-family:'Courier New',monospace;color:#555;">
+                <div id="exp-label-name" style="font-size:0.72rem;letter-spacing:1.5px;font-weight:700;"></div>
+                <div id="exp-label-rule" style="font-size:0.6rem;letter-spacing:0.5px;margin-top:2px;color:#777;"></div>
+            </div>
             <div class="exp-pass-stripe" id="exp-stripe"></div>
             <button id="pitch-btn" onclick="triggerColdPitch()">🎤 Pitch to Labels</button>
         </div>
@@ -905,10 +906,14 @@
             <h1 class="intro-header">Fearjoy: The Game</h1>
             <div id="setup-step-1">
                 <h2 style="font-family:'KCStrikerSans','Courier New',monospace;letter-spacing:3px;font-weight:normal;">HOW MANY ARTISTS?</h2>
-                <div style="display:flex;justify-content:center;gap:clamp(8px,2vw,15px);margin-top:16px;flex-wrap:wrap;">
+                <div id="playercount-row" style="display:flex;justify-content:center;gap:clamp(8px,2vw,15px);margin-top:16px;flex-wrap:wrap;">
                     <button class="setup-btn-large" onclick="setPlayerCount(1)">1</button>
                     <button class="setup-btn-large" onclick="setPlayerCount(2)">2</button>
                     <button class="setup-btn-large" onclick="setPlayerCount(3)">3</button>
+                    <button class="setup-btn-large pc-extra" onclick="setPlayerCount(4)" style="display:none;">4</button>
+                    <button class="setup-btn-large pc-extra" onclick="setPlayerCount(5)" style="display:none;">5</button>
+                    <button class="setup-btn-large pc-extra" onclick="setPlayerCount(6)" style="display:none;">6</button>
+                    <button class="setup-btn-large" id="pc-plus" onclick="expandPlayerChoices()" title="More players">+</button>
                 </div>
                     <div style="font-family:'Courier New',monospace; font-size:0.75rem; line-height:1.5; letter-spacing:1.2px; color:rgba(255,255,255,0.65); text-align:center; padding:25px 7px 4px;text-transform:uppercase;">
                     Made by Fearjoy<br>
@@ -916,20 +921,21 @@
                 </div>
             </div>
             <div id="setup-step-2" style="display:none;margin-top:16px;">
+                <button onclick="quickStart()" style="display:block;margin:0 auto 14px;background:transparent;border:1.5px solid rgba(255,255,255,0.35);color:rgba(255,255,255,0.75);font-family:'Courier New',monospace;font-size:0.8rem;letter-spacing:1.5px;border-radius:8px;padding:8px 18px;cursor:pointer;transition:all 0.2s;" onmouseover="this.style.borderColor='white';this.style.color='white'" onmouseout="this.style.borderColor='rgba(255,255,255,0.35)';this.style.color='rgba(255,255,255,0.75)'">⚡ QUICK START (RANDOM)</button>
                 <h2 id="setup-prompt" style="font-family:'KCStrikerSans','Courier New',monospace;letter-spacing:2px;font-weight:normal;font-size:clamp(0.85rem,2.5vw,1.05rem);color:#999;">ARTIST 1</h2>
-                <input type="text" id="name-input" placeholder="ARTIST NAME"
+                <input type="text" id="name-input" placeholder="ARTIST NAME" maxlength="15"
                     style="font-family:'Courier New',monospace;padding:clamp(10px,2vw,20px);width:90%;text-align:center;border-radius:8px;border:3px solid #333;background:#000;color:white;font-size:clamp(1rem,3vw,1.5rem);transition:all 0.3s ease;outline:none;box-sizing:border-box;">
                 <div id="name-error" style="font-family:'Courier New',monospace;color:var(--fear-glow);font-weight:bold;margin-top:10px;font-size:0.9rem;display:none;">NAME & PIC REQUIRED</div>
                 <div style="display:flex;justify-content:center;gap:clamp(12px,3vw,25px);margin:20px 0;">
-                    <img id="sel-jesse" src="jesse.png" class="setup-avatar" onclick="pickAvatar('jesse')">
-                    <img id="sel-marco" src="marco.png" class="setup-avatar" onclick="pickAvatar('marco')">
-                    <img id="sel-grant" src="grant.png" class="setup-avatar" onclick="pickAvatar('grant')">
+                    <img id="sel-jesse" src="jesse.png" class="setup-avatar" tabindex="0" onclick="pickAvatar('jesse')">
+                    <img id="sel-marco" src="marco.png" class="setup-avatar" tabindex="0" onclick="pickAvatar('marco')">
+                    <img id="sel-grant" src="grant.png" class="setup-avatar" tabindex="0" onclick="pickAvatar('grant')">
                 </div>
-                <button onclick="confirmArtist()" class="confirm-btn" style="font-family:'KCStrikerSans','Courier New',monospace;letter-spacing:2px;">ADD TO TOUR</button>
-                <div style="margin:16px 0 8px;">
+                <div style="margin:0 0 16px;">
                     <div style="font-family:'Courier New',monospace;font-size:0.65rem;letter-spacing:2px;color:#888;margin-bottom:8px;">PICK A COLOR (OPTIONAL)</div>
                     <div id="swatch-row" style="display:flex;justify-content:center;gap:clamp(6px,1.5vw,12px);flex-wrap:wrap;"></div>
                 </div>
+                <button onclick="confirmArtist()" class="confirm-btn" style="font-family:'KCStrikerSans','Courier New',monospace;letter-spacing:2px;">ADD TO TOUR</button>
                 <div id="tour-roster" style="margin-top:24px;border-top:1px solid #444;padding-top:15px;display:none;">
                     <div style="font-family:'Courier New',monospace;font-size:0.7rem;letter-spacing:2px;color:#888;margin-bottom:10px;">CURRENT ROSTER</div>
                     <div id="roster-list" style="display:flex;justify-content:center;gap:15px;flex-wrap:wrap;"></div>
@@ -1011,7 +1017,9 @@
         {hex:'#ff00ff',name:'Magenta'},{hex:'#00ff88',name:'Mint'},
         {hex:'#ff4444',name:'Red'},{hex:'#ff8800',name:'Orange'},
     ];
-    const DEFAULT_COLORS=['#00ccff','#00ff88','#ff00ff'];
+    const DEFAULT_COLORS=['#00ccff','#00ff88','#ff00ff','#ffcf40','#7e2b20','#f2d5c9'];
+    /* Signature default color per avatar — jesse warm yellow, marco dark red-brown, grant peachy */
+    const AVATAR_DEFAULT_COLORS={jesse:'#ffcf40',marco:'#7e2b20',grant:'#f2d5c9'};
 
     const boardLayout=[
         "START","blank","blank","DAYSPRING","blank","FEARJOY","blank","blank","FIGMENT","JOY",
@@ -1621,13 +1629,16 @@
             if(e.code==='KeyX'){const sb=document.getElementById('rule-sidebar');if(sb.classList.contains('active')){e.preventDefault();handleSidebarClick(e);}}
             return;
         }
-        const btns=[...document.querySelectorAll('#action-bar button')].filter(b=>b.style.display!=='none'&&!b.disabled);
+        const _winMode=document.body.classList.contains('win-active');
+        const btns=[...document.querySelectorAll(_winMode?'#overlay-event a.win-link-btn, #action-bar button':'#action-bar button')].filter(b=>b.style.display!=='none'&&!b.disabled);
         if(!btns.length)return;
-        if(e.code==='ArrowRight'||e.code==='ArrowLeft'){
+        if(e.code==='ArrowRight'||e.code==='ArrowLeft'||e.code==='ArrowDown'||e.code==='ArrowUp'){
             e.preventDefault();
+            const fwd=(e.code==='ArrowRight'||e.code==='ArrowDown');
             btns.forEach(b=>b.classList.remove('btn-kb-focus'));
-            kbFocusIdx=e.code==='ArrowRight'?(kbFocusIdx+1)%btns.length:(kbFocusIdx-1+btns.length)%btns.length;
+            kbFocusIdx=fwd?(kbFocusIdx+1)%btns.length:(kbFocusIdx-1+btns.length)%btns.length;
             btns[kbFocusIdx].classList.add('btn-kb-focus');
+            btns[kbFocusIdx].scrollIntoView({block:'nearest'});
         }
         if(e.code==='Space'||e.code==='Enter'){e.preventDefault();btns[kbFocusIdx]?.click();}
         /* X always fires secondary button if visible, otherwise primary */
@@ -2058,7 +2069,7 @@
         AVAILABLE_COLORS.forEach(c=>{
             const sw=document.createElement('div');
             sw.className='color-swatch'+(taken.includes(c.hex)?' swatch-taken':'')+(selectedColor===c.hex?' swatch-selected':'');
-            sw.style.background=c.hex;sw.title=c.name;sw.onclick=()=>pickColor(c.hex);row.appendChild(sw);
+            sw.style.background=c.hex;sw.title=c.name;sw.tabIndex=0;sw.onclick=()=>pickColor(c.hex);row.appendChild(sw);
         });
     }
     function pickColor(hex){
@@ -2078,6 +2089,65 @@
     }
     function goForwardToDetails(){
         if(_lastPlayerCount)setPlayerCount(_lastPlayerCount);
+    }
+    function expandPlayerChoices(){
+        document.querySelectorAll('.pc-extra').forEach(b=>b.style.display='');
+        const plus=document.getElementById('pc-plus');if(plus)plus.style.display='none';
+    }
+
+    /* ── SETUP KEYBOARD NAV — number keys, arrows, Tab, Enter (merch-table / no-mouse) ── */
+    document.addEventListener('keydown',e=>{
+        const setup=document.getElementById('overlay-setup');
+        if(!setup||setup.style.display==='none')return;
+        const step1=document.getElementById('setup-step-1');
+        const step1Visible=step1&&step1.style.display!=='none';
+        const ae=document.activeElement;
+        if(step1Visible){
+            if(e.key>='1'&&e.key<='6'){
+                const n=parseInt(e.key,10);
+                if(n>3)expandPlayerChoices();
+                setPlayerCount(n);e.preventDefault();return;
+            }
+            if(e.key==='+'||e.key==='='){expandPlayerChoices();e.preventDefault();return;}
+        } else {
+            /* step 2: Enter in the name field confirms */
+            if(e.key==='Enter'&&ae&&ae.id==='name-input'){e.preventDefault();confirmArtist();return;}
+        }
+        /* Enter/Space activates focused avatar or color swatch */
+        if((e.key==='Enter'||e.key===' ')&&ae&&(ae.classList.contains('setup-avatar')||ae.classList.contains('color-swatch'))){
+            e.preventDefault();ae.click();return;
+        }
+        /* Arrow keys move focus across all visible setup controls (skip while typing) */
+        if(e.key==='ArrowRight'||e.key==='ArrowLeft'||e.key==='ArrowDown'||e.key==='ArrowUp'){
+            if(ae&&ae.id==='name-input')return; /* keep text-cursor behavior */
+            const focusables=[...setup.querySelectorAll('button,input,[tabindex="0"]')].filter(el=>el.offsetParent!==null);
+            if(!focusables.length)return;
+            e.preventDefault();
+            const fwd=(e.key==='ArrowRight'||e.key==='ArrowDown');
+            let idx=focusables.indexOf(ae);
+            if(idx<0)idx=fwd?-1:0;
+            idx=fwd?(idx+1)%focusables.length:(idx-1+focusables.length)%focusables.length;
+            focusables[idx].focus();
+        }
+    });
+    /* Quick start: skips manual setup — random avatars (distinct first, numbered repeats
+       after), their real names, signature colors. Reuses confirmArtist so player objects
+       and game start stay identical to the manual path. */
+    function quickStart(){
+        const pool=['jesse','marco','grant'].sort(()=>Math.random()-0.5);
+        const ni=document.getElementById('name-input');
+        const cap=s=>s.charAt(0).toUpperCase()+s.slice(1);
+        while(currentSetupP<totalP){
+            const i=currentSetupP;
+            const id=pool[i%3];
+            const dupe=Math.floor(i/3); /* 0 first round, 1+ for repeats */
+            pickAvatar(id);
+            ni.value=cap(id)+(dupe>0?' '+(dupe+1):'');
+            if(dupe>0)pickColor(DEFAULT_COLORS[i]||AVAILABLE_COLORS[i%AVAILABLE_COLORS.length].hex);
+            const before=currentSetupP;
+            confirmArtist();
+            if(currentSetupP===before)break; /* safety: validation refused, stop looping */
+        }
     }
     function goBackToPlayerCount(){
         /* Reset setup state and show player count picker again */
@@ -2101,6 +2171,8 @@
     }
     function pickAvatar(id){
         selectedAvatar={id,img:id+'.png'};
+        /* Each avatar has a signature default color — still overridable via the swatches */
+        if(AVATAR_DEFAULT_COLORS[id])pickColor(AVATAR_DEFAULT_COLORS[id]);
         document.querySelectorAll('.setup-avatar').forEach(img=>{img.classList.remove('selected');img.style.borderColor='transparent';});
         const img=document.getElementById('sel-'+id);img.classList.add('selected');img.style.border=`3px solid ${selectedColor||'#fff'}`;
     }
@@ -2365,6 +2437,29 @@
             if(strip)strip.querySelectorAll('.access-pass').forEach(c=>c.remove());
             _renderPassesToContainer(sidebar);
         }
+        fitPasses();
+    }
+
+    /* Shrink pass cards uniformly (via zoom) until they ALL fit fully in their container.
+       All-visible beats big — passes expand on tap anyway. Scroll is the last resort. */
+    function fitPasses(){
+        const vertical=isVerticalLayout();
+        const cont=document.getElementById(vertical?'pass-strip':'pass-sidebar');
+        if(!cont)return;
+        const cards=[...cont.querySelectorAll('.access-pass')];
+        if(!cards.length)return;
+        cards.forEach(c=>{c.style.zoom='';}); /* reset before measuring natural size */
+        const gap=vertical?6:10;
+        const totalGap=gap*(cards.length-1);
+        const avail=vertical?(cont.clientWidth-24-totalGap):(cont.clientHeight-40-totalGap);
+        const cur=cards.reduce((s,c)=>{
+            const r=c.getBoundingClientRect();
+            return s+(vertical?r.width:r.height);
+        },0);
+        if(cur>avail&&cur>0){
+            const z=Math.max(0.2,avail/cur);
+            cards.forEach(c=>{c.style.zoom=z;});
+        }
     }
 
     function expandPass(idx){
@@ -2393,6 +2488,21 @@
         document.getElementById('exp-name').style.color=pl.avatar.color;
         document.getElementById('exp-tags').innerHTML=tags;
         document.getElementById('exp-accolades').innerText=pl.accolades.join('')||'—';
+        /* Sellout ownership stamp — bottom of the pass */
+        const ld=document.getElementById('exp-label-deal');
+        if(ld){
+            if(pl.isColdPitchSellout){
+                ld.style.display='block';
+                document.getElementById('exp-label-name').innerText='PROPERTY OF FEARVICES RECORDS';
+                document.getElementById('exp-label-rule').innerText='label takes -1 every other roll';
+            } else if(pl.isSellout){
+                ld.style.display='block';
+                document.getElementById('exp-label-name').innerText='PROPERTY OF ILLUMINATI RECORDS';
+                document.getElementById('exp-label-rule').innerText='label turns +6 into -2';
+            } else {
+                ld.style.display='none';
+            }
+        }
         document.getElementById('exp-stripe').style.background=`linear-gradient(90deg,${pl.avatar.color} 0%,transparent 100%)`;
         const pitchEligible=isCurrent&&!isMoving&&!pl.isSellout&&!pl.isColdPitchSellout&&!pl.usedColdPitch&&pl.pos>2&&pl.pos<=GATEKEEPER_SPACE;
         document.getElementById('pitch-btn').style.display=pitchEligible?'block':'none';
@@ -2550,8 +2660,11 @@
         const midX=(startPos.x+endPos.x)/2;
         const midY=(startPos.y+endPos.y)/2+4; /* +4% of board height, downward — very slight */
 
-        /* Temporarily disable the CSS transition so we can drive left/top manually per frame */
+        /* Temporarily disable the CSS transition AND the hover animation —
+           pieceHover's keyframes overwrite transform every frame, which was
+           hiding the spin entirely */
         el.style.transition='none';
+        el.style.animation='none';
         el.style.zIndex=200;
 
         const duration=650; /* ms */
@@ -2573,8 +2686,9 @@
             requestAnimationFrame(step);
         });
 
-        /* Restore normal transition behavior and hand off to updatePositions for final settle */
+        /* Restore normal transition/animation behavior and hand off to updatePositions */
         el.style.transition='';
+        el.style.animation='';
         el.style.transform='translate(-50%,-50%)';
         p.pos=destPos;
         updatePositions();
@@ -2595,8 +2709,12 @@
             const sizeScale=isActive?1.8:1.5;
             const centerXpct=pos.x, centerYpct=pos.y; /* % of board */
             if(stackSize>1){
-                const scale=0.72*sizeScale;const pieceW=spacePx*scale;const pieceH=spacePx*scale;
-                const offsets=[{x:-spacePx*0.18,y:-spacePx*0.12},{x:spacePx*0.18,y:-spacePx*0.12},{x:0,y:spacePx*0.14}];
+                const scale=(stackSize>3?0.55:0.72)*sizeScale;const pieceW=spacePx*scale;const pieceH=spacePx*scale;
+                /* six-slot ring — supports up to 6 players sharing one space */
+                const offsets=[
+                    {x:-spacePx*0.18,y:-spacePx*0.12},{x:spacePx*0.18,y:-spacePx*0.12},{x:0,y:spacePx*0.14},
+                    {x:-spacePx*0.22,y:spacePx*0.16},{x:spacePx*0.22,y:spacePx*0.16},{x:0,y:-spacePx*0.24}
+                ];
                 const off=offsets[myStackIdx]||{x:0,y:0};
                 el.style.left=`calc(${centerXpct}% + ${off.x}px)`;
                 el.style.top=`calc(${centerYpct}% + ${off.y}px)`;
@@ -2761,13 +2879,18 @@
                     dice.classList.add('dice-contract');spawnEmoji('📝',true);
                     showSidebar("CONTRACT CUT","Label takes their cut this roll. -1 total.","var(--pitch-orange)");
                     await new Promise(r=>setTimeout(r,700));
-                    roll=Math.max(1,roll-1);dice.innerText=roll;
+                    roll=Math.max(0,roll-1);dice.innerText=roll;
                     await new Promise(r=>setTimeout(r,1200));updateUI();
                 }
             }
         }
         p.totalRollValue+=Math.abs(roll);
         await diceReturnToBar();
+        if(roll===0){
+            /* Label cut the whole roll — going nowhere this turn */
+            showSidebar("📝 CUT TO ZERO","The label took your only space. Ouch.","var(--pitch-orange)");
+            endTurn();return;
+        }
         movePlayer(roll,false,capturedTurnIdx);
     }
 
@@ -2789,7 +2912,17 @@
         const dir=n>0?1:-1;
         const lastPlaceIdxList=getLastPlaceIdx();
         const isLast=lastPlaceIdxList.includes(idx);
+        /* Only a real signed deal counts — a declined pitch (usedColdPitch) does NOT */
         const anyLabelDeal=p.isSellout||p.isColdPitchSellout;
+
+        /* Standing ON the gatekeeper and rolling forward: blocked unless exempt.
+           (The loop guard below only stops pass-through arrivals — without this,
+           anyone stopped at the gate could simply roll again and walk through.) */
+        if(dir>0&&!skipSpaceCheck&&p.pos===GATEKEEPER_SPACE&&!isLast&&!anyLabelDeal){
+            playSpaceSfx('doorclip.wav');
+            showSidebar('🚪 GATEKEEPER',"Not on the list. Wait for last place, or sign a label deal.",'#b58956');
+            endTurn();return;
+        }
 
         for(let i=0;i<Math.abs(n);i++){
             if(p.pos+dir>=0&&p.pos+dir<boardLayout.length){
@@ -3538,7 +3671,7 @@ function showStatusPopup(t,d,b1,c1,b2,c2,playerNameHtml=''){
             const _isWinner=sortIdx===0;
             statsHtml+=`<div style="margin-bottom:${_isWinner?'16':'10'}px;border-bottom:1px solid #333;display:flex;align-items:center;gap:12px;padding-bottom:${_isWinner?'14':'8'}px;${_isWinner?'background:rgba(255,255,255,0.04);border-radius:10px;padding:10px;':''}">
                 <img src="${pl.avatar.img}" style="width:${_isWinner?'60':'44'}px;height:${_isWinner?'60':'44'}px;border-radius:50%;background:#000;border:${_isWinner?'3':'2'}px solid ${pl.avatar.color};box-shadow:0 0 ${_isWinner?'18':'8'}px ${pl.avatar.color};">
-                <div style="flex-grow:1;"><b style="color:${pl.avatar.color};font-size:${_isWinner?'1.25':'1.0'}rem;letter-spacing:1px;">${pl.name}</b>${supporterLine}
+                <div style="flex-grow:1;"><b style="color:${pl.avatar.color};font-size:${_isWinner?'1.25':'1.0'}rem;letter-spacing:1px;">${pl.name}</b>${pl.isColdPitchSellout?'<span style="font-family:\'Courier New\',monospace;font-size:0.58rem;color:#777;letter-spacing:0.5px;margin-left:8px;">property of FEARVICES RECORDS</span>':(pl.isSellout?'<span style="font-family:\'Courier New\',monospace;font-size:0.58rem;color:#777;letter-spacing:0.5px;margin-left:8px;">property of ILLUMINATI RECORDS</span>':'')}${supporterLine}
                 <div style="margin:3px 0;">${statusTags}</div>
                 <div style="font-size:1.2rem;margin:2px 0;">${pl.accolades.join('')}${_isWinner?` <span onclick="showAccoladeKey()" style="cursor:pointer;opacity:0.55;font-size:0.7rem;letter-spacing:0;background:rgba(0,0,0,0.18);border-radius:50%;width:15px;height:15px;display:inline-flex;align-items:center;justify-content:center;vertical-align:middle;font-family:sans-serif;transition:opacity 0.2s;" onmouseover="this.style.opacity='0.9'" onmouseout="this.style.opacity='0.55'" title="Accolades key">?</span>`:''}</div></div></div>`;
         });
