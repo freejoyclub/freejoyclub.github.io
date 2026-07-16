@@ -1,7 +1,7 @@
 <!DOCTYPE html><html lang="en"><head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Fearjoy - Game (v100.11)</title>
+    <title>Fearjoy - Game (v100.12)</title>
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
@@ -17,7 +17,7 @@
             --blue-glow:#00ccff; --teal-glow:#00ddcc;
             --pink-glow:#ff00ff; --mystery-glow:#dd99ff; --pitch-orange:#ff8800;
             --roll-color:#00ff88; /* updated each turn to current player color */
-            --bar-h:clamp(46px,9vh,110px);
+            --bar-h:clamp(40px,7.6vh,94px);
             --space-size:clamp(20px,6.2vmin,64px);
             --space-font:calc(var(--space-size) * 0.16);
             --space-emoji:calc(var(--space-size) * 0.32);
@@ -48,7 +48,7 @@
         @keyframes popupFloat    { 0%{transform:translateY(0);}25%{transform:translateY(-4px);}50%{transform:translateY(-2px);}75%{transform:translateY(-5px);}100%{transform:translateY(0);} }
         @keyframes popupShine    { 0%{background-position:-300% center;opacity:0;}40%{opacity:1;}60%{opacity:1;}100%{background-position:300% center;opacity:0;} }
         @keyframes menuBloom     { 0%{opacity:0;transform:scale(0.7);}100%{opacity:1;transform:scale(1);} }
-        @keyframes nowPlayingScroll { 0%{transform:translateX(105%);}100%{transform:translateX(-105%);} }
+        @keyframes nowPlayingScroll { 0%{transform:translateX(0);}100%{transform:translateX(-50%);} }
 
         /* ── SPACE PULSE ANIMATIONS — GPU-compositable filter:brightness/hue-rotate, zero repaint ── */
         /* Joy — green border stays static, whole space breathes brighter */
@@ -156,17 +156,17 @@
             box-shadow:0 -2px 12px rgba(0,0,0,0.6),inset 0 1px 0 rgba(255,255,255,0.25);
             overflow:visible;
         }
-        .rack-dial { display:flex; flex-direction:column; align-items:center; gap:2px; user-select:none; }
+        .rack-dial { display:flex; flex-direction:column; align-items:center; gap:2px; user-select:none; min-width:clamp(42px,5.2vw,66px); }
         .rack-dial .dial-knob {
             width:clamp(23px,3vw,30px); height:clamp(23px,3vw,30px);
             border-radius:50%; position:relative; cursor:grab; touch-action:none;
-            background:radial-gradient(circle at 35% 30%,#4c4c4c,#1a1a1a 72%);
-            border:2px solid #111;
-            box-shadow:0 2px 5px rgba(0,0,0,0.55),inset 0 1px 1px rgba(255,255,255,0.18);
+            background:radial-gradient(circle at 35% 30%,#9a9a96,#5e5e58 72%);
+            border:2px solid #46463f;
+            box-shadow:0 2px 5px rgba(0,0,0,0.45),inset 0 1px 1px rgba(255,255,255,0.3);
         }
         .rack-dial .dial-knob::after {
             content:''; position:absolute; left:calc(50% - 1.5px); top:2px;
-            width:3px; height:36%; background:#f2f2ec; border-radius:2px;
+            width:3px; height:36%; background:#fbfbf6; border-radius:2px;
         }
         .rack-dial .dial-label {
             font-family:sans-serif; font-size:0.68rem; font-weight:700;
@@ -836,7 +836,7 @@
                 <button class="nav-menu-btn btn-home" onclick="window.open('https://freejoy.club','_blank')"><span class="nav-icon">🏠</span> Fearjoy - Home</button>
                 <button class="nav-menu-btn btn-store" onclick="window.open('https://freejoy.club','_blank')"><span class="nav-icon">👕</span> Store</button>
                 <button class="nav-menu-btn btn-album" onclick="window.open('https://freejoy.club','_blank')"><span class="nav-icon">▶️</span> Play the Album</button>
-                <div class="nav-menu-btn" style="pointer-events:none;border-color:rgba(255,255,255,0.12);color:rgba(255,255,255,0.55);cursor:default;overflow:hidden;position:relative;padding-left:0;padding-right:0;"><span style="display:inline-block;white-space:nowrap;animation:nowPlayingScroll 9s linear infinite;">🎶 Now Playing: Unreleased Fearjoy Jam</span></div>
+                <div class="nav-menu-btn" style="border-color:rgba(255,255,255,0.12);color:rgba(255,255,255,0.55);cursor:default;overflow:hidden;position:relative;display:flex;align-items:center;gap:6px;padding-left:8px;padding-right:0;"><button id="bgmusic-playpause" onclick="toggleBgMusic()" style="flex-shrink:0;background:transparent;border:1px solid rgba(255,255,255,0.25);color:rgba(255,255,255,0.7);border-radius:4px;width:24px;height:24px;cursor:pointer;font-size:0.6rem;padding:0;line-height:1;">⏸</button><div style="overflow:hidden;flex-grow:1;"><span style="display:inline-block;white-space:nowrap;animation:nowPlayingScroll 10s linear infinite;">🎶 Now Playing: Unreleased Fearjoy Jam&nbsp;&nbsp;•&nbsp;&nbsp;🎶 Now Playing: Unreleased Fearjoy Jam&nbsp;&nbsp;•&nbsp;&nbsp;</span></div></div>
                 <div style="font-family:'Courier New',monospace;font-size:0.5rem;letter-spacing:1px;color:rgba(255,255,255,0.25);text-align:center;padding:6px 4px 2px;text-transform:uppercase;white-space:normal;line-height:1.5;">© 2026. Music/Game/<br>Sound Design by Fearjoy</div>
             </div>
         </div>
@@ -1406,6 +1406,8 @@
         bgMusicEnabled=!bgMusicEnabled;
         const st=document.getElementById('bgmusic-status');
         if(st)st.innerText=bgMusicEnabled?'ON':'OFF';
+        const pp=document.getElementById('bgmusic-playpause');
+        if(pp)pp.innerText=bgMusicEnabled?'⏸':'▶';
         updateAmbientGain();
     }
     function _mkAmb(src){const a=new Audio(src);a.loop=true;a.preload='auto';a.volume=0;return a;}
@@ -1446,12 +1448,28 @@
         amb2Active=false;
         if(amb2){_rampVol(amb2,0,1.0);setTimeout(()=>{try{amb2.pause();}catch(e){}},1200);}
     }
-    function duckAmbient(){_ambDuck++;if(amb2&&amb2Active)_rampVol(amb2,0,0.25);}
+    function duckAmbient(){_ambDuck++;_lastDuckStamp=Date.now();if(amb2&&amb2Active)_rampVol(amb2,0,0.25);}
     function releaseAmbient(){
         _ambDuck=Math.max(0,_ambDuck-1);
         if(_ambDuck===0&&amb2Active&&amb2)_rampVol(amb2,amb2Target(),3); /* slow fade back */
     }
     function duckAmbientFor(sec){duckAmbient();setTimeout(releaseAmbient,Math.max(300,sec*1000));}
+    let _lastDuckStamp=0;
+    /* Watchdog — the loop should be continuous unless muted/turned down. Self-heals:
+       restarts a paused loop, re-ramps stuck volume, clears leaked duck holds when
+       no video is actually playing (25s grace covers the longest track clips). */
+    setInterval(()=>{
+        if(!amb2Active||!amb2||document.hidden)return;
+        if(amb2.paused)amb2.play().catch(()=>{});
+        const lore=activeLoreVid,rv=document.getElementById('remedy-video');
+        const vidPlaying=(lore&&!lore.paused&&!lore.ended)||(rv&&!rv.paused&&!rv.ended);
+        if(_ambDuck>0&&!vidPlaying&&Date.now()-_lastDuckStamp>25000){
+            _ambDuck=0;
+            _rampVol(amb2,amb2Target(),2);
+        }
+        const t=amb2Target();
+        if(_ambDuck===0&&t>0.02&&amb2.volume<0.02&&!amb2._ramp)_rampVol(amb2,t,2);
+    },4000);
 
     /* ── APPLE/iOS AUDIO UNLOCK — on the first user gesture, resume the context and
        play a silent buffer so the browser knows: the person clicked, they want audio ── */
@@ -1964,6 +1982,7 @@
             vid.autoplay=true;vid.loop=false;vid.muted=videoShouldBeMuted();vid.volume=0;vid.playsInline=true;
             vid.setAttribute('playsinline','');
             container.appendChild(vid);_cap();
+            stopActiveLoreVid(); /* release any previous video's ambient duck before replacing it */
             activeLoreVid=vid;
             const _tryPlay=()=>{if(vid.paused&&!vid.ended)vid.play().catch(()=>{});};
             vid.play().then(()=>fadeVideoAudioIn(vid)).catch(()=>{vid.muted=true;vid.play().catch(()=>{});});
@@ -3338,12 +3357,13 @@
                     );
                 };
                 desc.innerHTML=r.isMaya
-                    ?`Click another player to start a staring contest.<br><br>Hold eye contact for 10s for <b>Both +2</b>. Avoid for <b>Both -1</b>.<br><br><span style="color:rgba(255,255,255,0.5);font-size:0.85em;">(Or "Fear of Intimacy" below to skip and move back 1.)</span>`
+                    ?`Click another player to start a staring contest.<br><br>Hold eye contact for 10s for <b>Both +2</b>. Avoid for <b>Both -1</b>.`
                     :"TELLUS: THE GREAT SWAP.<br><br>Select an Artist's face or Pass card to swap places.";
                 if(r.isMaya){
                     const fearBtn=document.createElement('button');
                     fearBtn.id='maya-fear-btn';fearBtn.className='btn-fear';
                     fearBtn.innerText='Fear of Intimacy (-1)';
+                    fearBtn.style.cssText='flex-basis:100%;max-width:240px;margin:6px auto 0;';
                     fearBtn.onclick=async()=>{
                         isMayaPartner=false;
                         document.querySelectorAll('.player').forEach(el=>{el.classList.remove('swap-target');el.style.pointerEvents='none';});
