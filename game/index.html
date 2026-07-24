@@ -1,7 +1,7 @@
 <!DOCTYPE html><html lang="en"><head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Fearjoy - Game (v100.16)</title>
+    <title>Fearjoy - Game (v100.17)</title>
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
@@ -129,6 +129,15 @@
         #main-area { flex:1; display:flex; flex-direction:row; min-height:0; overflow:hidden; position:relative; }
 
         /* ── BOTTOM UI BAR ── */
+        #quickgame-hint {
+            display:none; width:100%; box-sizing:border-box;
+            text-align:center; padding:5px 8px;
+            font-family:'Courier New',monospace; font-size:clamp(0.55rem,1.2vw,0.78rem);
+            font-weight:700; letter-spacing:1px; text-transform:uppercase;
+            color:#c9ffc9; background:rgba(14,92,14,0.55);
+            border-radius:8px 8px 0 0; flex-shrink:0;
+        }
+        #quickgame-hint.visible { display:block; }
         #ui-layer {
             display:flex; align-items:center; justify-content:center;
             padding:0 clamp(28px,3.5vw,50px);
@@ -348,6 +357,21 @@
         #mute-btn.muted {
             background:#880000; border-color:#cc0000; color:#000;
             box-shadow:inset 0 2px 4px rgba(0,0,0,0.6),0 0 14px rgba(220,0,0,0.45);
+        }
+        #quickgame-btn {
+            width:clamp(38px,4.5vw,58px); height:clamp(26px,3.2vw,42px);
+            border-radius:6px; background:#1a1a1a; border:1.5px solid #1f6b1f;
+            cursor:pointer; color:#3fbf3f; font-family:sans-serif;
+            font-size:clamp(0.38rem,0.62vw,0.58rem); font-weight:700;
+            letter-spacing:0.5px; text-transform:uppercase; line-height:1.15;
+            box-shadow:0 0 6px rgba(0,160,0,0.35); transition:all 0.15s ease;
+            display:flex; align-items:center; justify-content:center; flex-shrink:2;
+        }
+        #quickgame-btn:hover { box-shadow:0 0 12px rgba(0,200,0,0.5); }
+        #quickgame-btn:active { box-shadow:inset 0 2px 5px rgba(0,0,0,0.7); transform:scale(0.96); }
+        #quickgame-btn.active {
+            background:#0e5c0e; border-color:#2ecc2e; color:#000;
+            box-shadow:inset 0 2px 4px rgba(0,0,0,0.6),0 0 14px rgba(0,220,0,0.45);
         }
 
         /* ── ROLL BUTTON ── */
@@ -694,6 +718,10 @@
             padding:0 15px; cursor:pointer; transition:all 0.15s ease; box-sizing:border-box;
         }
         .setup-mini-btn:hover { border-color:rgba(255,255,255,0.4); color:white; }
+        #setup-quickgame-btn.active {
+            background:#0e5c0e; border-color:#2ecc2e; color:#000;
+            box-shadow:inset 0 2px 4px rgba(0,0,0,0.6),0 0 14px rgba(0,220,0,0.45);
+        }
         /* ── DARK/LIGHT TOGGLE SWITCH ── */
         .dl-toggle {
             position:relative; display:inline-flex; align-items:center;
@@ -718,9 +746,10 @@
         .setup-btn-large:hover { background:white; color:black; transform:scale(1.1); }
         .setup-avatar     { width:clamp(55px,11vw,90px); height:clamp(55px,11vw,90px); opacity:0.3; cursor:pointer; transition:all 0.3s ease; filter:grayscale(100%); border:3px solid transparent; border-radius:10px; }
         .setup-avatar:focus-visible, .color-swatch:focus-visible { outline:2px solid #fff; outline-offset:3px; }
-        #roll-btn:focus-visible, #mute-btn:focus-visible, #nav-knob-btn:focus-visible, #fullscreen-standalone-btn:focus-visible {
+        #roll-btn:focus-visible, #mute-btn:focus-visible, #quickgame-btn:focus-visible, #nav-knob-btn:focus-visible, #fullscreen-standalone-btn:focus-visible {
             outline:2px solid #fff; outline-offset:2px;
         }
+        #nav-menu button:focus-visible { outline:2px solid #fff; outline-offset:2px; }
         #overlay-setup button:focus-visible,
         #overlay-setup input:focus-visible,
         #overlay-setup .dl-toggle:focus-visible { outline:2px solid #fff; outline-offset:3px; }
@@ -802,6 +831,7 @@
     </div>
 
     <!-- ══ BOTTOM UI BAR ══ -->
+    <div id="quickgame-hint">QUICK GAME ON: MAX ROLL IS NOW 12; PIECES MOVE FASTER</div>
     <div id="ui-layer">
         <div id="ui-layer-color-wash"></div>
         <!-- VU meter left -->
@@ -833,6 +863,7 @@
         <div id="darkmode-toggle" class="dl-toggle" onclick="toggleDarkMode()" title="Dark / Light mode" style="width:80px;"><span class="dl-knob">☀️</span><span class="dl-label">LIGHT</span></div>
         <div id="nav-knob">
             <button id="mute-btn" onclick="toggleMute()" title="Mute">MUTE</button>
+            <button id="quickgame-btn" onclick="toggleQuickGame()" title="Quick Game">QUICK<br>GAME</button>
             <button id="nav-knob-btn" onclick="toggleNavMenu()" aria-label="Menu">MENU</button>
             <button id="fullscreen-standalone-btn" onclick="toggleFullscreen()" title="Fullscreen">⛶</button>
             <div id="nav-menu">
@@ -846,7 +877,7 @@
                 <button class="nav-menu-btn btn-accolade-key" onclick="showAccoladeKey();closeNavMenu()"><span class="nav-icon">🔑</span> Key / How-To</button>
                 <button class="nav-menu-btn btn-restart" onclick="confirmSoftRestart();closeNavMenu()"><span class="nav-icon">🔄</span> Restart Tour</button>
                 <button class="nav-menu-btn btn-newband" onclick="confirmHardReset();closeNavMenu()"><span class="nav-icon">💀</span> New Band</button>
-                <button class="nav-menu-btn btn-home" onclick="window.open('https://freejoy.club','_blank')"><span class="nav-icon">🏠</span> Fearjoy - Home</button>
+                <button class="nav-menu-btn btn-home" onclick="confirmGoHome()"><span class="nav-icon">🏠</span> Fearjoy - Home</button>
                 <button class="nav-menu-btn btn-store" onclick="window.open('https://freejoy.club','_blank')"><span class="nav-icon">👕</span> Store</button>
                 <button class="nav-menu-btn btn-album" onclick="window.open('https://freejoy.club','_blank')"><span class="nav-icon">▶️</span> Play the Album</button>
                 <div class="nav-menu-btn" style="border-color:rgba(255,255,255,0.12);color:rgba(255,255,255,0.55);cursor:default;overflow:hidden;position:relative;display:flex;align-items:center;gap:6px;padding-left:8px;padding-right:0;"><button id="bgmusic-playpause" onclick="toggleBgMusic()" style="flex-shrink:0;background:transparent;border:1px solid rgba(255,255,255,0.25);color:rgba(255,255,255,0.7);border-radius:4px;width:24px;height:24px;cursor:pointer;font-size:0.6rem;padding:0;line-height:1;">⏸</button><div style="overflow:hidden;flex-grow:1;"><span style="display:inline-block;white-space:nowrap;animation:nowPlayingScroll 10s linear infinite;">🎶 Now Playing: Unreleased Fearjoy Jam&nbsp;&nbsp;•&nbsp;&nbsp;🎶 Now Playing: Unreleased Fearjoy Jam&nbsp;&nbsp;•&nbsp;&nbsp;</span></div></div>
@@ -965,6 +996,7 @@
                 <button id="setup-fwd-btn" class="setup-mini-btn" onclick="goForwardToDetails()" title="Forward" style="display:none;font-size:1rem;">➡️</button>
                 <div id="setup-darkmode-toggle" class="dl-toggle" tabindex="0" onclick="toggleDarkMode()" title="Dark / Light mode" style="width:80px;height:38px;"><span class="dl-knob">☀️</span><span class="dl-label">LIGHT</span></div>
                 <button id="setup-mute-btn" class="setup-mini-btn" onclick="toggleMute()" style="border-color:#660000;color:#bb1111;width:80px;padding:0;">MUTE</button>
+                <button id="setup-quickgame-btn" class="setup-mini-btn" onclick="toggleQuickGame()" title="Quick Game" style="border-color:#1f6b1f;color:#3fbf3f;width:80px;padding:0;line-height:1.15;">QUICK<br>GAME</button>
                 <button class="setup-mini-btn" onclick="toggleSetupMenu()" title="Options" style="width:80px;padding:0;">MENU</button>
                 <button class="setup-mini-btn" onclick="toggleFullscreen()" title="Fullscreen">⛶</button>
                 <div id="setup-menu" style="display:none;position:fixed;inset:0;z-index:99999;align-items:center;justify-content:center;background:rgba(0,0,0,0.7);" onclick="if(event.target===this)closeSetupMenu()">
@@ -972,7 +1004,7 @@
                         <button class="nav-menu-btn btn-fullscreen" onclick="toggleFullscreen()"><span class="nav-icon">⛶</span> <span id="setup-fullscreen-label">Fullscreen</span></button>
                         <button class="nav-menu-btn btn-tracks" onclick="toggleTracks()"><span class="nav-icon" id="setup-tracks-icon">🎵</span> TRACKS: <span id="setup-tracks-status">ON</span></button>
                         <button class="nav-menu-btn btn-sfx" onclick="toggleSfx()"><span class="nav-icon" id="setup-sfx-icon">🔔</span> SFX: <span id="setup-sfx-status">ON</span></button>
-                        <button class="nav-menu-btn btn-home" onclick="window.open('https://freejoy.club','_blank')"><span class="nav-icon">🏠</span> Fearjoy - Home</button>
+                        <button class="nav-menu-btn btn-home" onclick="confirmGoHome()"><span class="nav-icon">🏠</span> Fearjoy - Home</button>
                         <button class="nav-menu-btn" onclick="closeSetupMenu()" style="border-color:#555;color:rgba(255,255,255,0.5);">✕ Close <span class="kb-hint" style="position:static;display:inline;margin-left:4px;">[Esc]</span></button>
                     </div>
                 </div>
@@ -1145,7 +1177,7 @@
     // ══════════════════════════════════════════════
     let audioCtx=null,masterGain=null,limiter=null;
     let sfxBus=null,trackBus=null,sfxVol=1,trackVol=1; /* dial-controlled channel gains */
-    let audioEnabled=true,tracksEnabled=true,sfxEnabled=true,masterMuted=false;
+    let audioEnabled=true,tracksEnabled=true,sfxEnabled=true,masterMuted=false,quickGameActive=false;
     const activeSources=new Set();
     const diceRollSources=new Set();
     /* Active tracklist sound — crossfaded out when a new one starts */
@@ -1369,6 +1401,15 @@
     function toggleSfx(){sfxEnabled=!sfxEnabled;syncAudioUI();}
 
     let darkModeOn=false;
+    function toggleQuickGame(){
+        quickGameActive=!quickGameActive;
+        const btn=document.getElementById('quickgame-btn');
+        if(btn)btn.classList.toggle('active',quickGameActive);
+        const setupBtn=document.getElementById('setup-quickgame-btn');
+        if(setupBtn)setupBtn.classList.toggle('active',quickGameActive);
+        const hint=document.getElementById('quickgame-hint');
+        if(hint)hint.classList.toggle('visible',quickGameActive);
+    }
     function toggleDarkMode(){
         darkModeOn=!darkModeOn;
         document.body.classList.toggle('dark-mode',darkModeOn);
@@ -1673,12 +1714,14 @@
     document.addEventListener('keydown',e=>{
         const modal=document.getElementById('overlay-event');
         const modalOpen=modal&&modal.style.display==='flex';
+        const setupOpen=document.getElementById('overlay-setup')&&document.getElementById('overlay-setup').style.display!=='none';
         if(!modalOpen){
+            if(setupOpen)return; /* setup screen owns keyboard input until the game actually starts */
             const ae=document.activeElement;
             const typing=ae&&(ae.tagName==='INPUT'||ae.tagName==='TEXTAREA');
             /* Game bar focus list — roll, then mute/menu/fullscreen. Dials are
                intentionally excluded: they need drag input, not a keyboard target. */
-            const barBtns=['roll-btn','mute-btn','nav-knob-btn','fullscreen-standalone-btn']
+            const barBtns=['roll-btn','mute-btn','quickgame-btn','nav-knob-btn','fullscreen-standalone-btn']
                 .map(id=>document.getElementById(id)).filter(b=>b&&b.offsetParent!==null&&!b.disabled);
             if(barBtns.length&&!typing){
                 if(e.code==='ArrowDown'||e.code==='ArrowRight'||e.code==='ArrowUp'||e.code==='ArrowLeft'){
@@ -1731,15 +1774,50 @@
     // NAV + RESTART
     // ══════════════════════════════════════════════
     
-    function toggleNavMenu(){document.getElementById('nav-menu').classList.toggle('open');}
+    function toggleNavMenu(){
+        const nm=document.getElementById('nav-menu');
+        if(!nm)return;
+        const opening=!nm.classList.contains('open');
+        nm.classList.toggle('open');
+        if(opening){
+            setTimeout(()=>{
+                const first=document.querySelector('#nav-menu button:not([disabled])');
+                if(first&&first.offsetParent!==null)first.focus();
+            },30);
+        }
+    }
     function closeNavMenu(){
         document.getElementById('nav-menu').classList.remove('open');
         const ss=document.getElementById('sound-submenu');if(ss)ss.classList.remove('open');
+        const menuBtn=document.getElementById('nav-knob-btn');
+        if(menuBtn)menuBtn.focus();
     }
     function toggleSoundSubmenu(){
         const ss=document.getElementById('sound-submenu');if(ss)ss.classList.toggle('open');
     }
     document.addEventListener('click',e=>{if(!document.getElementById('nav-knob').contains(e.target))closeNavMenu();});
+
+    /* In-game nav-menu popup owns keyboard input while open — same pattern as
+       setup's mini-menu. Up/Down/Tab cycle visible buttons top-to-bottom, Enter/
+       Space activates, Escape or X closes. */
+    document.addEventListener('keydown',e=>{
+        const nm=document.getElementById('nav-menu');
+        if(!nm||!nm.classList.contains('open'))return;
+        if(e.key==='Escape'||e.key==='x'||e.key==='X'){e.preventDefault();closeNavMenu();return;}
+        const items=[...nm.querySelectorAll('button')].filter(el=>el.offsetParent!==null&&!el.disabled);
+        if(!items.length)return;
+        if(e.key==='ArrowDown'||e.key==='ArrowUp'||e.key==='Tab'){
+            e.preventDefault();
+            const dir=(e.key==='ArrowUp'||(e.key==='Tab'&&e.shiftKey))?-1:1;
+            let idx=items.indexOf(document.activeElement);
+            idx=((idx+dir)%items.length+items.length)%items.length;
+            items[idx].focus();return;
+        }
+        if((e.key==='Enter'||e.key===' ')&&document.activeElement&&items.includes(document.activeElement)){
+            e.preventDefault();document.activeElement.click();return;
+        }
+        e.preventDefault(); /* swallow everything else while the popup is open */
+    });
 
     function toggleSetupMenu(){
         const m=document.getElementById('setup-menu');
@@ -1762,6 +1840,12 @@
     function confirmHardReset(){
         showStatusPopup("NEW BAND?","This will erase everything and start fresh.",
             "START FRESH",()=>location.reload(),
+            "CANCEL",()=>{}
+        );
+    }
+    function confirmGoHome(){
+        showStatusPopup("LEAVE THE GAME?","This will close the game and open Fearjoy's main site.",
+            "GO TO FEARJOY.CLUB",()=>{window.open('https://freejoy.club','_blank');closeNavMenu();closeSetupMenu();},
             "CANCEL",()=>{}
         );
     }
@@ -3030,12 +3114,13 @@
         await diceGoToCinematic();
         vuStartRoll();  /* needle resets to -45 and bounces */
         let roll;
+        const _rollMax=quickGameActive?12:6;
         for(let j=0;j<16;j++){
-            dice.innerText=Math.floor(Math.random()*6)+1;
+            dice.innerText=Math.floor(Math.random()*_rollMax)+1;
             if(j%4===0)playDiceRoll();
             await new Promise(r=>setTimeout(r,50));
         }
-        roll=Math.floor(Math.random()*6)+1;dice.innerText=roll;
+        roll=Math.floor(Math.random()*_rollMax)+1;dice.innerText=roll;
         /* VU needle settles on roll value */
         vuRollAnimation(roll);
         playDiceDone();
@@ -3100,6 +3185,11 @@
         /* Use capturedIdx if provided (from performActualRoll), else current turnIdx */
         const idx=(capturedIdx!==undefined)?capturedIdx:turnIdx;
         const p=players[idx];
+        /* Quick Game: glide 1.5x faster (0.7s -> ~0.47s) via inline override, restored after */
+        const _moveEl=document.getElementById('p'+idx);
+        if(quickGameActive&&_moveEl){
+            _moveEl.style.transition='top 0.467s cubic-bezier(0.18,0.89,0.32,1.28),left 0.467s cubic-bezier(0.18,0.89,0.32,1.28),width 0.467s cubic-bezier(0.18,0.89,0.32,1.28),height 0.467s cubic-bezier(0.18,0.89,0.32,1.28)';
+        }
         /* Re-verify idx is still the right turn — safety check */
         const dir=n>0?1:-1;
         const lastPlaceIdxList=getLastPlaceIdx();
@@ -3147,12 +3237,13 @@
                 if(dir>0&&p.pos===GATEKEEPER_SPACE&&!isLast&&!anyLabelDeal&&i<Math.abs(n)-1){break;}
                 /* Fire gateexec the exact moment a player steps from 48 to 49 */
                 if(dir>0&&p.pos===GATEKEEPER_SPACE+1)playSfx('gateexec.wav');
-                await new Promise(r=>setTimeout(r,240));
+                await new Promise(r=>setTimeout(r,quickGameActive?160:240));
             }
         }
 
-        if(skipSpaceCheck){updatePositions();return;}
+        if(skipSpaceCheck){updatePositions();if(_moveEl)_moveEl.style.transition='';return;}
         flashSpaceLanding(p.pos);
+        if(_moveEl)_moveEl.style.transition='';
 
         /* ── MYSTERY LORE DROP ── */
         if(mysterySpaces.has(p.pos)){
