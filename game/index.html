@@ -1,7 +1,7 @@
 <!DOCTYPE html><html lang="en"><head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Fearjoy - Game (v100.15)</title>
+    <title>Fearjoy - Game (v100.16)</title>
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
@@ -718,6 +718,9 @@
         .setup-btn-large:hover { background:white; color:black; transform:scale(1.1); }
         .setup-avatar     { width:clamp(55px,11vw,90px); height:clamp(55px,11vw,90px); opacity:0.3; cursor:pointer; transition:all 0.3s ease; filter:grayscale(100%); border:3px solid transparent; border-radius:10px; }
         .setup-avatar:focus-visible, .color-swatch:focus-visible { outline:2px solid #fff; outline-offset:3px; }
+        #roll-btn:focus-visible, #mute-btn:focus-visible, #nav-knob-btn:focus-visible, #fullscreen-standalone-btn:focus-visible {
+            outline:2px solid #fff; outline-offset:2px;
+        }
         #overlay-setup button:focus-visible,
         #overlay-setup input:focus-visible,
         #overlay-setup .dl-toggle:focus-visible { outline:2px solid #fff; outline-offset:3px; }
@@ -965,12 +968,12 @@
                 <button class="setup-mini-btn" onclick="toggleSetupMenu()" title="Options" style="width:80px;padding:0;">MENU</button>
                 <button class="setup-mini-btn" onclick="toggleFullscreen()" title="Fullscreen">⛶</button>
                 <div id="setup-menu" style="display:none;position:fixed;inset:0;z-index:99999;align-items:center;justify-content:center;background:rgba(0,0,0,0.7);" onclick="if(event.target===this)closeSetupMenu()">
-                    <div style="background:rgba(14,14,14,0.98);border:1px solid #333;border-radius:14px;padding:12px;min-width:200px;display:flex;flex-direction:column;gap:8px;animation:menuBloom 0.2s ease forwards;">
+                    <div id="setup-menu-inner" style="background:rgba(14,14,14,0.98);border:1px solid #333;border-radius:14px;padding:12px;min-width:200px;display:flex;flex-direction:column;gap:8px;animation:menuBloom 0.2s ease forwards;">
                         <button class="nav-menu-btn btn-fullscreen" onclick="toggleFullscreen()"><span class="nav-icon">⛶</span> <span id="setup-fullscreen-label">Fullscreen</span></button>
                         <button class="nav-menu-btn btn-tracks" onclick="toggleTracks()"><span class="nav-icon" id="setup-tracks-icon">🎵</span> TRACKS: <span id="setup-tracks-status">ON</span></button>
                         <button class="nav-menu-btn btn-sfx" onclick="toggleSfx()"><span class="nav-icon" id="setup-sfx-icon">🔔</span> SFX: <span id="setup-sfx-status">ON</span></button>
                         <button class="nav-menu-btn btn-home" onclick="window.open('https://freejoy.club','_blank')"><span class="nav-icon">🏠</span> Fearjoy - Home</button>
-                        <button class="nav-menu-btn" onclick="closeSetupMenu()" style="border-color:#555;color:rgba(255,255,255,0.5);">✕ Close</button>
+                        <button class="nav-menu-btn" onclick="closeSetupMenu()" style="border-color:#555;color:rgba(255,255,255,0.5);">✕ Close <span class="kb-hint" style="position:static;display:inline;margin-left:4px;">[Esc]</span></button>
                     </div>
                 </div>
             </div>
@@ -1671,7 +1674,26 @@
         const modal=document.getElementById('overlay-event');
         const modalOpen=modal&&modal.style.display==='flex';
         if(!modalOpen){
-            if(e.code==='Space'||e.code==='Enter'){e.preventDefault();doRoll();}
+            const ae=document.activeElement;
+            const typing=ae&&(ae.tagName==='INPUT'||ae.tagName==='TEXTAREA');
+            /* Game bar focus list — roll, then mute/menu/fullscreen. Dials are
+               intentionally excluded: they need drag input, not a keyboard target. */
+            const barBtns=['roll-btn','mute-btn','nav-knob-btn','fullscreen-standalone-btn']
+                .map(id=>document.getElementById(id)).filter(b=>b&&b.offsetParent!==null&&!b.disabled);
+            if(barBtns.length&&!typing){
+                if(e.code==='ArrowDown'||e.code==='ArrowRight'||e.code==='ArrowUp'||e.code==='ArrowLeft'){
+                    e.preventDefault();
+                    const fwd=(e.code==='ArrowDown'||e.code==='ArrowRight');
+                    let idx=barBtns.indexOf(ae);
+                    if(idx<0)idx=fwd?-1:0;
+                    idx=((idx+(fwd?1:-1))%barBtns.length+barBtns.length)%barBtns.length;
+                    barBtns[idx].focus();return;
+                }
+                if(e.code==='Enter'&&ae&&barBtns.includes(ae)){e.preventDefault();ae.click();return;}
+            }
+            /* Space always rolls, regardless of what's focused (unless typing) */
+            if(e.code==='Space'&&!typing){e.preventDefault();doRoll();return;}
+            if(e.code==='Enter'&&!ae||e.code==='Enter'&&ae===document.body){e.preventDefault();doRoll();return;}
             /* X dismisses sidecard when no modal open (Esc conflicts with exit-fullscreen) */
             if(e.code==='KeyX'){const sb=document.getElementById('rule-sidebar');if(sb.classList.contains('active')){e.preventDefault();handleSidebarClick(e);}}
             return;
@@ -1721,11 +1743,21 @@
 
     function toggleSetupMenu(){
         const m=document.getElementById('setup-menu');
-        if(m)m.style.display=m.style.display==='flex'?'none':'flex';
+        if(!m)return;
+        const opening=m.style.display!=='flex';
+        m.style.display=opening?'flex':'none';
+        if(opening){
+            setTimeout(()=>{
+                const first=document.querySelector('#setup-menu-inner button');
+                if(first)first.focus();
+            },30);
+        }
     }
     function closeSetupMenu(){
         const m=document.getElementById('setup-menu');
         if(m)m.style.display='none';
+        const menuBtn=[...document.querySelectorAll('[data-kb-section="bottommenu"] button')].find(b=>b.getAttribute('title')==='Options');
+        if(menuBtn)menuBtn.focus();
     }    
     function confirmHardReset(){
         showStatusPopup("NEW BAND?","This will erase everything and start fresh.",
@@ -2163,7 +2195,7 @@
        Vertical order (Up/Down, Tab/Shift-Tab): step1 = just playercount.
        step2 = quickstart -> name -> picture -> color -> confirm -> bottommenu.
        Left/Right moves between items within whichever section currently has focus. */
-    const SETUP_SECTION_ORDER_STEP1=['playercount'];
+    const SETUP_SECTION_ORDER_STEP1=['playercount','bottommenu'];
     const SETUP_SECTION_ORDER_STEP2=['quickstart','name','picture','color','confirm','bottommenu'];
 
     function _setupSectionItems(name){
@@ -2224,6 +2256,28 @@
     document.addEventListener('keydown',e=>{
         const setup=document.getElementById('overlay-setup');
         if(!setup||setup.style.display==='none')return;
+
+        /* ── Setup's mini-menu popup (Sound Options / Fullscreen / Home) owns
+           keyboard input while it's open — separate from the section nav below ── */
+        const setupMenu=document.getElementById('setup-menu');
+        const setupMenuOpen=setupMenu&&setupMenu.style.display==='flex';
+        if(setupMenuOpen){
+            if(e.key==='Escape'||e.key==='x'||e.key==='X'){e.preventDefault();closeSetupMenu();return;}
+            const items=[...document.querySelectorAll('#setup-menu-inner button')].filter(el=>el.offsetParent!==null);
+            if(!items.length)return;
+            if(e.key==='ArrowDown'||e.key==='ArrowUp'||e.key==='Tab'){
+                e.preventDefault();
+                const dir=(e.key==='ArrowUp'||(e.key==='Tab'&&e.shiftKey))?-1:1;
+                let idx=items.indexOf(document.activeElement);
+                idx=((idx+dir)%items.length+items.length)%items.length;
+                items[idx].focus();return;
+            }
+            if((e.key==='Enter'||e.key===' ')&&document.activeElement&&items.includes(document.activeElement)){
+                e.preventDefault();document.activeElement.click();return;
+            }
+            return; /* swallow everything else while the popup is open */
+        }
+
         const step1=document.getElementById('setup-step-1');
         const step1Visible=step1&&step1.style.display!=='none';
         const ae=document.activeElement;
