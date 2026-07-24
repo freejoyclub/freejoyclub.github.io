@@ -1,7 +1,7 @@
 <!DOCTYPE html><html lang="en"><head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Fearjoy - Game (v100.13)</title>
+    <title>Fearjoy - Game (v100.14)</title>
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
@@ -144,8 +144,7 @@
         }
         /* ── LA-2A RACK UNIT — settings rack below the 1176, lighter gray ── */
         #la2a {
-            display:flex; align-items:center; justify-content:space-evenly;
-            gap:clamp(4px,1vw,12px);
+            display:flex; align-items:center; justify-content:center;
             padding:0 clamp(10px,2vw,40px);
             height:var(--bar-h); min-height:var(--bar-h); max-height:var(--bar-h);
             border-radius:12px;
@@ -155,6 +154,11 @@
             background:linear-gradient(180deg,#9c9c98 0%,#8d8d89 40%,#82827e 70%,#a3a39f 100%);
             box-shadow:0 -2px 12px rgba(0,0,0,0.6),inset 0 1px 0 rgba(255,255,255,0.25);
             overflow:visible;
+        }
+        #la2a-content {
+            display:flex; align-items:center; justify-content:space-evenly;
+            gap:clamp(4px,1vw,12px);
+            width:100%; max-width:640px; /* keeps controls clustered on very wide screens */
         }
         .rack-dial { display:flex; flex-direction:column; align-items:center; gap:2px; user-select:none; min-width:clamp(42px,5.2vw,66px); }
         .rack-dial .dial-knob {
@@ -175,7 +179,8 @@
         }
         /* Thin screens (folded phones): tighten the rack, keep content inside the screws */
         @media (max-width:480px){
-            #la2a { gap:3px; padding:0 16px; }
+            #la2a { padding:0 16px; }
+            #la2a-content { gap:3px; }
             .rack-dial .dial-label { font-size:0.5rem; letter-spacing:0; }
             .rack-dial .dial-knob { width:20px; height:20px; }
             #la2a .dl-toggle { width:62px !important; font-size:0.48rem; }
@@ -806,6 +811,7 @@
 
     <!-- ══ LA-2A RACK UNIT — settings + dials, below the 1176 ══ -->
     <div id="la2a">
+      <div id="la2a-content">
         <div class="rack-dial">
             <div class="dial-knob" id="dial-sfx"></div>
             <div class="dial-label">SFX</div>
@@ -841,6 +847,7 @@
                 <div style="font-family:'Courier New',monospace;font-size:0.5rem;letter-spacing:1px;color:rgba(255,255,255,0.25);text-align:center;padding:6px 4px 2px;text-transform:uppercase;white-space:normal;line-height:1.5;">© 2026. Music/Game/<br>Sound Design by Fearjoy</div>
             </div>
         </div>
+      </div>
     </div>
 
     <!-- ══ PASS EXPANDED ══ -->
@@ -3549,23 +3556,26 @@
                     checkGrammyForCurrent();checkPassiveGrammys(players[capturedTurnIdx].name);
                     overlay.style.display='none';endTurn();
                 };
+                /* Both -1 — plot armor checked independently per player. An armored
+                   player is shielded from their own -1 (armor consumed); a non-armored
+                   partner still takes theirs. */
+                const applyBothMinusOne=()=>{
+                    const selfBlocked=checkPlotArmor(capturedTurnIdx,true);
+                    if(!selfBlocked){playSlide();players[capturedTurnIdx].pos=Math.max(0,players[capturedTurnIdx].pos-1);}
+                    const partnerBlocked=checkPlotArmor(partnerIdx,true);
+                    if(!partnerBlocked){
+                        players[partnerIdx].wasPassivelyMoved=true;
+                        playSlide();players[partnerIdx].pos=Math.max(0,players[partnerIdx].pos-1);
+                    }
+                    updatePositions();overlay.style.display='none';endTurn();
+                };
                 if(!completed){
                     /* nevermind = both -1 */
                     pBtn.innerText="NO -- BOTH -1";
-                    pBtn.onclick=()=>{
-                        playSlide();players[capturedTurnIdx].pos=Math.max(0,players[capturedTurnIdx].pos-1);
-                        players[partnerIdx].wasPassivelyMoved=true;
-                        playSlide();players[partnerIdx].pos=Math.max(0,players[partnerIdx].pos-1);
-                        updatePositions();overlay.style.display='none';endTurn();
-                    };
+                    pBtn.onclick=applyBothMinusOne;
                 }
                 sBtn.style.display='inline-block';sBtn.innerText="NO -- BOTH -1";
-                sBtn.onclick=()=>{
-                    playSlide();players[capturedTurnIdx].pos=Math.max(0,players[capturedTurnIdx].pos-1);
-                    players[partnerIdx].wasPassivelyMoved=true;
-                    playSlide();players[partnerIdx].pos=Math.max(0,players[partnerIdx].pos-1);
-                    updatePositions();overlay.style.display='none';endTurn();
-                };
+                sBtn.onclick=applyBothMinusOne;
                 resetKbFocus();
             });
         };
