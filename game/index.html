@@ -1,7 +1,7 @@
 <!DOCTYPE html><html lang="en"><head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Fearjoy - Game (v100.14)</title>
+    <title>Fearjoy - Game (v100.15)</title>
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
@@ -718,6 +718,9 @@
         .setup-btn-large:hover { background:white; color:black; transform:scale(1.1); }
         .setup-avatar     { width:clamp(55px,11vw,90px); height:clamp(55px,11vw,90px); opacity:0.3; cursor:pointer; transition:all 0.3s ease; filter:grayscale(100%); border:3px solid transparent; border-radius:10px; }
         .setup-avatar:focus-visible, .color-swatch:focus-visible { outline:2px solid #fff; outline-offset:3px; }
+        #overlay-setup button:focus-visible,
+        #overlay-setup input:focus-visible,
+        #overlay-setup .dl-toggle:focus-visible { outline:2px solid #fff; outline-offset:3px; }
         .setup-avatar:hover { opacity:0.7; }
         .setup-avatar.selected { opacity:1; filter:grayscale(0%); transform:scale(1.1); }
         .confirm-btn { padding:clamp(12px,2vh,20px) 40px; width:90%; background:white; color:black; font-size:clamp(1rem,2.5vw,1.3rem); font-weight:bold; border-radius:8px; border:none; cursor:pointer; transition:all 0.2s ease; }
@@ -914,7 +917,7 @@
             <h1 class="intro-header">Fearjoy: The Game</h1>
             <div id="setup-step-1">
                 <h2 style="font-family:'KCStrikerSans','Courier New',monospace;letter-spacing:3px;font-weight:normal;">HOW MANY ARTISTS?</h2>
-                <div id="playercount-row" style="display:flex;justify-content:center;gap:clamp(8px,2vw,15px);margin-top:16px;flex-wrap:wrap;">
+                <div id="playercount-row" data-kb-section="playercount" style="display:flex;justify-content:center;gap:clamp(8px,2vw,15px);margin-top:16px;flex-wrap:wrap;">
                     <button class="setup-btn-large" onclick="setPlayerCount(1)">1</button>
                     <button class="setup-btn-large" onclick="setPlayerCount(2)">2</button>
                     <button class="setup-btn-large" onclick="setPlayerCount(3)">3</button>
@@ -929,21 +932,21 @@
                 </div>
             </div>
             <div id="setup-step-2" style="display:none;margin-top:16px;">
-                <button onclick="quickStart()" style="display:block;margin:0 auto 14px;background:transparent;border:1.5px solid rgba(255,255,255,0.35);color:rgba(255,255,255,0.75);font-family:'Courier New',monospace;font-size:0.8rem;letter-spacing:1.5px;border-radius:8px;padding:8px 18px;cursor:pointer;transition:all 0.2s;" onmouseover="this.style.borderColor='white';this.style.color='white'" onmouseout="this.style.borderColor='rgba(255,255,255,0.35)';this.style.color='rgba(255,255,255,0.75)'">⚡ QUICK START (RANDOM)</button>
+                <button onclick="quickStart()" data-kb-section="quickstart" style="display:block;margin:0 auto 14px;background:transparent;border:1.5px solid rgba(255,255,255,0.35);color:rgba(255,255,255,0.75);font-family:'Courier New',monospace;font-size:0.8rem;letter-spacing:1.5px;border-radius:8px;padding:8px 18px;cursor:pointer;transition:all 0.2s;" onmouseover="this.style.borderColor='white';this.style.color='white'" onmouseout="this.style.borderColor='rgba(255,255,255,0.35)';this.style.color='rgba(255,255,255,0.75)'">⚡ QUICK START (RANDOM)</button>
                 <h2 id="setup-prompt" style="font-family:'KCStrikerSans','Courier New',monospace;letter-spacing:2px;font-weight:normal;font-size:clamp(0.85rem,2.5vw,1.05rem);color:#999;">ARTIST 1</h2>
-                <input type="text" id="name-input" placeholder="ARTIST NAME" maxlength="15"
+                <input type="text" id="name-input" placeholder="ARTIST NAME" maxlength="15" data-kb-section="name"
                     style="font-family:'Courier New',monospace;padding:clamp(10px,2vw,20px);width:90%;text-align:center;border-radius:8px;border:3px solid #333;background:#000;color:white;font-size:clamp(1rem,3vw,1.5rem);transition:all 0.3s ease;outline:none;box-sizing:border-box;">
                 <div id="name-error" style="font-family:'Courier New',monospace;color:var(--fear-glow);font-weight:bold;margin-top:10px;font-size:0.9rem;display:none;">NAME & PIC REQUIRED</div>
                 <div style="display:flex;justify-content:center;gap:clamp(12px,3vw,25px);margin:20px 0;">
-                    <img id="sel-jesse" src="jesse.png" class="setup-avatar" tabindex="0" onclick="pickAvatar('jesse')">
-                    <img id="sel-marco" src="marco.png" class="setup-avatar" tabindex="0" onclick="pickAvatar('marco')">
-                    <img id="sel-grant" src="grant.png" class="setup-avatar" tabindex="0" onclick="pickAvatar('grant')">
+                    <img id="sel-jesse" src="jesse.png" class="setup-avatar" tabindex="0" data-kb-section="picture" onclick="pickAvatar('jesse')">
+                    <img id="sel-marco" src="marco.png" class="setup-avatar" tabindex="0" data-kb-section="picture" onclick="pickAvatar('marco')">
+                    <img id="sel-grant" src="grant.png" class="setup-avatar" tabindex="0" data-kb-section="picture" onclick="pickAvatar('grant')">
                 </div>
                 <div style="margin:0 0 16px;">
                     <div style="font-family:'Courier New',monospace;font-size:0.65rem;letter-spacing:2px;color:#888;margin-bottom:8px;">PICK A COLOR (OPTIONAL)</div>
                     <div id="swatch-row" style="display:flex;justify-content:center;gap:clamp(6px,1.5vw,12px);flex-wrap:wrap;"></div>
                 </div>
-                <button onclick="confirmArtist()" class="confirm-btn" style="font-family:'KCStrikerSans','Courier New',monospace;letter-spacing:2px;">ADD TO TOUR</button>
+                <button onclick="confirmArtist()" class="confirm-btn" data-kb-section="confirm" style="font-family:'KCStrikerSans','Courier New',monospace;letter-spacing:2px;">ADD TO TOUR</button>
                 <div id="tour-roster" style="margin-top:24px;border-top:1px solid #444;padding-top:15px;display:none;">
                     <div style="font-family:'Courier New',monospace;font-size:0.7rem;letter-spacing:2px;color:#888;margin-bottom:10px;">CURRENT ROSTER</div>
                     <div id="roster-list" style="display:flex;justify-content:center;gap:15px;flex-wrap:wrap;"></div>
@@ -954,10 +957,10 @@
                 <div id="preload-bar-label">Loading assets...</div>
             </div>
             <!-- Mini menu row for setup screen -->
-            <div style="display:flex;justify-content:center;align-items:center;gap:8px;margin-top:18px;padding-top:14px;border-top:1px solid rgba(255,255,255,0.08);flex-wrap:wrap;">
+            <div data-kb-section="bottommenu" style="display:flex;justify-content:center;align-items:center;gap:8px;margin-top:18px;padding-top:14px;border-top:1px solid rgba(255,255,255,0.08);flex-wrap:wrap;">
                 <button id="setup-back-btn" class="setup-mini-btn" onclick="goBackToPlayerCount()" title="Back" style="display:none;font-size:1rem;">⬅️</button>
                 <button id="setup-fwd-btn" class="setup-mini-btn" onclick="goForwardToDetails()" title="Forward" style="display:none;font-size:1rem;">➡️</button>
-                <div id="setup-darkmode-toggle" class="dl-toggle" onclick="toggleDarkMode()" title="Dark / Light mode" style="width:80px;height:38px;"><span class="dl-knob">☀️</span><span class="dl-label">LIGHT</span></div>
+                <div id="setup-darkmode-toggle" class="dl-toggle" tabindex="0" onclick="toggleDarkMode()" title="Dark / Light mode" style="width:80px;height:38px;"><span class="dl-knob">☀️</span><span class="dl-label">LIGHT</span></div>
                 <button id="setup-mute-btn" class="setup-mini-btn" onclick="toggleMute()" style="border-color:#660000;color:#bb1111;width:80px;padding:0;">MUTE</button>
                 <button class="setup-mini-btn" onclick="toggleSetupMenu()" title="Options" style="width:80px;padding:0;">MENU</button>
                 <button class="setup-mini-btn" onclick="toggleFullscreen()" title="Fullscreen">⛶</button>
@@ -1838,6 +1841,7 @@
         const outer=document.getElementById('board-outer');
         const spacePos=SPACE_POS[pos];
         if(!glowEl||!outer||!spacePos)return;
+        _lastGlowPos=pos; /* remembered so a mid-glow resize can re-fire at the new position */
         const rect=outer.getBoundingClientRect();
         const vw=window.innerWidth,vh=window.innerHeight;
         const px=rect.left+(spacePos.x/100)*rect.width;
@@ -1919,7 +1923,19 @@
     /* NOTE: v100 board-sizing logic (sizing the square board PNG to fit the viewport,
        and deriving --space-size from it) is not yet written. This is a build-phase task. */
 
-    let _lastRefreshW=0,_lastRefreshH=0,_resizeTimer=null;
+    let _lastRefreshW=0,_lastRefreshH=0,_resizeTimer=null,_lastGlowPos=null;
+    function _refreshAfterResize(){
+        checkOrientation(); /* handles pass strip/sidebar switch, board size, position refresh */
+        /* Re-fire any currently-showing page glow at its space's NEW screen position —
+           the glow's mask coordinates are baked in when it fires and go stale on resize */
+        const glowEl=document.getElementById('page-glow');
+        if(glowEl&&glowEl.classList.contains('active')&&_lastGlowPos!=null){
+            pageGlowAt(_lastGlowPos);
+        }
+        /* Pass sizing is measured against the container at render time — resize can
+           leave it stale (too big/small, or clipped) until the next renderPasses() */
+        if(document.getElementById('s0'))fitPasses();
+    }
     window.addEventListener('resize',()=>{
         if(_resizeTimer)clearTimeout(_resizeTimer);
         _resizeTimer=setTimeout(()=>{
@@ -1927,10 +1943,7 @@
             const w=window.innerWidth,h=window.innerHeight;
             if(Math.abs(w-_lastRefreshW)<8&&Math.abs(h-_lastRefreshH)<8)return;
             _lastRefreshW=w;_lastRefreshH=h;
-            checkOrientation(); /* handles rotation lock, drawer show/hide, position refresh */
-            if(document.getElementById('s0')){
-                refreshLayout();
-            }
+            _refreshAfterResize();
         },400);
     });
     window.addEventListener('orientationchange',()=>{
@@ -1938,12 +1951,17 @@
         _resizeTimer=setTimeout(()=>{
             _resizeTimer=null;
             _lastRefreshW=window.innerWidth;_lastRefreshH=window.innerHeight;
-            checkOrientation();
-            if(document.getElementById('s0'))refreshLayout();
+            _refreshAfterResize();
         },500);
     });
     /* Initial orientation check on load */
     window.addEventListener('DOMContentLoaded',()=>setTimeout(checkOrientation,50));
+    window.addEventListener('DOMContentLoaded',()=>{
+        setTimeout(()=>{
+            const first=document.querySelector('[data-kb-section="playercount"] button');
+            if(first)first.focus();
+        },80);
+    });
 
     // ══════════════════════════════════════════════
     // MYSTERY SPACE ASSIGNMENT
@@ -2131,6 +2149,7 @@
         const fwdBtn=document.getElementById('setup-fwd-btn');if(fwdBtn)fwdBtn.style.display='none';
         selectedColor=DEFAULT_COLORS[currentSetupP]||DEFAULT_COLORS[0];
         renderSwatches();updateSetupPrompt();startPreload();
+        const ni=document.getElementById('name-input');if(ni)setTimeout(()=>ni.focus(),50);
     }
     function goForwardToDetails(){
         if(_lastPlayerCount)setPlayerCount(_lastPlayerCount);
@@ -2140,13 +2159,76 @@
         const plus=document.getElementById('pc-plus');if(plus)plus.style.display='none';
     }
 
-    /* ── SETUP KEYBOARD NAV — number keys, arrows, Tab, Enter (merch-table / no-mouse) ── */
+    /* ── SETUP KEYBOARD NAV — real 2D sections (merch-table / no-mouse) ──
+       Vertical order (Up/Down, Tab/Shift-Tab): step1 = just playercount.
+       step2 = quickstart -> name -> picture -> color -> confirm -> bottommenu.
+       Left/Right moves between items within whichever section currently has focus. */
+    const SETUP_SECTION_ORDER_STEP1=['playercount'];
+    const SETUP_SECTION_ORDER_STEP2=['quickstart','name','picture','color','confirm','bottommenu'];
+
+    function _setupSectionItems(name){
+        if(name==='color'){
+            /* swatch-row is rebuilt dynamically and has no data-kb-section on its children */
+            return[...document.querySelectorAll('#swatch-row .color-swatch')].filter(el=>el.offsetParent!==null);
+        }
+        if(name==='playercount'){
+            return[...document.querySelectorAll('[data-kb-section="playercount"] button')].filter(el=>el.offsetParent!==null);
+        }
+        if(name==='bottommenu'){
+            return[...document.querySelectorAll('[data-kb-section="bottommenu"] button,[data-kb-section="bottommenu"] .dl-toggle')].filter(el=>el.offsetParent!==null);
+        }
+        /* Leaf sections: quickstart, name, picture, confirm — tagged directly */
+        return[...document.querySelectorAll(`[data-kb-section="${name}"]`)].filter(el=>el.offsetParent!==null);
+    }
+    function _setupActiveOrder(){
+        const step1=document.getElementById('setup-step-1');
+        const step1Visible=step1&&step1.style.display!=='none';
+        return step1Visible?SETUP_SECTION_ORDER_STEP1:SETUP_SECTION_ORDER_STEP2;
+    }
+    function _setupCurrentSection(){
+        const ae=document.activeElement;
+        if(!ae)return null;
+        if(ae.classList&&ae.classList.contains('color-swatch'))return'color';
+        const withAttr=ae.closest('[data-kb-section]');
+        if(withAttr)return withAttr.getAttribute('data-kb-section');
+        return null;
+    }
+    function _setupFocusSection(name,preferIdx){
+        const items=_setupSectionItems(name);
+        if(!items.length)return false;
+        const idx=Math.max(0,Math.min(items.length-1,preferIdx||0));
+        items[idx].focus();
+        return true;
+    }
+    function _setupMoveVertical(dir){
+        const order=_setupActiveOrder();
+        const cur=_setupCurrentSection();
+        let curIdx=order.indexOf(cur);
+        if(curIdx<0)curIdx=dir>0?-1:0;
+        let next=curIdx+dir;
+        next=((next%order.length)+order.length)%order.length;
+        _setupFocusSection(order[next],0);
+    }
+    function _setupMoveHorizontal(dir){
+        const cur=_setupCurrentSection();
+        if(!cur)return false;
+        const items=_setupSectionItems(cur);
+        if(items.length<2)return false;
+        let idx=items.indexOf(document.activeElement);
+        if(idx<0)idx=0;
+        idx=((idx+dir)%items.length+items.length)%items.length;
+        items[idx].focus();
+        return true;
+    }
+
     document.addEventListener('keydown',e=>{
         const setup=document.getElementById('overlay-setup');
         if(!setup||setup.style.display==='none')return;
         const step1=document.getElementById('setup-step-1');
         const step1Visible=step1&&step1.style.display!=='none';
         const ae=document.activeElement;
+        const inNameField=ae&&ae.id==='name-input';
+
         if(step1Visible){
             if(e.key>='1'&&e.key<='6'){
                 const n=parseInt(e.key,10);
@@ -2155,24 +2237,27 @@
             }
             if(e.key==='+'||e.key==='='){expandPlayerChoices();e.preventDefault();return;}
         } else {
-            /* step 2: Enter in the name field confirms */
-            if(e.key==='Enter'&&ae&&ae.id==='name-input'){e.preventDefault();confirmArtist();return;}
+            /* step 2: Enter in the name field confirms rather than navigating */
+            if(e.key==='Enter'&&inNameField){e.preventDefault();confirmArtist();return;}
         }
-        /* Enter/Space activates focused avatar or color swatch */
-        if((e.key==='Enter'||e.key===' ')&&ae&&(ae.classList.contains('setup-avatar')||ae.classList.contains('color-swatch'))){
+
+        /* Enter/Space activates the focused control (skip while typing in the name field) */
+        if((e.key==='Enter'||e.key===' ')&&ae&&!inNameField&&setup.contains(ae)){
             e.preventDefault();ae.click();return;
         }
-        /* Arrow keys move focus across all visible setup controls (skip while typing) */
-        if(e.key==='ArrowRight'||e.key==='ArrowLeft'||e.key==='ArrowDown'||e.key==='ArrowUp'){
-            if(ae&&ae.id==='name-input')return; /* keep text-cursor behavior */
-            const focusables=[...setup.querySelectorAll('button,input,[tabindex="0"]')].filter(el=>el.offsetParent!==null);
-            if(!focusables.length)return;
-            e.preventDefault();
-            const fwd=(e.key==='ArrowRight'||e.key==='ArrowDown');
-            let idx=focusables.indexOf(ae);
-            if(idx<0)idx=fwd?-1:0;
-            idx=fwd?(idx+1)%focusables.length:(idx-1+focusables.length)%focusables.length;
-            focusables[idx].focus();
+
+        /* Up/Down — and Tab/Shift-Tab — move between sections */
+        if(e.key==='ArrowDown'||e.key==='ArrowUp'){
+            e.preventDefault();_setupMoveVertical(e.key==='ArrowDown'?1:-1);return;
+        }
+        if(e.key==='Tab'){
+            e.preventDefault();_setupMoveVertical(e.shiftKey?-1:1);return;
+        }
+        /* Left/Right move within the current section — except inside the name field,
+           where they keep normal text-cursor behavior */
+        if(e.key==='ArrowRight'||e.key==='ArrowLeft'){
+            if(inNameField)return;
+            e.preventDefault();_setupMoveHorizontal(e.key==='ArrowRight'?1:-1);return;
         }
     });
     /* Quick start: skips manual setup — random avatars (distinct first, numbered repeats
