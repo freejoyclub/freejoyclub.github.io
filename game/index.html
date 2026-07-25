@@ -1,7 +1,7 @@
 <!DOCTYPE html><html lang="en"><head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Fearjoy - Game (v100.17)</title>
+    <title>Fearjoy - Game (v100.18)</title>
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
@@ -831,7 +831,7 @@
     </div>
 
     <!-- ══ BOTTOM UI BAR ══ -->
-    <div id="quickgame-hint">QUICK GAME ON: MAX ROLL IS NOW 12; PIECES MOVE FASTER</div>
+    <div id="quickgame-hint">QUICK GAME ON: MAX ROLL IS NOW 10; PIECES MOVE FASTER</div>
     <div id="ui-layer">
         <div id="ui-layer-color-wash"></div>
         <!-- VU meter left -->
@@ -1120,14 +1120,14 @@
         5:{title:"FEARJOY",emoji:"☯️",isFearjoy:true,desc:"Flip the coin: JOY = +1, FEAR = -1.",sound:"coin.wav"},
         8:{title:"FIGMENT",emoji:"🛸",isFigment:true,isTrack:true,desc:"Step outside (1:00) for +2, or stay indoors for -1.",sound:"figclip.wav"},
         9:{title:"JOY",emoji:"😄",shift:1,isAuto:true,desc:"FREEJOY! Forward 1.",sound:"coinclip.wav"},
-        10:{title:"THE REMEDY",emoji:"💊",choice:'remedy',isTrack:true,desc:"A major label offers a deal. Sign for +6 now, but every 6 you roll becomes -2. Sellouts pass the Gatekeeper freely.",sound:"remedyclip.wav"},
+        10:{title:"THE REMEDY",emoji:"💊",choice:'remedy',isTrack:true,desc:"A major label offers a deal. Sign for +6 now, but any roll above 5 gets cut in half. Sellouts pass the Gatekeeper freely.",sound:"remedyclip.wav"},
         11:{title:"FEAR",emoji:"😱",shift:-1,isAuto:true,desc:"Get scared. Rewind 1.",sound:"spookyclip1.wav"},
         13:{title:"JOY",emoji:"😄",shift:1,isAuto:true,desc:"Choose JOY! Forward 1.",sound:"coinclip.wav"},
         15:{title:"DMITRI",emoji:"👨‍🚀",timer:15,isDmitri:true,isTrack:true,desc:"Take DEEP BREATHS (15 sec) for the 5D shortcut. Skip = Rewind 2.",sound:"dmitriclip.wav"},
         17:{title:"FEARJOY",emoji:"☯️",isFearjoy:true,desc:"Fear? Joy? Flip to find out.",sound:"coin.wav"},
         18:{title:"IT HAPPENS",emoji:"🔔",isItHappens:true,isTrack:true,desc:"Suddenly, instantly, take an extra turn!",sound:"happensclip.wav"},
         19:{title:"JOY",emoji:"😄",shift:1,isAuto:true,desc:"PUREJOY! Forward 1.",sound:"coinclip.wav"},
-        20:{title:"INVEST IN MERCH",emoji:"👕",choice:'merch',desc:"Do you INVEST by rewinding -4 now? Every 1 or 2 you roll later will be doubled."},
+        20:{title:"INVEST IN MERCH",emoji:"👕",choice:'merch',desc:"Do you INVEST by rewinding -4 now? Every roll below 4 will be doubled."},
         21:{title:"FEAR",emoji:"😱",shift:-1,isAuto:true,desc:"Self-doubt and vices. Rewind 1.",sound:"spookyclip1.wav"},
         23:{title:"5TH DIMENSION",emoji:"✨",shift:3,isAuto:true,desc:"You have transcended. Forward!.",sound:"coinclip.wav"},
         25:{title:"NIGHTDRIVE",emoji:"🌙",isNightDrive:true,isTrack:true,desc:"Fall asleep at the wheel! EYES CLOSED until next turn.",sound:"nightclip.wav"},
@@ -2774,7 +2774,7 @@
             } else if(pl.isSellout){
                 ld.style.display='block';
                 document.getElementById('exp-label-name').innerText='PROPERTY OF ILLUMINATI RECORDS';
-                document.getElementById('exp-label-rule').innerText='label turns +6 into -2';
+                document.getElementById('exp-label-rule').innerText='rolls above 5 get cut in half';
             } else {
                 ld.style.display='none';
             }
@@ -3114,7 +3114,7 @@
         await diceGoToCinematic();
         vuStartRoll();  /* needle resets to -45 and bounces */
         let roll;
-        const _rollMax=quickGameActive?12:6;
+        const _rollMax=quickGameActive?10:6;
         for(let j=0;j<16;j++){
             dice.innerText=Math.floor(Math.random()*_rollMax)+1;
             if(j%4===0)playDiceRoll();
@@ -3126,8 +3126,9 @@
         playDiceDone();
         await new Promise(r=>setTimeout(r,750));
 
-        /* Investor — teal dice */
-        if(p.isInvestor&&(roll===1||roll===2)){
+        /* Investor — teal dice. Doubles any roll below 4 (was hardcoded to exactly
+           1 or 2, which silently stopped firing once Quick Game widened the roll range) */
+        if(p.isInvestor&&roll>0&&roll<4){
             dice.classList.add('dice-teal');spawnEmoji('👕',true);
             showSidebar("INVESTMENT PAYOFF","Merch is moving! Roll doubled.","#ffffff");
             playCoinSfx();
@@ -3135,13 +3136,15 @@
             p.shirtsSold++;p.accolades.push('👕');roll*=2;dice.innerText=roll;
             await new Promise(r=>setTimeout(r,1800));updateUI();
         }
-        /* Remedy sellout — red dice */
-        if(p.isSellout&&roll===6){
+        /* Remedy sellout — red dice. Cuts any roll above 5 in half (was a flat
+           "6 becomes -2", which almost never fired once Quick Game widened the roll range) */
+        if(p.isSellout&&roll>5){
+            const halved=Math.floor(roll/2);
             dice.classList.add('dice-red');spawnEmoji('💊',true);
-            showSidebar("CONTRACT DEBT","Label takes a cut! 6 becomes -2. Should've stayed indie...","var(--fear-glow)");
+            showSidebar("CONTRACT DEBT",`Label takes a cut! ${roll} becomes ${halved}. Should've stayed indie...`,"var(--fear-glow)");
             playRemedyPunishment();
             await new Promise(r=>setTimeout(r,800));
-            p.pillsTaken++;p.accolades.push('💊');roll=-2;dice.innerText=roll;
+            p.pillsTaken++;p.accolades.push('💊');roll=halved;dice.innerText=roll;
             playDiceDone();
             await new Promise(r=>setTimeout(r,1800));updateUI();
         }
@@ -3542,7 +3545,7 @@
                 fp2body.style.cssText='display:none;margin-top:10px;padding:12px 14px;background:rgba(0,0,0,0.5);border-radius:8px;border:1px solid rgba(255,255,255,0.12);font-family:Courier New,monospace;font-size:0.98rem;text-align:left;line-height:1.9;';
                 fp2body.innerHTML=`<div style="font-weight:bold;letter-spacing:1px;color:rgba(255,255,255,0.9);margin-bottom:8px;">Illuminati Records: Artist Deal</div>`+
                 `<div style="color:#00ff88;">Move +6 now!</div>`+
-                `<div style="color:#ff4444;">Every future 6 you roll will become -2.</div>`+
+                `<div style="color:#ff4444;">Every future roll above 5 gets cut in half.</div>`+
                 `<div>You may pass the <span style="color:#00ff88;">Gatekeeper</span> freely as a signed artist.</div>`;
                 fpBtn2.onclick=()=>{const open=fp2body.style.display==='block';fp2body.style.display=open?'none':'block';fpBtn2.innerText=open?'Read the Fine Print ⬇️':'Hide Fine Print ⬆️';};
                 remedyDesc.appendChild(fpBtn2);remedyDesc.appendChild(fp2body);
