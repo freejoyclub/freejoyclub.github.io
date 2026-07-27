@@ -1,7 +1,7 @@
 <!DOCTYPE html><html lang="en"><head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Fearjoy - Game (v100.18)</title>
+    <title>Fearjoy - Game (v100.20)</title>
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
@@ -282,11 +282,15 @@
             border-radius:6px; background:#1a1a1a; border:1.5px solid #444;
             cursor:pointer; color:rgba(255,255,255,0.7); font-family:sans-serif;
             font-size:clamp(0.9rem,1.4vw,1.2rem); font-weight:700;
-            box-shadow:0 0 6px rgba(0,150,255,0.2); transition:all 0.15s ease;
+            box-shadow:0 2px 5px rgba(0,0,0,0.6),0 0 6px rgba(0,150,255,0.2); transition:all 0.15s ease;
             display:flex; align-items:center; justify-content:center; flex-shrink:2;
         }
-        #fullscreen-standalone-btn:hover { border-color:var(--blue-glow); color:var(--blue-glow); box-shadow:0 0 12px var(--blue-glow); }
+        #fullscreen-standalone-btn:hover { border-color:var(--blue-glow); color:var(--blue-glow); box-shadow:0 2px 5px rgba(0,0,0,0.6),0 0 12px var(--blue-glow); }
         #fullscreen-standalone-btn:active { box-shadow:inset 0 2px 5px rgba(0,0,0,0.7); transform:scale(0.96); }
+        #fullscreen-standalone-btn.active {
+            background:#3a3a3a; border-color:#e8c94a; color:#e8c94a;
+            box-shadow:inset 0 2px 4px rgba(0,0,0,0.6),0 0 14px rgba(232,201,74,0.45);
+        }
         #nav-knob-btn {
             width:clamp(38px,4.5vw,58px); height:clamp(26px,3.2vw,42px);
             border-radius:6px; background:#1a1a1a; border:1.5px solid #444;
@@ -299,6 +303,10 @@
         }
         #nav-knob-btn:hover { background:#252525; border-color:rgba(255,255,255,0.35); color:white; }
         #nav-knob-btn:active { box-shadow:inset 0 2px 5px rgba(0,0,0,0.7); transform:scale(0.96); background:#111; }
+        #nav-knob-btn.active {
+            background:#3a3a3a; border-color:#e8c94a; color:#e8c94a;
+            box-shadow:inset 0 2px 4px rgba(0,0,0,0.6),0 0 14px rgba(232,201,74,0.45);
+        }
         #nav-menu {
             display:none; flex-direction:column; gap:6px;
             position:fixed; bottom:calc(var(--bar-h)*2 + 14px); right:clamp(6px,2vw,16px);
@@ -349,10 +357,10 @@
             cursor:pointer; color:#bb1111; font-family:sans-serif;
             font-size:clamp(0.42rem,0.7vw,0.65rem); font-weight:700;
             letter-spacing:0.5px; text-transform:uppercase;
-            box-shadow:0 0 6px rgba(160,0,0,0.35); transition:all 0.15s ease;
+            box-shadow:0 2px 5px rgba(0,0,0,0.6),0 0 6px rgba(160,0,0,0.35); transition:all 0.15s ease;
             display:flex; align-items:center; justify-content:center; flex-shrink:2;
         }
-        #mute-btn:hover { box-shadow:0 0 12px rgba(200,0,0,0.5); }
+        #mute-btn:hover { box-shadow:0 2px 5px rgba(0,0,0,0.6),0 0 12px rgba(200,0,0,0.5); }
         #mute-btn:active { box-shadow:inset 0 2px 5px rgba(0,0,0,0.7); transform:scale(0.96); }
         #mute-btn.muted {
             background:#880000; border-color:#cc0000; color:#000;
@@ -364,13 +372,13 @@
             cursor:pointer; color:#3fbf3f; font-family:sans-serif;
             font-size:clamp(0.38rem,0.62vw,0.58rem); font-weight:700;
             letter-spacing:0.5px; text-transform:uppercase; line-height:1.15;
-            box-shadow:0 0 6px rgba(0,160,0,0.35); transition:all 0.15s ease;
+            box-shadow:0 2px 5px rgba(0,0,0,0.6),0 0 6px rgba(0,160,0,0.35); transition:all 0.15s ease;
             display:flex; align-items:center; justify-content:center; flex-shrink:2;
         }
-        #quickgame-btn:hover { box-shadow:0 0 12px rgba(0,200,0,0.5); }
+        #quickgame-btn:hover { box-shadow:0 2px 5px rgba(0,0,0,0.6),0 0 12px rgba(0,200,0,0.5); }
         #quickgame-btn:active { box-shadow:inset 0 2px 5px rgba(0,0,0,0.7); transform:scale(0.96); }
         #quickgame-btn.active {
-            background:#0e5c0e; border-color:#2ecc2e; color:#000;
+            background:#0e5c0e; border-color:#2ecc2e; color:#fff;
             box-shadow:inset 0 2px 4px rgba(0,0,0,0.6),0 0 14px rgba(0,220,0,0.45);
         }
 
@@ -719,7 +727,7 @@
         }
         .setup-mini-btn:hover { border-color:rgba(255,255,255,0.4); color:white; }
         #setup-quickgame-btn.active {
-            background:#0e5c0e; border-color:#2ecc2e; color:#000;
+            background:#0e5c0e; border-color:#2ecc2e; color:#fff;
             box-shadow:inset 0 2px 4px rgba(0,0,0,0.6),0 0 14px rgba(0,220,0,0.45);
         }
         /* ── DARK/LIGHT TOGGLE SWITCH ── */
@@ -1464,6 +1472,17 @@
         const pp=document.getElementById('bgmusic-playpause');
         if(pp)pp.innerText=bgMusicEnabled?'⏸':'▶';
         updateAmbientGain();
+        /* Self-healing: if turning it back on and the ambient track is stuck
+           (paused, or never started at all), actually (re)start it instead of
+           just raising a volume that has no audible effect on silence */
+        if(bgMusicEnabled){
+            const setupOpen=document.getElementById('overlay-setup')&&document.getElementById('overlay-setup').style.display!=='none';
+            if(setupOpen){
+                if(!amb1||amb1.paused)startAmbient1();
+            } else {
+                if(!amb2||amb2.paused)startAmbient2();
+            }
+        }
     }
     function _mkAmb(src){const a=new Audio(src);a.loop=true;a.preload='auto';a.volume=0;return a;}
     function _rampVol(a,target,secs){
@@ -1491,11 +1510,11 @@
         }catch(e){}
     }
     function startAmbient2(){
-        if(amb2Active)return;
+        if(amb2Active&&amb2&&!amb2.paused)return; /* only skip if genuinely already playing */
         amb2Active=true;_amb1On=false;
         if(amb1){_rampVol(amb1,0,1.2);setTimeout(()=>{try{amb1.pause();}catch(e){}},1400);}
         try{
-            amb2=_mkAmb('ambient-2.mp3');
+            if(!amb2)amb2=_mkAmb('ambient-2.mp3');
             amb2.play().then(()=>_rampVol(amb2,amb2Target(),2)).catch(()=>{});
         }catch(e){}
     }
@@ -1647,6 +1666,8 @@
     document.addEventListener('fullscreenchange',()=>{
         const fl=document.getElementById('fullscreen-label');
         if(fl)fl.innerText=document.fullscreenElement?'Exit Fullscreen':'Fullscreen';
+        const fb=document.getElementById('fullscreen-standalone-btn');
+        if(fb)fb.classList.toggle('active',!!document.fullscreenElement);
         if(!document.getElementById('s0'))return;
         /* Always force full redraw on fullscreen change — viewport shifts significantly */
         _lastRefreshW=0;_lastRefreshH=0;
@@ -1779,6 +1800,8 @@
         if(!nm)return;
         const opening=!nm.classList.contains('open');
         nm.classList.toggle('open');
+        const menuBtn=document.getElementById('nav-knob-btn');
+        if(menuBtn)menuBtn.classList.toggle('active',opening);
         if(opening){
             setTimeout(()=>{
                 const first=document.querySelector('#nav-menu button:not([disabled])');
@@ -1787,10 +1810,15 @@
         }
     }
     function closeNavMenu(){
-        document.getElementById('nav-menu').classList.remove('open');
+        const nm=document.getElementById('nav-menu');
+        const wasOpen=nm&&nm.classList.contains('open');
+        if(nm)nm.classList.remove('open');
         const ss=document.getElementById('sound-submenu');if(ss)ss.classList.remove('open');
         const menuBtn=document.getElementById('nav-knob-btn');
-        if(menuBtn)menuBtn.focus();
+        if(menuBtn){
+            menuBtn.classList.remove('active');
+            if(wasOpen)menuBtn.focus(); /* only steal focus back if the menu was genuinely open */
+        }
     }
     function toggleSoundSubmenu(){
         const ss=document.getElementById('sound-submenu');if(ss)ss.classList.toggle('open');
@@ -1868,6 +1896,7 @@
                 spacesTriggeredThisTurn=new Set();
                 turnIdx=0;isMoving=false;isRolling=false;isSwapping=false;isInLoreDrop=false;loreDoneResolver=null;
                 stopMetronome();stopActiveLoreVid();
+                startAmbient2(); /* restart the bg loop — a win screen (or any other stop) previously left it silent forever after restart */
                 players.forEach((_,i)=>{const el=document.getElementById('p'+i);if(el)el.style.transition='';});
                 const _mp=document.getElementById('main-popup');
                 if(_mp){_mp.style.overflowX='';_mp.style.maxWidth='';}
@@ -2123,7 +2152,7 @@
     }
 
     function renderBucketItem(item,container,playerIdx){
-        container.innerHTML='';if(!item)return;
+        container.innerHTML='';if(!item)return false;
         /* Strip path and extension for caption — "bucket/g sticker.png" → "g sticker" */
         const _caption=item.file?item.file.replace(/^.*\//,'').replace(/\.[^.]+$/,''):'';
         const _cap=()=>{
@@ -2157,9 +2186,13 @@
                 fadeVideoAudioOut(vid,true);if(activeLoreVid===vid)activeLoreVid=null;
             },{once:true});
         } else if(item.type==='link'||item.type==='download'){
-            /* Merch drops are handled as a central modal — not a sidecard */
+            /* Merch drops are handled as a central modal — not a sidecard.
+               This is a self-contained flow: it ends the turn itself once the
+               player accepts or declines. Signal the caller to stop here. */
             showMerchModal(item,playerIdx);
+            return true;
         }
+        return false;
     }
         // ══════════════════════════════════════════════
     // MERCH MODAL — central popup for discount drops
@@ -2202,6 +2235,9 @@
                 movePlayer(2,false,playerIdx);
             } else {
                 modal.style.display='none';
+                document.getElementById('roll-btn').disabled=false;
+                isMoving=false;isRolling=false;
+                endTurn();
             }
         };
         const codeEl=document.createElement('div');
@@ -2233,7 +2269,16 @@
             /* Declined the homies — announce first, then the penalty lands after 1s */
             if(playerIdx!==undefined&&players[playerIdx]){
                 showSidebar('🎫 No Merch: -1',"Didn't support the homies 😭",'var(--mystery-glow)');
-                setTimeout(()=>{movePlayerDirect(playerIdx,players[playerIdx].pos-1);},1000);
+                setTimeout(()=>{
+                    movePlayerDirect(playerIdx,players[playerIdx].pos-1);
+                    document.getElementById('roll-btn').disabled=false;
+                    isMoving=false;isRolling=false;
+                    endTurn();
+                },1000);
+            } else {
+                document.getElementById('roll-btn').disabled=false;
+                isMoving=false;isRolling=false;
+                endTurn();
             }
         };
         modal.style.display='flex';resetKbFocus();
@@ -3266,7 +3311,19 @@
             }
 
             item=getRandomBucketItem(idx);
-            renderBucketItem(item,document.getElementById('side-bucket'),idx);
+            const _openedMerchModal=renderBucketItem(item,document.getElementById('side-bucket'),idx);
+            if(_openedMerchModal){
+                /* Merch is a self-contained modal flow — it ends the turn itself
+                   once the player accepts or declines. Stop here; do NOT fall
+                   through to the video/image dismiss logic or endTurn() below.
+                   isMoving/isRolling STAY TRUE while this modal is open — it was
+                   a real bug to clear them here, since Space (and any other
+                   doRoll() path) bypasses the disabled roll-btn entirely and
+                   only checks these flags, letting a second roll sneak in for
+                   the same player while the merch modal still sat open. */
+                document.getElementById('roll-btn').disabled=true; /* stays locked until the modal resolves */
+                return;
+            }
             document.getElementById('rule-sidebar').classList.add('mystery-sidebar');
             showSidebar('Mystery Lore Drop','','var(--mystery-glow)',`Space ${p.pos}`);
 
@@ -4018,7 +4075,10 @@ function showStatusPopup(t,d,b1,c1,b2,c2,playerNameHtml=''){
     // ══════════════════════════════════════════════
     // END TURN
     // ══════════════════════════════════════════════
+    let _endTurnInProgress=false;
     function endTurn(){
+        if(_endTurnInProgress)return; /* reentrancy guard — a double-call is a no-op, not a double turn-advance */
+        _endTurnInProgress=true;
         dismissReminder();
         spacesTriggeredThisTurn=new Set();
         const fb=document.getElementById('maya-fear-btn');if(fb)fb.remove();
@@ -4034,6 +4094,9 @@ function showStatusPopup(t,d,b1,c1,b2,c2,playerNameHtml=''){
         document.getElementById('status-text').innerHTML=`<span style="color:${nextP.avatar.color}">${nextP.name}'S TURN</span>`;
         document.getElementById('ui-layer-color-wash').style.background=`linear-gradient(90deg,${nextP.avatar.color} 0%,transparent 35%)`;
         updateUI();
+        /* Released on next tick — endTurn is synchronous, so this only guards
+           against a same-tick double-call, not a legitimate later turn */
+        setTimeout(()=>{_endTurnInProgress=false;},0);
     }
     // ══════════════════════════════════════════════
     // LORE BACKDROP — click outside sidebar to dismiss lore
