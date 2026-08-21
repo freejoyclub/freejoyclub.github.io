@@ -286,6 +286,45 @@ font-size: 0.55rem;
 padding: 6px 3px;
 }
 }
+
+/* Tin Egg Easter Egg */
+#tinEgg {
+display: block;
+width: 55px;
+height: 55px;
+margin-top: 30px;
+opacity: 0;
+transform: translateY(40px);
+transition: opacity 0.9s ease, transform 0.9s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+#tinEgg img {
+width: 100%;
+height: 100%;
+object-fit: contain;
+display: block;
+filter: drop-shadow(0 0 10px var(--glow-color));
+}
+
+#tinEgg.peek {
+opacity: 1;
+transform: translateY(0);
+animation: eggFloat 6s ease-in-out infinite 0.9s;
+}
+
+#tinEgg.peek:hover {
+animation: eggFloat 6s ease-in-out infinite, eggBounce 0.5s ease;
+}
+
+@keyframes eggFloat {
+0%, 100% { transform: translateY(0); }
+50% { transform: translateY(-8px); }
+}
+
+@keyframes eggBounce {
+0%, 100% { transform: translateY(0) scale(1); }
+50% { transform: translateY(-10px) scale(1.1); }
+}
 </style>
 </head>
 <body>
@@ -306,12 +345,12 @@ style="width: 85%; max-width: 500px; height: 256px; border-radius: 25px; border:
 ></iframe>
 
 <div class="button-stack">
+<button class="btn" id="mailingListButton">🎧 NOTIFY ME WHEN IT DROPS!</button>
 <a href="/game" class="btn btn-game">
   🎲 PLAY THE GAME (FREE)
   <img src="31_WEB_GAME.png" alt="" class="btn-game-img">
 </a>
 <a href="mailto:grant@freejoy.club" class="btn">📧 CONTACT US</a>
-<button class="btn" id="mailingListButton">🎧 RESERVE YOUR COPY</button>
 </div>
 
 <form id="emailForm">
@@ -321,6 +360,10 @@ style="width: 85%; max-width: 500px; height: 256px; border-radius: 25px; border:
 </form>
 
 <p class="success-message" id="successMessage">Thanks! We'll send it over when it's done.</p>
+
+<a href="/clemmy-g" id="tinEgg" aria-label="???">
+<img src="images/tin-egg.png" alt="">
+</a>
 </div>
 
 <div class="nav-cluster">
@@ -366,6 +409,28 @@ alert('Problem submitting. Try again?');
 alert('Submission error. Try again?');
 }
 });
+
+// Tin egg easter egg: peeks in on scroll-near-bottom OR after 4s, whichever first
+(() => {
+const tinEgg = document.getElementById('tinEgg');
+let revealed = false;
+
+function revealEgg() {
+if (revealed) return;
+revealed = true;
+tinEgg.classList.add('peek');
+window.removeEventListener('scroll', checkScroll);
+}
+
+function checkScroll() {
+const scrolledToBottom = window.innerHeight + window.scrollY >= document.body.scrollHeight - 300;
+if (scrolledToBottom) revealEgg();
+}
+
+window.addEventListener('scroll', checkScroll, { passive: true });
+checkScroll(); // in case page loads already scrolled/short
+setTimeout(revealEgg, 4000);
+})();
 </script>
 
 </body>
