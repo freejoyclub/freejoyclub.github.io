@@ -1,7 +1,7 @@
 <!DOCTYPE html><html lang="en"><head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Fearjoy - Game (v100.21)</title>
+    <title>Fearjoy - Game (v100.22)</title>
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
@@ -195,6 +195,8 @@
             #la2a .dl-toggle { width:62px !important; font-size:0.48rem; }
             #mute-btn, #nav-knob-btn { width:32px; font-size:0.36rem; }
             #fullscreen-standalone-btn { width:24px; }
+            .bg-swatch-row .color-swatch { width:14px !important; height:14px !important; }
+            .bg-swatch-row { gap:2px !important; }
         }
         #ui-layer::after {
             content:''; position:absolute; inset:0; pointer-events:none;
@@ -768,6 +770,7 @@
         .roster-item { text-align:center; font-size:0.7rem; color:white; }
         .roster-img  { width:45px; height:45px; border-radius:50%; display:block; margin:0 auto 5px; }
         .color-swatch { width:clamp(22px,4vw,32px); height:clamp(22px,4vw,32px); border-radius:50%; border:2px solid transparent; cursor:pointer; transition:all 0.2s ease; display:inline-block; }
+        .bg-swatch-default { background:linear-gradient(135deg,#fff 0%,#fff 49%,#1a1a1a 51%,#1a1a1a 100%); border-color:rgba(255,255,255,0.3) !important; }
         .color-swatch:hover { transform:scale(1.15); }
         .color-swatch.swatch-selected { border-color:white; transform:scale(1.2); box-shadow:0 0 10px currentColor; }
         .color-swatch.swatch-taken { opacity:0.2; cursor:not-allowed; pointer-events:none; }
@@ -869,6 +872,10 @@
             <div class="dial-label">BG MUSIC</div>
         </div>
         <div id="darkmode-toggle" class="dl-toggle" onclick="toggleDarkMode()" title="Dark / Light mode" style="width:80px;"><span class="dl-knob">☀️</span><span class="dl-label">LIGHT</span></div>
+        <div class="rack-dial" style="min-width:auto;">
+            <div class="bg-swatch-row" style="display:flex;gap:4px;align-items:center;"></div>
+            <div class="dial-label">BG</div>
+        </div>
         <div id="nav-knob">
             <button id="mute-btn" onclick="toggleMute()" title="Mute">MUTE</button>
             <button id="quickgame-btn" onclick="toggleQuickGame()" title="Quick Game">QUICK<br>GAME</button>
@@ -1003,6 +1010,10 @@
                 <button id="setup-back-btn" class="setup-mini-btn" onclick="goBackToPlayerCount()" title="Back" style="display:none;font-size:1rem;">⬅️</button>
                 <button id="setup-fwd-btn" class="setup-mini-btn" onclick="goForwardToDetails()" title="Forward" style="display:none;font-size:1rem;">➡️</button>
                 <div id="setup-darkmode-toggle" class="dl-toggle" tabindex="0" onclick="toggleDarkMode()" title="Dark / Light mode" style="width:80px;height:38px;"><span class="dl-knob">☀️</span><span class="dl-label">LIGHT</span></div>
+                <div style="display:flex;flex-direction:column;align-items:center;gap:3px;">
+                    <div class="bg-swatch-row" style="display:flex;gap:4px;align-items:center;"></div>
+                    <div style="font-family:sans-serif;font-size:0.5rem;font-weight:700;letter-spacing:1px;color:rgba(255,255,255,0.5);text-transform:uppercase;">BG</div>
+                </div>
                 <button id="setup-mute-btn" class="setup-mini-btn" onclick="toggleMute()" style="border-color:#660000;color:#bb1111;width:80px;padding:0;">MUTE</button>
                 <button id="setup-quickgame-btn" class="setup-mini-btn" onclick="toggleQuickGame()" title="Quick Game" style="border-color:#1f6b1f;color:#3fbf3f;width:80px;padding:0;line-height:1.15;">QUICK<br>GAME</button>
                 <button class="setup-mini-btn" onclick="toggleSetupMenu()" title="Options" style="width:80px;padding:0;">MENU</button>
@@ -1070,6 +1081,16 @@
         {hex:'#00ccff',name:'Cyan'},
         {hex:'#ff00ff',name:'Magenta'},{hex:'#00ff88',name:'Mint'},
         {hex:'#ff4444',name:'Red'},{hex:'#ff8800',name:'Orange'},
+    ];
+    /* Muted/pastel background swatches — deliberately soft so they don't compete
+       visually with the board art or player pieces the way AVAILABLE_COLORS would */
+    const BG_COLORS=[
+        {hex:'#f0e6d2',name:'Sand'},
+        {hex:'#dde8e0',name:'Sage'},
+        {hex:'#e3dcec',name:'Lavender'},
+        {hex:'#f0dede',name:'Blush'},
+        {hex:'#dbe6ec',name:'Powder Blue'},
+        {hex:'#ece3d2',name:'Cream'},
     ];
     const DEFAULT_COLORS=['#00ccff','#00ff88','#ff00ff','#ffcf40','#7e2b20','#f2d5c9'];
     /* Jesse's default is fixed (warm yellow); Marco/Grant get a random bright swatch color */
@@ -1415,6 +1436,7 @@
     function toggleSfx(){sfxEnabled=!sfxEnabled;syncAudioUI();}
 
     let darkModeOn=false;
+    let customBgColor=null; /* persisted separately; null = following light/dark toggle */
     function toggleQuickGame(){
         quickGameActive=!quickGameActive;
         const btn=document.getElementById('quickgame-btn');
@@ -1426,7 +1448,9 @@
     }
     function toggleDarkMode(){
         darkModeOn=!darkModeOn;
+        customBgColor=null; /* manually flipping the switch overrides any picked swatch */
         document.body.classList.toggle('dark-mode',darkModeOn);
+        document.getElementById('page-bg').style.background='';
         document.querySelectorAll('.dl-toggle').forEach(t=>{
             t.classList.toggle('dark',darkModeOn);
             const knob=t.querySelector('.dl-knob');
@@ -1434,6 +1458,67 @@
             if(knob)knob.innerText=darkModeOn?'🌙':'☀️';
             if(label)label.innerText=darkModeOn?'DARK':'LIGHT';
         });
+        renderBgSwatches();
+        saveDisplayPrefs();
+    }
+
+    /* Custom background color — persistent, overrides light/dark until the
+       toggle switch is used again or "default" swatch is clicked */
+    function setCustomBg(hex){
+        customBgColor=hex;
+        document.getElementById('page-bg').style.background=hex;
+        renderBgSwatches();
+        saveDisplayPrefs();
+    }
+    function clearCustomBg(){
+        customBgColor=null;
+        document.getElementById('page-bg').style.background='';
+        renderBgSwatches();
+        saveDisplayPrefs();
+    }
+    function renderBgSwatches(){
+        document.querySelectorAll('.bg-swatch-row').forEach(row=>{
+            row.innerHTML='';
+            /* "Default" swatch — clears custom color, falls back to light/dark toggle */
+            const def=document.createElement('div');
+            def.className='color-swatch bg-swatch-default'+(!customBgColor?' swatch-selected':'');
+            def.title='Default (follow Light/Dark)';def.tabIndex=0;
+            def.onclick=clearCustomBg;
+            row.appendChild(def);
+            BG_COLORS.forEach(c=>{
+                const sw=document.createElement('div');
+                sw.className='color-swatch'+(customBgColor===c.hex?' swatch-selected':'');
+                sw.style.background=c.hex;sw.title=c.name;sw.tabIndex=0;
+                sw.onclick=()=>setCustomBg(c.hex);
+                row.appendChild(sw);
+            });
+        });
+    }
+    function saveDisplayPrefs(){
+        try{
+            localStorage.setItem('fearjoy_display_prefs',JSON.stringify({darkModeOn,customBgColor}));
+        }catch(e){}
+    }
+    function loadDisplayPrefs(){
+        try{
+            const raw=localStorage.getItem('fearjoy_display_prefs');
+            if(!raw)return;
+            const prefs=JSON.parse(raw);
+            if(prefs.darkModeOn){
+                darkModeOn=true;
+                document.body.classList.add('dark-mode');
+                document.querySelectorAll('.dl-toggle').forEach(t=>{
+                    t.classList.add('dark');
+                    const knob=t.querySelector('.dl-knob');const label=t.querySelector('.dl-label');
+                    if(knob)knob.innerText='🌙';if(label)label.innerText='DARK';
+                });
+            }
+            if(prefs.customBgColor){
+                customBgColor=prefs.customBgColor;
+                document.getElementById('page-bg').style.background=customBgColor;
+            }
+            renderBgSwatches();
+        }catch(e){}
     }
 
     // ══════════════════════════════════════════════
@@ -2147,6 +2232,10 @@
             if(first)first.focus();
         },80);
     });
+    window.addEventListener('DOMContentLoaded',()=>{
+        renderBgSwatches();
+        loadDisplayPrefs();
+    });
 
     // ══════════════════════════════════════════════
     // MYSTERY SPACE ASSIGNMENT
@@ -2388,7 +2477,7 @@
             return[...document.querySelectorAll('[data-kb-section="playercount"] button')].filter(el=>el.offsetParent!==null);
         }
         if(name==='bottommenu'){
-            return[...document.querySelectorAll('[data-kb-section="bottommenu"] button,[data-kb-section="bottommenu"] .dl-toggle')].filter(el=>el.offsetParent!==null);
+            return[...document.querySelectorAll('[data-kb-section="bottommenu"] button,[data-kb-section="bottommenu"] .dl-toggle,[data-kb-section="bottommenu"] .color-swatch')].filter(el=>el.offsetParent!==null);
         }
         /* Leaf sections: quickstart, name, picture, confirm — tagged directly */
         return[...document.querySelectorAll(`[data-kb-section="${name}"]`)].filter(el=>el.offsetParent!==null);
