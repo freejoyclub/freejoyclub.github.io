@@ -1,7 +1,7 @@
 <!DOCTYPE html><html lang="en"><head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Fearjoy - Game (v100.20)</title>
+    <title>Fearjoy - Game (v100.21)</title>
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
@@ -819,7 +819,7 @@
         <div id="pass-sidebar"><div id="lineup-label">Lineup</div></div>
         <div id="board-scroll">
             <div id="board-outer">
-                <img id="board-png" src="31_WEB_GAME.png" alt="">
+                <img id="board-png" src="31_WEB_GAME.png" onerror="this.onerror=null;this.src='29_Game_Web-compd.png';" alt="">
                 <div id="board-container"></div>
             </div>
         </div>
@@ -1184,7 +1184,7 @@
     // Tracklist sounds use activeTrackSrc/Gain — crossfade 1s on new tracklist/lore-video
     // ══════════════════════════════════════════════
     let audioCtx=null,masterGain=null,limiter=null;
-    let sfxBus=null,trackBus=null,sfxVol=1,trackVol=1; /* dial-controlled channel gains */
+    let sfxBus=null,trackBus=null,ambientBus=null,sfxVol=1,trackVol=1; /* dial-controlled channel gains */
     let audioEnabled=true,tracksEnabled=true,sfxEnabled=true,masterMuted=false,quickGameActive=false;
     const activeSources=new Set();
     const diceRollSources=new Set();
@@ -1203,6 +1203,12 @@
             /* Channel buses — the LA-2A SFX / TRACKS dials set these gains live */
             sfxBus=audioCtx.createGain();sfxBus.gain.value=sfxVol;sfxBus.connect(masterGain);
             trackBus=audioCtx.createGain();trackBus.gain.value=trackVol;trackBus.connect(masterGain);
+            /* Ambient bus — routes amb1/amb2 through the same graph as everything else.
+               iOS Safari silently ignores HTMLMediaElement.volume writes (a long-standing
+               WebKit quirk tying it to the hardware volume buttons instead), which is why
+               the LA-2A dials/mute previously had zero effect on the bg jam specifically on
+               iPhone. AudioParam.gain is real audio-graph routing and IS respected there. */
+            ambientBus=audioCtx.createGain();ambientBus.gain.value=0;ambientBus.connect(masterGain);
         }
         return audioCtx;
     }
@@ -1484,14 +1490,47 @@
             }
         }
     }
-    function _mkAmb(src){const a=new Audio(src);a.loop=true;a.preload='auto';a.volume=0;return a;}
+    function _mkAmb(src){
+        const a=new Audio(src);a.loop=true;a.preload='auto';a.volume=1;
+        /* Route through WebAudio so volume control works on iOS Safari, which silently
+           ignores HTMLMediaElement.volume writes but DOES respect real gain-node routing.
+           a._gain is this element's personal volume knob from here on; a.volume stays at
+           1 permanently so it never fights or double-attenuates against the gain node. */
+        try{
+            const ctx=getAudioCtx();
+            const src2=ctx.createMediaElementSource(a);
+            const gainNode=ctx.createGain();gainNode.gain.value=0;
+            src2.connect(gainNode);gainNode.connect(ambientBus||masterGain);
+            a._gain=gainNode;
+        }catch(e){
+            /* If routing fails for any reason, a.volume remains the fallback control */
+            a.volume=0;
+        }
+        return a;
+    }
+    /* Sets an ambient element's audible volume — through its WebAudio gain node when
+       available (works everywhere, including iOS), falling back to .volume otherwise. */
+    function _setAmbVol(a,v){
+        if(!a)return;
+        if(a._gain){
+            try{
+                const ctx=getAudioCtx();
+                a._gain.gain.setValueAtTime(a._gain.gain.value,ctx.currentTime);
+                a._gain.gain.linearRampToValueAtTime(Math.max(0.0001,v),ctx.currentTime+0.001);
+                /* linearRampToValueAtTime can't target exactly 0 — snap it directly after */
+                if(v<=0)a._gain.gain.setValueAtTime(0,ctx.currentTime+0.002);
+            }catch(e){a.volume=v;}
+        } else {
+            a.volume=v;
+        }
+    }
     function _rampVol(a,target,secs){
         if(!a)return;
         if(a._ramp)clearInterval(a._ramp);
         const steps=Math.max(1,Math.round(secs*20));
-        const start=a.volume,dv=(target-start)/steps;let i=0;
+        const start=a._gain?a._gain.gain.value:a.volume,dv=(target-start)/steps;let i=0;
         a._ramp=setInterval(()=>{
-            i++;a.volume=Math.max(0,Math.min(1,start+dv*i));
+            i++;_setAmbVol(a,Math.max(0,Math.min(1,start+dv*i)));
             if(i>=steps){clearInterval(a._ramp);a._ramp=null;}
         },50);
     }
@@ -1560,7 +1599,8 @@
             _rampVol(amb2,amb2Target(),2);
         }
         const t=amb2Target();
-        if(_ambDuck===0&&t>0.02&&amb2.volume<0.02&&!amb2._ramp)_rampVol(amb2,t,2);
+        const _curVol=amb2._gain?amb2._gain.gain.value:amb2.volume;
+        if(_ambDuck===0&&t>0.02&&_curVol<0.02&&!amb2._ramp)_rampVol(amb2,t,2);
     },4000);
 
     /* ── APPLE/iOS AUDIO UNLOCK — on the first user gesture, resume the context and
@@ -1873,7 +1913,7 @@
     }
     function confirmGoHome(){
         showStatusPopup("LEAVE THE GAME?","This will close the game and open Fearjoy's main site.",
-            "GO TO FEARJOY.CLUB",()=>{window.open('https://freejoy.club','_blank');closeNavMenu();closeSetupMenu();},
+            "GO TO FREEJOY.CLUB",()=>{window.open('https://freejoy.club','_blank');closeNavMenu();closeSetupMenu();},
             "CANCEL",()=>{}
         );
     }
@@ -2161,16 +2201,28 @@
             c.style.cssText='font-family:"Courier New",monospace;font-size:0.93rem;letter-spacing:1.5px;color:rgba(255,255,255,0.35);text-transform:lowercase;text-align:center;margin-top:5px;padding:0 4px;';
             c.innerText=_caption;container.appendChild(c);
         };
+        /* "Collect this lore" — a real download link so the image/video actually
+           saves to the person's device, not just a link-icon download button */
+        const _collectBtn=()=>{
+            if(!item.file)return;
+            const a=document.createElement('a');
+            a.href=item.file;
+            a.download=item.file.replace(/^.*\//,'');
+            a.className='bucket-btn';
+            a.style.cssText='display:block;margin:10px auto 0;text-align:center;';
+            a.innerHTML='Collect this lore ⬇';
+            container.appendChild(a);
+        };
         if(item.type==='image'){
             const img=document.createElement('img');
             img.src=item.file;img.className='bucket-img';img.alt='Mystery drop';
-            container.appendChild(img);_cap();
+            container.appendChild(img);_cap();_collectBtn();
         } else if(item.type==='video'){
             const vid=document.createElement('video');
             vid.src=item.file;vid.className='bucket-video';
             vid.autoplay=true;vid.loop=false;vid.muted=videoShouldBeMuted();vid.volume=0;vid.playsInline=true;
             vid.setAttribute('playsinline','');
-            container.appendChild(vid);_cap();
+            container.appendChild(vid);_cap();_collectBtn();
             stopActiveLoreVid(); /* release any previous video's ambient duck before replacing it */
             activeLoreVid=vid;
             const _tryPlay=()=>{if(vid.paused&&!vid.ended)vid.play().catch(()=>{});};
