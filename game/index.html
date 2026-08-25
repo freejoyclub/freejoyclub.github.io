@@ -1,7 +1,7 @@
 <!DOCTYPE html><html lang="en"><head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Fearjoy - Game (v100.22)</title>
+    <title>Fearjoy - Game (v100.24)</title>
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
@@ -98,7 +98,6 @@
             background:#ffffff;
             transition:background 0.5s ease;
         }
-        body.dark-mode #page-bg { background:#1a1a1a; }
         /* Event-color glow — solid-centered radial glow that originates from a space's
            position (--glow-x/--glow-y, percent of viewport) and expands outward, fading
            before it reaches the edges. Sits above the white background, below the board art. */
@@ -192,11 +191,8 @@
             #la2a-content { gap:3px; }
             .rack-dial .dial-label { font-size:0.5rem; letter-spacing:0; }
             .rack-dial .dial-knob { width:20px; height:20px; }
-            #la2a .dl-toggle { width:62px !important; font-size:0.48rem; }
             #mute-btn, #nav-knob-btn { width:32px; font-size:0.36rem; }
             #fullscreen-standalone-btn { width:24px; }
-            .bg-swatch-row .color-swatch { width:14px !important; height:14px !important; }
-            .bg-swatch-row { gap:2px !important; }
         }
         #ui-layer::after {
             content:''; position:absolute; inset:0; pointer-events:none;
@@ -732,27 +728,6 @@
             background:#0e5c0e; border-color:#2ecc2e; color:#fff;
             box-shadow:inset 0 2px 4px rgba(0,0,0,0.6),0 0 14px rgba(0,220,0,0.45);
         }
-        /* ── DARK/LIGHT TOGGLE SWITCH ── */
-        .dl-toggle {
-            position:relative; display:inline-flex; align-items:center;
-            height:clamp(26px,3.2vw,42px); width:100px; border-radius:6px; border:1.5px solid #444;
-            background:#e8e4dc; cursor:pointer; box-sizing:border-box; overflow:hidden;
-            font-family:sans-serif; font-size:0.56rem; font-weight:700;
-            letter-spacing:1px; text-transform:uppercase; user-select:none;
-            transition:background 0.3s ease;
-        }
-        .dl-toggle .dl-knob {
-            position:absolute; top:50%; left:3px; transform:translateY(-50%);
-            width:clamp(18px,2.4vw,30px); height:clamp(18px,2.4vw,30px);
-            border-radius:5px; background:#ffffff;
-            display:flex; align-items:center; justify-content:center; font-size:clamp(0.7rem,1.2vw,0.95rem);
-            box-shadow:0 1px 4px rgba(0,0,0,0.4);
-            transition:left 0.3s cubic-bezier(0.175,0.885,0.32,1.275),background 0.3s ease;
-        }
-        .dl-toggle .dl-label { position:absolute; right:9px; color:#3a3428; transition:color 0.3s ease; }
-        .dl-toggle.dark { background:#222; }
-        .dl-toggle.dark .dl-knob { left:calc(100% - clamp(18px,2.4vw,30px) - 3px); background:#0d0d0d; }
-        .dl-toggle.dark .dl-label { left:9px; right:auto; color:rgba(255,255,255,0.75); }
         .setup-btn-large:hover { background:white; color:black; transform:scale(1.1); }
         .setup-avatar     { width:clamp(55px,11vw,90px); height:clamp(55px,11vw,90px); opacity:0.3; cursor:pointer; transition:all 0.3s ease; filter:grayscale(100%); border:3px solid transparent; border-radius:10px; }
         .setup-avatar:focus-visible, .color-swatch:focus-visible { outline:2px solid #fff; outline-offset:3px; }
@@ -762,7 +737,7 @@
         #nav-menu button:focus-visible { outline:2px solid #fff; outline-offset:2px; }
         #overlay-setup button:focus-visible,
         #overlay-setup input:focus-visible,
-        #overlay-setup .dl-toggle:focus-visible { outline:2px solid #fff; outline-offset:3px; }
+        #overlay-setup .bg-picker-btn:focus-visible { outline:2px solid #fff; outline-offset:3px; }
         .setup-avatar:hover { opacity:0.7; }
         .setup-avatar.selected { opacity:1; filter:grayscale(0%); transform:scale(1.1); }
         .confirm-btn { padding:clamp(12px,2vh,20px) 40px; width:90%; background:white; color:black; font-size:clamp(1rem,2.5vw,1.3rem); font-weight:bold; border-radius:8px; border:none; cursor:pointer; transition:all 0.2s ease; }
@@ -770,7 +745,36 @@
         .roster-item { text-align:center; font-size:0.7rem; color:white; }
         .roster-img  { width:45px; height:45px; border-radius:50%; display:block; margin:0 auto 5px; }
         .color-swatch { width:clamp(22px,4vw,32px); height:clamp(22px,4vw,32px); border-radius:50%; border:2px solid transparent; cursor:pointer; transition:all 0.2s ease; display:inline-block; }
-        .bg-swatch-default { background:linear-gradient(135deg,#fff 0%,#fff 49%,#1a1a1a 51%,#1a1a1a 100%); border-color:rgba(255,255,255,0.3) !important; }
+        .bg-picker-btn {
+            width:clamp(23px,3vw,30px); height:clamp(23px,3vw,30px);
+            border-radius:50%; cursor:pointer; padding:0;
+            border:2px solid rgba(255,255,255,0.35);
+            /* Always shows all 8 palette colors as a wheel — a clear "open the
+               picker" affordance rather than reflecting just the current pick */
+            background:conic-gradient(#ffffff 0deg 45deg,#000000 45deg 90deg,#2b2620 90deg 135deg,#7a2e28 135deg 180deg,#2f6b73 180deg 225deg,#c98a1f 225deg 270deg,#4c9c4c 270deg 315deg,#c9a876 315deg 360deg);
+            box-shadow:0 2px 5px rgba(0,0,0,0.45); transition:all 0.15s ease;
+        }
+        .bg-picker-btn:hover { transform:scale(1.1); border-color:rgba(255,255,255,0.6); }
+        #bg-picker-popover {
+            display:none; position:fixed; z-index:100000;
+            background:rgba(14,14,14,0.98); border:1px solid #444; border-radius:16px;
+            padding:14px; box-shadow:0 -6px 30px rgba(0,0,0,0.7);
+            animation:menuBloom 0.15s ease forwards;
+        }
+        #bg-picker-popover.open { display:block; }
+        #bg-picker-popover .bg-wheel { position:relative; width:150px; height:150px; margin:0 auto; }
+        #bg-picker-popover .bg-wheel-swatch {
+            position:absolute; width:34px; height:34px; border-radius:50%;
+            border:2px solid rgba(255,255,255,0.25); cursor:pointer;
+            transform:translate(-50%,-50%); transition:all 0.15s ease;
+        }
+        #bg-picker-popover .bg-wheel-swatch:hover { transform:translate(-50%,-50%) scale(1.15); border-color:white; }
+        #bg-picker-popover .bg-wheel-swatch.selected { border-color:white; box-shadow:0 0 12px currentColor; }
+        #bg-picker-popover .bg-picker-label {
+            text-align:center; font-family:sans-serif; font-size:0.6rem; font-weight:700;
+            letter-spacing:1.5px; color:rgba(255,255,255,0.5); text-transform:uppercase;
+            margin-top:10px;
+        }
         .color-swatch:hover { transform:scale(1.15); }
         .color-swatch.swatch-selected { border-color:white; transform:scale(1.2); box-shadow:0 0 10px currentColor; }
         .color-swatch.swatch-taken { opacity:0.2; cursor:not-allowed; pointer-events:none; }
@@ -871,9 +875,8 @@
             <div class="dial-knob" id="dial-bgmusic"></div>
             <div class="dial-label">BG MUSIC</div>
         </div>
-        <div id="darkmode-toggle" class="dl-toggle" onclick="toggleDarkMode()" title="Dark / Light mode" style="width:80px;"><span class="dl-knob">☀️</span><span class="dl-label">LIGHT</span></div>
         <div class="rack-dial" style="min-width:auto;">
-            <div class="bg-swatch-row" style="display:flex;gap:4px;align-items:center;"></div>
+            <button class="bg-picker-btn" onclick="toggleBgPicker(this)" title="Background color" aria-label="Background color"></button>
             <div class="dial-label">BG</div>
         </div>
         <div id="nav-knob">
@@ -889,6 +892,7 @@
                     <button class="nav-menu-btn btn-sfx" id="sfx-btn" onclick="toggleSfx()"><span class="nav-icon" id="sfx-icon">🔔</span> SFX: <span id="sfx-status">ON</span></button>
                     <button class="nav-menu-btn btn-tracks" id="bgmusic-btn" onclick="toggleBgMusic()"><span class="nav-icon">🎧</span> BG MUSIC: <span id="bgmusic-status">ON</span></button>
                 </div>
+                <button class="nav-menu-btn" onclick="quickToggleBgBW()"><span class="nav-icon">◐</span> Toggle BG (B/W)</button>
                 <button class="nav-menu-btn btn-accolade-key" onclick="showAccoladeKey();closeNavMenu()"><span class="nav-icon">🔑</span> Key / How-To</button>
                 <button class="nav-menu-btn btn-restart" onclick="confirmSoftRestart();closeNavMenu()"><span class="nav-icon">🔄</span> Restart Tour</button>
                 <button class="nav-menu-btn btn-newband" onclick="confirmHardReset();closeNavMenu()"><span class="nav-icon">💀</span> New Band</button>
@@ -1009,9 +1013,8 @@
             <div data-kb-section="bottommenu" style="display:flex;justify-content:center;align-items:center;gap:8px;margin-top:18px;padding-top:14px;border-top:1px solid rgba(255,255,255,0.08);flex-wrap:wrap;">
                 <button id="setup-back-btn" class="setup-mini-btn" onclick="goBackToPlayerCount()" title="Back" style="display:none;font-size:1rem;">⬅️</button>
                 <button id="setup-fwd-btn" class="setup-mini-btn" onclick="goForwardToDetails()" title="Forward" style="display:none;font-size:1rem;">➡️</button>
-                <div id="setup-darkmode-toggle" class="dl-toggle" tabindex="0" onclick="toggleDarkMode()" title="Dark / Light mode" style="width:80px;height:38px;"><span class="dl-knob">☀️</span><span class="dl-label">LIGHT</span></div>
                 <div style="display:flex;flex-direction:column;align-items:center;gap:3px;">
-                    <div class="bg-swatch-row" style="display:flex;gap:4px;align-items:center;"></div>
+                    <button class="bg-picker-btn" onclick="toggleBgPicker(this)" title="Background color" aria-label="Background color"></button>
                     <div style="font-family:sans-serif;font-size:0.5rem;font-weight:700;letter-spacing:1px;color:rgba(255,255,255,0.5);text-transform:uppercase;">BG</div>
                 </div>
                 <button id="setup-mute-btn" class="setup-mini-btn" onclick="toggleMute()" style="border-color:#660000;color:#bb1111;width:80px;padding:0;">MUTE</button>
@@ -1032,6 +1035,10 @@
     </div>
 
     <div id="page-bg"></div>
+    <div id="bg-picker-popover">
+        <div class="bg-wheel" id="bg-wheel"></div>
+        <div class="bg-picker-label">Background</div>
+    </div>
     <div id="page-glow"></div>
     <div id="screen-glow"></div>
 
@@ -1082,15 +1089,16 @@
         {hex:'#ff00ff',name:'Magenta'},{hex:'#00ff88',name:'Mint'},
         {hex:'#ff4444',name:'Red'},{hex:'#ff8800',name:'Orange'},
     ];
-    /* Muted/pastel background swatches — deliberately soft so they don't compete
-       visually with the board art or player pieces the way AVAILABLE_COLORS would */
+    /* Background swatch palette — the specific set actually used, not the full
+       pastel range from before. Dark charcoal, brick red, teal-blue, deep gold,
+       bright green, warm wood-tan. */
     const BG_COLORS=[
-        {hex:'#f0e6d2',name:'Sand'},
-        {hex:'#dde8e0',name:'Sage'},
-        {hex:'#e3dcec',name:'Lavender'},
-        {hex:'#f0dede',name:'Blush'},
-        {hex:'#dbe6ec',name:'Powder Blue'},
-        {hex:'#ece3d2',name:'Cream'},
+        {hex:'#2b2620',name:'Charcoal'},
+        {hex:'#7a2e28',name:'Brick Red'},
+        {hex:'#2f6b73',name:'Teal Blue'},
+        {hex:'#c98a1f',name:'Deep Gold'},
+        {hex:'#4c9c4c',name:'Bright Green'},
+        {hex:'#c9a876',name:'Wood Tan'},
     ];
     const DEFAULT_COLORS=['#00ccff','#00ff88','#ff00ff','#ffcf40','#7e2b20','#f2d5c9'];
     /* Jesse's default is fixed (warm yellow); Marco/Grant get a random bright swatch color */
@@ -1435,8 +1443,7 @@
     }
     function toggleSfx(){sfxEnabled=!sfxEnabled;syncAudioUI();}
 
-    let darkModeOn=false;
-    let customBgColor=null; /* persisted separately; null = following light/dark toggle */
+    let bgColor=null; /* null = default white; otherwise the applied hex, persisted */
     function toggleQuickGame(){
         quickGameActive=!quickGameActive;
         const btn=document.getElementById('quickgame-btn');
@@ -1446,80 +1453,115 @@
         const hint=document.getElementById('quickgame-hint');
         if(hint)hint.classList.toggle('visible',quickGameActive);
     }
-    function toggleDarkMode(){
-        darkModeOn=!darkModeOn;
-        customBgColor=null; /* manually flipping the switch overrides any picked swatch */
-        document.body.classList.toggle('dark-mode',darkModeOn);
-        document.getElementById('page-bg').style.background='';
-        document.querySelectorAll('.dl-toggle').forEach(t=>{
-            t.classList.toggle('dark',darkModeOn);
-            const knob=t.querySelector('.dl-knob');
-            const label=t.querySelector('.dl-label');
-            if(knob)knob.innerText=darkModeOn?'🌙':'☀️';
-            if(label)label.innerText=darkModeOn?'DARK':'LIGHT';
-        });
-        renderBgSwatches();
+    /* Applies and persists a background color. hex=null resets to the CSS default (white).
+       This is the single source of truth — used by the wheel picker, the quick
+       black/white toggle in the menu, and prefs restoration on load. */
+    function applyBgColor(hex){
+        bgColor=hex;
+        document.getElementById('page-bg').style.background=hex||'';
+        renderBgWheel();
         saveDisplayPrefs();
-    }
-
-    /* Custom background color — persistent, overrides light/dark until the
-       toggle switch is used again or "default" swatch is clicked */
-    function setCustomBg(hex){
-        customBgColor=hex;
-        document.getElementById('page-bg').style.background=hex;
-        renderBgSwatches();
-        saveDisplayPrefs();
-    }
-    function clearCustomBg(){
-        customBgColor=null;
-        document.getElementById('page-bg').style.background='';
-        renderBgSwatches();
-        saveDisplayPrefs();
-    }
-    function renderBgSwatches(){
-        document.querySelectorAll('.bg-swatch-row').forEach(row=>{
-            row.innerHTML='';
-            /* "Default" swatch — clears custom color, falls back to light/dark toggle */
-            const def=document.createElement('div');
-            def.className='color-swatch bg-swatch-default'+(!customBgColor?' swatch-selected':'');
-            def.title='Default (follow Light/Dark)';def.tabIndex=0;
-            def.onclick=clearCustomBg;
-            row.appendChild(def);
-            BG_COLORS.forEach(c=>{
-                const sw=document.createElement('div');
-                sw.className='color-swatch'+(customBgColor===c.hex?' swatch-selected':'');
-                sw.style.background=c.hex;sw.title=c.name;sw.tabIndex=0;
-                sw.onclick=()=>setCustomBg(c.hex);
-                row.appendChild(sw);
-            });
-        });
     }
     function saveDisplayPrefs(){
-        try{
-            localStorage.setItem('fearjoy_display_prefs',JSON.stringify({darkModeOn,customBgColor}));
-        }catch(e){}
+        try{ localStorage.setItem('fearjoy_display_prefs',JSON.stringify({bgColor})); }catch(e){}
     }
     function loadDisplayPrefs(){
         try{
             const raw=localStorage.getItem('fearjoy_display_prefs');
             if(!raw)return;
             const prefs=JSON.parse(raw);
-            if(prefs.darkModeOn){
-                darkModeOn=true;
-                document.body.classList.add('dark-mode');
-                document.querySelectorAll('.dl-toggle').forEach(t=>{
-                    t.classList.add('dark');
-                    const knob=t.querySelector('.dl-knob');const label=t.querySelector('.dl-label');
-                    if(knob)knob.innerText='🌙';if(label)label.innerText='DARK';
-                });
+            if(prefs.bgColor){
+                bgColor=prefs.bgColor;
+                document.getElementById('page-bg').style.background=bgColor;
             }
-            if(prefs.customBgColor){
-                customBgColor=prefs.customBgColor;
-                document.getElementById('page-bg').style.background=customBgColor;
-            }
-            renderBgSwatches();
+            renderBgWheel();
         }catch(e){}
     }
+    /* Quick toggle in the nav menu — jumps straight to black or white, bypassing
+       the wheel, for a fast "back to basics" action away from a custom color */
+    function quickToggleBgBW(){
+        applyBgColor(bgColor==='#000000'?null:'#000000');
+    }
+
+    /* ── BG WHEEL POPOVER ── */
+    const BG_WHEEL_ITEMS=[
+        {hex:null,name:'White'},
+        {hex:'#000000',name:'Black'},
+        ...BG_COLORS
+    ];
+    function renderBgWheel(){
+        const wheel=document.getElementById('bg-wheel');
+        if(!wheel)return;
+        wheel.innerHTML='';
+        const n=BG_WHEEL_ITEMS.length;
+        const radius=55;
+        BG_WHEEL_ITEMS.forEach((item,i)=>{
+            const angle=(i/n)*2*Math.PI-Math.PI/2; /* start at top, go clockwise */
+            const x=75+radius*Math.cos(angle);
+            const y=75+radius*Math.sin(angle);
+            const sw=document.createElement('div');
+            const isSelected=bgColor===item.hex||(!bgColor&&!item.hex);
+            sw.className='bg-wheel-swatch'+(isSelected?' selected':'');
+            sw.style.left=x+'px';sw.style.top=y+'px';
+            sw.style.color=item.hex||'#ffffff'; /* drives the 'selected' glow color */
+            sw.style.background=item.hex||'#ffffff';
+            sw.title=item.name;sw.tabIndex=0;
+            sw.onclick=()=>{applyBgColor(item.hex);closeBgPicker();};
+            wheel.appendChild(sw);
+        });
+    }
+    function toggleBgPicker(btn){
+        const pop=document.getElementById('bg-picker-popover');
+        if(!pop)return;
+        const opening=!pop.classList.contains('open');
+        if(!opening){closeBgPicker();return;}
+        renderBgWheel();
+        const r=btn.getBoundingClientRect();
+        /* Position above the button by default (rack sits at the bottom of the screen);
+           clamp horizontally so the popover never runs off the left/right edge, and
+           clamp vertically so it can't get pushed above the top of the viewport either */
+        const popW=182,popH=230; /* approximate rendered size, close enough for clamping */
+        let left=r.left+r.width/2-popW/2;
+        left=Math.max(8,Math.min(window.innerWidth-popW-8,left));
+        let bottomPx=window.innerHeight-r.top+10;
+        bottomPx=Math.min(bottomPx,window.innerHeight-popH-8);
+        pop.style.left=left+'px';
+        pop.style.bottom=Math.max(8,bottomPx)+'px';
+        pop.style.top='';
+        pop.classList.add('open');
+        setTimeout(()=>{
+            const first=pop.querySelector('.bg-wheel-swatch');
+            if(first)first.focus();
+        },30);
+    }
+    function closeBgPicker(){
+        const pop=document.getElementById('bg-picker-popover');
+        if(pop)pop.classList.remove('open');
+    }
+    document.addEventListener('click',e=>{
+        const pop=document.getElementById('bg-picker-popover');
+        if(!pop||!pop.classList.contains('open'))return;
+        if(pop.contains(e.target)||e.target.classList.contains('bg-picker-btn'))return;
+        closeBgPicker();
+    });
+    document.addEventListener('keydown',e=>{
+        const pop=document.getElementById('bg-picker-popover');
+        if(!pop||!pop.classList.contains('open'))return;
+        if(e.key==='Escape'){e.preventDefault();closeBgPicker();return;}
+        const items=[...pop.querySelectorAll('.bg-wheel-swatch')];
+        if(!items.length)return;
+        if(e.key==='ArrowRight'||e.key==='ArrowDown'||e.key==='ArrowLeft'||e.key==='ArrowUp'||e.key==='Tab'){
+            e.preventDefault();
+            const fwd=!(e.key==='ArrowLeft'||e.key==='ArrowUp'||(e.key==='Tab'&&e.shiftKey));
+            let idx=items.indexOf(document.activeElement);
+            idx=((idx+(fwd?1:-1))%items.length+items.length)%items.length;
+            items[idx].focus();return;
+        }
+        if((e.key==='Enter'||e.key===' ')&&document.activeElement&&items.includes(document.activeElement)){
+            e.preventDefault();document.activeElement.click();return;
+        }
+        e.preventDefault();
+    });
 
     // ══════════════════════════════════════════════
     // LA-2A DIALS — click-drag up/right to increase (VST-style), 8:00 → 4:00 sweep
@@ -1593,29 +1635,28 @@
         }
         return a;
     }
-    /* Sets an ambient element's audible volume — through its WebAudio gain node when
-       available (works everywhere, including iOS), falling back to .volume otherwise. */
-    function _setAmbVol(a,v){
-        if(!a)return;
-        if(a._gain){
-            try{
-                const ctx=getAudioCtx();
-                a._gain.gain.setValueAtTime(a._gain.gain.value,ctx.currentTime);
-                a._gain.gain.linearRampToValueAtTime(Math.max(0.0001,v),ctx.currentTime+0.001);
-                /* linearRampToValueAtTime can't target exactly 0 — snap it directly after */
-                if(v<=0)a._gain.gain.setValueAtTime(0,ctx.currentTime+0.002);
-            }catch(e){a.volume=v;}
-        } else {
-            a.volume=v;
-        }
-    }
     function _rampVol(a,target,secs){
         if(!a)return;
-        if(a._ramp)clearInterval(a._ramp);
+        if(a._ramp){clearInterval(a._ramp);a._ramp=null;}
+        if(a._gain){
+            /* Real WebAudio ramp — schedule it ONCE for the full duration. Manually
+               stepping this 20x/second (the old approach) created overlapping
+               micro-ramps that fought each other and could leave the gain stuck
+               near zero — that's what silenced all background music last round. */
+            try{
+                const ctx=getAudioCtx();
+                const now=ctx.currentTime;
+                a._gain.gain.cancelScheduledValues(now);
+                a._gain.gain.setValueAtTime(a._gain.gain.value,now);
+                a._gain.gain.linearRampToValueAtTime(Math.max(0,Math.min(1,target)),now+Math.max(0.05,secs));
+            }catch(e){a.volume=target;}
+            return;
+        }
+        /* Fallback path — plain .volume has no native ramp, so step it manually */
         const steps=Math.max(1,Math.round(secs*20));
-        const start=a._gain?a._gain.gain.value:a.volume,dv=(target-start)/steps;let i=0;
+        const start=a.volume,dv=(target-start)/steps;let i=0;
         a._ramp=setInterval(()=>{
-            i++;_setAmbVol(a,Math.max(0,Math.min(1,start+dv*i)));
+            i++;a.volume=Math.max(0,Math.min(1,start+dv*i));
             if(i>=steps){clearInterval(a._ramp);a._ramp=null;}
         },50);
     }
@@ -2233,7 +2274,7 @@
         },80);
     });
     window.addEventListener('DOMContentLoaded',()=>{
-        renderBgSwatches();
+        renderBgWheel();
         loadDisplayPrefs();
     });
 
@@ -2477,7 +2518,7 @@
             return[...document.querySelectorAll('[data-kb-section="playercount"] button')].filter(el=>el.offsetParent!==null);
         }
         if(name==='bottommenu'){
-            return[...document.querySelectorAll('[data-kb-section="bottommenu"] button,[data-kb-section="bottommenu"] .dl-toggle,[data-kb-section="bottommenu"] .color-swatch')].filter(el=>el.offsetParent!==null);
+            return[...document.querySelectorAll('[data-kb-section="bottommenu"] button')].filter(el=>el.offsetParent!==null);
         }
         /* Leaf sections: quickstart, name, picture, confirm — tagged directly */
         return[...document.querySelectorAll(`[data-kb-section="${name}"]`)].filter(el=>el.offsetParent!==null);
