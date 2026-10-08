@@ -456,6 +456,113 @@ font-size: 1.2rem;
 text-shadow: 0 0 10px var(--glow-color);
 }
 
+/* ============ Desk scene (TV + toys) ============ */
+.desk-scene { width: 100%; max-width: 860px; margin: 0 auto; }
+.desk-scene a.tv { animation: none; z-index: 2; width: clamp(280px, 86vw, 380px); }
+@media (min-width: 900px) { .desk-scene a.tv { width: 500px; } }
+
+/* Bouncing dot hovers slowly around the board image */
+.tv-dot {
+position: absolute;
+left: 22%;
+top: 32%;
+width: 4.5cqw;
+height: 4.5cqw;
+margin: -2.25cqw 0 0 -2.25cqw;
+border-radius: 50%;
+background: radial-gradient(circle at 35% 30%, #fff, #ffe9b8 60%, #d2b48c);
+box-shadow: 0 0 2.5cqw rgba(255,255,255,0.9);
+z-index: 2;
+pointer-events: none;
+animation: wander 32s ease-in-out infinite, dotpulse 3s ease-in-out infinite;
+}
+.tv-screen:not(.has-pic) .tv-dot { display: none; }
+@keyframes wander {
+0%, 100% { left: 22%; top: 32%; }
+16% { left: 58%; top: 24%; }
+33% { left: 78%; top: 46%; }
+50% { left: 60%; top: 74%; }
+66% { left: 30%; top: 70%; }
+82% { left: 16%; top: 50%; }
+}
+@keyframes dotpulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.18); } }
+
+.desk {
+position: relative;
+z-index: 1;
+width: 100%;
+box-sizing: border-box;
+margin-top: -30px;
+padding: 46px 20px 24px;
+border-radius: 22px 22px 14px 14px;
+background:
+repeating-linear-gradient(90deg, rgba(0,0,0,0.07) 0 2px, transparent 2px 9px),
+linear-gradient(180deg, #a8744a 0%, #85572f 14%, #5d3a20 100%);
+box-shadow: inset 0 3px 0 rgba(255,255,255,0.2), inset 0 -10px 20px rgba(0,0,0,0.3), 0 18px 40px rgba(0,0,0,0.5);
+}
+.desk-cap {
+margin: 0 0 14px;
+font-family: 'KCStrikerSans', sans-serif;
+font-size: 1.1rem;
+color: #fff;
+text-shadow: 0 0 8px rgba(0,0,0,0.5);
+}
+.desk-row { display: grid; grid-template-columns: 1fr; gap: 16px; align-items: center; }
+@media (min-width: 700px) { .desk-row { grid-template-columns: 1.35fr 1fr; } }
+.viewer.desk-viewer { background: none; aspect-ratio: 5 / 2; }
+.toys { display: flex; flex-wrap: wrap; justify-content: center; align-items: flex-end; gap: 22px; padding: 6px; }
+.toys button { background: none; border: none; padding: 0; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+
+/* Coins (flip) */
+.coin { width: 66px; height: 66px; perspective: 400px; }
+.coin-in { display: block; position: relative; width: 100%; height: 100%; transform-style: preserve-3d; transition: transform 1.1s cubic-bezier(0.2, 0.7, 0.2, 1); }
+.coin-face {
+position: absolute;
+inset: 0;
+display: flex;
+align-items: center;
+justify-content: center;
+border-radius: 50%;
+backface-visibility: hidden;
+-webkit-backface-visibility: hidden;
+font-family: 'KCOraleSans', sans-serif;
+font-size: 0.95rem;
+letter-spacing: 1px;
+color: #5a5a5a;
+background: radial-gradient(circle at 35% 30%, #fbfbfb, #cfcfcf 70%, #a9a9a9);
+border: 3px solid #8e8e8e;
+box-shadow: inset 0 0 0 4px rgba(255,255,255,0.35), 0 4px 10px rgba(0,0,0,0.45);
+}
+.coin-face.back { transform: rotateX(180deg); }
+.coin.toss { animation: tossHop 1.1s ease-out; }
+@keyframes tossHop { 0% { transform: translateY(0); } 40% { transform: translateY(-46px); } 100% { transform: translateY(0); } }
+
+/* Dice (roll) */
+.die3d { --s: 46px; width: var(--s); height: var(--s); perspective: 320px; }
+.cube { display: block; position: relative; width: 100%; height: 100%; transform-style: preserve-3d; transition: transform 1.3s cubic-bezier(0.2, 0.8, 0.2, 1); }
+.dface {
+position: absolute;
+inset: 0;
+border-radius: 22%;
+background: rgba(var(--rgb), 0.58);
+border: 1px solid rgba(255,255,255,0.55);
+box-shadow: inset 0 0 10px rgba(255,255,255,0.35);
+}
+.dface i { position: absolute; width: 17%; height: 17%; border-radius: 50%; background: #fff; transform: translate(-50%, -50%); }
+.dface.f1 { transform: translateZ(calc(var(--s) / 2)); }
+.dface.f6 { transform: rotateY(180deg) translateZ(calc(var(--s) / 2)); }
+.dface.f3 { transform: rotateY(90deg) translateZ(calc(var(--s) / 2)); }
+.dface.f4 { transform: rotateY(-90deg) translateZ(calc(var(--s) / 2)); }
+.dface.f2 { transform: rotateX(90deg) translateZ(calc(var(--s) / 2)); }
+.dface.f5 { transform: rotateX(-90deg) translateZ(calc(var(--s) / 2)); }
+.die3d.toss { animation: tossHop 1.3s ease-out; }
+
+.soon { opacity: 0.55; }
+
+@media (prefers-reduced-motion: reduce) {
+.tv-dot, .coin.toss, .die3d.toss { animation: none; }
+}
+
 /* ============ Promo banner ============ */
 .promo {
 display: flex;
@@ -678,10 +785,11 @@ text-transform: uppercase;
 opacity: 0.7;
 margin: 6px 0 8px;
 }
-.cr { display: grid; grid-template-columns: 9em 1fr; gap: 4px 14px; font-family: 'KCStrikerSans', sans-serif; font-size: 1rem; margin: 0 0 14px; }
+.cr { display: grid; grid-template-columns: minmax(8em, 40%) 1fr; gap: 4px 14px; font-family: 'KCStrikerSans', sans-serif; font-size: 1rem; margin: 0 0 14px; }
 .cr dt { opacity: 0.7; }
 .cr dd { margin: 0; }
 .lyrics { white-space: pre-wrap; font-family: 'KCStrikerSans', sans-serif; font-size: 1.05rem; line-height: 1.6; margin: 0 0 20px; }
+.trk-inner .empty { font-family: 'KCStrikerSans', sans-serif; opacity: 0.6; margin: 0 0 16px; }
 
 /* ============ Order sheet ============ */
 dialog {
@@ -764,7 +872,7 @@ Welcome to The Game.
 <p class="sub">3D printed heads, a die and a coin.<br>Spin them. Collect them. Roll them.</p>
 
 <div class="promo glass" id="promoBox">
-<div id="promoText">Vinyl owners get 20% off game pieces<small>Not valid on the one-of-one</small></div>
+<div id="promoText">Vinyl owners get 20% off game pieces</div>
 <button class="btn small" id="promoBtn" type="button">Use code VINYL20</button>
 </div>
 
@@ -774,14 +882,15 @@ Welcome to The Game.
 <!-- ============ PLAY ONLINE (tube TV) ============ -->
 <section class="section" id="play">
 <h2>Play Online</h2>
-<p class="sub">Free in your browser.</p>
-<div class="tv-wrap">
+<p class="sub">Tap the TV. Flip a coin. Roll the dice.</p>
+<div class="tv-wrap desk-scene">
 <a href="/game" class="tv" id="tv" aria-label="Play the game online">
 <span class="ear l"></span><span class="ear r"></span>
 <div class="tv-body">
 <div class="tv-screen" id="tvScreen">
-<!-- Drop your game picture at /images/game-pic.png and it replaces the mini board automatically -->
-<img class="pic" src="/images/game-pic.png" alt="" onload="this.parentElement.classList.add('has-pic')" onerror="this.remove()">
+<!-- Board picture. If it fails to load, the mini board below shows instead -->
+<img class="pic" src="/images/31_WEB_GAME.png" alt="" onload="this.parentElement.classList.add('has-pic')" onerror="this.remove()">
+<span class="tv-dot"></span>
 <div class="mini">
 <div class="mt">The Game</div>
 <div class="track">
@@ -798,7 +907,20 @@ Welcome to The Game.
 </div>
 </div>
 </a>
-<p class="tv-cap">Tap the TV to turn it on</p>
+
+<!-- Little desk: the crew spins, coins flip, dice roll -->
+<div class="desk">
+<p class="tv-cap desk-cap">Tap the TV to turn it on</p>
+<div class="desk-row">
+<div class="viewer desk-viewer" data-viewer="desk-trio"><span class="hint">tap the crew to spin</span></div>
+<div class="toys">
+<button type="button" class="coin" aria-label="Flip a coin"><span class="coin-in"><span class="coin-face front">FEAR</span><span class="coin-face back">JOY</span></span></button>
+<button type="button" class="coin" aria-label="Flip a coin"><span class="coin-in"><span class="coin-face front">FEAR</span><span class="coin-face back">JOY</span></span></button>
+<button type="button" class="die3d" data-die3d data-rgb="216,52,44" aria-label="Roll a die"></button>
+<button type="button" class="die3d" data-die3d data-rgb="31,63,158" aria-label="Roll a die"></button>
+</div>
+</div>
+</div>
 </div>
 </section>
 
@@ -884,33 +1006,35 @@ Welcome to The Game.
    ===================================================================== */
 const CONFIG = {
   email: 'grant@freejoy.club',
-  venmo: '',                       // your Venmo handle, no @. Empty = we send a Venmo request after the order email.
+  venmo: 'grantclementi',          // Venmo handle, no @. Empty = we send a Venmo request after the order email.
   instagramDM: 'https://ig.me/m/fearjoymusic',
   spotify: '',                     // album link once it is live. Empty = "soon" buttons.
   promo: { code: 'VINYL20', pct: 20 },
-  stlBase: '/stl/',                // folder holding jesse.stl, marco.stl, etc.
-  useRealStl: false,               // flip to true once the real STL files are uploaded
+  useRealStl: true,                // busts load from each person's "stl" path below. false = placeholder shapes only
+  stlSuffix: '',                   // set to '_lite' to load lighter copies (Jesse_Bust_lite.stl etc.) if load time is slow
   shippingNote: 'Shipping is confirmed by reply before you pay.'
 };
 
 const PEOPLE = [
-  { id: 'jesse',   name: 'Jesse' },
-  { id: 'marco',   name: 'Marco' },
-  { id: 'grant',   name: 'Grant' },
+  { id: 'jesse',   name: 'Jesse',   stl: '/images/Jesse_Bust.stl' },
+  { id: 'marco',   name: 'Marco',   stl: '/images/Marco_Bust.stl' },
+  { id: 'grant',   name: 'Grant',   stl: '/images/Grant_Bust.stl' },
   { id: 'garrett', name: 'Garrett' },
   { id: 'matt',    name: 'Matt' },
   { id: 'isaac',   name: 'Isaac' }
 ];
 
 const DIE_COLORS = [
-  { id: 'red',    name: 'Red',    hex: '#d8342c' },
-  { id: 'orange', name: 'Orange', hex: '#f08a1c' },
-  { id: 'yellow', name: 'Yellow', hex: '#f2cf1d' },
-  { id: 'green',  name: 'Green',  hex: '#2f9e44' },
-  { id: 'blue',   name: 'Blue',   hex: '#2a6fd6' },
-  { id: 'purple', name: 'Purple', hex: '#7a3fc4' },
-  { id: 'black',  name: 'Black',  hex: '#1c1c1c' },
-  { id: 'white',  name: 'White',  hex: '#f4f1ea' }
+  { id: 'black',    name: 'Black',        hex: '#1c1c1c' },
+  { id: 'dkblue',   name: 'Dark blue',    hex: '#1f3f9e' },
+  { id: 'ltblue',   name: 'Light blue',   hex: '#6bb8f0' },
+  { id: 'purple',   name: 'Purple',       hex: '#7a3fc4' },
+  { id: 'red',      name: 'Red',          hex: '#d8342c' },
+  { id: 'rose',     name: 'Rose red',     hex: '#e0426f' },
+  { id: 'lime',     name: 'Yellow-green', hex: '#a8d62f' },
+  { id: 'green',    name: 'Green',        hex: '#2f9e44' },
+  { id: 'ltyellow', name: 'Light yellow', hex: '#f7ea7a' },
+  { id: 'orange',   name: 'Orange',       hex: '#f08a1c' }
 ];
 
 /* Products. This array is the reusable storefront piece: later it can move to a JSON file. */
@@ -918,14 +1042,16 @@ const PRODUCTS = [
   {
     id: 'core-trio', type: 'kit', name: 'Core Trio', price: 14, cta: 'Order',
     pieces: ['jesse', 'marco', 'grant'],
+    colors: ['red', 'ltyellow', 'green', 'dkblue'],
     blurb: 'Jesse, Marco and Grant, plus a free die and the Fearjoy coin.',
-    includes: ['3 player pieces (3D printed)', 'Die in any basic color', 'Fearjoy coin']
+    includes: ['3 player pieces (3D printed)', 'Die in red, yellow, green or blue', 'Fearjoy coin']
   },
   {
     id: 'full-band', type: 'kit', name: 'Full Band', price: 18, cta: 'Order',
     pieces: ['jesse', 'marco', 'grant', 'garrett', 'matt', 'isaac'],
+    colors: ['black', 'dkblue', 'ltblue', 'purple', 'red', 'rose', 'lime', 'green', 'ltyellow', 'orange'],
     blurb: 'The whole band. Garrett, Matt and Isaac join the trio.',
-    includes: ['6 player pieces (3D printed)', 'Die in any basic color', 'Fearjoy coin']
+    includes: ['6 player pieces (3D printed)', 'Die in any of 10 colors', 'Fearjoy coin']
   },
   {
     id: 'single', type: 'single', name: 'Single Piece', price: 6, cta: 'Pick pieces',
@@ -942,21 +1068,21 @@ const PRODUCTS = [
   }
 ];
 
-/* Replace titles, credits and lyrics here. Credits are [role, name(s)] pairs. */
+/* Songs in album order. Credits are [label, value] pairs shown as written in your docs. Empty credits or lyrics show "coming soon". */
 const T = (title, credits, lyrics) => ({ title, credits, lyrics });
 const TRACKS = [
-  T('Song title 1',  [['Written by', 'TBD'], ['Vocals', 'TBD'], ['Guitar', 'TBD']], 'Lyrics coming soon.'),
-  T('Song title 2',  [['Written by', 'TBD'], ['Vocals', 'TBD'], ['Guitar', 'TBD']], 'Lyrics coming soon.'),
-  T('Song title 3',  [['Written by', 'TBD'], ['Vocals', 'TBD'], ['Guitar', 'TBD']], 'Lyrics coming soon.'),
-  T('Song title 4',  [['Written by', 'TBD'], ['Vocals', 'TBD'], ['Guitar', 'TBD']], 'Lyrics coming soon.'),
-  T('Song title 5',  [['Written by', 'TBD'], ['Vocals', 'TBD'], ['Guitar', 'TBD']], 'Lyrics coming soon.'),
-  T('Song title 6',  [['Written by', 'TBD'], ['Vocals', 'TBD'], ['Guitar', 'TBD']], 'Lyrics coming soon.'),
-  T('Song title 7',  [['Written by', 'TBD'], ['Vocals', 'TBD'], ['Guitar', 'TBD']], 'Lyrics coming soon.'),
-  T('Song title 8',  [['Written by', 'TBD'], ['Vocals', 'TBD'], ['Guitar', 'TBD']], 'Lyrics coming soon.'),
-  T('Song title 9',  [['Written by', 'TBD'], ['Vocals', 'TBD'], ['Guitar', 'TBD']], 'Lyrics coming soon.'),
-  T('Song title 10', [['Written by', 'TBD'], ['Vocals', 'TBD'], ['Guitar', 'TBD']], 'Lyrics coming soon.'),
-  T('Song title 11', [['Written by', 'TBD'], ['Vocals', 'TBD'], ['Guitar', 'TBD']], 'Lyrics coming soon.'),
-  T('Song title 12', [['Written by', 'TBD'], ['Vocals', 'TBD'], ['Guitar', 'TBD']], 'Lyrics coming soon.')
+  T("Dayspring", [["Marco Jaimez", "vocals"], ["Jesse Carl", "drums, production"], ["Grant Clementi", "vocals, acoustic guitar, synth bass, keys"], ["Garrett Waite", "electric guitar, electric bass"]], "[Verse 1]\nStaring at the ceiling\nAnd my heart is barely beating\nOn the first day of my life\nContemplate the meaning\nOf forever it’s so fleeting\nBut I made it through the night\nOff the walls these empty halls\nThey echo back my voice\nSo it goes, if I’m alone\nI’ll call into the void asking\n\n[Chorus]\nWho’s the maker, creator?\nIs it true that everything is\nWithin you? Fixing the broken\nI’m brand new\nI let it be here\nI let it all go\n\n[Verse 2]\nAnd the sun sets on another life\nSo a new one can begin\nSunset (sunset), sunrise (sunrise)\nHalf-truths (half-truths), white lies (white lies)\nLove me (love me), loathe me (loathe me)\nLeave me (leave me) lonely asking\n\n[Chorus]\nWho’s the maker, creator?\nIs it true that everything is\nWithin you? Fixing the broken\nI’m brand new\nI let it be here\nI let it all go\n\n[Bridge]\nYou’ve got your head in the clouds\nI'm trying to breathe underwater\nI’d go alone to go fast\nI’d take you with to go farther\nSo I’ll turn around and never look back\n\n[Chorus / Outro]\nNever look back\nWho’s the maker, creator?\nIs it You?"),
+  T("Figment", [["Marco Jaimez", "lyrics, vocals"], ["Jesse Carl", "drums, bass, synths, production"], ["Grant Clementi", "vocals, organ, synths, production"], ["Tim Wolf", "electric guitar"], ["Garrett Waite", "acoustic guitar, upright bass"]], "[Verse 1]\nYou left me reeling\nWith all of the things you said\nAnd you’re not leaving\nYou’re living inside my head\nI’ve got a feeling\nThat everything’s getting\nDarker, colder, harder to explain\nHow can I reason\nWhen everyone is insane?\nThere’s no defeating\nThe chaos inside my brain\nYou won’t believe it\nBut I know we’re\nTearing through the simulation now\n\n[Chorus]\nI think I made a mistake\nWhen I let you through that door\nI want to be unafraid\nWhen you tell me that we’re not alone\nBut I’m shaken up\nWill I always wonder if\nAny of this is real?\n\n[Verse 2]\nI want to explain away\nAll the little mysteries\nLooking for some sympathy\nI wonder if there’s more to it\nThe point of why we all exist\nIt hits right to the bone\nAre these thoughts even my own?\n\n[Chorus]\nI think I made a mistake\nWhen I let you through that door\nI want to be unafraid\nWhen you tell me that we’re not alone\nBut I’m shaken up\nWill I always wonder if\nAny of this is real?\n\n[Instrumental Bridge]\n\n[Chorus]\nI think I made a mistake\nWhen I let you through that door\nI want to be unafraid\nWhen you tell me that we’re not alone\nBut I’m shaken up\nWill I always wonder if\nAny of this is real?"),
+  T("Remedy", [["Grant Clementi", "vocals, guitar, synth bass, keys, production"], ["Marco Jaimez", "vocals"], ["Carolyn Clementi", "vocals"], ["Jesse Carl", "production"]], "[Verse 1]\nGiver taker we can make it\nHappen once again\nWar on nature was a failure\nWhy can't we befriend\nAny extrahuman spirit\nWhat they gonna say?\nIf you're not afraid to hear it\nCome on step this way\n\n[Verse 2]\nI am the Remedy\nDon't let 'em let you think\nI am the enemy\nI'm in your blood\nI'm everywhere you see\nYou cannot live without\nI'm the only thing that you\nShould ever think about\nI'm everything\nI'm all you'll ever need\n(I'm all you'll ever need)\n\n[Chorus 1]\nGive me power I'll give you peace\nRestful days, serenity\nLeave your burden up to me, me, me\n\n[Verse 3]\nIt's time to give the devil his due\nThe devil in me sees the devil in you\nI'm a means to an end\nSo let me in\nCome on let the world go crazy\n\n[Verse 4]\nWe can make it happen once again\nWar on nature was a failure\nWhy can't we pretend\nAny all-consuming power's\nEver gonna last\nOne day you're a human\nBut these things they change so fast\n\n[Chorus 2]\nGive me power I'll give you peace\nRestful days, serenity\nLeave your burden up to me, me\nCome on let the world go crazy\nI'm the answer I'm the soul\nI am vision I am control\nI'm your life now let it go, go, go\n\n[Outro]\nWe only need (only need)\nWe only need time\nWe only need (only need)\nWe only need time\nWe only need (only need)\nWe only need time\nWe only need (only need)\nWe only need"),
+  T("Dmitri", [["Written by", "Grant Clementi"], ["Produced by", "Grant Clementi and Jesse Carl"], ["Vocals by", "Grant Clementi and Marco Jaimez"], ["Keyboards, Guitars, Percussion, FX by", "Grant Clementi"], ["Guitars by", "Garrett Waite"], ["Bass by", "Matthew Sherman"], ["Drums by", "Jesse Carl"], ["Mixed by", "Fearjoy"], ["Mastered by", "Justin Perkins at Mystery Room Mastering"], ["Special thanks", "Michael Darden, Khalil, and my friend Dmitri"]], "[Verse 1]\nI remember but I haven’t seen his face in years\nThrough the door he ran up to greet me\nIn a second he took away my doubt and fear\nHe said hey my name’s Dmitri\nI can’t talk to my friends but\nI can talk to my God about it\nAs soon as it happened\nMy brain went and forgot about it\n\n[Pre-Chorus]\nHow long had I been waitin’\nFor some inspiration?\n\n[Chorus 1]\nOh let me tell you ‘bout the way he taught me\nAll that he could teach me\nYou won’t learn half as much in years of school\nAs one day with Dmitri\nOne day with Dmitri\nOne day with Dmitri\n\n[Bridge 1]\n(He said)\nI only got 5 minutes to show you the ropes\nOver there’s where your brain makes your dreams and hopes\nYour life is meaningful but somehow still it’s only a joke\nWe’ll meet again if you transcend or if you choke\n\n[Bridge 2]\nHe’s livin’ in my head\nAnd when I’m almost dead\nHe’ll come beside my bed\nAnd show me what to do\nIn every flower bed\nAnd when your blood runs red\nHe’s livin’ in my head\nAnd livin’ in yours too\n\n[Chorus 2]\nOh let me tell you ‘bout the way\nHe taught me all that he could teach me\nI’m so indebted to my friend\nThe one\nThe only Dmitri\nYeah, yeah\nThe only Dmitri\nThe only Dmitri\n\n[Outro]\nI can’t talk to my friends\nI can talk to my God about it\nAs soon as it happened\nMy brain went and forgot"),
+  T("It Happens", [["Grant Clementi", "vocals, lyrics, keys"], ["Jesse Carl", "drums, production"], ["Carolyn Clementi", "vocals"], ["Tim Wolf", "guitar, harmonies"], ["Matthew Sherman", "bass"], ["Garrett Waite", "guitar"]], "How did I get here\nWhere am I going\nTrying to stay clear\nOut in the open\nI try and I try and I try\nBut nothing changes\nThe moment I finally stop\nTryna rearrange it\n\nIt happens\nSuddenly, instantly\nIt happens\nFinally, now I see\n\nTime ceases to exist\nEvery time we feel like this\nDon't let it slip away\nRealize it's going to anyway\nThat's ok, It'll happen once again\nWhen you're not trying to make it happen\nThat's ok, It'll happen once again\nWhen you're not trying to make it happen\n\nTime is the only truth\nWatch it slip away\nWhen you quit seeking\nForever in a day\n\nIt happens\nSuddenly, instantly\nIt happens\nFinally, now I see\nIt happens\nSuddenly, instantly\nIt happens\nFinally, now I see"),
+  T("Nightdrive", [["Marco Jaimez", "lyrics, vocals"], ["Grant Clementi", "lyrics, vocals, keys, production"], ["Jesse Carl", "drums, bass, production, percussion"], ["Tim Wolf", "guitars"]], "[Verse 1]\nYou took the backroads when you had to go\nBut somehow I knew you never would return\nYou're in the rearview but I'll turn around\nI see that silver lining and now there is no hiding\n\n[Prechorus 1]\nAll this moonlight\nMakes the room bright\nAll the faces\nFading out of focus\n\n[Chorus]\nWhen all your stars are falling\nWhen all the light has turned to black\nBending and breaking from the weight of it all\nWhen the day is gone\nAnd you’re moving on\nI’ll be the light to find you\nI’d drive all night to get you back\n\n[Verse 2]\nDarkness calling\nEngine stalling\nCan I cut through the fog without you by my side?\nFalling short of what you wanted to be\nBut I can finally see the signs\nThat the road ahead will find me\n\n[Prechorus 2]\nI gave you the moon but you needed the sun\nI gave you the room when you wanted to run\nRemembered your face even when it was\nFading out of focus\nAll this moonlight\nMakes the room bright\nAll the faces\nFading out of focus\n\n[Chorus]\nWhen all your stars are falling\nWhen all the light has turned to black\nBending and breaking from the weight of it all\nWhen the day is gone\nAnd you’re moving on\nI’ll be the light to find you\nI’d drive all night to get you back"),
+  T("Ghost 2", [], "Your ghost is in my room\nI hear your voice inside the telephone\nIf I can’t be with you\nI will wander my whole life alone\nA spectre in the gloom\nYou crawl out of my mind and up the wall\nIf you can’t be my all\nThen I will settle being miserable\nAgain and again and again and again and again\nEvery time you fly away\nThere was more that I could say\nBut I'm paralyzed and words don't reach my lips\n\nEvery time the lights go down\nSuddenly I hear a sound\nIt's you, it’s you, it’s you\n\nI wonder where you are\nI hear your voice inside when I'm alone\nSo I look down at the telephone\nBut I know what I'm not gonna see\n\nYour pictures line these walls\nBut this vacant house is not a home\nAnd I wish that I was not alone\nBut you never seem to visit when it's coldest\nAnd I need you here the most\n\nEvery time you fly away\nThere was more that I could say\nBut I'm paralyzed and words don't reach my lips\nEvery time the lights go down\nSuddenly I hear a sound\nAnd the memories replay\nWith you, with you, with you\nAnd the memories replay\nWith you, with you, with you\nAnd the memories replay"),
+  T("Maya", [["Grant Clementi", "vocals, lyrics, instruments, production"], ["Marco Jaimez", "vocals, lyrics"], ["Evan Lane", "viola"], ["Jesse Carl", "production"], ["Carolyn Clementi", "background vocals"]], "[Verse]\nI know I\nGotta wake up from this illusion\nShow me why\nI've been lost in confusion\n\nShe got the key, She wrote the code\nShe knows the way, She got the soul\nShe got the key, She wrote the code\nThe first in line, The last to know\n\nLet go of\nEverything I've been choosing\nBut I love it\nSo I stay\nLost inside this illusion\n\n[Chorus]\nWe only get so many days\nHelp me find a way\nShow me what lies beyond the gray\nHelp me find a way\nI feel it! You feel it too!\nNo running from the truth\nAccepting what we are\n\n[Bridge]\nThese plans I create fall right through my hands\nDon't want to lay but can hardly stand\nFrom this illusion I turned and ran away\n\n[CHORUS]\n\n[Outro]\nMaya, Maya, you've been asleep\nSecret's out now, nothing to keep\nFlying higher, diving so deep\nI desire more than I need\nGot to wake up, I've been asleep\nSeeds I sow now, one day I'll reap\nMaya, Maya, you've been asleep\nMy mind's made up, got to wake up"),
+  T("Tellus", [], ""),
+  T("Void", [], "What if I never come down, I just stay up here?\nWould I even make it back if we disappeared?\nWould it be alright if I came back in a year?\nI can't get by\nI can't get by\n\nWhat if I stayed up here and I never came down?\nHead above the stratosphere but feet on the ground\nWould it be alright down there if I'm not around?\nI can’t get by\nI can’t get by on my own\n\nOn my own\nOn my own\n\nI can’t get by\nI can’t get by on my own"),
+  T("The Endless Smile", [["Grant Clementi", "lyrics, vocals, instruments, production"], ["Ruby Clementi", "lyrics, vocals"], ["Our Friends", "laughter"]], "The endless smile\nIn the ground\nWhy not start\nStart right now\n\nTime to start\nPracticing your smile\nCuz it's all\nAll you'll leave behind\n\nFlesh and bone\nOnce the former's gone\nAll that's left\nThe smile that you put on\n\nEach time\nWe see the light\nWhen we smile\nWith the endless smile\n\nThe endless smile\nIn the ground\nWhy not start\nStart right now\n\nDon't you wait\nWait until you drop\nOnce you start\nYou can't make it stop\n\nEach time\nWe see the light\nWhen we smile\nWith the endless smile\nTeeth wide\nWe feel so bright\nWhen we smile\nWith the endless smile\n\nThe endless smile\nIn the ground\nWhy not start\nStart right now"),
+  T("Swimmin", [], "Why can't you just enjoy the moment?\nYou keep on asking yourself\nYou like to push pull and hold it\nLike it was somebody else\n\nYou take this bliss and postpone it\nThere's always something to do\nJust tune yourself in and own it\nIt's up to no one but you\n\nWhat you gotta do?\nWhat you gotta say?\nWho you gotta talk to?\nWhat you gotta find?\nWho you gotta pay?\nWhat ya holding on to?\n(X2)\n\nWhy don't you swim\nOut of your mind\nThe top of your spine\nIs where you live\nBut not tonight\nTonight we're goin’ swimmin’\nTonight we're goin’ swimmin’\n\nYou try to smooth out the thought ripples in your mind\nWith a flat iron\nCome on, don't you know it's futile?\nAnd catapult your mind every night\nSomewhere you were only ever meant to\nTravel to a few times\nGo with the rhythm of the tide\nLet it pull you to the side\nTake a ride on your new mind\n(You'll be fine)\n\nWhat you gotta do?\nWhat you gotta say?\nWho you gotta talk to?\nWhat you gotta find?\nWho you gotta pay?\nWhat ya holding on to?\n(X2)\n\nBefore you swim\nOut of your mind\nThe top of your spine\nIs where you live\nBut not tonight\nTonight we're goin’ swimmin’\nTonight we're goin’ swimmin’\nTonight we're goin’ swimmin’")
 ];
 /* ===================================================================== */
 
@@ -1005,7 +1131,7 @@ $$('[data-stream]').forEach(a => {
    PRODUCT CARDS
    ===================================================================== */
 function swatchesHTML(pid) {
-  return '<div class="swatches" role="group" aria-label="Die color">' + DIE_COLORS.map(c =>
+  return '<div class="swatches" role="group" aria-label="Die color">' + (getP(pid).colors || []).map(cid => DIE_COLORS.find(x => x.id === cid)).map(c =>
     `<button type="button" class="sw" data-die="${pid}:${c.id}" style="background:${c.hex}" aria-label="${c.name}" title="${c.name}"></button>`
   ).join('') + '</div>';
 }
@@ -1024,7 +1150,7 @@ function productCard(p) {
   if (p.type === 'single') opts = '<div class="optlabel">Preview a piece</div>' + chipsHTML(p.id);
   const diy = p.diy ? `
     <details class="stl"><summary>Rather print your own? Free STL files</summary>
-    <div class="stl-links">${PEOPLE.map(pp => `<a href="${CONFIG.stlBase}${pp.id}.stl" download>${pp.name}</a>`).join('')}</div></details>` : '';
+    <div class="stl-links">${PEOPLE.map(pp => pp.stl ? `<a href="${pp.stl}" download>${pp.name}</a>` : `<span class="soon">${pp.name} (soon)</span>`).join('')}</div></details>` : '';
   el.innerHTML = `
     <div class="viewer" data-viewer="${p.id}"><span class="hint">drag or tap to spin</span></div>
     <div class="info">
@@ -1120,18 +1246,52 @@ function makeHead(idx, mat) {
   return g;
 }
 
-/* Real STL swap-in (only when CONFIG.useRealStl is true) */
+/* Real STL busts. Anyone without an "stl" path keeps the placeholder shape. */
 const stlCache = {};
-function loadStl(id) {
-  if (!stlCache[id]) stlCache[id] = new Promise((res, rej) => new THREE.STLLoader().load(CONFIG.stlBase + id + '.stl', res, undefined, rej));
-  return stlCache[id];
+
+/* STL files have no UVs, so the marble would render flat. Project UVs per triangle from its dominant axis. */
+function addTriplanarUV(geo) {
+  geo.computeBoundingBox();
+  const bb = geo.boundingBox, P = geo.attributes.position.array, n = P.length / 3;
+  const inv = 1 / Math.max(bb.max.x - bb.min.x, bb.max.y - bb.min.y, bb.max.z - bb.min.z);
+  const uv = new Float32Array(n * 2);
+  for (let t = 0; t < n; t += 3) {
+    const o = t * 3;
+    const e1x = P[o + 3] - P[o], e1y = P[o + 4] - P[o + 1], e1z = P[o + 5] - P[o + 2];
+    const e2x = P[o + 6] - P[o], e2y = P[o + 7] - P[o + 1], e2z = P[o + 8] - P[o + 2];
+    const nx = Math.abs(e1y * e2z - e1z * e2y), ny = Math.abs(e1z * e2x - e1x * e2z), nz = Math.abs(e1x * e2y - e1y * e2x);
+    for (let k = 0; k < 3; k++) {
+      const x = (P[o + k * 3] - bb.min.x) * inv, y = (P[o + k * 3 + 1] - bb.min.y) * inv, z = (P[o + k * 3 + 2] - bb.min.z) * inv;
+      let u, v;
+      if (nx >= ny && nx >= nz) { u = y; v = z; } else if (ny >= nz) { u = x; v = z; } else { u = x; v = y; }
+      uv[(t + k) * 2] = u;
+      uv[(t + k) * 2 + 1] = v;
+    }
+  }
+  geo.setAttribute('uv', new THREE.BufferAttribute(uv, 2));
 }
+
+function loadStl(person) {
+  if (!stlCache[person.id]) {
+    const url = person.stl.replace(/\.stl$/i, CONFIG.stlSuffix + '.stl');
+    stlCache[person.id] = new Promise((res, rej) => new THREE.STLLoader().load(url, geo => {
+      geo.computeVertexNormals();
+      addTriplanarUV(geo);
+      geo.userData.shared = true;
+      res(geo);
+    }, undefined, rej));
+  }
+  return stlCache[person.id];
+}
+
+/* Placeholder shows first. The real bust is only downloaded once its viewer scrolls into view (see kickLoads). */
 function headFor(idx, mat) {
   const g = makeHead(idx, mat);
-  if (CONFIG.useRealStl && THREE.STLLoader) {
-    loadStl(PEOPLE[idx].id).then(geo => {
+  const person = PEOPLE[idx];
+  if (CONFIG.useRealStl && person.stl && THREE.STLLoader) {
+    g.userData.load = () => loadStl(person).then(geo => {
       const m = new THREE.Mesh(geo, mat);
-      m.rotation.x = -Math.PI / 2;
+      m.rotation.x = -Math.PI / 2;               /* STL is Z-up, the busts face -Y, so after this they face the camera */
       const box = new THREE.Box3().setFromObject(m);
       const size = box.getSize(new THREE.Vector3());
       m.scale.setScalar(1.5 / size.y);
@@ -1142,6 +1302,11 @@ function headFor(idx, mat) {
     }).catch(() => {});
   }
   return g;
+}
+function kickLoads(v) {
+  v.stage.traverse(o => {
+    if (o.userData && o.userData.load) { const f = o.userData.load; o.userData.load = null; f(); }
+  });
 }
 
 /* Die with pips baked into the face textures */
@@ -1155,13 +1320,17 @@ const PIPS = {
   6: [[0.25, 0.22], [0.75, 0.22], [0.25, 0.5], [0.75, 0.5], [0.25, 0.78], [0.75, 0.78]]
 };
 const pipCache = {};
-function pipTexture(n, bg, pip) {
-  const key = n + '|' + bg + '|' + pip;
+function hexA(hex, a) {
+  const n = parseInt(hex.slice(1), 16);
+  return 'rgba(' + ((n >> 16) & 255) + ',' + ((n >> 8) & 255) + ',' + (n & 255) + ',' + a + ')';
+}
+function pipTexture(n, bg, pip, alpha) {
+  const key = n + '|' + bg + '|' + pip + '|' + alpha;
   if (pipCache[key]) return pipCache[key];
   const c = document.createElement('canvas');
   c.width = c.height = 128;
   const g = c.getContext('2d');
-  g.fillStyle = bg;
+  g.fillStyle = hexA(bg, alpha);
   g.fillRect(0, 0, 128, 128);
   g.fillStyle = pip;
   PIPS[n].forEach(p => { g.beginPath(); g.arc(p[0] * 128, p[1] * 128, 11, 0, Math.PI * 2); g.fill(); });
@@ -1171,15 +1340,41 @@ function lum(hex) {
   const n = parseInt(hex.slice(1), 16);
   return ((n >> 16) & 255) * 0.299 + ((n >> 8) & 255) * 0.587 + (n & 255) * 0.114;
 }
+/* Cube with rounded corners: push every vertex of a subdivided box out from an inner box */
+function roundedBox(size, radius, seg) {
+  const geo = new THREE.BoxGeometry(size, size, size, seg, seg, seg);
+  const pos = geo.attributes.position, nor = geo.attributes.normal;
+  const h = size / 2 - radius;
+  const p = new THREE.Vector3(), q = new THREE.Vector3(), n = new THREE.Vector3();
+  for (let i = 0; i < pos.count; i++) {
+    p.fromBufferAttribute(pos, i);
+    q.set(Math.max(-h, Math.min(h, p.x)), Math.max(-h, Math.min(h, p.y)), Math.max(-h, Math.min(h, p.z)));
+    n.copy(p).sub(q);
+    if (n.lengthSq() > 1e-9) {
+      n.normalize();
+      p.copy(q).addScaledVector(n, radius);
+      nor.setXYZ(i, n.x, n.y, n.z);
+    }
+    pos.setXYZ(i, p.x, p.y, p.z);
+  }
+  return geo;
+}
+const DIE_ALPHA = 0.62;
 function makeDie(bg, pip, rough) {
-  const mats = FACES.map(n => new THREE.MeshStandardMaterial({ map: pipTexture(n, bg, pip), roughness: rough == null ? 0.45 : rough }));
-  const m = new THREE.Mesh(new THREE.BoxGeometry(0.46, 0.46, 0.46), mats);
-  return m;
+  const mats = FACES.map(n => new THREE.MeshStandardMaterial({
+    map: pipTexture(n, bg, pip, DIE_ALPHA),
+    transparent: true,
+    side: THREE.DoubleSide,
+    depthWrite: false,
+    roughness: rough == null ? 0.18 : rough,
+    metalness: 0.05
+  }));
+  return new THREE.Mesh(roundedBox(0.46, 0.07, 12), mats);
 }
 function recolorDie(mesh, colorId) {
   const c = DIE_COLORS.find(x => x.id === colorId) || DIE_COLORS[0];
   const pip = lum(c.hex) < 140 ? '#ffffff' : '#111111';
-  mesh.material.forEach((m, i) => { m.map = pipTexture(FACES[i], c.hex, pip); m.needsUpdate = true; });
+  mesh.material.forEach((m, i) => { m.map = pipTexture(FACES[i], c.hex, pip, DIE_ALPHA); m.needsUpdate = true; });
 }
 
 /* Coin: FEAR on one face, JOY on the other */
@@ -1238,7 +1433,7 @@ const PAINT = ['#e4572e', '#f3a712', '#29a375', '#2e86de', '#9b5de5', '#ef476f']
 function clearStage(stage) {
   while (stage.children.length) {
     const ch = stage.children[0];
-    ch.traverse(o => { if (o.geometry) o.geometry.dispose(); });
+    ch.traverse(o => { if (o.geometry && !o.geometry.userData.shared) o.geometry.dispose(); });
     stage.remove(ch);
   }
 }
@@ -1246,6 +1441,8 @@ function clearStage(stage) {
 function buildScene(v, p) {
   const st = S[p.id];
   clearStage(v.stage);
+  v.heads = null;
+  if (p.type === 'desk') { buildDesk(v, p); return; }
   v.die = null;
   v.onFrame = null;
   let ids, withExtras = false, painted = false;
@@ -1292,6 +1489,28 @@ function buildScene(v, p) {
   v.stage.add(pedestal(pr));
   v.radius = pr;
   v.fit();
+  if (v.visible) kickLoads(v);
+}
+
+/* Desk trio: three busts in a row, no turntable. Each one spins in place. */
+function buildDesk(v, p) {
+  const n = p.pieces.length, gap = 1.05;
+  v.heads = [];
+  p.pieces.forEach((id, i) => {
+    const idx = PEOPLE.findIndex(x => x.id === id);
+    const head = headFor(idx, marble());
+    head.position.set((i - (n - 1) / 2) * gap, 0, i === 1 ? 0.05 : -0.05);
+    head.userData.baseRot = (i - 1) * -0.18;
+    v.stage.add(head);
+    v.heads.push(head);
+    const shadow = new THREE.Mesh(new THREE.CircleGeometry(0.5, 32), new THREE.MeshBasicMaterial({ color: 0x000000, transparent: true, opacity: 0.3, depthWrite: false }));
+    shadow.rotation.x = -Math.PI / 2;
+    shadow.position.set(head.position.x, 0.002, head.position.z);
+    v.stage.add(shadow);
+  });
+  v.radius = ((n - 1) / 2) * gap + 0.75;
+  v.fit();
+  if (v.visible) kickLoads(v);
 }
 
 function makeViewer(el, p) {
@@ -1348,7 +1567,7 @@ function makeViewer(el, p) {
   el.addEventListener('pointercancel', end);
 
   if ('IntersectionObserver' in window) {
-    new IntersectionObserver(es => { v.visible = es[0].isIntersecting; }, { threshold: 0.05 }).observe(el);
+    new IntersectionObserver(es => { v.visible = es[0].isIntersecting; if (v.visible) kickLoads(v); }, { threshold: 0.05 }).observe(el);
   } else v.visible = true;
 
   buildScene(v, p);
@@ -1368,7 +1587,8 @@ function frame(t) {
       v.vel *= Math.pow(0.95, dt);
       if (Math.abs(v.vel) < 0.004 && !REDUCE) v.rotY += 0.006 * dt;
     }
-    v.stage.rotation.y = v.rotY;
+    if (v.heads) v.heads.forEach(h => { h.rotation.y = h.userData.baseRot + v.rotY; });
+    else v.stage.rotation.y = v.rotY;
     if (v.onFrame) v.onFrame(t);
     v.renderer.render(v.scene, v.camera);
   }
@@ -1379,6 +1599,7 @@ if (HAVE_GL) {
     const el = $(`[data-viewer="${p.id}"]`);
     viewers[p.id] = makeViewer(el, p);
   });
+  viewers['desk-trio'] = makeViewer($('[data-viewer="desk-trio"]'), { id: 'desk-trio', type: 'desk', pieces: ['jesse', 'marco', 'grant'] });
   requestAnimationFrame(frame);
 } else {
   $$('.viewer').forEach(el => el.classList.add('nogl'));
@@ -1421,8 +1642,8 @@ function refreshCards() {
   const box = $('#promoBox');
   box.classList.toggle('applied', promoOn());
   $('#promoText').innerHTML = promoOn()
-    ? `${CONFIG.promo.code} applied: ${CONFIG.promo.pct}% off game pieces<small>Not valid on the one-of-one</small>`
-    : `Vinyl owners get ${CONFIG.promo.pct}% off game pieces<small>Not valid on the one-of-one</small>`;
+    ? `${CONFIG.promo.code} applied: ${CONFIG.promo.pct}% off game pieces`
+    : `Vinyl owners get ${CONFIG.promo.pct}% off game pieces`;
   $('#promoBtn').textContent = promoOn() ? 'Applied ✓' : `Use code ${CONFIG.promo.code}`;
   $('#oPromo').value !== promoCode && ($('#oPromo').value = promoCode);
   if (cur) updateSheet();
@@ -1520,7 +1741,7 @@ function updateSheet() {
     venmo.style.display = '';
     const vn = encodeURIComponent(`LP1 ${p.name} ${$('#oName').value}`.trim());
     venmo.href = `https://venmo.com/${encodeURIComponent(CONFIG.venmo)}?txn=pay&amount=${c.total.toFixed(2)}&note=${vn}`;
-    note.textContent = CONFIG.shippingNote + ' Send the order first, then pay.';
+    note.textContent = CONFIG.shippingNote + ' Send the order first, then pay once we reply.';
   } else {
     venmo.style.display = 'none';
     note.textContent = CONFIG.shippingNote + ' We will reply with a Venmo request.';
@@ -1592,6 +1813,56 @@ tv.addEventListener('click', e => {
 window.addEventListener('pageshow', () => tv.classList.remove('on'));
 
 /* =====================================================================
+   DESK TOYS: coins flip, dice roll
+   ===================================================================== */
+$$('.coin').forEach(coin => {
+  const inner = $('.coin-in', coin);
+  let half = 0;                                   /* half-turns so far. even = FEAR up, odd = JOY up */
+  coin.addEventListener('click', () => {
+    if (coin.classList.contains('toss')) return;
+    const want = Math.random() < 0.5 ? 0 : 1;
+    let add = 6 + 2 * Math.floor(Math.random() * 3);
+    if ((half + add) % 2 !== want) add += 1;
+    half += add;
+    inner.style.transform = `rotateX(${half * 180}deg)`;
+    coin.classList.add('toss');
+    setTimeout(() => { coin.classList.remove('toss'); toast(want ? 'JOY' : 'FEAR'); }, REDUCE ? 200 : 1150);
+  });
+});
+
+/* Which cube face shows which number, and the rotation that brings each one to the front */
+const DIE_FACE_CLASSES = { f1: 1, f6: 6, f3: 3, f4: 4, f2: 2, f5: 5 };
+const DIE_ROT = { 1: [0, 0], 6: [0, 180], 3: [0, -90], 4: [0, 90], 2: [-90, 0], 5: [90, 0] };
+$$('[data-die3d]').forEach(btn => {
+  btn.style.setProperty('--rgb', btn.dataset.rgb);
+  const cube = document.createElement('span');
+  cube.className = 'cube';
+  Object.keys(DIE_FACE_CLASSES).forEach(cls => {
+    const f = document.createElement('span');
+    f.className = 'dface ' + cls;
+    PIPS[DIE_FACE_CLASSES[cls]].forEach(pt => {
+      const i = document.createElement('i');
+      i.style.left = (pt[0] * 100) + '%';
+      i.style.top = (pt[1] * 100) + '%';
+      f.appendChild(i);
+    });
+    cube.appendChild(f);
+  });
+  btn.appendChild(cube);
+  let rx = 0, ry = 0;
+  btn.addEventListener('click', () => {
+    if (btn.classList.contains('toss')) return;
+    const val = 1 + Math.floor(Math.random() * 6);
+    const [bx, by] = DIE_ROT[val];
+    rx = bx + 360 * (Math.floor(rx / 360) + 2 + Math.floor(Math.random() * 2));
+    ry = by + 360 * (Math.floor(ry / 360) + 2 + Math.floor(Math.random() * 2));
+    cube.style.transform = `rotateX(${rx}deg) rotateY(${ry}deg)`;
+    btn.classList.add('toss');
+    setTimeout(() => { btn.classList.remove('toss'); toast('Rolled ' + val); }, REDUCE ? 200 : 1350);
+  });
+});
+
+/* =====================================================================
    CREDITS + LYRICS
    ===================================================================== */
 const list = $('#trackList');
@@ -1606,9 +1877,9 @@ TRACKS.forEach((t, i) => {
     </button>
     <div class="trk-body"><div class="trk-inner">
       <h4>Credits</h4>
-      <dl class="cr">${t.credits.map(c => `<dt>${esc(c[0])}</dt><dd>${esc(c[1])}</dd>`).join('')}</dl>
+      ${t.credits.length ? `<dl class="cr">${t.credits.map(c => `<dt>${esc(c[0])}</dt><dd>${esc(c[1])}</dd>`).join('')}</dl>` : '<p class="empty">Credits coming soon.</p>'}
       <h4>Lyrics</h4>
-      <pre class="lyrics">${esc(t.lyrics)}</pre>
+      ${t.lyrics ? `<pre class="lyrics">${esc(t.lyrics)}</pre>` : '<p class="empty">Lyrics coming soon.</p>'}
     </div></div>`;
   list.appendChild(item);
 });
