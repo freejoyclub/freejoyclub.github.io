@@ -15,10 +15,19 @@ src: url('/KCOraleSans.otf') format('opentype');
 @font-face {
 font-family: 'KCStrikerSans';
 src: url('/KCStrikerSans.otf') format('opentype');
+unicode-range: U+0020-0022, U+0024, U+0026-0029, U+002B-002E, U+0030-003B, U+003D, U+003F, U+0041-005A, U+0061-007A, U+00C0-00FF, U+2018-2019, U+201C-201D;
 }
+/* Body text. unicode-range = only the characters this font really draws. Characters it shows as a filler logo (# & * + ; < > @ [ \ ] ^ ` { | } ~) fall through to Courier New. */
+@font-face {
+font-family: 'KCPelletierLight';
+src: url('/KCPelletierTyped-Light.otf') format('opentype');
+unicode-range: U+0020-0022, U+0024-0025, U+0027-0029, U+002C-003A, U+003D, U+003F, U+0041-005A, U+005F, U+0061-007A, U+00C0-00FF, U+2018-2019, U+201C-201D;
+}
+/* Body headers (Verse 1, Chorus, Credits, Lyrics). Same filler-character rule as above. */
 @font-face {
 font-family: 'KCPelletierTyped';
 src: url('/KCPelletierTyped(typewriter-cool).otf') format('opentype');
+unicode-range: U+0020-0022, U+0024-0025, U+0027-0029, U+002C-003A, U+003D, U+003F, U+0041-005A, U+005F, U+0061-007A, U+00C0-00FF, U+2018-2019, U+201C-201D;
 }
 
 :root {
@@ -117,7 +126,7 @@ h1.title .title-die { width: 1.7em; height: 1.7em; margin: -0.2em 0; }
 }
 
 .floating-text {
-font-family: 'KCPelletierTyped', 'Courier New', monospace;
+font-family: 'KCPelletierLight', 'Courier New', monospace;
 font-size: 1.6rem;
 margin: 20px 0 30px 0;
 text-shadow: 0 0 10px var(--glow-color);
@@ -266,7 +275,7 @@ animation: flicker 5s infinite;
 }
 
 .section .sub {
-font-family: 'KCPelletierTyped', 'Courier New', monospace;
+font-family: 'KCPelletierLight', 'Courier New', monospace;
 font-size: 1.2rem;
 line-height: 1.5;
 margin: 0 0 26px;
@@ -289,7 +298,7 @@ bottom: 110px;
 transform: translateX(-50%) translateY(10px);
 background: rgba(0,0,0,0.8);
 color: #fff;
-font-family: 'KCPelletierTyped', 'Courier New', monospace;
+font-family: 'KCPelletierLight', 'Courier New', monospace;
 padding: 12px 22px;
 border-radius: 40px;
 border: 1px solid rgba(255,255,255,0.2);
@@ -308,7 +317,7 @@ max-width: 88vw;
 
 /* Print-your-own STL button, under the single piece display */
 .diy-row { display: flex; justify-content: center; margin: -4px 0 0; }
-.btn.diy-btn { width: auto; max-width: 100%; padding: 8px 18px; font-family: 'KCPelletierTyped', 'Courier New', monospace; font-size: 1rem; animation: none; }
+.btn.diy-btn { width: auto; max-width: 100%; padding: 8px 18px; font-family: 'KCPelletierLight', 'Courier New', monospace; font-size: 1rem; animation: none; }
 .diy-btn[aria-disabled="true"] { pointer-events: none; }
 
 /* Symbols the heading font does not have: plain outlined sans-serif */
@@ -324,7 +333,7 @@ justify-content: center;
 padding: 14px 20px;
 margin: 0 auto 26px;
 max-width: 640px;
-font-family: 'KCPelletierTyped', 'Courier New', monospace;
+font-family: 'KCPelletierLight', 'Courier New', monospace;
 font-size: 1.1rem;
 }
 .promo.applied { box-shadow: 0 0 22px rgba(160,255,190,0.45); }
@@ -385,7 +394,7 @@ user-select: none;
 position: absolute;
 bottom: 8px;
 right: 14px;
-font-family: 'KCPelletierTyped', 'Courier New', monospace;
+font-family: 'KCPelletierLight', 'Courier New', monospace;
 font-size: 0.75rem;
 letter-spacing: 1px;
 opacity: 0.7;
@@ -398,7 +407,7 @@ inset: 0;
 display: flex;
 align-items: center;
 justify-content: center;
-font-family: 'KCPelletierTyped', 'Courier New', monospace;
+font-family: 'KCPelletierLight', 'Courier New', monospace;
 opacity: 0.7;
 }
 
@@ -412,7 +421,7 @@ margin: 0;
 }
 .badge {
 align-self: flex-start;
-font-family: 'KCPelletierTyped', 'Courier New', monospace;
+font-family: 'KCPelletierLight', 'Courier New', monospace;
 font-size: 0.8rem;
 letter-spacing: 1.5px;
 text-transform: uppercase;
@@ -421,8 +430,8 @@ border-radius: 30px;
 background: linear-gradient(135deg, var(--btn-tan-start), var(--btn-tan-end));
 color: #000;
 }
-.product .blurb { font-family: 'KCPelletierTyped', 'Courier New', monospace; font-size: 1.05rem; line-height: 1.45; margin: 0; }
-.product ul.inc { margin: 0; padding-left: 20px; font-family: 'KCPelletierTyped', 'Courier New', monospace; font-size: 0.95rem; line-height: 1.6; opacity: 0.9; }
+.product .blurb { font-family: 'KCPelletierLight', 'Courier New', monospace; font-size: 1.05rem; line-height: 1.45; margin: 0; }
+.product ul.inc { margin: 0; padding-left: 20px; font-family: 'KCPelletierLight', 'Courier New', monospace; font-size: 0.95rem; line-height: 1.6; opacity: 0.9; }
 .optlabel { font-family: 'KCPelletierTyped', 'Courier New', monospace; font-size: 0.85rem; letter-spacing: 1.5px; text-transform: uppercase; opacity: 0.8; margin-top: 4px; }
 
 .buyrow { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 4px; }
@@ -462,7 +471,7 @@ details.stl a { color: #ffecd2; }
 
 /* ============ Credits ============ */
 
-.album-credits { margin-top: 14px; padding: 16px 22px; text-align: center; font-family: 'KCPelletierTyped', 'Courier New', monospace; font-size: 1rem; line-height: 1.6; }
+.album-credits { margin-top: 14px; padding: 16px 22px; text-align: center; font-family: 'KCPelletierLight', 'Courier New', monospace; font-size: 1rem; line-height: 1.6; }
 .album-credits p { margin: 0 0 0.6em; opacity: 0.92; }
 .album-credits p:last-child { margin-bottom: 0; }
 
@@ -510,11 +519,13 @@ text-transform: uppercase;
 opacity: 0.7;
 margin: 6px 0 8px;
 }
-.cr { display: grid; grid-template-columns: minmax(8em, 40%) 1fr; gap: 4px 14px; font-family: 'KCPelletierTyped', 'Courier New', monospace; font-size: 1rem; margin: 0 0 14px; }
+.cr { display: grid; grid-template-columns: minmax(8em, 40%) 1fr; gap: 4px 14px; font-family: 'KCPelletierLight', 'Courier New', monospace; font-size: 1rem; margin: 0 0 14px; }
 .cr dt { opacity: 0.7; }
 .cr dd { margin: 0; }
-.lyrics { white-space: pre-wrap; font-family: 'KCPelletierTyped', 'Courier New', monospace; font-size: 1.05rem; line-height: 1.6; margin: 0 0 20px; }
-.trk-inner .empty { font-family: 'KCPelletierTyped', 'Courier New', monospace; opacity: 0.6; margin: 0 0 16px; }
+.lyrics .sect { font-family: 'KCPelletierTyped', 'Courier New', monospace; font-size: 0.95rem; letter-spacing: 2px; text-transform: uppercase; opacity: 0.75; display: inline-block; margin-top: 0.7em; }
+.lyrics .sect:first-child { margin-top: 0; }
+.lyrics { white-space: pre-wrap; font-family: 'KCPelletierLight', 'Courier New', monospace; font-size: 1.05rem; line-height: 1.6; margin: 0 0 20px; }
+.trk-inner .empty { font-family: 'KCPelletierLight', 'Courier New', monospace; opacity: 0.6; margin: 0 0 16px; }
 
 /* ============ Order sheet ============ */
 dialog {
@@ -528,7 +539,7 @@ color: #fff;
 box-shadow: 0 20px 60px rgba(0,0,0,0.7);
 }
 dialog::backdrop { background: rgba(0,0,0,0.6); backdrop-filter: blur(4px); }
-.sheet { padding: 24px 22px 26px; text-align: left; font-family: 'KCPelletierTyped', 'Courier New', monospace; display: flex; flex-direction: column; gap: 12px; }
+.sheet { padding: 24px 22px 26px; text-align: left; font-family: 'KCPelletierLight', 'Courier New', monospace; display: flex; flex-direction: column; gap: 12px; }
 .sheet h3 { font-family: 'KCOraleSans', sans-serif; font-size: 2rem; letter-spacing: 2px; text-transform: uppercase; margin: 0; padding-right: 36px; }
 .sheet .x {
 position: absolute;
@@ -545,7 +556,7 @@ cursor: pointer;
 }
 .sheet label { display: flex; flex-direction: column; gap: 4px; font-size: 0.85rem; letter-spacing: 1.5px; text-transform: uppercase; opacity: 0.9; }
 .sheet input, .sheet textarea {
-font-family: 'KCPelletierTyped', 'Courier New', monospace;
+font-family: 'KCPelletierLight', 'Courier New', monospace;
 padding: 12px;
 border-radius: 15px;
 border: 1px solid #000;
@@ -618,7 +629,6 @@ body, h1, .floating-text, .btn, .floating-logo, .section h2, .product.deluxe { a
 <p>Mastered by Justin Perkins at Mystery Room Mastering.</p>
 <p>Album photography by Pearl Nemecek.</p>
 <p>Game design, web design and hand-drawn board art by Grant Clementi, with additional drawings by Ruby Clementi, Marco Jaimez and Shelby Jaimez.</p>
-<p>Special thanks to our families, friends, supporters, listeners, teachers, mentors, creator, and each other (in no particular order).</p>
 </div>
 </section>
 
@@ -696,9 +706,9 @@ const CONFIG = {
 };
 
 const PEOPLE = [
-  { id: 'jesse',   name: 'Jesse',   stl: 'Jesse_Bust.stl' },
-  { id: 'marco',   name: 'Marco',   stl: 'Marco_Bust.stl' },
-  { id: 'grant',   name: 'Grant',   stl: 'Grant_Bust.stl' },
+  { id: 'jesse',   name: 'Jesse',   stl: 'Jesse Bust.stl' },
+  { id: 'marco',   name: 'Marco',   stl: 'Marco Bust.stl' },
+  { id: 'grant',   name: 'Grant',   stl: 'Grant Bust.stl' },
   { id: 'garrett', name: 'Garrett' },
   { id: 'matt',    name: 'Matt' },
   { id: 'isaac',   name: 'Isaac' }
@@ -967,9 +977,13 @@ function addTriplanarUV(geo) {
 function loadStl(person) {
   if (!stlCache[person.id]) {
     const file = person.stl.split('/').pop();
-    const names = CONFIG.preferLite ? [file.replace(/\.stl$/i, '_lite.stl'), file] : [file];
+    /* tries "Jesse Bust.stl" and "Jesse_Bust.stl", each in every folder, lite copy first. Spaces are URL-encoded. */
+    const bases = [file, file.replace(/ /g, '_')].filter((b, i, a) => a.indexOf(b) === i);
     const tries = [];
-    names.forEach(n => CONFIG.stlFolders.forEach(f => tries.push({ url: f + n, folder: f })));
+    CONFIG.stlFolders.forEach(f => bases.forEach(b => {
+      if (CONFIG.preferLite) tries.push({ url: encodeURI(f + b.replace(/\.stl$/i, (b.indexOf(' ') > -1 ? ' lite' : '_lite') + '.stl')), folder: f, base: b });
+      tries.push({ url: encodeURI(f + b), folder: f, base: b });
+    }));
     stlCache[person.id] = new Promise((res, rej) => {
       let i = 0;
       const next = () => {
@@ -980,7 +994,7 @@ function loadStl(person) {
           geo.computeVertexNormals();
           addTriplanarUV(geo);
           geo.userData.shared = true;
-          person.stlFolder = t.folder;
+          person.stlFolder = t.folder; person.stlBase = t.base;
           if (typeof refreshCards === 'function') refreshCards();
           res(geo);
         }, undefined, next);
@@ -1726,8 +1740,8 @@ function refreshCards() {
     const a = $(`[data-diy="${p.id}"]`);
     const who = PEOPLE.find(x => x.id === S[p.id].view);
     if (who.stl) {
-      a.href = (who.stlFolder || './') + who.stl;
-      a.setAttribute('download', who.stl.split('/').pop());
+      a.href = encodeURI((who.stlFolder || './') + (who.stlBase || who.stl));
+      a.setAttribute('download', (who.stlBase || who.stl).split('/').pop());
       a.removeAttribute('aria-disabled');
       a.textContent = `Print your own: free ${who.name} STL`;
     } else {
@@ -1927,7 +1941,7 @@ TRACKS.forEach((t, i) => {
       <h4>Credits</h4>
       ${t.credits.length ? `<dl class="cr">${t.credits.map(c => `<dt>${esc(c[0])}</dt><dd>${esc(c[1])}</dd>`).join('')}</dl>` : '<p class="empty">Credits coming soon.</p>'}
       <h4>Lyrics</h4>
-      ${t.lyrics ? `<pre class="lyrics">${esc(t.lyrics)}</pre>` : '<p class="empty">Lyrics coming soon.</p>'}
+      ${t.lyrics ? `<pre class="lyrics">${esc(t.lyrics).replace(/^\[(.*)\]$/gm, '<span class="sect">[$1]</span>')}</pre>` : '<p class="empty">Lyrics coming soon.</p>'}
     </div></div>`;
   list.appendChild(item);
 });
