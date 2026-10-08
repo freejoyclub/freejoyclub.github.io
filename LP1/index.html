@@ -106,6 +106,16 @@ letter-spacing: 4px;
 text-transform: uppercase;
 }
 
+/* Title: FEARJOY [die] THE GAME on one line, stacked on narrow screens */
+h1.title { margin-bottom: 0.25em; display: flex; flex-wrap: nowrap; align-items: center; justify-content: center; gap: 0 0.14em; font-size: min(5.2rem, 5.6vw); line-height: 1.1; }
+h1.title .title-die { display: block; flex: none; width: 1.3em; height: 1.3em; margin: -0.12em 0; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+h1.title .title-die:empty { display: none; }
+h1.title .title-die canvas { display: block; width: 100%; height: 100%; }
+@media (max-width: 760px) {
+h1.title { flex-direction: column; font-size: 3.4rem; gap: 0; }
+h1.title .title-die { width: 1.7em; height: 1.7em; margin: -0.2em 0; }
+}
+
 .floating-text {
 font-family: 'KCPelletierTyped', 'Courier New', monospace;
 font-size: 1.6rem;
@@ -452,6 +462,10 @@ details.stl a { color: #ffecd2; }
 
 /* ============ Credits ============ */
 
+.album-credits { margin-top: 14px; padding: 16px 22px; text-align: center; font-family: 'KCPelletierTyped', 'Courier New', monospace; font-size: 1rem; line-height: 1.6; }
+.album-credits p { margin: 0 0 0.6em; opacity: 0.92; }
+.album-credits p:last-child { margin-bottom: 0; }
+
 .scrollbox {
 margin-top: 20px;
 max-height: 62vh;
@@ -482,7 +496,7 @@ font-size: 1.25rem;
 }
 .trk-head .num { font-family: 'KCOraleSans', sans-serif; opacity: 0.6; min-width: 2ch; }
 .trk-head .ttl { flex: 1; }
-.trk-head .chev { transition: transform 0.3s; font-size: 1.4rem; }
+.trk-head .chev { transition: transform 0.3s; font-size: 1.6rem; font-family: Arial, Helvetica, sans-serif; font-weight: 700; }
 .trk.open .trk-head .chev { transform: rotate(45deg); }
 .trk.open .trk-head { text-shadow: 0 0 12px var(--glow-color); }
 .trk-body { display: grid; grid-template-rows: 0fr; transition: grid-template-rows 0.4s ease; }
@@ -563,11 +577,7 @@ body, h1, .floating-text, .btn, .floating-logo, .section h2, .product.deluxe { a
 <div class="content">
 
 <!-- ============ HERO ============ -->
-<h1>Fearjoy</h1>
-<p class="floating-text">
-You scanned the insert.<br>
-Welcome to The Game.
-</p>
+<h1 class="title"><span>Fearjoy</span><span class="title-die" data-title-die role="button" tabindex="0" aria-label="Roll the die"></span><span>The Game</span></h1>
 
 <div class="button-stack">
 <a href="#" class="btn" data-stream data-soon="Stream the Album (soon)" data-live="Stream the Album">Stream the Album (soon)</a>
@@ -592,7 +602,7 @@ Welcome to The Game.
 <!-- ============ PLAY ONLINE (3D desk) ============ -->
 <section class="section" id="play">
 <h2>Play Online</h2>
-<p class="sub">Tap the TV. Flip a coin. Roll the dice.</p>
+<p class="sub">The Game - on the Go</p>
 <div class="desk-scene">
 <div class="viewer desk-viewer" data-viewer="desk"></div>
 <a class="sr-only" href="/game">Play the game online</a>
@@ -603,6 +613,13 @@ Welcome to The Game.
 <section class="section" id="credits">
 <h2>Credits &amp; Lyrics</h2>
 <div class="scrollbox glass" id="trackList"></div>
+<div class="album-credits glass">
+<p>Mixed, written and produced by Fearjoy.</p>
+<p>Mastered by Justin Perkins at Mystery Room Mastering.</p>
+<p>Album photography by Pearl Nemecek.</p>
+<p>Game design, web design and hand-drawn board art by Grant Clementi, with additional drawings by Ruby Clementi, Marco Jaimez and Shelby Jaimez.</p>
+<p>Special thanks to our families, friends, supporters, listeners, teachers, mentors, creator, and each other (in no particular order).</p>
+</div>
 </section>
 
 <!-- ============ LINK TREE ============ -->
@@ -673,14 +690,15 @@ const CONFIG = {
   spotify: '',                     // album link once it is live. Empty = "soon" buttons.
   promo: { code: 'VINYL20', pct: 20 },
   useRealStl: true,                // busts load from each person's "stl" path below. false = placeholder shapes only
-  stlSuffix: '',                   // set to '_lite' to load lighter copies (Jesse_Bust_lite.stl etc.) if load time is slow
+  preferLite: true,                // try Jesse_Bust_lite.stl etc. first (about 1 MB each), then fall back to the full files
+  stlFolders: ['./', '/LP1/', '/images/'],  // where to look for the STL files, in order. './' = the same folder as this page
   shippingNote: 'Shipping is confirmed by reply before you pay.'
 };
 
 const PEOPLE = [
-  { id: 'jesse',   name: 'Jesse',   stl: '/images/Jesse_Bust.stl' },
-  { id: 'marco',   name: 'Marco',   stl: '/images/Marco_Bust.stl' },
-  { id: 'grant',   name: 'Grant',   stl: '/images/Grant_Bust.stl' },
+  { id: 'jesse',   name: 'Jesse',   stl: 'Jesse_Bust.stl' },
+  { id: 'marco',   name: 'Marco',   stl: 'Marco_Bust.stl' },
+  { id: 'grant',   name: 'Grant',   stl: 'Grant_Bust.stl' },
   { id: 'garrett', name: 'Garrett' },
   { id: 'matt',    name: 'Matt' },
   { id: 'isaac',   name: 'Isaac' }
@@ -723,10 +741,10 @@ const PRODUCTS = [
     diy: true
   },
   {
-    id: 'deluxe', type: 'deluxe', name: 'Super-Deluxe', price: 333, cta: 'Inquire', badge: 'One of one',
+    id: 'deluxe', type: 'deluxe', name: 'Angel Investor Edition', price: 444, cta: 'Inquire', badge: 'One of one',
     pieces: ['jesse', 'marco', 'grant', 'garrett', 'matt', 'isaac'],
-    blurb: 'A single hand-finished edition for the ones who really want to back handmade, independent art.',
-    includes: ['Custom-painted player pieces', 'Dichroic glass die (color-shifting, iridescent)', 'Handmade custom real-bronze Fear/Joy coin', 'Only one exists']
+    blurb: 'The only one ever made. This hand-finished edition is the best way to support our fully-independent handmade art.',
+    includes: ['Custom-painted player pieces', 'Dichroic glass die (color-shifting, iridescent)', 'Handmade custom real-bronze Fear/Joy coin', 'Free entry to any future show', 'Only one exists']
   }
 ];
 
@@ -948,13 +966,27 @@ function addTriplanarUV(geo) {
 
 function loadStl(person) {
   if (!stlCache[person.id]) {
-    const url = person.stl.replace(/\.stl$/i, CONFIG.stlSuffix + '.stl');
-    stlCache[person.id] = new Promise((res, rej) => new THREE.STLLoader().load(url, geo => {
-      geo.computeVertexNormals();
-      addTriplanarUV(geo);
-      geo.userData.shared = true;
-      res(geo);
-    }, undefined, rej));
+    const file = person.stl.split('/').pop();
+    const names = CONFIG.preferLite ? [file.replace(/\.stl$/i, '_lite.stl'), file] : [file];
+    const tries = [];
+    names.forEach(n => CONFIG.stlFolders.forEach(f => tries.push({ url: f + n, folder: f })));
+    stlCache[person.id] = new Promise((res, rej) => {
+      let i = 0;
+      const next = () => {
+        if (i >= tries.length) { rej(new Error('not found at: ' + tries.map(t => t.url).join(', '))); return; }
+        const t = tries[i++];
+        new THREE.STLLoader().load(t.url, geo => {
+          if (!geo.attributes.position || !geo.attributes.position.count) { next(); return; }
+          geo.computeVertexNormals();
+          addTriplanarUV(geo);
+          geo.userData.shared = true;
+          person.stlFolder = t.folder;
+          if (typeof refreshCards === 'function') refreshCards();
+          res(geo);
+        }, undefined, next);
+      };
+      next();
+    });
   }
   return stlCache[person.id];
 }
@@ -1138,12 +1170,8 @@ function buildScene(v, p) {
   if (withExtras) {
     let die;
     if (painted) {
-      die = makeDie('#ffffff', '#111111', 0.15);
-      die.material.forEach(m => { m.metalness = 0.4; });
-      v.onFrame = (t) => {
-        const base = (v.rotY * 0.18) % 1;
-        die.material.forEach((m, i) => m.color.setHSL(((base + i * 0.09) % 1 + 1) % 1, 0.85, 0.66));
-      };
+      die = makeDichroicDie();
+      v.onFrame = (t) => die.userData.tint(((v.rotY * 0.18) % 1 + 1) % 1);
     } else {
       die = makeDie('#ffffff', '#111111');
       v.die = die;
@@ -1195,7 +1223,7 @@ function makeDesk(el) {
     v.camera.updateProjectionMatrix();
     const t = Math.tan(THREE.MathUtils.degToRad(15));
     const d = Math.max(3.7 / (t * v.camera.aspect), 2.3 / t);
-    const el_ = THREE.MathUtils.degToRad(20);
+    const el_ = THREE.MathUtils.degToRad(26);
     v.camera.position.set(0, 1.05 + d * Math.sin(el_), d * Math.cos(el_));
     v.camera.lookAt(0, 1.05, 0);
   };
@@ -1357,24 +1385,22 @@ function makeDesk(el) {
     blob(1.0, 0.8, h.position.x, h.position.z, 0.8);
   });
 
-  /* ---------- coin: one coin, real 50/50 ---------- */
-  const COIN_ROT_TOP = Math.PI / 2, COIN_ROT_BOT = -Math.PI / 2;   /* tuned in render check */
-  const COIN_SCALE = 1.4, COIN_R = 0.3 * COIN_SCALE;
+  /* ---------- coin: lies flat on the desk, real 50/50 ---------- */
+  const COIN_ROT_TOP = Math.PI / 2, COIN_ROT_BOT = -Math.PI / 2;   /* keeps the text upright on both faces */
+  const COIN_SCALE = 1.9, COIN_H = 0.03 * COIN_SCALE, COIN_R = 0.3 * COIN_SCALE;
   const coinRoot = new THREE.Group();
-  coinRoot.position.set(2.45, 0.07 + COIN_R, 0.5);
+  coinRoot.position.set(2.3, COIN_H, 0.6);
   stage.add(coinRoot);
-  box(0.9, 0.07, 0.4, grayBezel, 2.45, 0.035, 0.5);
   const flipper = new THREE.Group();
   coinRoot.add(flipper);
   const coin = makeCoin(false);
   coin.scale.setScalar(COIN_SCALE);
-  coin.rotation.x = Math.PI / 2;               /* stands on its edge, FEAR face toward the camera */
   coin.material[1].map.center.set(0.5, 0.5); coin.material[1].map.rotation = COIN_ROT_TOP;
   coin.material[2].map.center.set(0.5, 0.5); coin.material[2].map.rotation = COIN_ROT_BOT;
   flipper.add(coin);
-  hitBox(0.9, 0.9, 0.3, 0, 0, 0, 'coin', coinRoot);
-  blob(1.0, 0.5, 2.45, 0.5, 0.8);
-  let half = 0, flip = null;                    /* half = number of half turns so far (even = FEAR showing) */
+  hitBox(1.3, 0.3, 1.3, 0, 0, 0, 'coin', coinRoot);
+  blob(1.5, 1.5, 2.3, 0.6, 0.6);
+  let half = 0, flip = null;                    /* half = number of half turns so far (even = FEAR up) */
   function doFlip() {
     if (flip) return;
     const result = Math.random() < 0.5 ? 'FEAR' : 'JOY';
@@ -1384,21 +1410,20 @@ function makeDesk(el) {
     half += k;
   }
 
-  /* ---------- die: one die ---------- */
-  const DIE_SCALE = 1.25;
+  /* ---------- die: one dichroic glass die with gold pips, resting on the desk ---------- */
+  const DIE_SCALE = 1.4, DIE_H = 0.23 * DIE_SCALE;
   const dieRoot = new THREE.Group();
-  dieRoot.position.set(1.4, 0.23 * DIE_SCALE, 0.9);
+  dieRoot.position.set(1.3, DIE_H, 1.0);
   stage.add(dieRoot);
   const yawG = new THREE.Group();
   dieRoot.add(yawG);
-  const die = makeDie('#ffffff', '#111111');
-  recolorDie(die, 'red');
+  const die = makeDichroicDie();
   die.scale.setScalar(DIE_SCALE);
   yawG.add(die);
-  hitBox(0.7, 0.7, 0.7, 0, 0, 0, 'die', dieRoot);
-  blob(0.8, 0.8, 1.4, 0.9, 0.8);
+  hitBox(0.8, 0.8, 0.8, 0, 0, 0, 'die', dieRoot);
+  blob(0.9, 0.9, 1.3, 1.0, 0.8);
   const FACE_UP = { 1: [0, 0, 0], 6: [Math.PI, 0, 0], 3: [0, 0, Math.PI / 2], 4: [0, 0, -Math.PI / 2], 2: [-Math.PI / 2, 0, 0], 5: [Math.PI / 2, 0, 0] };
-  const dieBaseY = dieRoot.position.y;
+  const dieBaseY = DIE_H;
   let roll = null;
   function doRoll() {
     if (roll) return;
@@ -1439,12 +1464,13 @@ function makeDesk(el) {
   v.onFrame = function (t) {
     const now = performance.now();
     place(t);
+    die.userData.tint((t / 7000 + die.rotation.x * 0.07 + yawG.rotation.y * 0.05) % 1);   /* dichroic color shift */
     if (!REDUCE) crew.forEach((h, i) => { h.rotation.y = Math.sin(t / 1400 + i * 1.7) * 0.16 + (i - 1) * -0.14; });
     if (flip) {
       const k = Math.min(1, (now - flip.t0) / flip.dur);
       flipper.rotation.x = flip.a0 + (flip.a1 - flip.a0) * ease(k);
-      coinRoot.position.y = 0.07 + COIN_R + Math.sin(Math.PI * k) * (REDUCE ? 0 : 1.1);
-      if (k >= 1) { flipper.rotation.x = flip.a1; toast(flip.result); flip = null; }
+      coinRoot.position.y = COIN_H + Math.abs(Math.sin(flipper.rotation.x)) * COIN_R + Math.sin(Math.PI * k) * (REDUCE ? 0 : 1.1);   /* lift so the spinning edge never dips into the desk */
+      if (k >= 1) { flipper.rotation.x = flip.a1; coinRoot.position.y = COIN_H; toast(flip.result); flip = null; }
     }
     if (roll) {
       const k = Math.min(1, (now - roll.t0) / roll.dur);
@@ -1454,7 +1480,7 @@ function makeDesk(el) {
         roll.e0[1] + (roll.e1[1] - roll.e0[1]) * e,
         roll.e0[2] + (roll.e1[2] - roll.e0[2]) * e);
       yawG.rotation.y = roll.y0 + (roll.y1 - roll.y0) * e;
-      dieRoot.position.y = dieBaseY + Math.sin(Math.PI * k) * (REDUCE ? 0 : 0.9);
+      dieRoot.position.y = dieBaseY + (REDUCE ? 0 : Math.sin(Math.PI * k) * 0.9 + 0.22 * Math.min(1, Math.sin(Math.PI * k) * 6));
       if (k >= 1) {
         die.rotation.set(roll.tgt[0], roll.tgt[1], roll.tgt[2]);
         dieRoot.position.y = dieBaseY;
@@ -1478,6 +1504,104 @@ function makeDesk(el) {
   } else v.visible = true;
   if (window.ResizeObserver) new ResizeObserver(() => v.fit()).observe(el);
   v.fit();
+  return v;
+}
+
+/* Clearer translucent die: front faces only, so the pips on the far side no longer show through and hide the top number */
+function makeClearDie(colorId, alpha) {
+  const c = DIE_COLORS.find(x => x.id === colorId) || DIE_COLORS[0];
+  const pip = lum(c.hex) < 140 ? '#ffffff' : '#111111';
+  const mats = FACES.map(n => new THREE.MeshStandardMaterial({
+    map: pipTexture(n, c.hex, pip, alpha), transparent: true, roughness: 0.18, metalness: 0.05
+  }));
+  return new THREE.Mesh(roundedBox(0.46, 0.07, 12), mats);
+}
+
+/* Dichroic glass die: the body color-shifts, the pips are gold. Two meshes: a tinted body and a gold-pip skin on top. */
+const goldPipCache = {};
+function goldPipTexture(n) {
+  if (goldPipCache[n]) return goldPipCache[n];
+  const c = document.createElement('canvas');
+  c.width = c.height = 128;
+  const g = c.getContext('2d');
+  PIPS[n].forEach(p => {
+    const gr = g.createRadialGradient(p[0] * 128 - 3, p[1] * 128 - 3, 1, p[0] * 128, p[1] * 128, 13);
+    gr.addColorStop(0, '#fff2a8'); gr.addColorStop(0.6, '#f2c230'); gr.addColorStop(1, '#a8740a');
+    g.fillStyle = gr;
+    g.beginPath(); g.arc(p[0] * 128, p[1] * 128, 12, 0, Math.PI * 2); g.fill();
+  });
+  return (goldPipCache[n] = new THREE.CanvasTexture(c));
+}
+function makeDichroicDie() {
+  const g = new THREE.Group();
+  const geo = roundedBox(0.46, 0.07, 12);
+  const body = new THREE.Mesh(geo, FACES.map(() => new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.12, metalness: 0.45 })));
+  const pips = new THREE.Mesh(geo, FACES.map(n => new THREE.MeshBasicMaterial({ map: goldPipTexture(n), transparent: true, depthWrite: false })));
+  pips.scale.setScalar(1.006);
+  g.add(body, pips);
+  g.userData.tint = h => body.material.forEach((m, i) => m.color.setHSL((((h + i * 0.09) % 1) + 1) % 1, 0.8, 0.58));
+  g.userData.tint(0);
+  return g;
+}
+
+/* Rollable red die between FEARJOY and THE GAME in the page title. Hovers and turns slowly; click to roll. */
+function makeTitleDie(el) {
+  const v = { el, visible: false, fixed: true, onFrame: null };
+  try {
+    const canvas = document.createElement('canvas');
+    el.appendChild(canvas);
+    v.renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
+    v.renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+  } catch (err) { return null; }
+  v.scene = new THREE.Scene();
+  v.camera = new THREE.PerspectiveCamera(30, 1, 0.1, 50);
+  v.camera.position.set(0, 0, 3.8);
+  v.scene.add(new THREE.HemisphereLight(0xffffff, 0x6b4a42, 1.0));
+  const key = new THREE.DirectionalLight(0xffffff, 0.9); key.position.set(2, 4, 5); v.scene.add(key);
+  const rim = new THREE.DirectionalLight(0xffd9b0, 0.5); rim.position.set(-3, 1, -2); v.scene.add(rim);
+  v.stage = new THREE.Group(); v.scene.add(v.stage);
+
+  const tilt = new THREE.Group(); tilt.rotation.x = 0.55; v.stage.add(tilt);
+  const spin = new THREE.Group(); tilt.add(spin);
+  const lift = new THREE.Group(); spin.add(lift);
+  const die = makeClearDie('red', 0.92);
+  die.scale.setScalar(2.2);
+  lift.add(die);
+
+  v.fit = () => {
+    const s = Math.max(1, el.clientWidth || 100), h = Math.max(1, el.clientHeight || 100);
+    v.renderer.setSize(s, h, false);
+    v.camera.aspect = s / h; v.camera.updateProjectionMatrix();
+  };
+  if (window.ResizeObserver) new ResizeObserver(() => v.fit()).observe(el);
+  v.fit();
+
+  const FACE_UP = { 1: [0, 0, 0], 6: [Math.PI, 0, 0], 3: [0, 0, Math.PI / 2], 4: [0, 0, -Math.PI / 2], 2: [-Math.PI / 2, 0, 0], 5: [Math.PI / 2, 0, 0] };
+  const TAU = Math.PI * 2, ease = k => 1 - Math.pow(1 - k, 3);
+  let roll = null;
+  function doRoll() {
+    if (roll) return;
+    const n = 1 + Math.floor(Math.random() * 6), tgt = FACE_UP[n];
+    roll = { t0: performance.now(), dur: REDUCE ? 250 : 1000, n, tgt,
+      e0: [die.rotation.x, die.rotation.y, die.rotation.z],
+      e1: tgt.map(a => a + TAU * (1 + Math.floor(Math.random() * 2))) };
+  }
+  el.addEventListener('click', doRoll);
+  el.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); doRoll(); } });
+
+  v.onFrame = t => {
+    spin.rotation.y = REDUCE ? 0.4 : t * 0.00035;                       /* slow turn */
+    lift.position.y = REDUCE ? 0 : Math.sin(t / 900) * 0.06;            /* slow hover */
+    if (roll) {
+      const k = Math.min(1, (performance.now() - roll.t0) / roll.dur), e = ease(k);
+      die.rotation.set(roll.e0[0] + (roll.e1[0] - roll.e0[0]) * e, roll.e0[1] + (roll.e1[1] - roll.e0[1]) * e, roll.e0[2] + (roll.e1[2] - roll.e0[2]) * e);
+      lift.position.y += Math.sin(Math.PI * k) * (REDUCE ? 0 : 0.35);
+      if (k >= 1) { die.rotation.set(roll.tgt[0], roll.tgt[1], roll.tgt[2]); toast('Rolled ' + roll.n); roll = null; }
+    }
+  };
+  if ('IntersectionObserver' in window) {
+    new IntersectionObserver(es => { v.visible = es[0].isIntersecting; }, { threshold: 0.05 }).observe(el);
+  } else v.visible = true;
   return v;
 }
 
@@ -1569,6 +1693,7 @@ if (HAVE_GL) {
     viewers[p.id] = makeViewer(el, p);
   });
   viewers['desk'] = makeDesk($('[data-viewer="desk"]'));
+  viewers['title'] = makeTitleDie($('[data-title-die]'));
   requestAnimationFrame(frame);
 } else {
   $$('.viewer').forEach(el => el.classList.add('nogl'));
@@ -1601,7 +1726,7 @@ function refreshCards() {
     const a = $(`[data-diy="${p.id}"]`);
     const who = PEOPLE.find(x => x.id === S[p.id].view);
     if (who.stl) {
-      a.href = who.stl;
+      a.href = (who.stlFolder || './') + who.stl;
       a.setAttribute('download', who.stl.split('/').pop());
       a.removeAttribute('aria-disabled');
       a.textContent = `Print your own: free ${who.name} STL`;
@@ -1711,7 +1836,7 @@ function updateSheet() {
     else { pm.textContent = 'Code not recognized'; pm.className = 'note'; }
   }
 
-  const subject = encodeURIComponent(p.type === 'deluxe' ? 'LP1 inquiry: Super-Deluxe' : `LP1 order: ${p.name}`);
+  const subject = encodeURIComponent(p.type === 'deluxe' ? 'LP1 inquiry: Angel Investor Edition' : `LP1 order: ${p.name}`);
   const body = encodeURIComponent(orderText(p));
   const send = $('#sendEmail');
   send.href = `mailto:${CONFIG.email}?subject=${subject}&body=${body}`;
@@ -1738,7 +1863,7 @@ function openSheet(pid) {
   cur = getP(pid);
   const st = S[pid];
   if (cur.type === 'single' && st.pick.size === 0) st.pick.add(st.view);
-  $('#sheetTitle').innerHTML = symHTML(cur.type === 'deluxe' ? 'Super-Deluxe inquiry' : `Order: ${cur.name}`);
+  $('#sheetTitle').innerHTML = symHTML(cur.type === 'deluxe' ? 'Angel Investor inquiry' : `Order: ${cur.name}`);
   $('#sheetOptions').innerHTML = sheetOptionsHTML(cur);
   $('#oPromo').value = promoCode;
   refreshCards();
@@ -1821,7 +1946,7 @@ list.addEventListener('click', e => {
   openTrack(h.parentElement.id.replace('trk-', ''), false);
 });
 
-$$('h1, .section h2').forEach(symifyNode);
+$$('.section h2').forEach(symifyNode);
 
 refreshCards();
 })();
