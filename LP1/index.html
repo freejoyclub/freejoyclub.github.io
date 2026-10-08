@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- LP1 v10 -->
+<!-- LP1 v12 -->
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
@@ -222,51 +222,8 @@ animation: subtleFloat 5s ease-in-out infinite alternate;
 
 .floating-logo:hover { transform: scale(1.2) rotate(10deg); }
 
-.nav-cluster {
-position: fixed;
-bottom: 40px;
-left: 50%;
-transform: translateX(-50%);
-display: flex;
-background: rgba(0, 0, 0, 0.3);
-backdrop-filter: blur(12px);
-border: 1px solid rgba(255, 255, 255, 0.15);
-border-radius: 100px;
-padding: 8px 15px;
-box-shadow: 0 10px 40px rgba(0,0,0,0.6);
-z-index: 100;
-white-space: nowrap;
-}
-
-.nav-cluster a {
-font-family: 'KCStrikerSans', sans-serif;
-text-decoration: none;
-color: #fff;
-padding: 8px 12px;
-font-size: 0.8rem;
-text-transform: uppercase;
-letter-spacing: 1.5px;
-transition: all 0.3s;
-}
-
-.nav-cluster a:hover {
-color: #ffecd2;
-text-shadow: 0 0 12px var(--glow-color);
-transform: scale(1.1);
-}
-
-.nav-divider {
-width: 1px;
-height: 14px;
-background: rgba(255, 255, 255, 0.2);
-align-self: center;
-margin: 0 4px;
-}
-
 @media (max-width: 600px) {
 h1 { font-size: 3.5rem; }
-.nav-cluster { padding: 6px 10px; width: 90%; justify-content: center; }
-.nav-cluster a { font-size: 0.65rem; padding: 8px 6px; }
 }
 
 /* ============ New: sections ============ */
@@ -595,35 +552,82 @@ box-sizing: border-box;
 /* single piece card: the piece picker sits on top */
 .top-opts { display: flex; flex-direction: column; gap: 8px; padding: 0 6px; }
 
-/* master mute button, locked to the right end of the bottom nav */
-.nav-cluster .mute-btn {
-font-family: 'KCStrikerSans', sans-serif;
-font-size: 0.8rem;
-text-transform: uppercase;
-letter-spacing: 1.5px;
-color: #ff6a5c;
-background: rgba(120, 0, 0, 0.28);
-border: 1px solid #ff3b30;
-border-radius: 100px;
-padding: 6px 14px;
-margin-left: 6px;
-cursor: pointer;
-text-shadow: 0 0 8px rgba(255, 59, 48, 0.9);
-box-shadow: 0 0 10px rgba(255, 59, 48, 0.7), inset 0 0 6px rgba(255, 59, 48, 0.35);
-transition: all 0.2s;
+/* ============ v12: rack bar along the very bottom (replaces the floating nav pill) ============ */
+body { padding-bottom: 96px; }
+.rack {
+position: fixed; left: 0; right: 0; bottom: 0; z-index: 100;
+display: flex; align-items: center; flex-wrap: wrap; gap: 6px 12px;
+padding: 7px 34px calc(7px + env(safe-area-inset-bottom));
+background: linear-gradient(#3b3b40, #202023 16%, #151517 84%, #0a0a0b);
+border-top: 2px solid #5a5a60;
+box-shadow: 0 -6px 24px rgba(0,0,0,0.55), inset 0 1px 0 rgba(255,255,255,0.2);
+}
+/* rack ears: a screw at each end */
+.rack::before, .rack::after { content: ""; position: absolute; top: 50%; width: 13px; height: 13px; margin-top: -6px; border-radius: 50%; background: radial-gradient(circle at 35% 30%, #d6d6db, #5a5a60 60%, #222); box-shadow: 0 1px 2px rgba(0,0,0,0.8); }
+.rack::before { left: 10px; }
+.rack::after { right: 10px; }
+.rack-nav, .rack-ctl { display: flex; align-items: center; gap: 8px; }
+.rack-ctl { margin-left: auto; }
+/* chunky 3D rounded buttons. Pressed in and lit in their own color when clicked or switched on. */
+.rk {
+--c: #9ad1ff;
+font-family: 'KCStrikerSans', sans-serif; font-size: 0.72rem; letter-spacing: 1.2px; text-transform: uppercase; text-decoration: none; white-space: nowrap;
+color: #e9e9ee; background: linear-gradient(#70707a, #4a4a52 55%, #3a3a41);
+border: 1px solid #141416; border-radius: 10px; padding: 7px 12px 7px 10px;
+display: inline-flex; align-items: center; justify-content: center; gap: 7px;
+cursor: pointer; position: relative; top: 0;
+box-shadow: 0 3px 0 #131315, 0 5px 7px rgba(0,0,0,0.55), inset 0 1px 0 rgba(255,255,255,0.3);
+transition: transform 0.06s, box-shadow 0.06s, background 0.15s, color 0.15s;
 -webkit-tap-highlight-color: transparent;
 }
-.nav-cluster .mute-btn:hover { box-shadow: 0 0 18px rgba(255, 59, 48, 0.95), inset 0 0 8px rgba(255, 59, 48, 0.5); }
-.nav-cluster .mute-btn[aria-pressed="true"] {
-background: #ff3b30;
-color: #2a0705;
-text-shadow: none;
-box-shadow: inset 0 3px 8px rgba(0, 0, 0, 0.7), inset 0 0 0 1px rgba(0, 0, 0, 0.35);
-transform: translateY(1px) scale(0.97);
+.rk::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: #1c1c1f; box-shadow: inset 0 1px 1px rgba(0,0,0,0.8); transition: all 0.15s; }
+.rk:hover { filter: brightness(1.14); }
+.rk:active, .rk.lit, .rk[aria-pressed="true"] {
+transform: translateY(3px); color: var(--c); text-shadow: 0 0 8px var(--c);
+background: linear-gradient(#2a2a2f, #3a3a40);
+border-color: var(--c);
+box-shadow: 0 0 0 #131315, inset 0 3px 8px rgba(0,0,0,0.8), 0 0 12px var(--c);
 }
-@media (max-width: 600px) {
-.nav-cluster .mute-btn { font-size: 0.65rem; padding: 5px 9px; margin-left: 2px; }
+.rk:active::before, .rk.lit::before, .rk[aria-pressed="true"]::before { background: var(--c); box-shadow: 0 0 8px 2px var(--c); }
+.c-home { --c: #6fb4ff; } .c-game { --c: #6dff9a; } .c-breathe { --c: #5ff0e0; } .c-move { --c: #ffb35a; } .c-store { --c: #d28bff; } .c-play { --c: #6dff9a; } .c-bg { --c: #ffd36b; }
+.c-play { min-width: 44px; padding: 7px 10px; font-size: 0.8rem; }
+/* mute: glows red; pressed = inverted, depressed */
+.c-mute { --c: #ff3b30; color: #ff6a5c; border-color: #ff3b30; text-shadow: 0 0 8px rgba(255,59,48,0.9); box-shadow: 0 3px 0 #131315, 0 0 10px rgba(255,59,48,0.7), inset 0 0 6px rgba(255,59,48,0.35); }
+.c-mute::before { background: #ff3b30; box-shadow: 0 0 6px 1px #ff3b30; }
+.c-mute:active, .c-mute[aria-pressed="true"] { background: #ff3b30; color: #2a0705; text-shadow: none; box-shadow: inset 0 3px 8px rgba(0,0,0,0.7), inset 0 0 0 1px rgba(0,0,0,0.35); }
+.c-mute:active::before, .c-mute[aria-pressed="true"]::before { background: #2a0705; box-shadow: none; }
+/* little LCD that scrolls the song title */
+.rack-lcd { flex: 1 1 170px; min-width: 120px; height: 30px; position: relative; overflow: hidden; border-radius: 6px; background: #07140b; border: 1px solid #000; box-shadow: inset 0 2px 6px rgba(0,0,0,0.9), 0 1px 0 rgba(255,255,255,0.14); }
+.rack-lcd span { position: absolute; left: 0; top: 0; padding-left: 100%; white-space: nowrap; line-height: 30px; font-family: 'Courier New', Courier, monospace; font-weight: 700; font-size: 0.85rem; letter-spacing: 2px; color: #64ff8f; text-shadow: 0 0 6px rgba(100,255,143,0.8); opacity: 0.5; animation: lcdScroll 16s linear infinite; }
+.rack-lcd.on span { opacity: 1; }
+@keyframes lcdScroll { to { transform: translateX(-100%); } }
+/* volume knob */
+.rk-vol { display: inline-flex; align-items: center; gap: 6px; font-family: 'KCStrikerSans', sans-serif; font-size: 0.6rem; letter-spacing: 1.2px; text-transform: uppercase; color: #b8b8c0; }
+.rk-knob { position: relative; width: 38px; height: 38px; border-radius: 50%; background: conic-gradient(#5a5a62, #26262a, #707078, #26262a, #5a5a62); border: 2px solid #101012; box-shadow: 0 3px 6px rgba(0,0,0,0.7), inset 0 1px 0 rgba(255,255,255,0.3); cursor: grab; touch-action: none; -webkit-tap-highlight-color: transparent; outline: none; }
+.rk-knob::after { content: ""; position: absolute; left: 50%; top: 3px; width: 3px; height: 13px; margin-left: -1.5px; border-radius: 2px; background: #fff; box-shadow: 0 0 6px #fff; transform-origin: 50% 16px; transform: rotate(var(--a, 0deg)); }
+.rk-knob:hover, .rk-knob:focus-visible, .rk-knob.turning { box-shadow: 0 3px 6px rgba(0,0,0,0.7), inset 0 1px 0 rgba(255,255,255,0.3), 0 0 12px rgba(255,194,122,0.75); }
+.rk-knob.turning { cursor: grabbing; }
+@media (max-width: 700px) {
+body { padding-bottom: 118px; }
+.rack { padding: 7px 24px calc(7px + env(safe-area-inset-bottom)); gap: 7px 8px; }
+.rack-nav { flex: 1 0 100%; justify-content: center; gap: 6px; }
+.rack-ctl { margin-left: 0; gap: 6px; flex: 1 1 auto; justify-content: flex-end; }
+.rk { font-size: 0.62rem; letter-spacing: 0.8px; padding: 6px 8px 6px 7px; gap: 5px; }
+.rk-vol-label { display: none; }
+.rack-lcd { min-width: 80px; }
 }
+@media (prefers-reduced-motion: reduce) { .rack-lcd span { animation: none; padding-left: 8px; } }
+
+/* how-to-play popup and its click-to-zoom picture */
+dialog.wide { width: min(96vw, 1100px); }
+.howgrid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.howgrid figure { margin: 0; }
+.howgrid img { width: 100%; height: auto; display: block; border-radius: 12px; cursor: zoom-in; background: rgba(0,0,0,0.25); }
+@media (max-width: 760px), (orientation: portrait) { .howgrid { grid-template-columns: 1fr; } }
+.zoom { position: fixed; inset: 0; z-index: 10; display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,0.9); cursor: zoom-out; }
+.zoom[hidden] { display: none; }
+.zoom img { max-width: 96vw; max-height: 94vh; object-fit: contain; }
+.lore-actions { display: flex; gap: 10px; flex-wrap: wrap; }
 
 /* ============ Reduced motion ============ */
 @media (prefers-reduced-motion: reduce) {
@@ -655,7 +659,7 @@ try { if (location.hash) history.replaceState(null, '', location.pathname + loca
 <!-- ============ KITS (mini storefront) ============ -->
 <section class="section" id="kits">
 <h2>Game Pieces</h2>
-<p class="sub">Handmade pieces: by the band, of the band.<br>Designed and printed by Jesse.</p>
+<p class="sub">Handmade pieces: by the band, of the band.<br>3D-scanned and printed by Jesse.</p>
 
 <div class="grid" id="productGrid"></div>
 </section>
@@ -679,6 +683,7 @@ try { if (location.hash) history.replaceState(null, '', location.pathname + loca
 <a href="#" class="btn" data-stream data-soon="Stream the Album (soon)" data-live="Stream the Album">Stream the Album (soon)</a>
 <a href="#kits" class="btn">Game Piece Kits</a>
 <a href="#play" class="btn">🎲 Play Online 🏆</a>
+<button type="button" class="btn" id="howBtn">How to Play</button>
 <a href="#credits" class="btn">Credits &amp; Lyrics</a>
 </div>
 <div class="logo-group">
@@ -711,29 +716,58 @@ try { if (location.hash) history.replaceState(null, '', location.pathname + loca
 </div>
 </dialog>
 
+<dialog id="loreDlg">
+<div class="sheet">
+<h3>Mystery lore</h3>
+<p>Save the mystery lore?</p>
+<div class="lore-actions">
+<button class="btn" id="loreYes" type="button">Yes, save it</button>
+<button class="btn" id="loreNo" type="button">No thanks</button>
+</div>
+</div>
+</dialog>
+
+<dialog id="howDlg" class="wide">
+<div class="sheet">
+<button class="x" type="button" id="howClose" aria-label="Close">×</button>
+<h3>How to Play</h3>
+<div class="howgrid">
+<figure><img src="/images/how-to-credits.png" alt="How to play" data-zoom></figure>
+<figure><img src="/images/rulebook.png" alt="Rulebook" data-zoom></figure>
+</div>
+<p class="note">Tap a picture to zoom.</p>
+</div>
+<div class="zoom" id="zoom" hidden><img alt=""></div>
+</dialog>
+
 <div class="toast" id="toast" role="status"></div>
 <div class="secret" id="secret" role="status" hidden>
-<span>Secret unlocked: a 6 and JOY.</span>
+<span>Secret unlocked: THREEJOY</span>
 <a id="secretLink" href="/sfx/endless-jam-jgg-1.mp3" download="endless-jam-jgg-1.mp3">Download The Endless Jam (mp3)</a>
 <button type="button" id="secretClose" aria-label="Close">&times;</button>
 </div>
 
-<div class="nav-cluster">
-<a href="https://freejoy.club">Home</a>
-<div class="nav-divider"></div>
-<a href="/game">Game</a>
-<div class="nav-divider"></div>
-<a href="/breathe">Breathe</a>
-<div class="nav-divider"></div>
-<a href="/move">Move</a>
-<div class="nav-divider"></div>
-<button type="button" class="mute-btn" id="muteBtn" aria-pressed="false" aria-label="Mute all sound">Mute</button>
+<div class="rack" role="toolbar" aria-label="Site menu and music">
+<nav class="rack-nav">
+<a class="rk c-home" href="https://freejoy.club">Home</a>
+<a class="rk c-game" href="/game">Game</a>
+<a class="rk c-breathe" href="/breathe">Breathe</a>
+<a class="rk c-move" href="/move">Move</a>
+<a class="rk c-store" href="/store">Store</a>
+</nav>
+<div class="rack-lcd" id="rackLcd"><span>&#9654; THE ENDLESS JAM (UNRELEASED) - FEARJOY</span></div>
+<div class="rack-ctl">
+<button type="button" class="rk c-play" id="rackPlay" aria-pressed="false" aria-label="Play or pause The Endless Jam">&#9654;</button>
+<span class="rk-vol"><span class="rk-vol-label">Vol</span><span class="rk-knob" id="rackKnob" role="slider" tabindex="0" aria-label="Music volume" aria-valuemin="0" aria-valuemax="100" aria-valuenow="50"></span></span>
+<button type="button" class="rk c-bg" id="rackBg" aria-pressed="false" aria-label="Keep the music playing in the background">BG play</button>
+<button type="button" class="rk c-mute" id="muteBtn" aria-pressed="false" aria-label="Mute all sound">Mute</button>
+</div>
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/STLLoader.js"></script>
 <script>
-// LP1 v10
+// LP1 v12
 const toTop = () => { try { window.scrollTo({ top: 0, left: 0, behavior: 'instant' }); } catch (e) { window.scrollTo(0, 0); } };
 toTop();
 window.addEventListener('load', toTop);
@@ -753,7 +787,10 @@ const CONFIG = {
   preferLite: true,                // try Jesse_Bust_lite.stl etc. first (about 1 MB each), then fall back to the full files
   stlFolders: ['./', '/LP1/', '/images/'],  // where to look for the STL files, in order. './' = the same folder as this page
   tvImage: '/images/34_Board_temp.png?v=8',  // game board picture on the desk TV. The ?v=8 makes browsers fetch the newest copy: bump the number whenever you swap the file
-  sfxFolder: '/sfx/',              // sound effects (coinflip, dice1, dice2, dice5, 1up) and the radio song (endless-jam-jgg-1.mp3)
+  sfxFolder: '/sfx/',              // sound effects (coinflip, dice1, dice2, dice5, 1up, slide1) and the radio song (endless-jam-jgg-1.mp3)
+  loreFolder: '/game/bucket/',     // the lore bucket: pictures that flash on the desk TV
+  loreSeconds: 3,                  // how long a lore picture stays on the TV
+  lorePics: ['1st band promo.png', 'CP-30.jpg', 'Chilis.jpg', 'IMG_20200116_191840_549.jpg', 'creepin.JPG', 'fine-china.jpg', 'fj stone.png', 'foot only.jpg', 'forbidden-stache.jpg', 'g j wed.jpeg', 'g sticker.png', 'g-wedding.jpg', 'game v1.png', 'j dusty 1.jpg', 'j-g-18.jpg', 'marco lay.jpg', 'milwaukeedee grant.jpg', 'miramar wheel bunz ariel.jpg', 'morganshootsthings Grant & jesse 2.jpg', 'morganshootsthings Grant & jesse.jpg', 'morganshootsthings Grant ok.jpg', 'the 3 straights.jpg', 'walkin.JPG', 'yung-jesse.jpg'],   // pictures only (no videos, no .heic). Add new file names here.
   shippingNote: 'Shipping is confirmed by reply before you pay.'
 };
 
@@ -792,6 +829,7 @@ const PRODUCTS = [
     id: 'full-band', type: 'kit', name: 'Full Band Kit', price: 18, cta: 'Order',
     pieces: ['jesse', 'marco', 'grant', 'garrett', 'matt', 'isaac'],
     colors: ['black', 'dkblue', 'ltblue', 'purple', 'red', 'rose', 'lime', 'green', 'ltyellow', 'orange'],
+    defaultDie: 'orange',
     blurb: 'The whole band. Garrett, Matt and Isaac join the trio.',
     includes: ['6 player pieces (3D printed)', 'Die in any of 10 colors', 'Fearjoy coin']
   },
@@ -891,10 +929,22 @@ $('#secretLink').href = CONFIG.sfxFolder + 'endless-jam-jgg-1.mp3';
 const Sound = (() => {
   const DIR = CONFIG.sfxFolder;
   const AC = window.AudioContext || window.webkitAudioContext;
-  const SFX = ['coinflip.wav', 'dice1.wav', 'dice2.wav', 'dice5.wav', '1up.wav'];
-  let ctx = null, master = null, muted = false, vol = 0.5, el = null, musicGain = null, playing = false, onRadio = null;
+  const SFX = ['coinflip.wav', 'dice1.wav', 'dice2.wav', 'dice5.wav', '1up.wav', 'slide1.wav'];
+  let ctx = null, master = null, muted = false, vol = 0.5, el = null, musicGain = null, playing = false, bgPlay = false;
   const raw = {}, bufs = {}, decoding = {};
   const DICE_SFX = ['dice1.wav', 'dice2.wav', 'dice5.wav'];
+  const VOL = { coin: 0.3, dice: 0.5, oneUp: 0.25, slide: 1 };   /* coin 30%, dice 50% and 1up 25% of the original file volume */
+  const radioCbs = [], volCbs = [];
+  let lastSlide = 0;
+  const emitRadio = on => radioCbs.forEach(f => { try { f(on); } catch (e) {} });
+  /* lock screen / media key controls and the "this is music" hint that lets browsers keep playing under other apps */
+  function session(on) {
+    if (!('mediaSession' in navigator)) return;
+    try {
+      if (on && window.MediaMetadata) navigator.mediaSession.metadata = new MediaMetadata({ title: 'The Endless Jam (unreleased)', artist: 'Fearjoy', album: 'The Game' });
+      navigator.mediaSession.playbackState = on ? 'playing' : 'paused';
+    } catch (e) {}
+  }
   let diceN = 0, resumeRadio = false;   /* dice sounds go 1, 2, 5, 1, 2, 5 ... */
 
   /* start downloading the effects right away (decoding has to wait for the first tap) */
@@ -930,26 +980,28 @@ const Sound = (() => {
     SFX.forEach(decode);
   }
   /* plays an effect and returns how long it lasts in ms (0 if it is not loaded yet) */
-  function play(name) {
+  function play(name, gain) {
+    gain = gain == null ? 1 : gain;
     const c = ensure();
     if (!c) {   /* very old browser: plain audio element */
-      if (!muted) { try { new Audio(DIR + name).play().catch(() => {}); } catch (e) {} }
+      if (!muted) { try { const a = new Audio(DIR + name); a.volume = gain; a.play().catch(() => {}); } catch (e) {} }
       return 0;
     }
     const go = b => {
       if (!b || muted) return;
-      try { const s = c.createBufferSource(); s.buffer = b; s.connect(master); s.start(0); } catch (e) {}
+      try { const s = c.createBufferSource(), gn = c.createGain(); s.buffer = b; gn.gain.value = gain; s.connect(gn); gn.connect(master); s.start(0); } catch (e) {}
     };
     if (bufs[name]) { go(bufs[name]); return bufs[name].duration * 1000; }
     decode(name).then(go);
     return 0;
   }
-  return {
+  const api = {
     unlock,
     ready: () => !!ctx && ctx.state === 'running',
-    coin: () => play('coinflip.wav'),
-    dice: () => play(DICE_SFX[diceN++ % DICE_SFX.length]),
-    oneUp: () => play('1up.wav'),
+    coin: () => play('coinflip.wav', VOL.coin),
+    dice: () => play(DICE_SFX[diceN++ % DICE_SFX.length], VOL.dice),
+    oneUp: () => play('1up.wav', VOL.oneUp),
+    slide: () => { const n = performance.now(); if (n - lastSlide < 250) return 0; lastSlide = n; return play('slide1.wav', VOL.slide); },   /* never stacks more than 4 a second */
     isMuted: () => muted,
     setMuted(m) {
       muted = !!m;
@@ -962,10 +1014,12 @@ const Sound = (() => {
       vol = Math.max(0, Math.min(1, v));
       if (musicGain) { try { musicGain.gain.setTargetAtTime(vol, ctx.currentTime, 0.02); } catch (e) { musicGain.gain.value = vol; } }
       else if (el) el.volume = vol;
+      volCbs.forEach(f => { try { f(vol); } catch (e) {} });
       return vol;
     },
     /* tab hidden or page left: stop everything (the radio picks back up when you return) */
-    hide() {
+    hide(force) {
+      if (bgPlay && !force) return;   /* background play is on: keep the music going */
       if (playing && el && !el.paused) { el.pause(); resumeRadio = true; }
       if (ctx && ctx.state === 'running') { try { ctx.suspend(); } catch (e) {} }
     },
@@ -974,10 +1028,14 @@ const Sound = (() => {
       if (resumeRadio && el) {
         resumeRadio = false;
         const p = el.play();
-        if (p && p.catch) p.catch(() => { playing = false; if (onRadio) onRadio(false); });
+        if (p && p.catch) p.catch(() => { playing = false; emitRadio(false); });
       }
     },
-    onRadio(fn) { onRadio = fn; },
+    onRadio(fn) { radioCbs.push(fn); },
+    onVolume(fn) { volCbs.push(fn); },
+    isPlaying: () => playing,
+    setBackground(on) { bgPlay = !!on; return bgPlay; },
+    isBackground: () => bgPlay,
     /* radio: first call starts the song (at half volume), next call pauses it. Returns true while playing. */
     toggleRadio() {
       const c = ensure();
@@ -995,24 +1053,33 @@ const Sound = (() => {
           } catch (e) { musicGain = null; }
         }
         if (!musicGain) { el.volume = vol; el.muted = muted; }
-        el.addEventListener('error', () => { playing = false; if (onRadio) onRadio(false); toast('Could not load the song.'); });
+        el.playsInline = true;
+        el.addEventListener('error', () => { playing = false; emitRadio(false); session(false); toast('Could not load the song.'); });
+        try {   /* lock screen and media key buttons */
+          if ('mediaSession' in navigator) {
+            navigator.mediaSession.setActionHandler('play', () => { if (!playing) api.toggleRadio(); });
+            navigator.mediaSession.setActionHandler('pause', () => { if (playing) api.toggleRadio(); });
+          }
+        } catch (e) {}
       }
       resumeRadio = false;
       if (playing) { el.pause(); playing = false; }
       else {
         playing = true;
         const p = el.play();
-        if (p && p.catch) p.catch(() => { playing = false; if (onRadio) onRadio(false); });
+        if (p && p.catch) p.catch(() => { playing = false; emitRadio(false); });
       }
-      if (onRadio) onRadio(playing);
+      emitRadio(playing);
+      session(playing);
       return playing;
     }
   };
+  return api;
 })();
 
 /* ---------- State ---------- */
 const S = {};
-PRODUCTS.forEach(p => { S[p.id] = { die: 'red', qty: 1, view: 'jesse', pick: new Set() }; });
+PRODUCTS.forEach(p => { S[p.id] = { die: p.defaultDie || 'red', qty: 1, view: 'jesse', pick: new Set() }; });
 const getP = id => PRODUCTS.find(p => p.id === id);
 
 /* ---------- Streaming buttons ---------- */
@@ -1450,6 +1517,9 @@ function addSoftLights(scene) {
 
 /* Kit cards: the pieces tray sits back and center, and the die and the coin float on small trays in the front left and right
    corners of the same 3D space (a slight overlap is fine). All three are drawn into the one canvas. Tap the die to roll it, tap the coin to flip it. */
+/* tiny landing bounce: two small hops that die out (ms since landing, amp = height of the first hop) */
+const BOUNCE_MS = 380;
+function bounceAt(ms, amp) { const u = ms / BOUNCE_MS; return u >= 1 ? 0 : amp * (1 - u) * Math.abs(Math.sin(u * Math.PI * 2)); }
 const TRAYS = {
   main: { x: 0, y: 0, w: 1, h: 1 },
   die:  { x: 0.03, y: 0.5, w: 0.29, h: 0.5 },
@@ -1481,9 +1551,10 @@ function buildExtras(v, painted, st) {
   die.scale.setScalar(1.8);
   dieLift.add(die);
   dieS.stage.add(pedestal(0.75));
-  let roll = null;
+  let roll = null, dieLand = 0, coinLand = 0;
   v.rollDie = () => {
     if (roll) return;
+    dieLand = 0;
     const tgt = FU6[1 + Math.floor(Math.random() * 6)];
     roll = { t0: performance.now(), dur: REDUCE ? 250 : 1000, tgt,
       e0: [die.rotation.x, die.rotation.y, die.rotation.z],
@@ -1509,7 +1580,8 @@ function buildExtras(v, painted, st) {
     if (flip) return;
     const want = Math.random() < 0.5 ? 0 : 1;
     const k = 6 + ((((want - half) % 2) + 2) % 2);
-    flip = { t0: performance.now(), dur: REDUCE ? 250 : 1100, a0: half * Math.PI, a1: (half + k) * Math.PI };
+    flip = { t0: performance.now(), dur: REDUCE ? 250 : 1320, a0: half * Math.PI, a1: (half + k) * Math.PI };
+    coinLand = 0;
     half += k;
     Sound.coin();
   };
@@ -1523,7 +1595,11 @@ function buildExtras(v, painted, st) {
       const k = Math.min(1, (now - roll.t0) / roll.dur), e = ease(k);
       die.rotation.set(roll.e0[0] + (roll.e1[0] - roll.e0[0]) * e, roll.e0[1] + (roll.e1[1] - roll.e0[1]) * e, roll.e0[2] + (roll.e1[2] - roll.e0[2]) * e);
       dieLift.position.y += Math.sin(Math.PI * k) * (REDUCE ? 0 : 0.45);
-      if (k >= 1) { die.rotation.set(roll.tgt[0], roll.tgt[1], roll.tgt[2]); roll = null; }
+      if (k >= 1) { die.rotation.set(roll.tgt[0], roll.tgt[1], roll.tgt[2]); roll = null; dieLand = now; }
+    } else if (dieLand) {   /* little landing bounce */
+      const ms = now - dieLand;
+      dieLift.position.y += REDUCE ? 0 : bounceAt(ms, 0.12);
+      if (ms >= BOUNCE_MS) dieLand = 0;
     }
     cYaw.rotation.y = REDUCE ? 0 : Math.sin(t / 1600) * 0.4;
     cLift.position.y = baseY + (REDUCE ? 0 : Math.sin(t / 900) * 0.03);
@@ -1531,15 +1607,27 @@ function buildExtras(v, painted, st) {
       const k = Math.min(1, (now - flip.t0) / flip.dur);
       cFlip.rotation.x = flip.a0 + (flip.a1 - flip.a0) * ease(k);
       cLift.position.y = baseY + Math.sin(Math.PI * k) * (REDUCE ? 0 : 0.9);
-      if (k >= 1) { cFlip.rotation.x = flip.a1; flip = null; }
+      if (k >= 1) { cFlip.rotation.x = flip.a1; flip = null; coinLand = now; }
+    } else if (coinLand) {
+      const ms = now - coinLand;
+      cLift.position.y += REDUCE ? 0 : bounceAt(ms, 0.1);
+      if (ms >= BOUNCE_MS) coinLand = 0;
     }
   };
 
-  /* which tray is a pointer over? */
+  /* is the pointer on the die or the coin itself? (a ray into each little scene; anything else counts as the pieces tray) */
+  const tapRay = new THREE.Raycaster(), tapNdc = new THREE.Vector2();
   v.regionAt = e => {
     const r = v.el.getBoundingClientRect(), fx = (e.clientX - r.left) / r.width, fy = (e.clientY - r.top) / r.height;
-    const inside = q => fx >= q.x && fx <= q.x + q.w && fy >= q.y && fy <= q.y + q.h;
-    return inside(TRAYS.die) ? 'die' : inside(TRAYS.coin) ? 'coin' : 'main';
+    const list = [['die', dieS, die], ['coin', coinS, coin]];
+    for (let i = 0; i < list.length; i++) {
+      const name = list[i][0], sc = list[i][1], obj = list[i][2], q = sc.rect;
+      if (fx < q.x || fx > q.x + q.w || fy < q.y || fy > q.y + q.h) continue;
+      tapNdc.set(((fx - q.x) / q.w) * 2 - 1, -(((fy - q.y) / q.h) * 2 - 1));
+      tapRay.setFromCamera(tapNdc, sc.camera);
+      if (tapRay.intersectObject(obj, true).length) return name;
+    }
+    return 'main';
   };
 
   /* draw the three trays into the one canvas */
@@ -1735,17 +1823,14 @@ function makeDesk(el) {
 
   /* ---------- tube TV (gray) ---------- */
   const tv = new THREE.Group();
-  tv.position.set(0.15, 0, -1.25);
+  tv.position.set(0.15, -0.33, -1.25);   /* sits right on the desk, no stand feet */
   tv.scale.set(2.2, 2.2, 1.3);   /* big TV, but no deeper than before (z scale stays small) */
   stage.add(tv);
+  blob(5.5, 2.2, 0.15, -1.15, 0.55);   /* soft shadow under the TV */
   const grayBody = std(0x9a9ea3, 0.55), grayDark = std(0x5d6165, 0.6), grayBezel = std(0x34373a, 0.5);
   const slabAt = (w, h, d, r, b, mat, x, y, z) => { const m = new THREE.Mesh(roundedSlab(w, h, d, r, b), mat); m.position.set(x, y, z); tv.add(m); return m; };
   slabAt(2.3, 1.7, 0.95, 0.24, 0.08, grayBody, 0, 1.0, 0);
   slabAt(1.7, 1.3, 0.5, 0.2, 0.07, grayDark, 0, 1.0, -0.72);
-  slabAt(0.4, 0.15, 0.5, 0.04, 0.03, grayBezel, -0.9, 0.075, 0.2);
-  slabAt(0.4, 0.15, 0.5, 0.04, 0.03, grayBezel, 0.9, 0.075, 0.2);
-  slabAt(0.4, 0.15, 0.5, 0.04, 0.03, grayBezel, -0.9, 0.075, -0.2);
-  slabAt(0.4, 0.15, 0.5, 0.04, 0.03, grayBezel, 0.9, 0.075, -0.2);
   /* antenna */
   const antBase = new THREE.Mesh(new THREE.SphereGeometry(0.13, 20, 10, 0, Math.PI * 2, 0, Math.PI / 2), grayBezel);
   antBase.position.set(0.1, 1.85, -0.1);
@@ -1771,11 +1856,14 @@ function makeDesk(el) {
   const spkM = new THREE.Mesh(roundedScreenGeo(0.34, 0.6, 0.08), new THREE.MeshStandardMaterial({ map: spk, roughness: 0.7 }));   /* small rounded speaker panel */
   spkM.position.set(0.83, 1.4, 0.476);
   tv.add(spkM);
+  const tvKnobs = [];   /* the two TV knobs are buttons: click one to change the channel */
   [0.78, 0.56].forEach(y => {
     const k = new THREE.Mesh(new THREE.CylinderGeometry(0.075, 0.075, 0.07, 24), std(0x2a2c2e, 0.4, 0.3));
     k.rotation.x = Math.PI / 2;
     k.position.set(0.83, y, 0.51);
     tv.add(k);
+    tvKnobs.push(k);
+    hitBox(0.26, 0.26, 0.2, 0.83, y, 0.52, 'tvknob', tv).userData.knob = k;
   });
   /* square screen */
   slabAt(1.55, 1.55, 0.08, 0.2, 0.025, grayBezel, -0.2, 1.0, 0.475);   /* rounded screen bezel */
@@ -1864,8 +1952,8 @@ function makeDesk(el) {
       g.fillStyle = '#ff7a59'; g.fillText(txt, W / 2 + 4, y + 4);
       g.fillStyle = '#ffffff'; g.fillText(txt, W / 2, y);
     });
-    g.fillStyle = '#7fb0ff'; g.font = "22px 'KCPelletierTyped', 'Courier New', monospace";
-    g.fillText('1 PLAYER  -  FREEJOY CLUB', W / 2, 252);
+    g.fillStyle = '#7fb0ff'; g.font = "24px 'KCPelletierTyped', 'Courier New', 'Apple Color Emoji', 'Segoe UI Emoji', 'Noto Color Emoji', monospace";
+    g.fillText('free 🎲 1-6 players', W / 2, 252);
     MENU_OPTS.forEach(o => {
       const on = menuSel === o.id, cy = (o.y0 + o.y1) / 2;
       if (on) { g.fillStyle = '#ffd36b'; g.fillRect(MENU_X0, o.y0, MENU_X1 - MENU_X0, o.y1 - o.y0); }
@@ -1898,6 +1986,86 @@ function makeDesk(el) {
     if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); if (menuSel === 'start') startGame(); else closeMenu(); }
     else if (e.key === 'Escape') { e.preventDefault(); closeMenu(); }
     else if (e.key === 'ArrowUp' || e.key === 'ArrowDown') { e.preventDefault(); menuSel = menuSel === 'start' ? 'cancel' : 'start'; drawMenu(); }
+  });
+
+  /* ---------- channel change: a burst of static, then a random lore picture for 3 seconds, then back to the game screen.
+     Triggered by the die landing or a click on one of the two TV knobs. Click the picture to be asked if you want to save it. ---------- */
+  const staticCanvas = document.createElement('canvas');
+  staticCanvas.width = staticCanvas.height = 96;
+  const staticCtx = staticCanvas.getContext('2d'), staticImg = staticCtx.createImageData(96, 96);
+  const staticTex = new THREE.CanvasTexture(staticCanvas);
+  staticTex.magFilter = THREE.NearestFilter; staticTex.minFilter = THREE.NearestFilter; staticTex.generateMipmaps = false;
+  const staticM = noHit(new THREE.Mesh(scrGeo, new THREE.MeshBasicMaterial({ map: staticTex })));
+  staticM.position.z = 0.127; staticM.renderOrder = 6; staticM.visible = false;
+  screenGrp.add(staticM);
+  const loreMat = new THREE.MeshBasicMaterial({ color: 0xffffff });
+  const loreM = new THREE.Mesh(scrGeo, loreMat);
+  loreM.position.z = 0.126; loreM.renderOrder = 5; loreM.visible = false;
+  screenGrp.add(loreM);
+  const loreDlg = document.getElementById('loreDlg');
+  let lore = null, loreLast = '';
+  const loreUrl = n => CONFIG.loreFolder + encodeURIComponent(n);
+  function drawStatic() {
+    const d = staticImg.data;
+    for (let i = 0; i < d.length; i += 4) { const g = (Math.random() * 255) | 0; d[i] = d[i + 1] = d[i + 2] = g; d[i + 3] = 255; }
+    staticCtx.putImageData(staticImg, 0, 0);
+    staticTex.needsUpdate = true;
+  }
+  function pickLore() {
+    const list = CONFIG.lorePics || [];
+    if (!list.length) return '';
+    let n;
+    do { n = list[Math.floor(Math.random() * list.length)]; } while (list.length > 1 && n === loreLast);
+    return (loreLast = n);
+  }
+  function loadLore(cur, name) {
+    cur.name = name;
+    new THREE.TextureLoader().load(loreUrl(name), tex => {
+      if (lore !== cur) { tex.dispose(); return; }
+      const img = tex.image, a = img && img.width && img.height ? img.width / img.height : 1;   /* fill the square screen, cropping the long side */
+      if (a > 1) { tex.repeat.x = 1 / a; tex.offset.x = (1 - 1 / a) / 2; }
+      else if (a < 1) { tex.repeat.y = a; tex.offset.y = (1 - a) / 2; }
+      cur.tex = tex;
+    }, undefined, () => {
+      if (lore !== cur) return;
+      if (++cur.failed < 3) loadLore(cur, pickLore());   /* a bad file name: try another picture */
+      else { cur.phase = 'out'; cur.t0 = performance.now(); staticM.visible = !REDUCE; }
+    });
+  }
+  function endLore() {
+    if (!lore) return;
+    if (lore.tex) lore.tex.dispose();
+    loreMat.map = null; loreMat.needsUpdate = true;
+    loreM.visible = false; staticM.visible = false;
+    jesse.visible = !menuOn;
+    lore = null;
+  }
+  function startLore() {
+    if (menuOn || v.tvT || v.navigated || !(CONFIG.lorePics || []).length) return;
+    endLore();
+    lore = { phase: 'in', t0: performance.now(), tex: null, name: '', failed: 0, paused: false };
+    jesse.visible = false; staticM.visible = !REDUCE; loreM.visible = false;
+    loadLore(lore, pickLore());
+  }
+  function loreAt(e) {   /* is the pointer on the lore picture? */
+    if (!lore || lore.phase !== 'show' || lore.paused) return false;
+    const r = el.getBoundingClientRect();
+    ndc.set(((e.clientX - r.left) / r.width) * 2 - 1, -((e.clientY - r.top) / r.height) * 2 + 1);
+    ray.setFromCamera(ndc, v.camera);
+    return ray.intersectObject(loreM, false).length > 0;
+  }
+  function openLoreDlg() {
+    lore.paused = true;
+    try { loreDlg.showModal(); } catch (x) { loreDlg.setAttribute('open', ''); }
+  }
+  loreDlg.addEventListener('close', () => {   /* yes or no, the TV then goes back to the game screen */
+    if (lore && lore.paused) { lore.paused = false; lore.phase = 'out'; lore.t0 = performance.now(); staticM.visible = !REDUCE; }
+  });
+  loreDlg.addEventListener('click', e => { if (e.target === loreDlg) loreDlg.close(); });
+  document.getElementById('loreNo').addEventListener('click', () => loreDlg.close());
+  document.getElementById('loreYes').addEventListener('click', () => {
+    if (lore) { const a = document.createElement('a'); a.href = loreUrl(lore.name); a.download = lore.name; document.body.appendChild(a); a.click(); a.remove(); }
+    loreDlg.close();
   });
   const tvLight = new THREE.PointLight(0xa8d4ff, 0.55, 7);   /* faint blue spill onto the desk and the crew */
   tvLight.position.set(-0.18, 2.2, 0.35);
@@ -1937,9 +2105,10 @@ function makeDesk(el) {
   const ant = new THREE.Mesh(new THREE.CylinderGeometry(0.012, 0.012, 0.8, 8), chrome); ant.position.set(0.64, 1.24, -0.1); ant.rotation.z = -0.35; radio.add(ant);
   hitBox(1.4, 0.95, 0.65, 0, 0.47, 0, 'radio', radio);
   hitBox(0.5, 0.5, 0.3, 0.3, 0.32, 0.3, 'knob', radio);
-  let hoverGroup = null, glowItems = null, knobDrag = null, knobMoved = 0, ledOn = false, lastDie = 0, lastCoin = '';
+  let hoverGroup = null, glowItems = null, knobDrag = null, knobMoved = 0, ledOn = false, lastDie = 0, lastCoin = '', coinLand = 0, dieLand = 0;
   const setKnob = vol => { knob.rotation.z = 2.35 - vol * 4.7; };   /* quiet = turned left, loud = turned right */
   setKnob(Sound.getVolume());
+  Sound.onVolume(setKnob);   /* the rack bar knob turns this one too */
   Sound.onRadio(on => { ledOn = on; ledMat.color.setHex(on ? 0xff3b2a : 0x4a0d0a); });
 
   /* Jesse hovers slowly around the game board on the screen */
@@ -1972,29 +2141,36 @@ function makeDesk(el) {
   });
 
   /* ---------- coin: lies flat on the desk, real 50/50 ---------- */
-  const COIN_ROT_TOP = Math.PI / 2, COIN_ROT_BOT = -Math.PI / 2;   /* keeps the text upright on both faces */
+  const COIN_ROT_TOP = Math.PI / 2, COIN_ROT_BOT = Math.PI / 2;   /* keeps the text upright on both faces (JOY is turned the other way so it also reads upright while the coin spins on its edge; a JOY landing adds a half turn of yaw to put it right side up when flat) */
   const COIN_SCALE = 1.9, COIN_H = 0.03 * COIN_SCALE, COIN_R = 0.3 * COIN_SCALE;
   const coinRoot = new THREE.Group();
   coinRoot.position.set(1.1, COIN_H, 1.6);
   stage.add(coinRoot);
+  const spinG = new THREE.Group();   /* spins the coin on its edge until it is flipped */
+  coinRoot.add(spinG);
   const flipper = new THREE.Group();
-  coinRoot.add(flipper);
+  spinG.add(flipper);
   const coin = makeCoin(true, { base: '#e0b878', ink: '#6b4420', color: 0xe0b878, metalness: 0.25, roughness: 0.5 });   /* light bronze */
   coin.scale.setScalar(COIN_SCALE);
   coin.material[1].map.center.set(0.5, 0.5); coin.material[1].map.rotation = COIN_ROT_TOP;
   coin.material[2].map.center.set(0.5, 0.5); coin.material[2].map.rotation = COIN_ROT_BOT;
   flipper.add(coin);
-  hitBox(1.3, 0.3, 1.3, 0, 0, 0, 'coin', coinRoot);
+  hitBox(1.2, 1.2, 1.2, 0, 0, 0, 'coin', coinRoot);   /* tall enough for the coin standing on its edge */
   const coinShadow = blob(1.5, 1.5, 1.1, 1.6, 0.6);
-  let half = 1, flip = null;                    /* half = number of half turns so far (even = FEAR up, odd = JOY up). Starts on JOY. */
-  flipper.rotation.x = Math.PI;
+  let flip = null, idle = true;   /* idle = the coin stands on its edge and spins slowly until you click it */
+  flipper.rotation.x = Math.PI / 2;
+  coinRoot.position.y = COIN_R + 0.012;
   function doFlip() {
     if (flip) return;
     const result = Math.random() < 0.5 ? 'FEAR' : 'JOY';
     const want = result === 'JOY' ? 1 : 0;
-    const k = 6 + ((((want - half) % 2) + 2) % 2);
-    flip = { t0: performance.now(), dur: REDUCE ? 250 : 1100, a0: half * Math.PI, a1: (half + k) * Math.PI, result };
-    half += k;
+    const a0 = flipper.rotation.x;
+    let n = Math.ceil(a0 / Math.PI) + 6;   /* whole half turns: even = FEAR up, odd = JOY up */
+    if (n % 2 !== want) n++;
+    const off = want ? Math.PI : 0, y0 = spinG.rotation.y, y1 = Math.round((y0 - off) / (Math.PI * 2)) * Math.PI * 2 + off;   /* straighten out the edge spin on the way down (JOY lands a half turn round, so its text is upright) */
+    flip = { t0: performance.now(), dur: REDUCE ? 250 : 1320, a0, a1: n * Math.PI, result, y0, y1, fromEdge: idle, py0: coinRoot.position.y };
+    idle = false;
+    coinLand = 0;
     Sound.coin();
   }
 
@@ -2015,6 +2191,7 @@ function makeDesk(el) {
   let roll = null;
   function doRoll() {
     if (roll) return;
+    dieLand = 0;
     const n = 1 + Math.floor(Math.random() * 6);
     const tgt = FACE_UP[n], TAU = Math.PI * 2;
     roll = {
@@ -2026,8 +2203,8 @@ function makeDesk(el) {
     Sound.dice();
   }
 
-  /* a 6 on the die and JOY on the coin (both from real rolls and flips) unlock the secret download */
-  function checkSecret() { if (lastDie === 6 && lastCoin === 'JOY') { lastDie = 0; lastCoin = ''; showSecret(); } }
+  /* a 3 on the die and JOY on the coin (both from real rolls and flips) unlock the secret download: THREEJOY */
+  function checkSecret() { if (lastDie === 3 && lastCoin === 'JOY') { lastDie = 0; lastCoin = ''; showSecret(); } }
 
   /* ---------- clicking ---------- */
   const ray = new THREE.Raycaster(), ndc = new THREE.Vector2();
@@ -2055,9 +2232,10 @@ function makeDesk(el) {
       const o = menuAt(e);
       if (o) { if (o !== menuSel) { menuSel = o; menuBlink = true; menuBlinkT = performance.now(); drawMenu(); } el.style.cursor = MENU_CURSOR; hoverGroup = null; return; }
     }
+    if (loreAt(e)) { el.style.cursor = 'pointer'; hoverGroup = null; return; }   /* a lore picture is on the TV: click it to save it */
     const tag = pick(e);
     el.style.cursor = tag && !(menuOn && tag === 'tv') ? 'pointer' : 'default';
-    hoverGroup = tag === 'tv' ? (menuOn ? null : tv) : tag === 'bust' ? pickObj.userData.bust : tag === 'coin' ? coinRoot : tag === 'die' ? dieRoot : tag === 'radio' ? radio : tag === 'knob' ? knob : null;
+    hoverGroup = tag === 'tvknob' ? pickObj.userData.knob : tag === 'tv' ? (menuOn ? null : tv) : tag === 'bust' ? pickObj.userData.bust : tag === 'coin' ? coinRoot : tag === 'die' ? dieRoot : tag === 'radio' ? radio : tag === 'knob' ? knob : null;
   });
   const endKnob = () => { knobDrag = null; };
   el.addEventListener('pointerup', endKnob);
@@ -2066,18 +2244,20 @@ function makeDesk(el) {
   el.addEventListener('pointerleave', () => { hoverGroup = null; });
   el.addEventListener('click', e => {
     if (menuOn && !v.tvT) { const o = menuAt(e); if (o) { if (o === 'start') startGame(); else closeMenu(); return; } }
+    if (loreAt(e)) { openLoreDlg(); return; }
     const tag = pick(e);
     if (tag === 'coin') doFlip();
     else if (tag === 'die') doRoll();
     else if (tag === 'bust') {
       pickObj.userData.bust.userData.spin = performance.now();
-      Sound.oneUp();
+      Sound.slide();
     }
     else if (tag === 'radio') { if (Sound.toggleRadio()) toast('Now playing: The Endless Jam (unreleased)'); }
     else if (tag === 'knob') {   /* a plain tap on the knob steps the volume; dragging turns it */
       if (knobMoved < 5) { const cur = Sound.getVolume(); setKnob(Sound.setVolume(cur >= 0.99 ? 0 : Math.min(1, Math.round(cur * 4) / 4 + 0.25))); }
     }
-    else if (tag === 'tv' && !menuOn && !v.tvT && !v.navigated) { v.tvMode = 'open'; v.tvSwapped = false; v.tvT = performance.now(); }
+    else if (tag === 'tvknob') { pickObj.userData.knob.userData.press = performance.now(); startLore(); }
+    else if (tag === 'tv' && !menuOn && !v.tvT && !v.navigated) { endLore(); Sound.oneUp(); v.tvMode = 'open'; v.tvSwapped = false; v.tvT = performance.now(); }
   });
   window.addEventListener('pageshow', () => {
     v.tvT = 0; v.navigated = false;
@@ -2099,7 +2279,7 @@ function makeDesk(el) {
     barTex.offset.y = REDUCE ? 0 : -((t / 7000) % 1);
     tvLight.intensity = 0.55 * fl;
     /* hover glow: whatever is under the pointer warms up slightly (the radio knob too, while it is turned) */
-    if (!glowItems) glowItems = [tv, radio, knob, coinRoot, dieRoot].concat(crew).map(g => ({ g, k: 0, s: g === knob ? 1.2 : 1 }));
+    if (!glowItems) glowItems = [tv, radio, knob, coinRoot, dieRoot].concat(crew, tvKnobs).map(g => ({ g, k: 0, s: g === knob || tvKnobs.indexOf(g) >= 0 ? 1.2 : 1 }));
     const hg = knobDrag ? knob : hoverGroup;
     glowItems.forEach(it => {
       const tgt = it.g === hg ? 1 : 0;
@@ -2109,6 +2289,20 @@ function makeDesk(el) {
       applyGlow(it.g, it.k, it.s);
     });
     if (menuOn && now - menuBlinkT > 500) { menuBlinkT = now; menuBlink = !menuBlink; drawMenu(); }   /* selector arrow blinks */
+    tvKnobs.forEach(k => { const pt = k.userData.press ? Math.max(0, 1 - (now - k.userData.press) / 160) : 0; k.position.z = 0.51 - 0.03 * pt; });   /* TV buttons press in */
+    if (lore) {   /* channel change: static, picture, static, back to the game screen */
+      const dt = now - lore.t0, stMs = REDUCE ? 0 : 420;
+      if (lore.phase === 'in') {
+        if (!REDUCE) drawStatic();
+        if (dt > stMs && lore.tex) { loreMat.map = lore.tex; loreMat.needsUpdate = true; loreM.visible = true; staticM.visible = false; lore.phase = 'show'; lore.t0 = now; }
+        else if (dt > 8000) { lore.phase = 'out'; lore.t0 = now; }
+      } else if (lore.phase === 'show') {
+        if (!lore.paused && dt > CONFIG.loreSeconds * 1000) { lore.phase = 'out'; lore.t0 = now; staticM.visible = !REDUCE; }
+      } else {
+        if (!REDUCE) drawStatic();
+        if (dt > (REDUCE ? 0 : 380)) endLore();
+      }
+    }
     /* radio light pulses while the song plays */
     ledHalo.material.opacity = ledOn ? 0.7 + (REDUCE ? 0 : 0.2 * Math.sin(t / 220)) : 0;
     crew.forEach((h, i) => {
@@ -2120,12 +2314,25 @@ function makeDesk(el) {
       }
       h.rotation.y = r;
     });
+    if (idle) {   /* standing on its edge, slowly spinning */
+      const sp = REDUCE ? 0 : t * 0.0011;
+      spinG.rotation.y = sp;
+      coinRoot.position.y = COIN_R + 0.012;
+      coinShadow.scale.set(0.15 + 0.7 * Math.abs(Math.cos(sp)), 0.15 + 0.7 * Math.abs(Math.sin(sp)), 1);
+      coinShadow.material.opacity = coinShadow.userData.op * 0.8;
+    }
     if (flip) {
       const k = Math.min(1, (now - flip.t0) / flip.dur);
       flipper.rotation.x = flip.a0 + (flip.a1 - flip.a0) * ease(k);
-      coinRoot.position.y = COIN_H + Math.abs(Math.sin(flipper.rotation.x)) * COIN_R + Math.sin(Math.PI * k) * (REDUCE ? 0 : 1.1);   /* lift so the spinning edge never dips into the desk */
+      spinG.rotation.y = flip.y0 + (flip.y1 - flip.y0) * ease(k);
+      const yFlip = COIN_H + Math.abs(Math.sin(flipper.rotation.x)) * COIN_R + Math.sin(Math.PI * k) * (REDUCE ? 0 : 1.1);   /* lift so the spinning edge never dips into the desk */
+      coinRoot.position.y = flip.fromEdge ? flip.py0 + (yFlip - flip.py0) * Math.min(1, k * 6) : yFlip;
       shade(coinShadow, coinRoot.position.y - COIN_H);
-      if (k >= 1) { flipper.rotation.x = flip.a1; coinRoot.position.y = COIN_H; shade(coinShadow, 0); lastCoin = flip.result; flip = null; checkSecret(); }
+      if (k >= 1) { flipper.rotation.x = flip.a1; coinRoot.position.y = COIN_H; shade(coinShadow, 0); spinG.rotation.y = flip.y1; lastCoin = flip.result; flip = null; coinLand = now; checkSecret(); }
+    } else if (coinLand) {   /* little landing bounce */
+      const ms = now - coinLand, b = REDUCE ? 0 : bounceAt(ms, 0.09);
+      coinRoot.position.y = COIN_H + b; shade(coinShadow, b);
+      if (ms >= BOUNCE_MS) { coinLand = 0; coinRoot.position.y = COIN_H; shade(coinShadow, 0); }
     }
     if (roll) {
       const k = Math.min(1, (now - roll.t0) / roll.dur);
@@ -2141,8 +2348,12 @@ function makeDesk(el) {
         die.rotation.set(roll.tgt[0], roll.tgt[1], roll.tgt[2]);
         dieRoot.position.y = dieBaseY;
         shade(dieShadow, 0);
-        lastDie = roll.n; roll = null; checkSecret();
+        lastDie = roll.n; roll = null; dieLand = now; checkSecret(); startLore();
       }
+    } else if (dieLand) {
+      const ms = now - dieLand, b = REDUCE ? 0 : bounceAt(ms, 0.1);
+      dieRoot.position.y = dieBaseY + b; shade(dieShadow, b);
+      if (ms >= BOUNCE_MS) { dieLand = 0; dieRoot.position.y = dieBaseY; shade(dieShadow, 0); }
     }
     if (v.tvT && !v.navigated) {
       const mode = v.tvMode || 'open', dur = REDUCE ? 150 : (mode === 'start' ? 420 : 750);
@@ -2316,12 +2527,21 @@ function makeViewer(el, p) {
   if (window.ResizeObserver) new ResizeObserver(() => v.fit()).observe(el);
 
   el.addEventListener('pointerdown', e => {
-    if (v.regionAt && v.regionAt(e) !== 'main') return;   /* the die and coin trays do not start a drag */
+    v.tap = null;
+    const rg = v.regionAt ? v.regionAt(e) : 'main';
+    if (rg !== 'main') { v.tap = { rg, x: e.clientX, y: e.clientY }; return; }   /* on the die or coin itself: wait and see if it is a tap or the start of a drag */
     v.dragging = true; v.lastX = e.clientX; v.moved = 0; v.vel = 0; v.lastMoveT = performance.now();
     el.classList.add('grabbing');
     try { el.setPointerCapture(e.pointerId); } catch (x) {}
   });
   el.addEventListener('pointermove', e => {
+    if (v.tap) {
+      if (Math.hypot(e.clientX - v.tap.x, e.clientY - v.tap.y) < 8) return;
+      v.tap = null;   /* it moved, so it is a drag, not a tap: spin the pieces and leave the die and coin alone */
+      v.dragging = true; v.lastX = e.clientX; v.moved = 0; v.vel = 0; v.lastMoveT = performance.now();
+      el.classList.add('grabbing');
+      try { el.setPointerCapture(e.pointerId); } catch (x) {}
+    }
     if (!v.dragging) { if (v.regionAt) el.style.cursor = v.regionAt(e) === 'main' ? '' : 'pointer'; return; }
     v.lastMoveT = performance.now();
     const dx = e.clientX - v.lastX;
@@ -2334,16 +2554,18 @@ function makeViewer(el, p) {
     if (!v.dragging) return;
     v.dragging = false;
     el.classList.remove('grabbing');
-    if (v.moved < 6) v.vel = 0.22; /* tap = spin kick */
+    if (v.moved < 6) { v.vel = 0.22; Sound.slide(); }   /* tap = spin kick */
+    else if (Math.abs(v.vel) > 0.04) Sound.slide();   /* a flick of the pieces */
   };
   el.addEventListener('pointerup', end);
   el.addEventListener('pointercancel', end);
   el.addEventListener('lostpointercapture', end);   /* iPhone can drop the pointer mid-drag, which used to leave the auto spin stuck off */
-  el.addEventListener('click', e => {   /* tap the small trays: roll the die, flip the coin */
-    if (!v.regionAt) return;
-    const rg = v.regionAt(e);
-    if (rg === 'die' && v.rollDie) v.rollDie();
-    else if (rg === 'coin' && v.flipCoin) v.flipCoin();
+  el.addEventListener('pointercancel', () => { v.tap = null; });
+  el.addEventListener('click', () => {   /* only a real tap that started on the die or coin itself rolls or flips it */
+    const tp = v.tap; v.tap = null;
+    if (!tp) return;
+    if (tp.rg === 'die' && v.rollDie) v.rollDie();
+    else if (tp.rg === 'coin' && v.flipCoin) v.flipCoin();
   });
 
   if ('IntersectionObserver' in window) {
@@ -2568,7 +2790,7 @@ document.addEventListener('click', e => {
     S[pid].qty = Math.max(1, Math.min(9, S[pid].qty + Number(d)));
     refreshCards();
   }
-  else if (b.dataset.order) openSheet(b.dataset.order);
+  else if (b.dataset.order) { Sound.oneUp(); openSheet(b.dataset.order); }
 });
 
 /* =====================================================================
@@ -2617,7 +2839,7 @@ const armSound = () => {
 ['touchend', 'pointerup', 'click', 'keydown'].forEach(t => document.addEventListener(t, armSound, true));
 /* leaving the tab or page silences everything; the radio resumes when you come back */
 document.addEventListener('visibilitychange', () => { if (document.hidden) Sound.hide(); else Sound.show(); });
-window.addEventListener('pagehide', () => Sound.hide());
+window.addEventListener('pagehide', () => Sound.hide(true));
 window.addEventListener('pageshow', e => { if (e.persisted) Sound.show(); });
 
 const muteBtn = $('#muteBtn');
@@ -2626,6 +2848,39 @@ muteBtn.addEventListener('click', () => {
   muteBtn.setAttribute('aria-pressed', String(m));
   muteBtn.textContent = m ? 'Muted' : 'Mute';
 });
+
+/* ---------- rack bar: lit buttons, play/pause, volume knob, background play ---------- */
+$$('.rack-nav a').forEach(a => a.addEventListener('click', () => a.classList.add('lit')));
+const rackPlay = $('#rackPlay'), rackLcd = $('#rackLcd'), rackBg = $('#rackBg'), rackKnob = $('#rackKnob');
+Sound.onRadio(on => { rackPlay.setAttribute('aria-pressed', String(on)); rackPlay.innerHTML = on ? '&#10074;&#10074;' : '&#9654;'; rackLcd.classList.toggle('on', on); });
+rackPlay.addEventListener('click', () => { if (Sound.toggleRadio()) toast('Now playing: The Endless Jam (unreleased)'); });
+const showRackKnob = v => { rackKnob.style.setProperty('--a', (-135 + v * 270) + 'deg'); rackKnob.setAttribute('aria-valuenow', String(Math.round(v * 100))); };
+showRackKnob(Sound.getVolume());
+Sound.onVolume(showRackKnob);
+let rackDrag = null;   /* drag right or up = louder, left or down = quieter (diagonal counts) */
+rackKnob.addEventListener('pointerdown', e => { rackDrag = { x: e.clientX, y: e.clientY, v: Sound.getVolume() }; rackKnob.classList.add('turning'); try { rackKnob.setPointerCapture(e.pointerId); } catch (x) {} e.preventDefault(); });
+rackKnob.addEventListener('pointermove', e => { if (rackDrag) Sound.setVolume(rackDrag.v + ((e.clientX - rackDrag.x) - (e.clientY - rackDrag.y)) / 120); });
+const rackDragEnd = () => { rackDrag = null; rackKnob.classList.remove('turning'); };
+['pointerup', 'pointercancel', 'lostpointercapture'].forEach(t => rackKnob.addEventListener(t, rackDragEnd));
+rackKnob.addEventListener('wheel', e => { e.preventDefault(); Sound.setVolume(Sound.getVolume() + (e.deltaY < 0 ? 0.05 : -0.05)); }, { passive: false });
+rackKnob.addEventListener('keydown', e => {
+  if (e.key === 'ArrowUp' || e.key === 'ArrowRight') { e.preventDefault(); Sound.setVolume(Sound.getVolume() + 0.05); }
+  else if (e.key === 'ArrowDown' || e.key === 'ArrowLeft') { e.preventDefault(); Sound.setVolume(Sound.getVolume() - 0.05); }
+});
+rackBg.addEventListener('click', () => {
+  const on = Sound.setBackground(!Sound.isBackground());
+  rackBg.setAttribute('aria-pressed', String(on));
+  toast(on ? 'Background play on: the jam keeps going in the background.' : 'Background play off.');
+});
+
+/* ---------- How to Play popup: two pictures side by side (stacked on tall screens), tap one to zoom ---------- */
+const howDlg = $('#howDlg'), zoomEl = $('#zoom'), zoomImg = zoomEl.querySelector('img');
+$('#howBtn').addEventListener('click', () => { try { howDlg.showModal(); } catch (x) { howDlg.setAttribute('open', ''); } });
+$('#howClose').addEventListener('click', () => howDlg.close());
+howDlg.addEventListener('click', e => { if (e.target === howDlg) howDlg.close(); });
+howDlg.addEventListener('close', () => { zoomEl.hidden = true; });
+$$('#howDlg [data-zoom]').forEach(img => img.addEventListener('click', () => { zoomImg.src = img.src; zoomImg.alt = img.alt; zoomEl.hidden = false; }));
+zoomEl.addEventListener('click', e => { e.stopPropagation(); zoomEl.hidden = true; });
 
 /* ---------- credits box: at the very top or bottom, keep scrolling and the page moves instead of getting stuck ---------- */
 list.addEventListener('wheel', e => {
