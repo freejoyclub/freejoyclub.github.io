@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- LP1 v8 -->
+<!-- LP1 v10 -->
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
@@ -581,13 +581,19 @@ box-sizing: border-box;
 /* desk sits right under the title now */
 #play { margin-top: 14px; }
 
-/* kit cards: the die and the coin each get their own little tray beside the pieces tray */
-.viewer.has-trays .hint { left: 0; right: auto; width: 68%; text-align: center; }
-.tray { position: absolute; box-sizing: border-box; border: 1px solid rgba(255,255,255,0.14); border-radius: 16px; background: radial-gradient(circle at 50% 40%, rgba(255,255,255,0.08), rgba(0,0,0,0.14)); pointer-events: none; }
-.tray-label { position: absolute; left: 0; right: 0; bottom: 5px; text-align: center; font-family: 'KCPelletierLight', 'Courier New', monospace; font-size: 0.68rem; letter-spacing: 1px; opacity: 0.65; }
+/* kit cards: the die and the coin float in the front corners of the same 3D space (no boxes), so the hint moves to the top */
+.viewer.has-trays .hint { top: 8px; bottom: auto; left: 0; right: 0; text-align: center; }
+/* single piece card: a shorter preview with less empty room around it */
+.product.single .viewer { aspect-ratio: 3 / 2; }
+/* secret popup (rolling a 6 and flipping JOY on the desk) */
+.secret { position: fixed; left: 50%; bottom: 168px; transform: translateX(-50%) translateY(10px); z-index: 310; display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 6px 14px; max-width: 90vw; padding: 12px 20px; border-radius: 40px; background: rgba(0,0,0,0.9); border: 1px solid rgba(255,211,107,0.7); box-shadow: 0 0 18px rgba(255,211,107,0.3); font-family: 'KCPelletierLight', 'Courier New', monospace; color: #fff; opacity: 0; transition: opacity 0.35s ease, transform 0.35s ease; }
+.secret.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+.secret[hidden] { display: none; }
+.secret a { font-family: 'KCStrikerSans', sans-serif; color: #ffd36b; text-decoration: underline; }
+.secret button { background: none; border: 0; color: #fff; font-size: 1.3rem; line-height: 1; cursor: pointer; opacity: 0.7; padding: 0 4px; }
 
 /* single piece card: the piece picker sits on top */
-.top-opts { display: flex; flex-direction: column; gap: 10px; padding: 4px 6px 0; }
+.top-opts { display: flex; flex-direction: column; gap: 8px; padding: 0 6px; }
 
 /* master mute button, locked to the right end of the bottom nav */
 .nav-cluster .mute-btn {
@@ -625,6 +631,11 @@ html { scroll-behavior: auto; }
 body, h1, .floating-text, .btn, .floating-logo, .section h2, .product.deluxe { animation: none !important; }
 }
 </style>
+<script>
+/* v10: every load, refresh or return starts at the very top (no remembered scroll spot, no #section jump) */
+try { if ('scrollRestoration' in history) history.scrollRestoration = 'manual'; } catch (e) {}
+try { if (location.hash) history.replaceState(null, '', location.pathname + location.search); } catch (e) {}
+</script>
 </head>
 <body>
 
@@ -701,6 +712,11 @@ body, h1, .floating-text, .btn, .floating-logo, .section h2, .product.deluxe { a
 </dialog>
 
 <div class="toast" id="toast" role="status"></div>
+<div class="secret" id="secret" role="status" hidden>
+<span>Secret unlocked: a 6 and JOY.</span>
+<a id="secretLink" href="/sfx/endless-jam-jgg-1.mp3" download="endless-jam-jgg-1.mp3">Download The Endless Jam (mp3)</a>
+<button type="button" id="secretClose" aria-label="Close">&times;</button>
+</div>
 
 <div class="nav-cluster">
 <a href="https://freejoy.club">Home</a>
@@ -717,7 +733,11 @@ body, h1, .floating-text, .btn, .floating-logo, .section h2, .product.deluxe { a
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/STLLoader.js"></script>
 <script>
-// LP1 v8
+// LP1 v10
+const toTop = () => { try { window.scrollTo({ top: 0, left: 0, behavior: 'instant' }); } catch (e) { window.scrollTo(0, 0); } };
+toTop();
+window.addEventListener('load', toTop);
+window.addEventListener('pageshow', e => { if (e.persisted) toTop(); });
 (function () {
 'use strict';
 
@@ -844,6 +864,23 @@ function toast(msg) {
   toastTimer = setTimeout(() => t.classList.remove('show'), 2600);
 }
 
+/* secret popup: shown when a 6 and JOY are both rolled on the desk */
+let secretTimer = 0;
+function showSecret() {
+  const el = $('#secret');
+  el.hidden = false;
+  requestAnimationFrame(() => el.classList.add('show'));
+  clearTimeout(secretTimer);
+  secretTimer = setTimeout(hideSecret, 20000);
+}
+function hideSecret() {
+  const el = $('#secret');
+  el.classList.remove('show');
+  setTimeout(() => { if (!el.classList.contains('show')) el.hidden = true; }, 400);
+}
+$('#secretClose').addEventListener('click', hideSecret);
+$('#secretLink').href = CONFIG.sfxFolder + 'endless-jam-jgg-1.mp3';
+
 /* =====================================================================
    SOUND. Everything starts from a tap or click, which is what phones require.
    - One shared AudioContext, created and resumed on the first tap (Safari and iPhone need this).
@@ -857,6 +894,8 @@ const Sound = (() => {
   const SFX = ['coinflip.wav', 'dice1.wav', 'dice2.wav', 'dice5.wav', '1up.wav'];
   let ctx = null, master = null, muted = false, vol = 0.5, el = null, musicGain = null, playing = false, onRadio = null;
   const raw = {}, bufs = {}, decoding = {};
+  const DICE_SFX = ['dice1.wav', 'dice2.wav', 'dice5.wav'];
+  let diceN = 0, resumeRadio = false;   /* dice sounds go 1, 2, 5, 1, 2, 5 ... */
 
   /* start downloading the effects right away (decoding has to wait for the first tap) */
   SFX.forEach(n => { raw[n] = fetch(DIR + n).then(r => (r.ok ? r.arrayBuffer() : null)).catch(() => null); });
@@ -909,7 +948,7 @@ const Sound = (() => {
     unlock,
     ready: () => !!ctx && ctx.state === 'running',
     coin: () => play('coinflip.wav'),
-    dice: () => play(['dice1.wav', 'dice2.wav', 'dice5.wav'][Math.floor(Math.random() * 3)]),
+    dice: () => play(DICE_SFX[diceN++ % DICE_SFX.length]),
     oneUp: () => play('1up.wav'),
     isMuted: () => muted,
     setMuted(m) {
@@ -924,6 +963,19 @@ const Sound = (() => {
       if (musicGain) { try { musicGain.gain.setTargetAtTime(vol, ctx.currentTime, 0.02); } catch (e) { musicGain.gain.value = vol; } }
       else if (el) el.volume = vol;
       return vol;
+    },
+    /* tab hidden or page left: stop everything (the radio picks back up when you return) */
+    hide() {
+      if (playing && el && !el.paused) { el.pause(); resumeRadio = true; }
+      if (ctx && ctx.state === 'running') { try { ctx.suspend(); } catch (e) {} }
+    },
+    show() {
+      if (ctx && ctx.state !== 'running') { try { const r = ctx.resume(); if (r && r.catch) r.catch(() => {}); } catch (e) {} }
+      if (resumeRadio && el) {
+        resumeRadio = false;
+        const p = el.play();
+        if (p && p.catch) p.catch(() => { playing = false; if (onRadio) onRadio(false); });
+      }
     },
     onRadio(fn) { onRadio = fn; },
     /* radio: first call starts the song (at half volume), next call pauses it. Returns true while playing. */
@@ -945,6 +997,7 @@ const Sound = (() => {
         if (!musicGain) { el.volume = vol; el.muted = muted; }
         el.addEventListener('error', () => { playing = false; if (onRadio) onRadio(false); toast('Could not load the song.'); });
       }
+      resumeRadio = false;
       if (playing) { el.pause(); playing = false; }
       else {
         playing = true;
@@ -1224,7 +1277,7 @@ function roundedBox(size, radius, seg) {
   }
   return geo;
 }
-const DIE_ALPHA = 0.62;
+const DIE_ALPHA = 0.8;   /* mostly see-through, but solid enough to tell which way it turns */
 function makeDie(bg, pip, rough) {
   const mats = FACES.map(n => new THREE.MeshStandardMaterial({
     map: pipTexture(n, bg, pip, DIE_ALPHA),
@@ -1242,22 +1295,35 @@ function recolorDie(mesh, colorId) {
   mesh.material.forEach((m, i) => { m.map = pipTexture(FACES[i], c.hex, pip, DIE_ALPHA); m.needsUpdate = true; });
 }
 
-/* Coin: FEAR on one face, JOY on the other */
+/* Coin: FEAR on one face, JOY on the other. Lettering is the Striker Sans subheader font; the textures redraw once that font has loaded. */
+const COIN_FONT = "'KCStrikerSans', 'Arial Black', Arial, sans-serif";
+const COIN_REDRAW = [];
+function setCoinFont(g, text) {
+  let px = 64;
+  g.font = px + 'px ' + COIN_FONT;
+  while (px > 24 && g.measureText(text).width > 170) { px -= 4; g.font = px + 'px ' + COIN_FONT; }
+}
+if (document.fonts && document.fonts.load) document.fonts.load("64px 'KCStrikerSans'").then(() => COIN_REDRAW.forEach(f => f())).catch(() => {});
 function coinFace(text, base, ink, useMarble) {
   const c = document.createElement('canvas');
   c.width = c.height = 256;
   const g = c.getContext('2d');
-  if (useMarble && MARBLE_CANVAS) g.drawImage(MARBLE_CANVAS, 0, 0);
-  else { g.fillStyle = base; g.fillRect(0, 0, 256, 256); }
-  g.strokeStyle = ink;
-  g.lineWidth = 8;
-  g.beginPath(); g.arc(128, 128, 112, 0, Math.PI * 2); g.stroke();
-  g.fillStyle = ink;
-  g.font = 'bold 56px Arial Black, Arial, sans-serif';
-  g.textAlign = 'center';
-  g.textBaseline = 'middle';
-  g.fillText(text, 128, 132);
-  return new THREE.CanvasTexture(c);
+  const draw = () => {
+    if (useMarble && MARBLE_CANVAS) g.drawImage(MARBLE_CANVAS, 0, 0);
+    else { g.fillStyle = base; g.fillRect(0, 0, 256, 256); }
+    g.strokeStyle = ink;
+    g.lineWidth = 8;
+    g.beginPath(); g.arc(128, 128, 112, 0, Math.PI * 2); g.stroke();
+    g.fillStyle = ink;
+    setCoinFont(g, text);
+    g.textAlign = 'center';
+    g.textBaseline = 'middle';
+    g.fillText(text, 128, 132);
+  };
+  draw();
+  const tex = new THREE.CanvasTexture(c);
+  COIN_REDRAW.push(() => { draw(); tex.needsUpdate = true; });
+  return tex;
 }
 /* ---- shiny bronze. A "matcap" is a pre-lit sphere picture; wrapping it on the coin gives a polished-metal sheen that sweeps across as the coin turns. ---- */
 function shadeHex(hex, f) {   /* f > 0 mixes toward white, f < 0 toward black */
@@ -1309,6 +1375,7 @@ function coinFaceShiny(text, base, ink) {
   const c = document.createElement('canvas');
   c.width = c.height = 256;
   const g = c.getContext('2d');
+  const draw = () => {
   const rg = g.createRadialGradient(96, 90, 8, 128, 128, 160);
   rg.addColorStop(0, shadeHex(base, 0.35)); rg.addColorStop(0.5, base); rg.addColorStop(1, shadeHex(base, -0.3));
   g.fillStyle = rg; g.fillRect(0, 0, 256, 256);
@@ -1317,12 +1384,16 @@ function coinFaceShiny(text, base, ink) {
   g.fillStyle = st; g.fillRect(0, 0, 256, 256);
   g.lineWidth = 7; g.strokeStyle = shadeHex(base, 0.45); g.beginPath(); g.arc(128, 128, 114, 0, Math.PI * 2); g.stroke();   /* raised rim */
   g.lineWidth = 3; g.strokeStyle = shadeHex(base, -0.45); g.beginPath(); g.arc(128, 128, 106, 0, Math.PI * 2); g.stroke();
-  g.font = 'bold 56px Arial Black, Arial, sans-serif';
+  setCoinFont(g, text);
   g.textAlign = 'center';
   g.textBaseline = 'middle';
   g.fillStyle = 'rgba(255,245,220,0.55)'; g.fillText(text, 130, 135);   /* lettering: highlight, then ink */
   g.fillStyle = ink; g.fillText(text, 128, 132);
-  return new THREE.CanvasTexture(c);
+  };
+  draw();
+  const tex = new THREE.CanvasTexture(c);
+  COIN_REDRAW.push(() => { draw(); tex.needsUpdate = true; });
+  return tex;
 }
 function makeCoin(bronze, tone) {
   const geo = new THREE.CylinderGeometry(0.3, 0.3, 0.06, 48);
@@ -1377,12 +1448,12 @@ function addSoftLights(scene) {
   const rim = new THREE.DirectionalLight(0xffd9b0, 0.25); rim.position.set(-4, 2, -3); scene.add(rim);
 }
 
-/* Kit cards: the die and the coin sit on their own little trays beside the pieces tray, so the turning heads never cover them
-   and they are always visible. All three trays are drawn into the same canvas. Tap the die to roll it, tap the coin to flip it. */
+/* Kit cards: the pieces tray sits back and center, and the die and the coin float on small trays in the front left and right
+   corners of the same 3D space (a slight overlap is fine). All three are drawn into the one canvas. Tap the die to roll it, tap the coin to flip it. */
 const TRAYS = {
-  main: { x: 0, y: 0, w: 0.68, h: 1 },
-  die:  { x: 0.7, y: 0, w: 0.3, h: 0.495 },
-  coin: { x: 0.7, y: 0.505, w: 0.3, h: 0.495 }
+  main: { x: 0, y: 0, w: 1, h: 1 },
+  die:  { x: 0.03, y: 0.5, w: 0.29, h: 0.5 },
+  coin: { x: 0.68, y: 0.5, w: 0.29, h: 0.5 }
 };
 const FU6 = { 1: [0, 0, 0], 6: [Math.PI, 0, 0], 3: [0, 0, Math.PI / 2], 4: [0, 0, -Math.PI / 2], 2: [-Math.PI / 2, 0, 0], 5: [Math.PI / 2, 0, 0] };
 function buildExtras(v, painted, st) {
@@ -1398,15 +1469,6 @@ function buildExtras(v, painted, st) {
   const dieS = mkSub(TRAYS.die), coinS = mkSub(TRAYS.coin);
   v.subs = [dieS, coinS];
 
-  /* tray frames + labels (plain HTML on top of the canvas) */
-  [['die', 'tap to roll'], ['coin', 'tap to flip']].forEach(([k, label]) => {
-    const r = TRAYS[k], f = document.createElement('div');
-    f.className = 'tray';
-    f.style.cssText = 'left:' + r.x * 100 + '%;top:' + r.y * 100 + '%;width:' + r.w * 100 + '%;height:' + r.h * 100 + '%';
-    f.innerHTML = '<span class="tray-label">' + label + '</span>';
-    v.el.appendChild(f);
-  });
-
   const ease = k => 1 - Math.pow(1 - k, 3), TAU = Math.PI * 2;
 
   /* ----- die tray ----- */
@@ -1416,9 +1478,9 @@ function buildExtras(v, painted, st) {
   let die;
   if (painted) die = makeDichroicDie();
   else { die = makeDie('#ffffff', '#111111'); v.die = die; recolorDie(die, st.die); }
-  die.scale.setScalar(2.0);
+  die.scale.setScalar(1.8);
   dieLift.add(die);
-  dieS.stage.add(pedestal(0.85));
+  dieS.stage.add(pedestal(0.75));
   let roll = null;
   v.rollDie = () => {
     if (roll) return;
@@ -1430,7 +1492,7 @@ function buildExtras(v, painted, st) {
   };
 
   /* ----- coin tray (the coin leans back on its pedestal so the lettering faces you) ----- */
-  const COIN_S = 2.3, COIN_R = 0.3 * COIN_S, TILT = 1.05, baseY = COIN_R * Math.sin(TILT) + 0.05;
+  const COIN_S = 2.0, COIN_R = 0.3 * COIN_S, TILT = 1.05, baseY = COIN_R * Math.sin(TILT) + 0.05;
   const cLift = new THREE.Group(); cLift.position.y = baseY; coinS.stage.add(cLift);
   const cTilt = new THREE.Group(); cTilt.rotation.x = TILT; cLift.add(cTilt);
   const cYaw = new THREE.Group(); cTilt.add(cYaw);
@@ -1440,8 +1502,9 @@ function buildExtras(v, painted, st) {
   coin.material[1].map.center.set(0.5, 0.5); coin.material[1].map.rotation = Math.PI / 2;      /* keeps the lettering upright on both faces */
   coin.material[2].map.center.set(0.5, 0.5); coin.material[2].map.rotation = -Math.PI / 2;
   cFlip.add(coin);
-  coinS.stage.add(pedestal(0.85));
-  let half = 0, flip = null;
+  coinS.stage.add(pedestal(0.75));
+  let half = 1, flip = null;
+  cFlip.rotation.x = Math.PI;   /* JOY faces you first */
   v.flipCoin = () => {
     if (flip) return;
     const want = Math.random() < 0.5 ? 0 : 1;
@@ -1484,12 +1547,15 @@ function buildExtras(v, painted, st) {
     const r = v.renderer, w = v.el.clientWidth, h = v.el.clientHeight;
     if (!w || !h) return;
     r.setScissorTest(true);
-    [{ rect: TRAYS.main, scene: v.scene, camera: v.camera }, dieS, coinS].forEach(sc => {
+    [{ rect: TRAYS.main, scene: v.scene, camera: v.camera }, dieS, coinS].forEach((sc, i) => {
       const q = sc.rect, pw = q.w * w, ph = q.h * h, px = q.x * w, py = h - q.y * h - ph;
       r.setViewport(px, py, pw, ph);
       r.setScissor(px, py, pw, ph);
+      r.autoClear = i === 0;   /* the die and coin are drawn on top of the pieces tray without wiping it */
+      if (i) r.clearDepth();
       r.render(sc.scene, sc.camera);
     });
+    r.autoClear = true;
     r.setScissorTest(false);
   };
 }
@@ -1551,6 +1617,21 @@ function roundedScreenGeo(w, h, r) {
   return g;
 }
 
+/* Soft hover glow: warms every lit material under `group` by k (0 to 1). Shiny matcap materials get a little brighter instead. */
+const GLOW_COLOR = new THREE.Color(0xffe0b0), glowBase = new WeakMap();
+function applyGlow(group, k, strength) {
+  group.traverse(o => {
+    if (!o.material) return;
+    (Array.isArray(o.material) ? o.material : [o.material]).forEach(m => {
+      if (m.isSprite || m.isMeshBasicMaterial) return;
+      let b = glowBase.get(m);
+      if (!b) { b = { c: m.color ? m.color.clone() : null, e: m.emissive ? m.emissive.clone() : null, i: m.emissiveIntensity }; glowBase.set(m, b); }
+      if (m.isMeshMatcapMaterial) { if (b.c) m.color.copy(b.c).multiplyScalar(1 + k * 0.18 * strength); }
+      else if (m.emissive) { if (k > 0) { m.emissive.copy(GLOW_COLOR); m.emissiveIntensity = k * 0.11 * strength; } else { m.emissive.copy(b.e); m.emissiveIntensity = b.i; } }
+    });
+  });
+}
+
 /* 3D desk: semi-side-view desk with the tube TV, the crew, one coin and one die on top.
    Click the TV to play, click the coin to flip it (real 50/50), click the die to roll it. */
 function makeDesk(el) {
@@ -1567,9 +1648,9 @@ function makeDesk(el) {
   }
   v.scene = new THREE.Scene();
   v.camera = new THREE.PerspectiveCamera(30, 16 / 10, 0.1, 100);
-  v.scene.add(new THREE.HemisphereLight(0xffffff, 0x6b4a42, 0.95));
-  const key = new THREE.DirectionalLight(0xffffff, 0.85); key.position.set(3, 6, 5); v.scene.add(key);
-  const rim = new THREE.DirectionalLight(0xffd9b0, 0.45); rim.position.set(-4, 3, -3); v.scene.add(rim);
+  v.scene.add(new THREE.HemisphereLight(0xffffff, 0x6b4a42, 0.78));
+  const key = new THREE.DirectionalLight(0xffffff, 0.58); key.position.set(3, 6, 5); v.scene.add(key);
+  const rim = new THREE.DirectionalLight(0xffd9b0, 0.34); rim.position.set(-4, 3, -3); v.scene.add(rim);
   v.stage = new THREE.Group();
   v.scene.add(v.stage);
   const stage = v.stage;
@@ -1589,12 +1670,6 @@ function makeDesk(el) {
 
   /* ---------- small helpers ---------- */
   const noHit = m => { m.raycast = () => {}; return m; };
-  /* after a roll, flip or spin finishes, glide down to the player pieces */
-  let jumpT = 0;
-  function jumpToKits(delay) {
-    clearTimeout(jumpT);
-    jumpT = setTimeout(() => { const k = document.getElementById('kits'); if (k) k.scrollIntoView({ behavior: REDUCE ? 'auto' : 'smooth', block: 'start' }); }, delay);
-  }
   const std = (color, rough, metal) => new THREE.MeshStandardMaterial({ color, roughness: rough == null ? 0.7 : rough, metalness: metal || 0 });
   function box(w, h, d, mat, x, y, z, parent) {
     const m = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), mat);
@@ -1660,7 +1735,7 @@ function makeDesk(el) {
 
   /* ---------- tube TV (gray) ---------- */
   const tv = new THREE.Group();
-  tv.position.set(0.7, 0, -1.25);
+  tv.position.set(0.15, 0, -1.25);
   tv.scale.set(2.2, 2.2, 1.3);   /* big TV, but no deeper than before (z scale stays small) */
   stage.add(tv);
   const grayBody = std(0x9a9ea3, 0.55), grayDark = std(0x5d6165, 0.6), grayBezel = std(0x34373a, 0.5);
@@ -1693,19 +1768,19 @@ function makeDesk(el) {
     for (let y = 24; y < 240; y += 22) g.fillRect(22, y, 212, 9);
     return new THREE.CanvasTexture(c);
   })();
-  const spkM = new THREE.Mesh(new THREE.PlaneGeometry(0.62, 0.8), new THREE.MeshStandardMaterial({ map: spk, roughness: 0.7 }));
-  spkM.position.set(0.74, 1.4, 0.476);
+  const spkM = new THREE.Mesh(roundedScreenGeo(0.34, 0.6, 0.08), new THREE.MeshStandardMaterial({ map: spk, roughness: 0.7 }));   /* small rounded speaker panel */
+  spkM.position.set(0.83, 1.4, 0.476);
   tv.add(spkM);
-  [0.78, 0.5].forEach(y => {
-    const k = new THREE.Mesh(new THREE.CylinderGeometry(0.11, 0.11, 0.07, 24), std(0x2a2c2e, 0.4, 0.3));
+  [0.78, 0.56].forEach(y => {
+    const k = new THREE.Mesh(new THREE.CylinderGeometry(0.075, 0.075, 0.07, 24), std(0x2a2c2e, 0.4, 0.3));
     k.rotation.x = Math.PI / 2;
-    k.position.set(0.74, y, 0.51);
+    k.position.set(0.83, y, 0.51);
     tv.add(k);
   });
   /* square screen */
-  slabAt(1.55, 1.55, 0.08, 0.2, 0.025, grayBezel, -0.35, 1.0, 0.475);   /* rounded screen bezel */
+  slabAt(1.55, 1.55, 0.08, 0.2, 0.025, grayBezel, -0.2, 1.0, 0.475);   /* rounded screen bezel */
   const screenGrp = new THREE.Group();
-  screenGrp.position.set(-0.35, 1.0, 0.518);
+  screenGrp.position.set(-0.2, 1.0, 0.518);
   tv.add(screenGrp);
   const screenMat = new THREE.MeshBasicMaterial({ color: 0xffffff });
   screenMat.color.setHex(0x0e2a1e);
@@ -1759,22 +1834,88 @@ function makeDesk(el) {
   };
   glassLayer(scanTex, false, 0.14, 10);
   const glowM = glassLayer(glowTex, true, 0.15, 11), barM = glassLayer(barTex, true, 0.16, 12);
+
+  /* ---------- retro start menu on the TV: click the TV, the picture flattens and pops, then NEW GAME / CANCEL ---------- */
+  const MENU_PX = 512, MENU_X0 = 96, MENU_X1 = 416;
+  const MENU_OPTS = [{ id: 'start', label: 'NEW GAME', y0: 304, y1: 368 }, { id: 'cancel', label: 'CANCEL', y0: 386, y1: 450 }];
+  const menuCanvas = document.createElement('canvas');
+  menuCanvas.width = menuCanvas.height = MENU_PX;
+  const menuTex = new THREE.CanvasTexture(menuCanvas);
+  const menuM = new THREE.Mesh(scrGeo, new THREE.MeshBasicMaterial({ map: menuTex }));
+  menuM.position.z = 0.125; menuM.renderOrder = 5; menuM.visible = false;
+  screenGrp.add(menuM);
+  /* the pointer turns into a little pixel arrow over the menu choices (drawn in code, no image file needed) */
+  const MENU_CURSOR = 'url("data:image/svg+xml,' + encodeURIComponent("<svg xmlns='http://www.w3.org/2000/svg' width='26' height='26' shape-rendering='crispEdges'><path d='M3 3 L3 21 L8 16 L12 24 L15 22.5 L11 14.5 L18 14.5 Z' fill='#ffd36b' stroke='#000' stroke-width='2' stroke-linejoin='miter'/></svg>") + '") 3 3, pointer';
+  let menuOn = false, menuSel = 'start', menuBlink = true, menuBlinkT = 0;
+  function fitText(g, text, maxW, px, family) {
+    g.font = px + 'px ' + family;
+    while (px > 16 && g.measureText(text).width > maxW) { px -= 2; g.font = px + 'px ' + family; }
+  }
+  function drawMenu() {
+    const g = menuCanvas.getContext('2d'), W = MENU_PX;
+    g.fillStyle = '#070b1c'; g.fillRect(0, 0, W, W);
+    g.strokeStyle = 'rgba(90,140,255,0.14)'; g.lineWidth = 1;   /* faint grid */
+    for (let i = 0; i <= W; i += 32) { g.beginPath(); g.moveTo(i, 0); g.lineTo(i, W); g.stroke(); g.beginPath(); g.moveTo(0, i); g.lineTo(W, i); g.stroke(); }
+    g.strokeStyle = '#ffd36b'; g.lineWidth = 6; g.strokeRect(24, 24, W - 48, W - 48);
+    g.strokeStyle = '#ff7a59'; g.lineWidth = 2; g.strokeRect(38, 38, W - 76, W - 76);
+    g.textAlign = 'center'; g.textBaseline = 'middle';
+    [['FEARJOY', 112], ['THE GAME', 190]].forEach(([txt, y]) => {   /* title in the header font */
+      fitText(g, txt, 400, 80, "'KCOraleSans', 'Arial Black', sans-serif");
+      g.fillStyle = '#ff7a59'; g.fillText(txt, W / 2 + 4, y + 4);
+      g.fillStyle = '#ffffff'; g.fillText(txt, W / 2, y);
+    });
+    g.fillStyle = '#7fb0ff'; g.font = "22px 'KCPelletierTyped', 'Courier New', monospace";
+    g.fillText('1 PLAYER  -  FREEJOY CLUB', W / 2, 252);
+    MENU_OPTS.forEach(o => {
+      const on = menuSel === o.id, cy = (o.y0 + o.y1) / 2;
+      if (on) { g.fillStyle = '#ffd36b'; g.fillRect(MENU_X0, o.y0, MENU_X1 - MENU_X0, o.y1 - o.y0); }
+      g.fillStyle = on ? '#12162e' : '#ffd36b';
+      fitText(g, o.label, 230, 42, "'KCStrikerSans', 'Arial Black', sans-serif");
+      g.fillText(o.label, W / 2 + 12, cy + 2);
+      if (on && menuBlink) { g.beginPath(); g.moveTo(MENU_X0 + 22, cy - 13); g.lineTo(MENU_X0 + 22, cy + 13); g.lineTo(MENU_X0 + 46, cy); g.closePath(); g.fill(); }   /* blinking selector arrow */
+    });
+    menuTex.needsUpdate = true;
+  }
+  if (document.fonts && document.fonts.load) Promise.all([document.fonts.load("66px 'KCOraleSans'"), document.fonts.load("36px 'KCStrikerSans'"), document.fonts.load("20px 'KCPelletierTyped'")]).then(() => { if (menuOn) drawMenu(); }).catch(() => {});
+  function showMenu(on) {
+    menuOn = on; menuM.visible = on; jesse.visible = !on;
+    if (on) { menuSel = 'start'; menuBlink = true; menuBlinkT = performance.now(); drawMenu(); }
+  }
+  function menuAt(e) {   /* which menu choice is under the pointer ('' if none) */
+    const r = el.getBoundingClientRect();
+    ndc.set(((e.clientX - r.left) / r.width) * 2 - 1, -((e.clientY - r.top) / r.height) * 2 + 1);
+    ray.setFromCamera(ndc, v.camera);
+    const h = ray.intersectObject(menuM, false)[0];
+    if (!h || !h.uv) return '';
+    const px = h.uv.x * MENU_PX, py = (1 - h.uv.y) * MENU_PX;
+    const o = MENU_OPTS.find(q => py >= q.y0 && py <= q.y1 && px >= MENU_X0 && px <= MENU_X1);
+    return o ? o.id : '';
+  }
+  function startGame() { if (v.tvT || v.navigated) return; v.tvMode = 'start'; v.tvT = performance.now(); }
+  function closeMenu() { if (v.tvT || v.navigated) return; v.tvMode = 'close'; v.tvSwapped = false; v.tvT = performance.now(); }
+  window.addEventListener('keydown', e => {   /* keyboard: up/down to choose, Enter to start, Esc to cancel */
+    if (!menuOn || v.tvT || v.navigated) return;
+    if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); if (menuSel === 'start') startGame(); else closeMenu(); }
+    else if (e.key === 'Escape') { e.preventDefault(); closeMenu(); }
+    else if (e.key === 'ArrowUp' || e.key === 'ArrowDown') { e.preventDefault(); menuSel = menuSel === 'start' ? 'cancel' : 'start'; drawMenu(); }
+  });
   const tvLight = new THREE.PointLight(0xa8d4ff, 0.55, 7);   /* faint blue spill onto the desk and the crew */
-  tvLight.position.set(-0.07, 2.2, 0.35);
+  tvLight.position.set(-0.18, 2.2, 0.35);
   stage.add(tvLight);
 
   /* ---------- little radio, left of the TV: click for the song, drag the knob for volume ---------- */
   const radio = new THREE.Group();
-  radio.position.set(-3.1, 0, -1.55);
-  radio.rotation.y = 0.2;
+  radio.position.set(2.55, 0, 1.15);
+  radio.rotation.y = -0.25;
+  radio.scale.setScalar(1.25);
   stage.add(radio);
-  const cream = std(0xd8c59c, 0.5), brown = std(0x5a3a26, 0.75), chrome = std(0xa8adb3, 0.3, 0.6);
+  const cream = std(0xb09a72, 0.55), brown = std(0x5a3a26, 0.75), chrome = std(0xa8adb3, 0.3, 0.6);
   const rBody = new THREE.Mesh(roundedSlab(1.3, 0.78, 0.5, 0.12, 0.05), cream);
   rBody.position.y = 0.45; radio.add(rBody);
   [-0.5, 0.5].forEach(x => { const f = new THREE.Mesh(roundedSlab(0.2, 0.06, 0.34, 0.02, 0.015), brown); f.position.set(x, 0.03, 0); radio.add(f); });
   const grilleTex = mkTex(128, 128, (g, w, h) => { g.fillStyle = '#4a3020'; g.fillRect(0, 0, w, h); g.fillStyle = '#1e120a'; for (let y = 10; y < h; y += 14) g.fillRect(8, y, w - 16, 6); });
-  const grille = new THREE.Mesh(new THREE.PlaneGeometry(0.64, 0.56), new THREE.MeshStandardMaterial({ map: grilleTex, roughness: 0.8 }));
-  grille.position.set(-0.3, 0.42, 0.256); radio.add(grille);
+  const grille = new THREE.Mesh(roundedScreenGeo(0.6, 0.56, 0.09), new THREE.MeshStandardMaterial({ map: grilleTex, roughness: 0.8 }));   /* rounded so it stays inside the radio's corners */
+  grille.position.set(-0.28, 0.42, 0.256); radio.add(grille);
   const dialTex = mkTex(256, 128, (g, w, h) => {
     g.fillStyle = '#f4ecd0'; g.fillRect(0, 0, w, h);
     g.strokeStyle = '#6b4a2a'; g.lineWidth = 3;
@@ -1782,30 +1923,28 @@ function makeDesk(el) {
     g.strokeStyle = '#c0392b'; g.lineWidth = 6; g.beginPath(); g.moveTo(w * 0.62, 8); g.lineTo(w * 0.62, h - 8); g.stroke();
   });
   const dial = new THREE.Mesh(new THREE.PlaneGeometry(0.4, 0.2), new THREE.MeshStandardMaterial({ map: dialTex, roughness: 0.4 }));
-  dial.position.set(0.32, 0.64, 0.256); radio.add(dial);
+  dial.position.set(0.3, 0.66, 0.256); radio.add(dial);
   const knobMat = std(0x2b2b2e, 0.35, 0.3);
-  const knob = new THREE.Group(); knob.position.set(0.36, 0.3, 0.27); radio.add(knob);
-  const kc = new THREE.Mesh(new THREE.CylinderGeometry(0.11, 0.12, 0.09, 32), knobMat); kc.rotation.x = Math.PI / 2; knob.add(kc);
-  const notch = new THREE.Mesh(new THREE.BoxGeometry(0.025, 0.075, 0.02), new THREE.MeshBasicMaterial({ color: 0xffffff })); notch.position.set(0, 0.06, 0.05); knob.add(notch);
+  const knob = new THREE.Group(); knob.position.set(0.3, 0.32, 0.27); radio.add(knob);
+  const kc = new THREE.Mesh(new THREE.CylinderGeometry(0.17, 0.18, 0.1, 32), knobMat); kc.rotation.x = Math.PI / 2; knob.add(kc);
+  const notch = new THREE.Mesh(new THREE.BoxGeometry(0.035, 0.11, 0.02), new THREE.MeshBasicMaterial({ color: 0xffffff })); notch.position.set(0, 0.09, 0.055); knob.add(notch);
   const haloTex = mkTex(64, 64, (g, w, h) => { const rg = g.createRadialGradient(32, 32, 1, 32, 32, 32); rg.addColorStop(0, 'rgba(255,255,255,1)'); rg.addColorStop(1, 'rgba(255,255,255,0)'); g.fillStyle = rg; g.fillRect(0, 0, w, h); });
-  const knobGlow = new THREE.Sprite(new THREE.SpriteMaterial({ map: haloTex, color: 0xffc27a, transparent: true, opacity: 0, blending: THREE.AdditiveBlending, depthWrite: false }));
-  knobGlow.scale.set(0.62, 0.62, 1); knobGlow.position.set(0.36, 0.3, 0.34); radio.add(knobGlow);
   const ledMat = new THREE.MeshBasicMaterial({ color: 0x4a0d0a });
-  const led = new THREE.Mesh(new THREE.SphereGeometry(0.035, 12, 10), ledMat); led.position.set(0.56, 0.3, 0.262); radio.add(led);
+  const led = new THREE.Mesh(new THREE.SphereGeometry(0.035, 12, 10), ledMat); led.position.set(0.58, 0.32, 0.262); radio.add(led);
   const ledHalo = new THREE.Sprite(new THREE.SpriteMaterial({ map: haloTex, color: 0xff3a2a, transparent: true, opacity: 0, blending: THREE.AdditiveBlending, depthWrite: false }));
-  ledHalo.scale.set(0.4, 0.4, 1); ledHalo.position.set(0.56, 0.3, 0.3); radio.add(ledHalo);
+  ledHalo.scale.set(0.4, 0.4, 1); ledHalo.position.set(0.58, 0.32, 0.3); radio.add(ledHalo);
   const handle = new THREE.Mesh(new THREE.TorusGeometry(0.32, 0.022, 8, 28, Math.PI), chrome); handle.position.set(0, 0.84, 0); radio.add(handle);
   const ant = new THREE.Mesh(new THREE.CylinderGeometry(0.012, 0.012, 0.8, 8), chrome); ant.position.set(0.64, 1.24, -0.1); ant.rotation.z = -0.35; radio.add(ant);
   hitBox(1.4, 0.95, 0.65, 0, 0.47, 0, 'radio', radio);
-  hitBox(0.4, 0.4, 0.3, 0.36, 0.3, 0.3, 'knob', radio);
-  let knobHover = false, knobDrag = null, knobMoved = 0, ledOn = false;
+  hitBox(0.5, 0.5, 0.3, 0.3, 0.32, 0.3, 'knob', radio);
+  let hoverGroup = null, glowItems = null, knobDrag = null, knobMoved = 0, ledOn = false, lastDie = 0, lastCoin = '';
   const setKnob = vol => { knob.rotation.z = 2.35 - vol * 4.7; };   /* quiet = turned left, loud = turned right */
   setKnob(Sound.getVolume());
   Sound.onRadio(on => { ledOn = on; ledMat.color.setHex(on ? 0xff3b2a : 0x4a0d0a); });
 
   /* Jesse hovers slowly around the game board on the screen */
   const jIdx = Math.max(0, PEOPLE.findIndex(x => x.id === 'jesse'));
-  const jesse = headFor(jIdx, marble());
+  const jesse = headFor(jIdx, marble().clone());
   jesse.scale.setScalar(0.22);
   screenGrp.add(jesse);
   const path = new THREE.CatmullRomCurve3([[22, 32], [58, 24], [78, 46], [60, 74], [30, 70], [16, 50]]
@@ -1823,9 +1962,9 @@ function makeDesk(el) {
   const crew = [];
   ['jesse', 'marco', 'grant'].forEach((id, i) => {
     const idx = Math.max(0, PEOPLE.findIndex(x => x.id === id));
-    const h = headFor(idx, marble());
+    const h = headFor(idx, marble().clone());   /* its own material copy, so only the hovered bust glows */
     h.scale.setScalar(0.95);
-    h.position.set(-2.6 + i * 0.95, 0, 1.0 + (i === 1 ? 0.1 : 0));
+    h.position.set(-3.0 + i * 0.95, 0, 1.45 + (i === 1 ? 0.1 : 0));
     stage.add(h);
     crew.push(h);
     blob(1.2, 0.95, h.position.x, h.position.z, 0.8);
@@ -1836,7 +1975,7 @@ function makeDesk(el) {
   const COIN_ROT_TOP = Math.PI / 2, COIN_ROT_BOT = -Math.PI / 2;   /* keeps the text upright on both faces */
   const COIN_SCALE = 1.9, COIN_H = 0.03 * COIN_SCALE, COIN_R = 0.3 * COIN_SCALE;
   const coinRoot = new THREE.Group();
-  coinRoot.position.set(2.9, COIN_H, 1.5);
+  coinRoot.position.set(1.1, COIN_H, 1.6);
   stage.add(coinRoot);
   const flipper = new THREE.Group();
   coinRoot.add(flipper);
@@ -1846,8 +1985,9 @@ function makeDesk(el) {
   coin.material[2].map.center.set(0.5, 0.5); coin.material[2].map.rotation = COIN_ROT_BOT;
   flipper.add(coin);
   hitBox(1.3, 0.3, 1.3, 0, 0, 0, 'coin', coinRoot);
-  const coinShadow = blob(1.5, 1.5, 2.9, 1.5, 0.6);
-  let half = 0, flip = null;                    /* half = number of half turns so far (even = FEAR up) */
+  const coinShadow = blob(1.5, 1.5, 1.1, 1.6, 0.6);
+  let half = 1, flip = null;                    /* half = number of half turns so far (even = FEAR up, odd = JOY up). Starts on JOY. */
+  flipper.rotation.x = Math.PI;
   function doFlip() {
     if (flip) return;
     const result = Math.random() < 0.5 ? 'FEAR' : 'JOY';
@@ -1855,13 +1995,13 @@ function makeDesk(el) {
     const k = 6 + ((((want - half) % 2) + 2) % 2);
     flip = { t0: performance.now(), dur: REDUCE ? 250 : 1100, a0: half * Math.PI, a1: (half + k) * Math.PI, result };
     half += k;
-    jumpToKits(Math.max(flip.dur, Sound.coin()) + 350);
+    Sound.coin();
   }
 
   /* ---------- die: one dichroic glass die with gold pips, resting on the desk ---------- */
   const DIE_SCALE = 1.4, DIE_H = 0.23 * DIE_SCALE;
   const dieRoot = new THREE.Group();
-  dieRoot.position.set(1.7, DIE_H, 1.65);
+  dieRoot.position.set(-0.1, DIE_H, 1.7);
   stage.add(dieRoot);
   const yawG = new THREE.Group();
   dieRoot.add(yawG);
@@ -1869,7 +2009,7 @@ function makeDesk(el) {
   die.scale.setScalar(DIE_SCALE);
   yawG.add(die);
   hitBox(0.8, 0.8, 0.8, 0, 0, 0, 'die', dieRoot);
-  const dieShadow = blob(0.9, 0.9, 1.7, 1.65, 0.8);
+  const dieShadow = blob(0.9, 0.9, -0.1, 1.7, 0.8);
   const FACE_UP = { 1: [0, 0, 0], 6: [Math.PI, 0, 0], 3: [0, 0, Math.PI / 2], 4: [0, 0, -Math.PI / 2], 2: [-Math.PI / 2, 0, 0], 5: [Math.PI / 2, 0, 0] };
   const dieBaseY = DIE_H;
   let roll = null;
@@ -1883,8 +2023,11 @@ function makeDesk(el) {
       e1: tgt.map(a => a + TAU * (1 + Math.floor(Math.random() * 2))),
       y0: yawG.rotation.y, y1: yawG.rotation.y + (Math.random() - 0.5) * 3
     };
-    jumpToKits(Math.max(roll.dur, Sound.dice()) + 350);
+    Sound.dice();
   }
+
+  /* a 6 on the die and JOY on the coin (both from real rolls and flips) unlock the secret download */
+  function checkSecret() { if (lastDie === 6 && lastCoin === 'JOY') { lastDie = 0; lastCoin = ''; showSecret(); } }
 
   /* ---------- clicking ---------- */
   const ray = new THREE.Raycaster(), ndc = new THREE.Vector2();
@@ -1899,42 +2042,49 @@ function makeDesk(el) {
   }
   el.addEventListener('pointerdown', e => {
     knobMoved = 0;
-    if (pick(e) === 'knob') { knobDrag = { x0: e.clientX, v0: Sound.getVolume() }; try { el.setPointerCapture(e.pointerId); } catch (x) {} }
+    if (pick(e) === 'knob') { knobDrag = { x0: e.clientX, y0: e.clientY, v0: Sound.getVolume() }; try { el.setPointerCapture(e.pointerId); } catch (x) {} }
   });
   el.addEventListener('pointermove', e => {
-    if (knobDrag) {   /* turning the volume knob: drag left or right */
-      const dx = e.clientX - knobDrag.x0;
-      knobMoved = Math.max(knobMoved, Math.abs(dx));
-      setKnob(Sound.setVolume(knobDrag.v0 + dx / 150));
+    if (knobDrag) {   /* turning the volume knob: right or up = louder, left or down = quieter (diagonal counts too) */
+      const d = (e.clientX - knobDrag.x0) - (e.clientY - knobDrag.y0);
+      knobMoved = Math.max(knobMoved, Math.abs(d));
+      setKnob(Sound.setVolume(knobDrag.v0 + d / 150));
       return;
     }
+    if (menuOn && !v.tvT) {   /* retro menu: hover picks a choice and the cursor turns into the pixel arrow */
+      const o = menuAt(e);
+      if (o) { if (o !== menuSel) { menuSel = o; menuBlink = true; menuBlinkT = performance.now(); drawMenu(); } el.style.cursor = MENU_CURSOR; hoverGroup = null; return; }
+    }
     const tag = pick(e);
-    el.style.cursor = tag ? 'pointer' : 'default';
-    knobHover = tag === 'knob';
+    el.style.cursor = tag && !(menuOn && tag === 'tv') ? 'pointer' : 'default';
+    hoverGroup = tag === 'tv' ? (menuOn ? null : tv) : tag === 'bust' ? pickObj.userData.bust : tag === 'coin' ? coinRoot : tag === 'die' ? dieRoot : tag === 'radio' ? radio : tag === 'knob' ? knob : null;
   });
   const endKnob = () => { knobDrag = null; };
   el.addEventListener('pointerup', endKnob);
   el.addEventListener('pointercancel', endKnob);
   el.addEventListener('lostpointercapture', endKnob);
-  el.addEventListener('pointerleave', () => { knobHover = false; });
+  el.addEventListener('pointerleave', () => { hoverGroup = null; });
   el.addEventListener('click', e => {
+    if (menuOn && !v.tvT) { const o = menuAt(e); if (o) { if (o === 'start') startGame(); else closeMenu(); return; } }
     const tag = pick(e);
     if (tag === 'coin') doFlip();
     else if (tag === 'die') doRoll();
     else if (tag === 'bust') {
       pickObj.userData.bust.userData.spin = performance.now();
-      jumpToKits(Math.max(REDUCE ? 1 : 900, Sound.oneUp()) + 350);
+      Sound.oneUp();
     }
     else if (tag === 'radio') { if (Sound.toggleRadio()) toast('Now playing: The Endless Jam (unreleased)'); }
     else if (tag === 'knob') {   /* a plain tap on the knob steps the volume; dragging turns it */
       if (knobMoved < 5) { const cur = Sound.getVolume(); setKnob(Sound.setVolume(cur >= 0.99 ? 0 : Math.min(1, Math.round(cur * 4) / 4 + 0.25))); }
     }
-    else if (tag === 'tv' && !v.tvT && !v.navigated) v.tvT = performance.now();
+    else if (tag === 'tv' && !menuOn && !v.tvT && !v.navigated) { v.tvMode = 'open'; v.tvSwapped = false; v.tvT = performance.now(); }
   });
   window.addEventListener('pageshow', () => {
     v.tvT = 0; v.navigated = false;
+    showMenu(false);
     screenGrp.scale.set(1, 1, 1);
     screenMat.color.setHex(0xffffff);
+    menuM.material.color.setRGB(1, 1, 1);
   });
 
   /* ---------- per-frame ---------- */
@@ -1948,11 +2098,18 @@ function makeDesk(el) {
     barM.material.opacity = 0.9 * fl;
     barTex.offset.y = REDUCE ? 0 : -((t / 7000) % 1);
     tvLight.intensity = 0.55 * fl;
-    /* radio: knob glows on hover or while turning, the light pulses while the song plays */
-    const kg = knobGlow.material;
-    kg.opacity += ((knobHover || knobDrag ? 0.85 : 0) - kg.opacity) * 0.2;
-    knobMat.emissive.setHex(0xffc27a);
-    knobMat.emissiveIntensity = kg.opacity * 0.8;
+    /* hover glow: whatever is under the pointer warms up slightly (the radio knob too, while it is turned) */
+    if (!glowItems) glowItems = [tv, radio, knob, coinRoot, dieRoot].concat(crew).map(g => ({ g, k: 0, s: g === knob ? 1.2 : 1 }));
+    const hg = knobDrag ? knob : hoverGroup;
+    glowItems.forEach(it => {
+      const tgt = it.g === hg ? 1 : 0;
+      if (it.k === tgt) return;
+      it.k += (tgt - it.k) * 0.18;
+      if (Math.abs(tgt - it.k) < 0.01) it.k = tgt;
+      applyGlow(it.g, it.k, it.s);
+    });
+    if (menuOn && now - menuBlinkT > 500) { menuBlinkT = now; menuBlink = !menuBlink; drawMenu(); }   /* selector arrow blinks */
+    /* radio light pulses while the song plays */
     ledHalo.material.opacity = ledOn ? 0.7 + (REDUCE ? 0 : 0.2 * Math.sin(t / 220)) : 0;
     crew.forEach((h, i) => {
       let r = REDUCE ? 0 : Math.sin(t / 1400 + i * 1.7) * 0.16 + (i - 1) * -0.14;
@@ -1968,7 +2125,7 @@ function makeDesk(el) {
       flipper.rotation.x = flip.a0 + (flip.a1 - flip.a0) * ease(k);
       coinRoot.position.y = COIN_H + Math.abs(Math.sin(flipper.rotation.x)) * COIN_R + Math.sin(Math.PI * k) * (REDUCE ? 0 : 1.1);   /* lift so the spinning edge never dips into the desk */
       shade(coinShadow, coinRoot.position.y - COIN_H);
-      if (k >= 1) { flipper.rotation.x = flip.a1; coinRoot.position.y = COIN_H; shade(coinShadow, 0); flip = null; }
+      if (k >= 1) { flipper.rotation.x = flip.a1; coinRoot.position.y = COIN_H; shade(coinShadow, 0); lastCoin = flip.result; flip = null; checkSecret(); }
     }
     if (roll) {
       const k = Math.min(1, (now - roll.t0) / roll.dur);
@@ -1984,22 +2141,30 @@ function makeDesk(el) {
         die.rotation.set(roll.tgt[0], roll.tgt[1], roll.tgt[2]);
         dieRoot.position.y = dieBaseY;
         shade(dieShadow, 0);
-        roll = null;
+        lastDie = roll.n; roll = null; checkSecret();
       }
     }
     if (v.tvT && !v.navigated) {
-      const dur = REDUCE ? 150 : 750;
+      const mode = v.tvMode || 'open', dur = REDUCE ? 150 : (mode === 'start' ? 420 : 750);
       const p = Math.min(1, (t - v.tvT) / dur);
-      if (REDUCE) screenGrp.scale.set(1, 1, 1);
-      else if (p < 0.4) { const q = p / 0.4; screenGrp.scale.set(1 + q * 0.04, Math.max(0.02, 1 - q * 0.98), 1); screenMat.color.setRGB(1 + q, 1 + q, 1 + q); }
-      else { const q = (p - 0.4) / 0.6; screenGrp.scale.set(1.04 - q * 0.04, 0.02 + q * 0.98, 1); const b = 2 - q; screenMat.color.setRGB(b, b, b); }
-      if (p >= 1) { v.navigated = true; location.href = '/game'; }
+      const setBright = b => { if (screenMat.map) screenMat.color.setRGB(b, b, b); else screenMat.color.setRGB(0.055 * b, 0.165 * b, 0.118 * b); menuM.material.color.setRGB(b, b, b); };
+      if (mode === 'start') {   /* NEW GAME: the picture collapses to a bright line, then the game page opens */
+        if (REDUCE) screenGrp.scale.set(1, 1, 1);
+        else { screenGrp.scale.set(1 + p * 0.04, Math.max(0.02, 1 - p * 0.98), 1); setBright(1 + p); }
+        if (p >= 1) { v.navigated = true; location.href = '/game'; }
+      } else {   /* TV click (open) or CANCEL (close): flatten and pop back, swapping the menu in or out at the flat moment */
+        if (REDUCE) screenGrp.scale.set(1, 1, 1);
+        else if (p < 0.4) { const q = p / 0.4; screenGrp.scale.set(1 + q * 0.04, Math.max(0.02, 1 - q * 0.98), 1); setBright(1 + q); }
+        else { const q = (p - 0.4) / 0.6; screenGrp.scale.set(1.04 - q * 0.04, 0.02 + q * 0.98, 1); setBright(2 - q); }
+        if (p >= 0.4 && !v.tvSwapped) { v.tvSwapped = true; showMenu(mode === 'open'); }
+        if (p >= 1) { v.tvT = 0; screenGrp.scale.set(1, 1, 1); setBright(1); }
+      }
     }
   };
 
   /* start on the placeholder shapes, download the real busts once the desk is on screen */
   if ('IntersectionObserver' in window) {
-    new IntersectionObserver(es => { v.visible = es[0].isIntersecting; if (v.visible) kickLoads(v); }, { threshold: 0.05 }).observe(el);
+    new IntersectionObserver(es => { v.visible = es[0].isIntersecting; if (v.visible) kickLoads(v); else if (menuOn && !v.tvT) showMenu(false); }, { threshold: 0.05 }).observe(el);
   } else v.visible = true;
   if (window.ResizeObserver) new ResizeObserver(() => v.fit()).observe(el);
   v.fit();
@@ -2135,9 +2300,10 @@ function makeViewer(el, p) {
     v.camera.aspect = (w * mr.w) / (h * mr.h);
     v.camera.updateProjectionMatrix();
     const t = Math.tan(THREE.MathUtils.degToRad(17.5));
-    const d = Math.max((v.radius + 0.5) / (t * v.camera.aspect), 1.25 / t);
+    const d0 = Math.max((v.radius + 0.5) / (t * v.camera.aspect), (v.p && v.p.type === 'single' ? 1.12 : 1.25) / t);
+    const d = v.subs ? d0 * 1.22 : d0;   /* kit cards: pieces tray a little smaller, sitting back and up so the die and coin can float in front */
     v.camera.position.set(0, 0.7 + d * 0.3, d * 0.95);
-    v.camera.lookAt(0, 0.65, 0);
+    v.camera.lookAt(0, v.subs ? -0.15 : 0.65, 0);
     (v.subs || []).forEach(sc => {   /* the small die and coin trays */
       const a = (w * sc.rect.w) / (h * sc.rect.h), tt = Math.tan(THREE.MathUtils.degToRad(15));
       sc.camera.aspect = a;
@@ -2449,6 +2615,10 @@ const armSound = () => {
   if (Sound.ready()) ['touchend', 'pointerup', 'click', 'keydown'].forEach(t => document.removeEventListener(t, armSound, true));
 };
 ['touchend', 'pointerup', 'click', 'keydown'].forEach(t => document.addEventListener(t, armSound, true));
+/* leaving the tab or page silences everything; the radio resumes when you come back */
+document.addEventListener('visibilitychange', () => { if (document.hidden) Sound.hide(); else Sound.show(); });
+window.addEventListener('pagehide', () => Sound.hide());
+window.addEventListener('pageshow', e => { if (e.persisted) Sound.show(); });
 
 const muteBtn = $('#muteBtn');
 muteBtn.addEventListener('click', () => {
