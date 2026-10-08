@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- LP1 v7 -->
+<!-- LP1 v8 -->
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
@@ -32,7 +32,8 @@ unicode-range: U+0020-0022, U+0024-0025, U+0027-0029, U+002C-003A, U+003D, U+003
 }
 
 :root {
---glow-color: rgba(255, 255, 255, 0.7);
+--glow-color: rgba(0, 0, 0, 0.7);
+--btn-glow: rgba(255, 255, 255, 0.7);
 --btn-tan-start: #e8dcc4;
 --btn-tan-end: #d2b48c;
 }
@@ -44,7 +45,7 @@ margin: 0;
 padding: 0;
 width: 100%;
 min-height: 100vh;
-color: #000;
+color: #fff;
 text-align: center;
 overflow-x: hidden;
 position: relative;
@@ -52,7 +53,7 @@ position: relative;
 
 /* Warm sweeping gradient (same as home) */
 body {
-background: linear-gradient(45deg, #a65a4e, #7a3e34, #945d42, #5c2b2b);
+background: linear-gradient(45deg, #884a40, #64332b, #794c36, #4b2323);
 background-size: 400% 400%;
 animation: sweep 20s ease infinite;
 }
@@ -126,6 +127,16 @@ h1.title { flex-direction: column; font-size: 3.4rem; gap: 0; }
 h1.title .title-die { width: 1.7em; height: 1.7em; margin: -0.2em 0; }
 }
 
+/* Credits & Lyrics heading: same idea as the main title (die in the middle, stacked on narrow screens), die a little smaller */
+.section h2.title { display: flex; flex-wrap: nowrap; align-items: center; justify-content: center; gap: 0 0.14em; line-height: 1.1; }
+.section h2.title .title-die { display: block; flex: none; width: 1.05em; height: 1.05em; margin: -0.1em 0; cursor: pointer; }
+.section h2.title .title-die:empty { display: none; }
+.section h2.title .title-die canvas { display: block; width: 100%; height: 100%; }
+@media (max-width: 760px) {
+.section h2.title { flex-direction: column; gap: 0; }
+.section h2.title .title-die { width: 1.4em; height: 1.4em; margin: -0.15em 0; }
+}
+
 .floating-text {
 font-family: 'KCPelletierLight', 'Courier New', monospace;
 font-size: 1.6rem;
@@ -157,7 +168,7 @@ border-radius: 50px;
 width: 310px;
 max-width: 100%;
 background: linear-gradient(135deg, var(--btn-tan-start), var(--btn-tan-end));
-box-shadow: 0 0 12px var(--glow-color);
+box-shadow: 0 0 12px var(--btn-glow);
 transition: all 0.3s ease;
 display: flex;
 justify-content: center;
@@ -182,7 +193,7 @@ animation: shineLoop 6s infinite ease-in-out;
 
 .btn:hover {
 transform: translateY(-5px) scale(1.05);
-box-shadow: 0 0 22px var(--glow-color);
+box-shadow: 0 0 22px var(--btn-glow);
 }
 
 .btn:hover::after {
@@ -464,7 +475,7 @@ details.stl a { color: #ffecd2; }
 margin-top: 20px;
 max-height: 62vh;
 overflow-y: auto;
-overscroll-behavior: contain;
+overscroll-behavior: auto;
 -webkit-overflow-scrolling: touch;
 padding: 8px 14px;
 text-align: left;
@@ -563,6 +574,51 @@ box-sizing: border-box;
 .sheet .btn { width: 100%; font-size: 1.25rem; padding: 14px 18px; animation: none; }
 .sheet .ok { color: #b6ffb0; }
 
+/* ============ v8 additions ============ */
+/* no blue flash when tapping the 3D scenes on phones */
+.viewer, .viewer *, .title-die, .title-die * { -webkit-tap-highlight-color: transparent; -webkit-touch-callout: none; -webkit-user-select: none; user-select: none; outline: none; }
+
+/* desk sits right under the title now */
+#play { margin-top: 14px; }
+
+/* kit cards: the die and the coin each get their own little tray beside the pieces tray */
+.viewer.has-trays .hint { left: 0; right: auto; width: 68%; text-align: center; }
+.tray { position: absolute; box-sizing: border-box; border: 1px solid rgba(255,255,255,0.14); border-radius: 16px; background: radial-gradient(circle at 50% 40%, rgba(255,255,255,0.08), rgba(0,0,0,0.14)); pointer-events: none; }
+.tray-label { position: absolute; left: 0; right: 0; bottom: 5px; text-align: center; font-family: 'KCPelletierLight', 'Courier New', monospace; font-size: 0.68rem; letter-spacing: 1px; opacity: 0.65; }
+
+/* single piece card: the piece picker sits on top */
+.top-opts { display: flex; flex-direction: column; gap: 10px; padding: 4px 6px 0; }
+
+/* master mute button, locked to the right end of the bottom nav */
+.nav-cluster .mute-btn {
+font-family: 'KCStrikerSans', sans-serif;
+font-size: 0.8rem;
+text-transform: uppercase;
+letter-spacing: 1.5px;
+color: #ff6a5c;
+background: rgba(120, 0, 0, 0.28);
+border: 1px solid #ff3b30;
+border-radius: 100px;
+padding: 6px 14px;
+margin-left: 6px;
+cursor: pointer;
+text-shadow: 0 0 8px rgba(255, 59, 48, 0.9);
+box-shadow: 0 0 10px rgba(255, 59, 48, 0.7), inset 0 0 6px rgba(255, 59, 48, 0.35);
+transition: all 0.2s;
+-webkit-tap-highlight-color: transparent;
+}
+.nav-cluster .mute-btn:hover { box-shadow: 0 0 18px rgba(255, 59, 48, 0.95), inset 0 0 8px rgba(255, 59, 48, 0.5); }
+.nav-cluster .mute-btn[aria-pressed="true"] {
+background: #ff3b30;
+color: #2a0705;
+text-shadow: none;
+box-shadow: inset 0 3px 8px rgba(0, 0, 0, 0.7), inset 0 0 0 1px rgba(0, 0, 0, 0.35);
+transform: translateY(1px) scale(0.97);
+}
+@media (max-width: 600px) {
+.nav-cluster .mute-btn { font-size: 0.65rem; padding: 5px 9px; margin-left: 2px; }
+}
+
 /* ============ Reduced motion ============ */
 @media (prefers-reduced-motion: reduce) {
 html { scroll-behavior: auto; }
@@ -577,12 +633,13 @@ body, h1, .floating-text, .btn, .floating-logo, .section h2, .product.deluxe { a
 <!-- ============ HERO ============ -->
 <h1 class="title"><span>Fearjoy</span><span class="title-die" data-title-die role="button" tabindex="0" aria-label="Roll the die"></span><span>The Game</span></h1>
 
-<div class="button-stack">
-<a href="#" class="btn" data-stream data-soon="Stream the Album (soon)" data-live="Stream the Album">Stream the Album (soon)</a>
-<a href="#kits" class="btn">Game Piece Kits</a>
-<a href="#play" class="btn">🎲 Play Online 🏆</a>
-<a href="#credits" class="btn">Credits &amp; Lyrics</a>
+<!-- ============ DESK (3D scene, now at the top; click the things on it) ============ -->
+<section class="section" id="play">
+<div class="desk-scene">
+<div class="viewer desk-viewer" data-viewer="desk"></div>
+<a class="sr-only" href="/game">Play the game online</a>
 </div>
+</section>
 
 <!-- ============ KITS (mini storefront) ============ -->
 <section class="section" id="kits">
@@ -592,19 +649,9 @@ body, h1, .floating-text, .btn, .floating-logo, .section h2, .product.deluxe { a
 <div class="grid" id="productGrid"></div>
 </section>
 
-<!-- ============ PLAY ONLINE (3D desk) ============ -->
-<section class="section" id="play">
-<h2>Play Online</h2>
-<p class="sub">The Game on the Go (free)</p>
-<div class="desk-scene">
-<div class="viewer desk-viewer" data-viewer="desk"></div>
-<a class="sr-only" href="/game">Play the game online</a>
-</div>
-</section>
-
 <!-- ============ CREDITS + LYRICS ============ -->
 <section class="section" id="credits">
-<h2>Credits &amp; Lyrics</h2>
+<h2 class="title"><span>Credits</span><span class="title-die" data-title-die role="button" tabindex="0" aria-label="Roll the die"></span><span>Lyrics</span></h2>
 <div class="scrollbox glass" id="trackList"></div>
 <div class="album-credits glass">
 <p>Mixed, written and produced by Fearjoy.</p>
@@ -615,13 +662,13 @@ body, h1, .floating-text, .btn, .floating-logo, .section h2, .product.deluxe { a
 </div>
 </section>
 
-<!-- ============ LINK TREE ============ -->
+<!-- ============ LINK BUTTONS (moved down from the top; replaces "Everywhere Else") ============ -->
 <section class="section" id="links">
-<h2>Everywhere Else</h2>
 <div class="button-stack">
-<a href="#" class="btn" data-stream data-soon="Spotify (soon)" data-live="Stream on Spotify">Spotify (soon)</a>
-<a href="https://freejoy.club" class="btn">Home</a>
-<a href="/store" class="btn">Full Store (coming soon)</a>
+<a href="#" class="btn" data-stream data-soon="Stream the Album (soon)" data-live="Stream the Album">Stream the Album (soon)</a>
+<a href="#kits" class="btn">Game Piece Kits</a>
+<a href="#play" class="btn">🎲 Play Online 🏆</a>
+<a href="#credits" class="btn">Credits &amp; Lyrics</a>
 </div>
 <div class="logo-group">
 <a href="https://www.instagram.com/fearjoymusic" target="_blank" rel="noopener">
@@ -663,12 +710,14 @@ body, h1, .floating-text, .btn, .floating-logo, .section h2, .product.deluxe { a
 <a href="/breathe">Breathe</a>
 <div class="nav-divider"></div>
 <a href="/move">Move</a>
+<div class="nav-divider"></div>
+<button type="button" class="mute-btn" id="muteBtn" aria-pressed="false" aria-label="Mute all sound">Mute</button>
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/STLLoader.js"></script>
 <script>
-// LP1 v7
+// LP1 v8
 (function () {
 'use strict';
 
@@ -683,6 +732,8 @@ const CONFIG = {
   useRealStl: true,                // busts load from each person's "stl" path below. false = placeholder shapes only
   preferLite: true,                // try Jesse_Bust_lite.stl etc. first (about 1 MB each), then fall back to the full files
   stlFolders: ['./', '/LP1/', '/images/'],  // where to look for the STL files, in order. './' = the same folder as this page
+  tvImage: '/images/34_Board_temp.png?v=8',  // game board picture on the desk TV. The ?v=8 makes browsers fetch the newest copy: bump the number whenever you swap the file
+  sfxFolder: '/sfx/',              // sound effects (coinflip, dice1, dice2, dice5, 1up) and the radio song (endless-jam-jgg-1.mp3)
   shippingNote: 'Shipping is confirmed by reply before you pay.'
 };
 
@@ -714,7 +765,7 @@ const PRODUCTS = [
     id: 'core-trio', type: 'kit', name: 'Core Trio Kit', price: 14, cta: 'Order',
     pieces: ['jesse', 'marco', 'grant'],
     colors: ['red', 'ltyellow', 'green', 'dkblue'],
-    blurb: 'Jesse, Marco and Grant, plus a free die and the Fearjoy coin.',
+    blurb: 'Jesse, Marco and Grant, plus colored dice and the Fearjoy coin.',
     includes: ['3 player pieces (3D printed)', 'Die in red, yellow, green or blue', 'Fearjoy coin']
   },
   {
@@ -733,9 +784,9 @@ const PRODUCTS = [
   },
   {
     id: 'deluxe', type: 'deluxe', name: 'Angel Investor Edition', price: 444, cta: 'Inquire', badge: 'One of one',
-    pieces: ['jesse', 'marco', 'grant', 'garrett', 'matt', 'isaac'],
+    pieces: ['jesse', 'marco', 'grant'],
     blurb: 'The only one ever made. This hand-finished edition is the best way to support our fully-independent art.',
-    includes: ['Custom-painted player pieces', 'Dichroic glass die (color-shifting, iridescent)', 'Handmade custom real-bronze Fear/Joy coin', 'Free entry to any future show', 'Only one exists']
+    includes: ['Custom-painted player pieces: Jesse, Marco and Grant', 'Heads are resin printed, not plastic', 'Dichroic glass die (color-shifting, iridescent)', 'Handmade custom real-bronze Fear/Joy coin', 'Signed record', 'Free entry to any future show', 'Only one exists']
   }
 ];
 
@@ -745,7 +796,7 @@ const TRACKS = [
   T("Dayspring", [["Marco Jaimez", "vocals"], ["Jesse Carl", "drums, production"], ["Grant Clementi", "vocals, acoustic guitar, synth bass, keys"], ["Garrett Waite", "electric guitar, electric bass"]], "[Verse 1]\nStaring at the ceiling\nAnd my heart is barely beating\nOn the first day of my life\nContemplate the meaning\nOf forever it’s so fleeting\nBut I made it through the night\nOff the walls these empty halls\nThey echo back my voice\nSo it goes, if I’m alone\nI’ll call into the void asking\n\n[Chorus]\nWho’s the maker, creator?\nIs it true that everything is\nWithin you? Fixing the broken\nI’m brand new\nI let it be here\nI let it all go\n\n[Verse 2]\nAnd the sun sets on another life\nSo a new one can begin\nSunset (sunset), sunrise (sunrise)\nHalf-truths (half-truths), white lies (white lies)\nLove me (love me), loathe me (loathe me)\nLeave me (leave me) lonely asking\n\n[Chorus]\nWho’s the maker, creator?\nIs it true that everything is\nWithin you? Fixing the broken\nI’m brand new\nI let it be here\nI let it all go\n\n[Bridge]\nYou’ve got your head in the clouds\nI'm trying to breathe underwater\nI’d go alone to go fast\nI’d take you with to go farther\nSo I’ll turn around and never look back\n\n[Chorus / Outro]\nNever look back\nWho’s the maker, creator?\nIs it You?"),
   T("Figment", [["Marco Jaimez", "lyrics, vocals"], ["Jesse Carl", "drums, bass, synths, production"], ["Grant Clementi", "vocals, organ, synths, production"], ["Tim Wolf", "electric guitar"], ["Garrett Waite", "acoustic guitar, upright bass"]], "[Verse 1]\nYou left me reeling\nWith all of the things you said\nAnd you’re not leaving\nYou’re living inside my head\nI’ve got a feeling\nThat everything’s getting\nDarker, colder, harder to explain\nHow can I reason\nWhen everyone is insane?\nThere’s no defeating\nThe chaos inside my brain\nYou won’t believe it\nBut I know we’re\nTearing through the simulation now\n\n[Chorus]\nI think I made a mistake\nWhen I let you through that door\nI want to be unafraid\nWhen you tell me that we’re not alone\nBut I’m shaken up\nWill I always wonder if\nAny of this is real?\n\n[Verse 2]\nI want to explain away\nAll the little mysteries\nLooking for some sympathy\nI wonder if there’s more to it\nThe point of why we all exist\nIt hits right to the bone\nAre these thoughts even my own?\n\n[Chorus]\nI think I made a mistake\nWhen I let you through that door\nI want to be unafraid\nWhen you tell me that we’re not alone\nBut I’m shaken up\nWill I always wonder if\nAny of this is real?\n\n[Instrumental Bridge]\n\n[Chorus]\nI think I made a mistake\nWhen I let you through that door\nI want to be unafraid\nWhen you tell me that we’re not alone\nBut I’m shaken up\nWill I always wonder if\nAny of this is real?"),
   T("Remedy", [["Grant Clementi", "vocals, guitar, synth bass, keys, production"], ["Marco Jaimez", "vocals"], ["Carolyn Clementi", "vocals"], ["Jesse Carl", "production"]], "[Verse 1]\nGiver taker we can make it\nHappen once again\nWar on nature was a failure\nWhy can't we befriend\nAny extrahuman spirit\nWhat they gonna say?\nIf you're not afraid to hear it\nCome on step this way\n\n[Verse 2]\nI am the Remedy\nDon't let 'em let you think\nI am the enemy\nI'm in your blood\nI'm everywhere you see\nYou cannot live without\nI'm the only thing that you\nShould ever think about\nI'm everything\nI'm all you'll ever need\n(I'm all you'll ever need)\n\n[Chorus 1]\nGive me power I'll give you peace\nRestful days, serenity\nLeave your burden up to me, me, me\n\n[Verse 3]\nIt's time to give the devil his due\nThe devil in me sees the devil in you\nI'm a means to an end\nSo let me in\nCome on let the world go crazy\n\n[Verse 4]\nWe can make it happen once again\nWar on nature was a failure\nWhy can't we pretend\nAny all-consuming power's\nEver gonna last\nOne day you're a human\nBut these things they change so fast\n\n[Chorus 2]\nGive me power I'll give you peace\nRestful days, serenity\nLeave your burden up to me, me\nCome on let the world go crazy\nI'm the answer I'm the soul\nI am vision I am control\nI'm your life now let it go, go, go\n\n[Outro]\nWe only need (only need)\nWe only need time\nWe only need (only need)\nWe only need time\nWe only need (only need)\nWe only need time\nWe only need (only need)\nWe only need"),
-  T("Dmitri", [["Written by", "Grant Clementi"], ["Produced by", "Grant Clementi and Jesse Carl"], ["Vocals by", "Grant Clementi and Marco Jaimez"], ["Keyboards, Guitars, Percussion, FX by", "Grant Clementi"], ["Guitars by", "Garrett Waite"], ["Bass by", "Matthew Sherman"], ["Drums by", "Jesse Carl"], ["Mixed by", "Fearjoy"], ["Mastered by", "Justin Perkins at Mystery Room Mastering"], ["Special thanks", "Michael Darden, Khalil, and my friend Dmitri"]], "[Verse 1]\nI remember but I haven’t seen his face in years\nThrough the door he ran up to greet me\nIn a second he took away my doubt and fear\nHe said hey my name’s Dmitri\nI can’t talk to my friends but\nI can talk to my God about it\nAs soon as it happened\nMy brain went and forgot about it\n\n[Pre-Chorus]\nHow long had I been waitin’\nFor some inspiration?\n\n[Chorus 1]\nOh let me tell you ‘bout the way he taught me\nAll that he could teach me\nYou won’t learn half as much in years of school\nAs one day with Dmitri\nOne day with Dmitri\nOne day with Dmitri\n\n[Bridge 1]\n(He said)\nI only got 5 minutes to show you the ropes\nOver there’s where your brain makes your dreams and hopes\nYour life is meaningful but somehow still it’s only a joke\nWe’ll meet again if you transcend or if you choke\n\n[Bridge 2]\nHe’s livin’ in my head\nAnd when I’m almost dead\nHe’ll come beside my bed\nAnd show me what to do\nIn every flower bed\nAnd when your blood runs red\nHe’s livin’ in my head\nAnd livin’ in yours too\n\n[Chorus 2]\nOh let me tell you ‘bout the way\nHe taught me all that he could teach me\nI’m so indebted to my friend\nThe one\nThe only Dmitri\nYeah, yeah\nThe only Dmitri\nThe only Dmitri\n\n[Outro]\nI can’t talk to my friends\nI can talk to my God about it\nAs soon as it happened\nMy brain went and forgot"),
+  T("Dmitri", [["Grant Clementi", "written by, production, vocals, keyboards, guitars, percussion, FX"], ["Marco Jaimez", "vocals"], ["Jesse Carl", "drums, production"], ["Garrett Waite", "guitars"], ["Matthew Sherman", "bass"], ["Fearjoy", "mixing"], ["Justin Perkins", "mastering at Mystery Room Mastering"], ["Michael Darden", "special thanks"], ["Khalil", "special thanks"], ["Dmitri", "special thanks (my friend)"]], "[Verse 1]\nI remember but I haven’t seen his face in years\nThrough the door he ran up to greet me\nIn a second he took away my doubt and fear\nHe said hey my name’s Dmitri\nI can’t talk to my friends but\nI can talk to my God about it\nAs soon as it happened\nMy brain went and forgot about it\n\n[Pre-Chorus]\nHow long had I been waitin’\nFor some inspiration?\n\n[Chorus 1]\nOh let me tell you ‘bout the way he taught me\nAll that he could teach me\nYou won’t learn half as much in years of school\nAs one day with Dmitri\nOne day with Dmitri\nOne day with Dmitri\n\n[Bridge 1]\n(He said)\nI only got 5 minutes to show you the ropes\nOver there’s where your brain makes your dreams and hopes\nYour life is meaningful but somehow still it’s only a joke\nWe’ll meet again if you transcend or if you choke\n\n[Bridge 2]\nHe’s livin’ in my head\nAnd when I’m almost dead\nHe’ll come beside my bed\nAnd show me what to do\nIn every flower bed\nAnd when your blood runs red\nHe’s livin’ in my head\nAnd livin’ in yours too\n\n[Chorus 2]\nOh let me tell you ‘bout the way\nHe taught me all that he could teach me\nI’m so indebted to my friend\nThe one\nThe only Dmitri\nYeah, yeah\nThe only Dmitri\nThe only Dmitri\n\n[Outro]\nI can’t talk to my friends\nI can talk to my God about it\nAs soon as it happened\nMy brain went and forgot"),
   T("It Happens", [["Grant Clementi", "vocals, lyrics, keys"], ["Jesse Carl", "drums, production"], ["Carolyn Clementi", "vocals"], ["Tim Wolf", "guitar, harmonies"], ["Matthew Sherman", "bass"], ["Garrett Waite", "guitar"]], "How did I get here\nWhere am I going\nTrying to stay clear\nOut in the open\nI try and I try and I try\nBut nothing changes\nThe moment I finally stop\nTryna rearrange it\n\nIt happens\nSuddenly, instantly\nIt happens\nFinally, now I see\n\nTime ceases to exist\nEvery time we feel like this\nDon't let it slip away\nRealize it's going to anyway\nThat's ok, It'll happen once again\nWhen you're not trying to make it happen\nThat's ok, It'll happen once again\nWhen you're not trying to make it happen\n\nTime is the only truth\nWatch it slip away\nWhen you quit seeking\nForever in a day\n\nIt happens\nSuddenly, instantly\nIt happens\nFinally, now I see\nIt happens\nSuddenly, instantly\nIt happens\nFinally, now I see"),
   T("Nightdrive", [["Marco Jaimez", "lyrics, vocals"], ["Grant Clementi", "lyrics, vocals, keys, production"], ["Jesse Carl", "drums, bass, production, percussion"], ["Tim Wolf", "guitars"]], "[Verse 1]\nYou took the backroads when you had to go\nBut somehow I knew you never would return\nYou're in the rearview but I'll turn around\nI see that silver lining and now there is no hiding\n\n[Prechorus 1]\nAll this moonlight\nMakes the room bright\nAll the faces\nFading out of focus\n\n[Chorus]\nWhen all your stars are falling\nWhen all the light has turned to black\nBending and breaking from the weight of it all\nWhen the day is gone\nAnd you’re moving on\nI’ll be the light to find you\nI’d drive all night to get you back\n\n[Verse 2]\nDarkness calling\nEngine stalling\nCan I cut through the fog without you by my side?\nFalling short of what you wanted to be\nBut I can finally see the signs\nThat the road ahead will find me\n\n[Prechorus 2]\nI gave you the moon but you needed the sun\nI gave you the room when you wanted to run\nRemembered your face even when it was\nFading out of focus\nAll this moonlight\nMakes the room bright\nAll the faces\nFading out of focus\n\n[Chorus]\nWhen all your stars are falling\nWhen all the light has turned to black\nBending and breaking from the weight of it all\nWhen the day is gone\nAnd you’re moving on\nI’ll be the light to find you\nI’d drive all night to get you back"),
   T("Ghost 2", [["Marco Jaimez", "lyrics, vocals"], ["Grant Clementi", "lyrics, vocals, synths, percussion"], ["Jesse Carl", "drums, production"], ["Matt Sherman", "bass"], ["Garrett Waite", "acoustic guitar, electric guitar"], ["Shawn Bost", "additional keys"], ["Ruby Clementi", "\"hello?\""]], "Your ghost is in my room\nI hear your voice inside the telephone\nIf I can’t be with you\nI will wander my whole life alone\nA spectre in the gloom\nYou crawl out of my mind and up the wall\nIf you can’t be my all\nThen I will settle being miserable\nAgain and again and again and again and again\nEvery time you fly away\nThere was more that I could say\nBut I'm paralyzed and words don't reach my lips\n\nEvery time the lights go down\nSuddenly I hear a sound\nIt's you, it’s you, it’s you\n\nI wonder where you are\nI hear your voice inside when I'm alone\nSo I look down at the telephone\nBut I know what I'm not gonna see\n\nYour pictures line these walls\nBut this vacant house is not a home\nAnd I wish that I was not alone\nBut you never seem to visit when it's coldest\nAnd I need you here the most\n\nEvery time you fly away\nThere was more that I could say\nBut I'm paralyzed and words don't reach my lips\nEvery time the lights go down\nSuddenly I hear a sound\nAnd the memories replay\nWith you, with you, with you\nAnd the memories replay\nWith you, with you, with you\nAnd the memories replay"),
@@ -793,6 +844,119 @@ function toast(msg) {
   toastTimer = setTimeout(() => t.classList.remove('show'), 2600);
 }
 
+/* =====================================================================
+   SOUND. Everything starts from a tap or click, which is what phones require.
+   - One shared AudioContext, created and resumed on the first tap (Safari and iPhone need this).
+   - Sound effects are decoded to buffers and played through one master volume.
+   - The radio song plays from an <audio> element routed into the same master, so the radio volume knob also works on iPhone
+     (iPhone ignores audio.volume).
+   ===================================================================== */
+const Sound = (() => {
+  const DIR = CONFIG.sfxFolder;
+  const AC = window.AudioContext || window.webkitAudioContext;
+  const SFX = ['coinflip.wav', 'dice1.wav', 'dice2.wav', 'dice5.wav', '1up.wav'];
+  let ctx = null, master = null, muted = false, vol = 0.5, el = null, musicGain = null, playing = false, onRadio = null;
+  const raw = {}, bufs = {}, decoding = {};
+
+  /* start downloading the effects right away (decoding has to wait for the first tap) */
+  SFX.forEach(n => { raw[n] = fetch(DIR + n).then(r => (r.ok ? r.arrayBuffer() : null)).catch(() => null); });
+
+  function ensure() {
+    if (!AC) return null;
+    if (!ctx) {
+      try {
+        ctx = new AC();
+        master = ctx.createGain();
+        master.gain.value = muted ? 0 : 1;
+        master.connect(ctx.destination);
+      } catch (e) { ctx = null; return null; }
+      try { if (navigator.audioSession) navigator.audioSession.type = 'playback'; } catch (e) {}   /* iPhone: play even with the silent switch on */
+    }
+    if (ctx.state !== 'running') { try { const p = ctx.resume(); if (p && p.catch) p.catch(() => {}); } catch (e) {} }
+    return ctx;
+  }
+  function decode(name) {
+    if (bufs[name]) return Promise.resolve(bufs[name]);
+    if (decoding[name]) return decoding[name];
+    const c = ensure();
+    if (!c) return Promise.resolve(null);
+    const src = raw[name] || (raw[name] = fetch(DIR + name).then(r => (r.ok ? r.arrayBuffer() : null)).catch(() => null));
+    return (decoding[name] = src.then(ab => (ab ? new Promise((res, rej) => c.decodeAudioData(ab, res, rej)) : null))
+      .then(b => (bufs[name] = b)).catch(() => null));
+  }
+  function unlock() {
+    const c = ensure();
+    if (!c) return;
+    try { const s = c.createBufferSource(); s.buffer = c.createBuffer(1, 1, 22050); s.connect(c.destination); s.start(0); } catch (e) {}   /* silent blip wakes the audio engine on iPhone */
+    SFX.forEach(decode);
+  }
+  /* plays an effect and returns how long it lasts in ms (0 if it is not loaded yet) */
+  function play(name) {
+    const c = ensure();
+    if (!c) {   /* very old browser: plain audio element */
+      if (!muted) { try { new Audio(DIR + name).play().catch(() => {}); } catch (e) {} }
+      return 0;
+    }
+    const go = b => {
+      if (!b || muted) return;
+      try { const s = c.createBufferSource(); s.buffer = b; s.connect(master); s.start(0); } catch (e) {}
+    };
+    if (bufs[name]) { go(bufs[name]); return bufs[name].duration * 1000; }
+    decode(name).then(go);
+    return 0;
+  }
+  return {
+    unlock,
+    ready: () => !!ctx && ctx.state === 'running',
+    coin: () => play('coinflip.wav'),
+    dice: () => play(['dice1.wav', 'dice2.wav', 'dice5.wav'][Math.floor(Math.random() * 3)]),
+    oneUp: () => play('1up.wav'),
+    isMuted: () => muted,
+    setMuted(m) {
+      muted = !!m;
+      if (master) master.gain.value = muted ? 0 : 1;
+      if (el && !musicGain) el.muted = muted;
+      return muted;
+    },
+    getVolume: () => vol,
+    setVolume(v) {
+      vol = Math.max(0, Math.min(1, v));
+      if (musicGain) { try { musicGain.gain.setTargetAtTime(vol, ctx.currentTime, 0.02); } catch (e) { musicGain.gain.value = vol; } }
+      else if (el) el.volume = vol;
+      return vol;
+    },
+    onRadio(fn) { onRadio = fn; },
+    /* radio: first call starts the song (at half volume), next call pauses it. Returns true while playing. */
+    toggleRadio() {
+      const c = ensure();
+      if (!el) {
+        el = new Audio(DIR + 'endless-jam-jgg-1.mp3');
+        el.loop = true;
+        el.preload = 'auto';
+        if (c) {
+          try {
+            const src = c.createMediaElementSource(el);
+            musicGain = c.createGain();
+            musicGain.gain.value = vol;
+            src.connect(musicGain);
+            musicGain.connect(master);
+          } catch (e) { musicGain = null; }
+        }
+        if (!musicGain) { el.volume = vol; el.muted = muted; }
+        el.addEventListener('error', () => { playing = false; if (onRadio) onRadio(false); toast('Could not load the song.'); });
+      }
+      if (playing) { el.pause(); playing = false; }
+      else {
+        playing = true;
+        const p = el.play();
+        if (p && p.catch) p.catch(() => { playing = false; if (onRadio) onRadio(false); });
+      }
+      if (onRadio) onRadio(playing);
+      return playing;
+    }
+  };
+})();
+
 /* ---------- State ---------- */
 const S = {};
 PRODUCTS.forEach(p => { S[p.id] = { die: 'red', qty: 1, view: 'jesse', pick: new Set() }; });
@@ -829,11 +993,12 @@ function productCard(p) {
   const el = document.createElement('article');
   el.className = 'product ' + p.type;
   el.id = 'p-' + p.id;
-  let opts = '';
+  let opts = '', topOpts = '';
   if (p.type === 'kit') opts = '<div class="optlabel">Die color</div>' + swatchesHTML(p.id);
-  if (p.type === 'single') opts = '<div class="optlabel">Preview a piece</div>' + chipsHTML(p.id);
+  if (p.type === 'single') topOpts = '<div class="top-opts"><div class="optlabel">Preview a piece</div>' + chipsHTML(p.id) + '</div>';
   const diyBtn = p.diy ? '<div class="diy-row"><a class="btn small diy-btn" data-diy="' + p.id + '"></a></div>' : '';
   el.innerHTML = `
+    ${topOpts}
     <div class="viewer" data-viewer="${p.id}"><span class="hint">drag or tap to spin</span></div>
     ${diyBtn}
     <div class="info">
@@ -1094,17 +1259,83 @@ function coinFace(text, base, ink, useMarble) {
   g.fillText(text, 128, 132);
   return new THREE.CanvasTexture(c);
 }
+/* ---- shiny bronze. A "matcap" is a pre-lit sphere picture; wrapping it on the coin gives a polished-metal sheen that sweeps across as the coin turns. ---- */
+function shadeHex(hex, f) {   /* f > 0 mixes toward white, f < 0 toward black */
+  const n = parseInt(hex.slice(1), 16), t = f > 0 ? 255 : 0, a = Math.abs(f);
+  const ch = sh => Math.round(((n >> sh) & 255) * (1 - a) + t * a);
+  return 'rgb(' + ch(16) + ',' + ch(8) + ',' + ch(0) + ')';
+}
+function matcapTexture(shadeFn) {
+  const S = 128, c = document.createElement('canvas');
+  c.width = c.height = S;
+  const g = c.getContext('2d'), img = g.createImageData(S, S);
+  for (let y = 0; y < S; y++) for (let x = 0; x < S; x++) {
+    let nx = (x + 0.5) / S * 2 - 1, ny = 1 - (y + 0.5) / S * 2;
+    const r2 = nx * nx + ny * ny;
+    if (r2 > 1) { const r = Math.sqrt(r2); nx /= r; ny /= r; }
+    const nz = Math.sqrt(Math.max(0, 1 - nx * nx - ny * ny)), col = shadeFn(nx, ny, nz), i = (y * S + x) * 4;
+    img.data[i] = Math.max(0, Math.min(255, col[0]));
+    img.data[i + 1] = Math.max(0, Math.min(255, col[1]));
+    img.data[i + 2] = Math.max(0, Math.min(255, col[2]));
+    img.data[i + 3] = 255;
+  }
+  g.putImageData(img, 0, 0);
+  return new THREE.CanvasTexture(c);
+}
+const MATCAP_LIGHT = (() => { const v = new THREE.Vector3(-0.45, 0.55, 0.7).normalize(); return v; })();
+function specAt(nx, ny, nz, power) {   /* highlight toward the light, viewed head-on */
+  const hx = MATCAP_LIGHT.x, hy = MATCAP_LIGHT.y, hz = MATCAP_LIGHT.z + 1, hl = Math.sqrt(hx * hx + hy * hy + hz * hz);
+  return Math.pow(Math.max(0, (nx * hx + ny * hy + nz * hz) / hl), power);
+}
+let bronzeMatcapTex, rainbowMatcapTex;
+function bronzeMatcap() {
+  if (!bronzeMatcapTex) bronzeMatcapTex = matcapTexture((nx, ny, nz) => {
+    const d = Math.max(0, nx * MATCAP_LIGHT.x + ny * MATCAP_LIGHT.y + nz * MATCAP_LIGHT.z);
+    const v = 120 + 95 * d + 30 * nz + 230 * specAt(nx, ny, nz, 40);
+    return [v, v * 0.97, v * 0.92];
+  });
+  return bronzeMatcapTex;
+}
+function rainbowMatcap() {   /* dichroic glass: hue changes with the angle you look at the face, so it shimmers as the die turns */
+  if (!rainbowMatcapTex) rainbowMatcapTex = matcapTexture((nx, ny, nz) => {
+    const hue = (((Math.atan2(ny, nx) / (Math.PI * 2)) + 0.5 + nz * 0.35) % 1 + 1) % 1;
+    const c = new THREE.Color().setHSL(hue, 0.85, 0.5 + 0.12 * nz);
+    const sp = 255 * specAt(nx, ny, nz, 30) * 0.9;
+    return [c.r * 255 + sp, c.g * 255 + sp, c.b * 255 + sp];
+  });
+  return rainbowMatcapTex;
+}
+function coinFaceShiny(text, base, ink) {
+  const c = document.createElement('canvas');
+  c.width = c.height = 256;
+  const g = c.getContext('2d');
+  const rg = g.createRadialGradient(96, 90, 8, 128, 128, 160);
+  rg.addColorStop(0, shadeHex(base, 0.35)); rg.addColorStop(0.5, base); rg.addColorStop(1, shadeHex(base, -0.3));
+  g.fillStyle = rg; g.fillRect(0, 0, 256, 256);
+  const st = g.createLinearGradient(40, 0, 216, 256);   /* polished streak */
+  st.addColorStop(0.28, 'rgba(255,255,255,0)'); st.addColorStop(0.42, 'rgba(255,250,235,0.32)'); st.addColorStop(0.55, 'rgba(255,255,255,0)');
+  g.fillStyle = st; g.fillRect(0, 0, 256, 256);
+  g.lineWidth = 7; g.strokeStyle = shadeHex(base, 0.45); g.beginPath(); g.arc(128, 128, 114, 0, Math.PI * 2); g.stroke();   /* raised rim */
+  g.lineWidth = 3; g.strokeStyle = shadeHex(base, -0.45); g.beginPath(); g.arc(128, 128, 106, 0, Math.PI * 2); g.stroke();
+  g.font = 'bold 56px Arial Black, Arial, sans-serif';
+  g.textAlign = 'center';
+  g.textBaseline = 'middle';
+  g.fillStyle = 'rgba(255,245,220,0.55)'; g.fillText(text, 130, 135);   /* lettering: highlight, then ink */
+  g.fillStyle = ink; g.fillText(text, 128, 132);
+  return new THREE.CanvasTexture(c);
+}
 function makeCoin(bronze, tone) {
   const geo = new THREE.CylinderGeometry(0.3, 0.3, 0.06, 48);
   let mats;
   if (bronze) {
     tone = tone || {};
     const base = tone.base || '#c98b4a', ink = tone.ink || '#5a3512';
-    const props = { metalness: tone.metalness == null ? 0.55 : tone.metalness, roughness: tone.roughness == null ? 0.38 : tone.roughness };
+    const mc = bronzeMatcap();
+    const mk = (map, col) => new THREE.MeshMatcapMaterial({ matcap: mc, map: map, color: col || new THREE.Color(1.3, 1.3, 1.3) });
     mats = [
-      new THREE.MeshStandardMaterial({ color: tone.color || 0xc98b4a, ...props }),
-      new THREE.MeshStandardMaterial({ map: coinFace('FEAR', base, ink, false), ...props }),
-      new THREE.MeshStandardMaterial({ map: coinFace('JOY', base, ink, false), ...props })
+      mk(null, new THREE.Color(tone.color || 0xc98b4a).multiplyScalar(1.45)),
+      mk(coinFaceShiny('FEAR', base, ink)),
+      mk(coinFaceShiny('JOY', base, ink))
     ];
   } else {
     marble();
@@ -1129,7 +1360,7 @@ function pedestal(r) {
   return g;
 }
 
-const PAINT = ['#e4572e', '#f3a712', '#29a375', '#2e86de', '#9b5de5', '#ef476f'];
+const PAINT = ['#e2b996', '#c9966b', '#deb18c', '#e0b793', '#dcae89', '#e5bf9f'];   /* skin tones in PEOPLE order: Jesse, Marco (a bit more tan), Grant, Garrett, Matt, Isaac */
 
 function clearStage(stage) {
   while (stage.children.length) {
@@ -1137,6 +1368,130 @@ function clearStage(stage) {
     ch.traverse(o => { if (o.geometry && !o.geometry.userData.shared) o.geometry.dispose(); });
     stage.remove(ch);
   }
+}
+
+/* Gentler studio light: less key light and more even fill, so the white marble stops blowing out into glare */
+function addSoftLights(scene) {
+  scene.add(new THREE.HemisphereLight(0xffffff, 0x8a6a60, 0.75));
+  const key = new THREE.DirectionalLight(0xffffff, 0.4); key.position.set(3, 5, 4); scene.add(key);
+  const rim = new THREE.DirectionalLight(0xffd9b0, 0.25); rim.position.set(-4, 2, -3); scene.add(rim);
+}
+
+/* Kit cards: the die and the coin sit on their own little trays beside the pieces tray, so the turning heads never cover them
+   and they are always visible. All three trays are drawn into the same canvas. Tap the die to roll it, tap the coin to flip it. */
+const TRAYS = {
+  main: { x: 0, y: 0, w: 0.68, h: 1 },
+  die:  { x: 0.7, y: 0, w: 0.3, h: 0.495 },
+  coin: { x: 0.7, y: 0.505, w: 0.3, h: 0.495 }
+};
+const FU6 = { 1: [0, 0, 0], 6: [Math.PI, 0, 0], 3: [0, 0, Math.PI / 2], 4: [0, 0, -Math.PI / 2], 2: [-Math.PI / 2, 0, 0], 5: [Math.PI / 2, 0, 0] };
+function buildExtras(v, painted, st) {
+  if (v.subs) return;
+  v.mainRect = TRAYS.main;
+  v.el.classList.add('has-trays');
+  const mkSub = rect => {
+    const sub = { rect, scene: new THREE.Scene(), camera: new THREE.PerspectiveCamera(30, 1, 0.1, 50), stage: new THREE.Group() };
+    addSoftLights(sub.scene);
+    sub.scene.add(sub.stage);
+    return sub;
+  };
+  const dieS = mkSub(TRAYS.die), coinS = mkSub(TRAYS.coin);
+  v.subs = [dieS, coinS];
+
+  /* tray frames + labels (plain HTML on top of the canvas) */
+  [['die', 'tap to roll'], ['coin', 'tap to flip']].forEach(([k, label]) => {
+    const r = TRAYS[k], f = document.createElement('div');
+    f.className = 'tray';
+    f.style.cssText = 'left:' + r.x * 100 + '%;top:' + r.y * 100 + '%;width:' + r.w * 100 + '%;height:' + r.h * 100 + '%';
+    f.innerHTML = '<span class="tray-label">' + label + '</span>';
+    v.el.appendChild(f);
+  });
+
+  const ease = k => 1 - Math.pow(1 - k, 3), TAU = Math.PI * 2;
+
+  /* ----- die tray ----- */
+  const dieTilt = new THREE.Group(); dieTilt.rotation.x = 0.5; dieTilt.position.y = 0.85; dieS.stage.add(dieTilt);
+  const dieSpin = new THREE.Group(); dieTilt.add(dieSpin);
+  const dieLift = new THREE.Group(); dieSpin.add(dieLift);
+  let die;
+  if (painted) die = makeDichroicDie();
+  else { die = makeDie('#ffffff', '#111111'); v.die = die; recolorDie(die, st.die); }
+  die.scale.setScalar(2.0);
+  dieLift.add(die);
+  dieS.stage.add(pedestal(0.85));
+  let roll = null;
+  v.rollDie = () => {
+    if (roll) return;
+    const tgt = FU6[1 + Math.floor(Math.random() * 6)];
+    roll = { t0: performance.now(), dur: REDUCE ? 250 : 1000, tgt,
+      e0: [die.rotation.x, die.rotation.y, die.rotation.z],
+      e1: tgt.map(a => a + TAU * (1 + Math.floor(Math.random() * 2))) };
+    Sound.dice();
+  };
+
+  /* ----- coin tray (the coin leans back on its pedestal so the lettering faces you) ----- */
+  const COIN_S = 2.3, COIN_R = 0.3 * COIN_S, TILT = 1.05, baseY = COIN_R * Math.sin(TILT) + 0.05;
+  const cLift = new THREE.Group(); cLift.position.y = baseY; coinS.stage.add(cLift);
+  const cTilt = new THREE.Group(); cTilt.rotation.x = TILT; cLift.add(cTilt);
+  const cYaw = new THREE.Group(); cTilt.add(cYaw);
+  const cFlip = new THREE.Group(); cYaw.add(cFlip);
+  const coin = makeCoin(painted);
+  coin.scale.setScalar(COIN_S);
+  coin.material[1].map.center.set(0.5, 0.5); coin.material[1].map.rotation = Math.PI / 2;      /* keeps the lettering upright on both faces */
+  coin.material[2].map.center.set(0.5, 0.5); coin.material[2].map.rotation = -Math.PI / 2;
+  cFlip.add(coin);
+  coinS.stage.add(pedestal(0.85));
+  let half = 0, flip = null;
+  v.flipCoin = () => {
+    if (flip) return;
+    const want = Math.random() < 0.5 ? 0 : 1;
+    const k = 6 + ((((want - half) % 2) + 2) % 2);
+    flip = { t0: performance.now(), dur: REDUCE ? 250 : 1100, a0: half * Math.PI, a1: (half + k) * Math.PI };
+    half += k;
+    Sound.coin();
+  };
+
+  v.onFrame = t => {
+    const now = performance.now();
+    dieSpin.rotation.y = REDUCE ? 0.4 : t * 0.00035;
+    dieLift.position.y = REDUCE ? 0 : Math.sin(t / 900) * 0.05;
+    if (painted) die.userData.tint((t / 9000) % 1);
+    if (roll) {
+      const k = Math.min(1, (now - roll.t0) / roll.dur), e = ease(k);
+      die.rotation.set(roll.e0[0] + (roll.e1[0] - roll.e0[0]) * e, roll.e0[1] + (roll.e1[1] - roll.e0[1]) * e, roll.e0[2] + (roll.e1[2] - roll.e0[2]) * e);
+      dieLift.position.y += Math.sin(Math.PI * k) * (REDUCE ? 0 : 0.45);
+      if (k >= 1) { die.rotation.set(roll.tgt[0], roll.tgt[1], roll.tgt[2]); roll = null; }
+    }
+    cYaw.rotation.y = REDUCE ? 0 : Math.sin(t / 1600) * 0.4;
+    cLift.position.y = baseY + (REDUCE ? 0 : Math.sin(t / 900) * 0.03);
+    if (flip) {
+      const k = Math.min(1, (now - flip.t0) / flip.dur);
+      cFlip.rotation.x = flip.a0 + (flip.a1 - flip.a0) * ease(k);
+      cLift.position.y = baseY + Math.sin(Math.PI * k) * (REDUCE ? 0 : 0.9);
+      if (k >= 1) { cFlip.rotation.x = flip.a1; flip = null; }
+    }
+  };
+
+  /* which tray is a pointer over? */
+  v.regionAt = e => {
+    const r = v.el.getBoundingClientRect(), fx = (e.clientX - r.left) / r.width, fy = (e.clientY - r.top) / r.height;
+    const inside = q => fx >= q.x && fx <= q.x + q.w && fy >= q.y && fy <= q.y + q.h;
+    return inside(TRAYS.die) ? 'die' : inside(TRAYS.coin) ? 'coin' : 'main';
+  };
+
+  /* draw the three trays into the one canvas */
+  v.render = () => {
+    const r = v.renderer, w = v.el.clientWidth, h = v.el.clientHeight;
+    if (!w || !h) return;
+    r.setScissorTest(true);
+    [{ rect: TRAYS.main, scene: v.scene, camera: v.camera }, dieS, coinS].forEach(sc => {
+      const q = sc.rect, pw = q.w * w, ph = q.h * h, px = q.x * w, py = h - q.y * h - ph;
+      r.setViewport(px, py, pw, ph);
+      r.setScissor(px, py, pw, ph);
+      r.render(sc.scene, sc.camera);
+    });
+    r.setScissorTest(false);
+  };
 }
 
 function buildScene(v, p) {
@@ -1161,31 +1516,39 @@ function buildScene(v, p) {
     v.stage.add(head);
   });
 
-  if (withExtras) {
-    let die;
-    if (painted) {
-      die = makeDichroicDie();
-      v.onFrame = (t) => die.userData.tint(((v.rotY * 0.18) % 1 + 1) % 1);
-    } else {
-      die = makeDie('#ffffff', '#111111');
-      v.die = die;
-      recolorDie(die, st.die);
-    }
-    die.position.set(-0.42, 0.24, 0.12);
-    die.rotation.y = 0.5;
-    v.stage.add(die);
-    const coin = makeCoin(painted);
-    coin.scale.setScalar(1.5);
-    coin.position.set(0.5, 0.045, 0.14);
-    coin.rotation.z = 0.04;
-    v.stage.add(coin);
-  }
+  if (withExtras) buildExtras(v, painted, st);   /* die + coin now live on their own trays */
 
   const pr = (n === 1 ? 1.1 : R + 0.85);
   v.stage.add(pedestal(pr));
   v.radius = pr;
   v.fit();
   if (v.visible) kickLoads(v);
+}
+
+/* Rounded shapes for the tube TV */
+function roundedRectShape(w, h, r) {
+  const s = new THREE.Shape(), x0 = -w / 2, y0 = -h / 2, x1 = w / 2, y1 = h / 2;
+  s.moveTo(x0 + r, y0);
+  s.lineTo(x1 - r, y0); s.absarc(x1 - r, y0 + r, r, -Math.PI / 2, 0, false);
+  s.lineTo(x1, y1 - r); s.absarc(x1 - r, y1 - r, r, 0, Math.PI / 2, false);
+  s.lineTo(x0 + r, y1); s.absarc(x0 + r, y1 - r, r, Math.PI / 2, Math.PI, false);
+  s.lineTo(x0, y0 + r); s.absarc(x0 + r, y0 + r, r, Math.PI, Math.PI * 1.5, false);
+  return s;
+}
+/* a box with rounded corners (seen from the front) and softly rounded edges. r = corner radius, b = edge rounding */
+function roundedSlab(w, h, d, r, b) {
+  const iw = w - 2 * b, ih = h - 2 * b, rr = Math.max(0.005, Math.min(r, iw / 2 - 0.001, ih / 2 - 0.001));
+  const g = new THREE.ExtrudeGeometry(roundedRectShape(iw, ih, rr), { depth: d - 2 * b, bevelEnabled: true, bevelThickness: b, bevelSize: b, bevelOffset: 0, bevelSegments: 5, curveSegments: 14 });
+  g.translate(0, 0, -(d - 2 * b) / 2);
+  g.computeVertexNormals();
+  return g;
+}
+/* flat rounded-corner face with 0..1 UVs, for the TV picture and the glass layers on top of it */
+function roundedScreenGeo(w, h, r) {
+  const g = new THREE.ShapeGeometry(roundedRectShape(w, h, r), 14), P = g.attributes.position, uv = new Float32Array(P.count * 2);
+  for (let i = 0; i < P.count; i++) { uv[i * 2] = (P.getX(i) + w / 2) / w; uv[i * 2 + 1] = (P.getY(i) + h / 2) / h; }
+  g.setAttribute('uv', new THREE.BufferAttribute(uv, 2));
+  return g;
 }
 
 /* 3D desk: semi-side-view desk with the tube TV, the crew, one coin and one die on top.
@@ -1197,6 +1560,7 @@ function makeDesk(el) {
     el.insertBefore(canvas, el.firstChild);
     v.renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
     v.renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+    canvas.addEventListener('webglcontextlost', ev => ev.preventDefault(), false);   /* lets the browser restore the 3D view if a phone drops it */
   } catch (err) {
     el.classList.add('nogl');
     return null;
@@ -1225,6 +1589,12 @@ function makeDesk(el) {
 
   /* ---------- small helpers ---------- */
   const noHit = m => { m.raycast = () => {}; return m; };
+  /* after a roll, flip or spin finishes, glide down to the player pieces */
+  let jumpT = 0;
+  function jumpToKits(delay) {
+    clearTimeout(jumpT);
+    jumpT = setTimeout(() => { const k = document.getElementById('kits'); if (k) k.scrollIntoView({ behavior: REDUCE ? 'auto' : 'smooth', block: 'start' }); }, delay);
+  }
   const std = (color, rough, metal) => new THREE.MeshStandardMaterial({ color, roughness: rough == null ? 0.7 : rough, metalness: metal || 0 });
   function box(w, h, d, mat, x, y, z, parent) {
     const m = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), mat);
@@ -1294,12 +1664,13 @@ function makeDesk(el) {
   tv.scale.set(2.2, 2.2, 1.3);   /* big TV, but no deeper than before (z scale stays small) */
   stage.add(tv);
   const grayBody = std(0x9a9ea3, 0.55), grayDark = std(0x5d6165, 0.6), grayBezel = std(0x34373a, 0.5);
-  box(2.3, 1.7, 0.95, grayBody, 0, 1.0, 0, tv);
-  box(1.7, 1.3, 0.5, grayDark, 0, 1.0, -0.72, tv);
-  box(0.4, 0.15, 0.5, grayBezel, -0.9, 0.075, 0.2, tv);
-  box(0.4, 0.15, 0.5, grayBezel, 0.9, 0.075, 0.2, tv);
-  box(0.4, 0.15, 0.5, grayBezel, -0.9, 0.075, -0.2, tv);
-  box(0.4, 0.15, 0.5, grayBezel, 0.9, 0.075, -0.2, tv);
+  const slabAt = (w, h, d, r, b, mat, x, y, z) => { const m = new THREE.Mesh(roundedSlab(w, h, d, r, b), mat); m.position.set(x, y, z); tv.add(m); return m; };
+  slabAt(2.3, 1.7, 0.95, 0.24, 0.08, grayBody, 0, 1.0, 0);
+  slabAt(1.7, 1.3, 0.5, 0.2, 0.07, grayDark, 0, 1.0, -0.72);
+  slabAt(0.4, 0.15, 0.5, 0.04, 0.03, grayBezel, -0.9, 0.075, 0.2);
+  slabAt(0.4, 0.15, 0.5, 0.04, 0.03, grayBezel, 0.9, 0.075, 0.2);
+  slabAt(0.4, 0.15, 0.5, 0.04, 0.03, grayBezel, -0.9, 0.075, -0.2);
+  slabAt(0.4, 0.15, 0.5, 0.04, 0.03, grayBezel, 0.9, 0.075, -0.2);
   /* antenna */
   const antBase = new THREE.Mesh(new THREE.SphereGeometry(0.13, 20, 10, 0, Math.PI * 2, 0, Math.PI / 2), grayBezel);
   antBase.position.set(0.1, 1.85, -0.1);
@@ -1332,15 +1703,16 @@ function makeDesk(el) {
     tv.add(k);
   });
   /* square screen */
-  box(1.55, 1.55, 0.08, grayBezel, -0.35, 1.0, 0.475, tv);
+  slabAt(1.55, 1.55, 0.08, 0.2, 0.025, grayBezel, -0.35, 1.0, 0.475);   /* rounded screen bezel */
   const screenGrp = new THREE.Group();
   screenGrp.position.set(-0.35, 1.0, 0.518);
   tv.add(screenGrp);
   const screenMat = new THREE.MeshBasicMaterial({ color: 0xffffff });
   screenMat.color.setHex(0x0e2a1e);
-  const screen = new THREE.Mesh(new THREE.PlaneGeometry(1.35, 1.35), screenMat);
+  const scrGeo = roundedScreenGeo(1.35, 1.35, 0.15);   /* rounded screen corners, shared by the picture and the glass layers */
+  const screen = new THREE.Mesh(scrGeo, screenMat);
   screenGrp.add(screen);
-  new THREE.TextureLoader().load('/images/34_Board_temp.png', tex => {
+  new THREE.TextureLoader().load(CONFIG.tvImage, tex => {
     const img = tex.image, a = img && img.width && img.height ? img.width / img.height : 1;
     if (a > 1) { tex.repeat.x = 1 / a; tex.offset.x = (1 - 1 / a) / 2; }
     else if (a < 1) { tex.repeat.y = a; tex.offset.y = (1 - a) / 2; }
@@ -1356,10 +1728,80 @@ function makeDesk(el) {
     g.fillStyle = gr; g.fillRect(0, 0, 128, 128);
     return new THREE.CanvasTexture(c);
   })();
-  const vigM = noHit(new THREE.Mesh(new THREE.PlaneGeometry(1.35, 1.35), new THREE.MeshBasicMaterial({ map: vig, transparent: true, depthWrite: false })));
+  const vigM = noHit(new THREE.Mesh(scrGeo, new THREE.MeshBasicMaterial({ map: vig, transparent: true, depthWrite: false })));
   vigM.position.z = 0.002;
   screenGrp.add(vigM);
   hitBox(2.4, 1.9, 1.1, 0, 1.0, 0, 'tv', tv);
+
+  /* ---------- CRT glass on top of Jesse and the picture: scanlines, a flickering glow, a slow rolling bar ---------- */
+  const mkTex = (w, h, draw) => { const c = document.createElement('canvas'); c.width = w; c.height = h; draw(c.getContext('2d'), w, h); return new THREE.CanvasTexture(c); };
+  const scanTex = mkTex(4, 4, g => { g.fillStyle = 'rgba(0,0,0,0.32)'; g.fillRect(0, 0, 4, 1); });
+  scanTex.wrapS = scanTex.wrapT = THREE.RepeatWrapping;
+  scanTex.repeat.set(1, 64);
+  const glowTex = mkTex(256, 256, (g, w, h) => {
+    const rg = g.createRadialGradient(w * 0.42, h * 0.4, 4, w / 2, h / 2, w * 0.7);
+    rg.addColorStop(0, 'rgba(210,235,255,0.55)'); rg.addColorStop(0.6, 'rgba(120,170,255,0.18)'); rg.addColorStop(1, 'rgba(60,100,200,0)');
+    g.fillStyle = rg; g.fillRect(0, 0, w, h);
+    const st = g.createLinearGradient(0, 0, w, h);   /* glass reflection */
+    st.addColorStop(0.12, 'rgba(255,255,255,0)'); st.addColorStop(0.24, 'rgba(255,255,255,0.28)'); st.addColorStop(0.36, 'rgba(255,255,255,0)');
+    g.fillStyle = st; g.fillRect(0, 0, w, h);
+  });
+  const barTex = mkTex(8, 256, (g, w, h) => {
+    const lg = g.createLinearGradient(0, 0, 0, h);
+    lg.addColorStop(0.35, 'rgba(255,255,255,0)'); lg.addColorStop(0.5, 'rgba(255,255,255,0.2)'); lg.addColorStop(0.65, 'rgba(255,255,255,0)');
+    g.fillStyle = lg; g.fillRect(0, 0, w, h);
+  });
+  barTex.wrapS = barTex.wrapT = THREE.RepeatWrapping;
+  const glassLayer = (map, add, z, order) => {
+    const m = noHit(new THREE.Mesh(scrGeo, new THREE.MeshBasicMaterial({ map, transparent: true, depthWrite: false, blending: add ? THREE.AdditiveBlending : THREE.NormalBlending })));
+    m.position.z = z; m.renderOrder = order; screenGrp.add(m);
+    return m;
+  };
+  glassLayer(scanTex, false, 0.14, 10);
+  const glowM = glassLayer(glowTex, true, 0.15, 11), barM = glassLayer(barTex, true, 0.16, 12);
+  const tvLight = new THREE.PointLight(0xa8d4ff, 0.55, 7);   /* faint blue spill onto the desk and the crew */
+  tvLight.position.set(-0.07, 2.2, 0.35);
+  stage.add(tvLight);
+
+  /* ---------- little radio, left of the TV: click for the song, drag the knob for volume ---------- */
+  const radio = new THREE.Group();
+  radio.position.set(-3.1, 0, -1.55);
+  radio.rotation.y = 0.2;
+  stage.add(radio);
+  const cream = std(0xd8c59c, 0.5), brown = std(0x5a3a26, 0.75), chrome = std(0xa8adb3, 0.3, 0.6);
+  const rBody = new THREE.Mesh(roundedSlab(1.3, 0.78, 0.5, 0.12, 0.05), cream);
+  rBody.position.y = 0.45; radio.add(rBody);
+  [-0.5, 0.5].forEach(x => { const f = new THREE.Mesh(roundedSlab(0.2, 0.06, 0.34, 0.02, 0.015), brown); f.position.set(x, 0.03, 0); radio.add(f); });
+  const grilleTex = mkTex(128, 128, (g, w, h) => { g.fillStyle = '#4a3020'; g.fillRect(0, 0, w, h); g.fillStyle = '#1e120a'; for (let y = 10; y < h; y += 14) g.fillRect(8, y, w - 16, 6); });
+  const grille = new THREE.Mesh(new THREE.PlaneGeometry(0.64, 0.56), new THREE.MeshStandardMaterial({ map: grilleTex, roughness: 0.8 }));
+  grille.position.set(-0.3, 0.42, 0.256); radio.add(grille);
+  const dialTex = mkTex(256, 128, (g, w, h) => {
+    g.fillStyle = '#f4ecd0'; g.fillRect(0, 0, w, h);
+    g.strokeStyle = '#6b4a2a'; g.lineWidth = 3;
+    for (let i = 0, x = 16; x < w - 8; x += 12, i++) { g.beginPath(); g.moveTo(x, h - 14); g.lineTo(x, h - (i % 3 === 0 ? 56 : 38)); g.stroke(); }
+    g.strokeStyle = '#c0392b'; g.lineWidth = 6; g.beginPath(); g.moveTo(w * 0.62, 8); g.lineTo(w * 0.62, h - 8); g.stroke();
+  });
+  const dial = new THREE.Mesh(new THREE.PlaneGeometry(0.4, 0.2), new THREE.MeshStandardMaterial({ map: dialTex, roughness: 0.4 }));
+  dial.position.set(0.32, 0.64, 0.256); radio.add(dial);
+  const knobMat = std(0x2b2b2e, 0.35, 0.3);
+  const knob = new THREE.Group(); knob.position.set(0.36, 0.3, 0.27); radio.add(knob);
+  const kc = new THREE.Mesh(new THREE.CylinderGeometry(0.11, 0.12, 0.09, 32), knobMat); kc.rotation.x = Math.PI / 2; knob.add(kc);
+  const notch = new THREE.Mesh(new THREE.BoxGeometry(0.025, 0.075, 0.02), new THREE.MeshBasicMaterial({ color: 0xffffff })); notch.position.set(0, 0.06, 0.05); knob.add(notch);
+  const haloTex = mkTex(64, 64, (g, w, h) => { const rg = g.createRadialGradient(32, 32, 1, 32, 32, 32); rg.addColorStop(0, 'rgba(255,255,255,1)'); rg.addColorStop(1, 'rgba(255,255,255,0)'); g.fillStyle = rg; g.fillRect(0, 0, w, h); });
+  const knobGlow = new THREE.Sprite(new THREE.SpriteMaterial({ map: haloTex, color: 0xffc27a, transparent: true, opacity: 0, blending: THREE.AdditiveBlending, depthWrite: false }));
+  knobGlow.scale.set(0.62, 0.62, 1); knobGlow.position.set(0.36, 0.3, 0.34); radio.add(knobGlow);
+  const ledMat = new THREE.MeshBasicMaterial({ color: 0x4a0d0a });
+  const led = new THREE.Mesh(new THREE.SphereGeometry(0.035, 12, 10), ledMat); led.position.set(0.56, 0.3, 0.262); radio.add(led);
+  const ledHalo = new THREE.Sprite(new THREE.SpriteMaterial({ map: haloTex, color: 0xff3a2a, transparent: true, opacity: 0, blending: THREE.AdditiveBlending, depthWrite: false }));
+  ledHalo.scale.set(0.4, 0.4, 1); ledHalo.position.set(0.56, 0.3, 0.3); radio.add(ledHalo);
+  const handle = new THREE.Mesh(new THREE.TorusGeometry(0.32, 0.022, 8, 28, Math.PI), chrome); handle.position.set(0, 0.84, 0); radio.add(handle);
+  const ant = new THREE.Mesh(new THREE.CylinderGeometry(0.012, 0.012, 0.8, 8), chrome); ant.position.set(0.64, 1.24, -0.1); ant.rotation.z = -0.35; radio.add(ant);
+  hitBox(1.4, 0.95, 0.65, 0, 0.47, 0, 'radio', radio);
+  hitBox(0.4, 0.4, 0.3, 0.36, 0.3, 0.3, 'knob', radio);
+  let knobHover = false, knobDrag = null, knobMoved = 0, ledOn = false;
+  const setKnob = vol => { knob.rotation.z = 2.35 - vol * 4.7; };   /* quiet = turned left, loud = turned right */
+  setKnob(Sound.getVolume());
+  Sound.onRadio(on => { ledOn = on; ledMat.color.setHex(on ? 0xff3b2a : 0x4a0d0a); });
 
   /* Jesse hovers slowly around the game board on the screen */
   const jIdx = Math.max(0, PEOPLE.findIndex(x => x.id === 'jesse'));
@@ -1413,6 +1855,7 @@ function makeDesk(el) {
     const k = 6 + ((((want - half) % 2) + 2) % 2);
     flip = { t0: performance.now(), dur: REDUCE ? 250 : 1100, a0: half * Math.PI, a1: (half + k) * Math.PI, result };
     half += k;
+    jumpToKits(Math.max(flip.dur, Sound.coin()) + 350);
   }
 
   /* ---------- die: one dichroic glass die with gold pips, resting on the desk ---------- */
@@ -1440,6 +1883,7 @@ function makeDesk(el) {
       e1: tgt.map(a => a + TAU * (1 + Math.floor(Math.random() * 2))),
       y0: yawG.rotation.y, y1: yawG.rotation.y + (Math.random() - 0.5) * 3
     };
+    jumpToKits(Math.max(roll.dur, Sound.dice()) + 350);
   }
 
   /* ---------- clicking ---------- */
@@ -1453,12 +1897,38 @@ function makeDesk(el) {
     pickObj = h ? h.object : null;
     return h ? h.object.userData.tag : null;
   }
-  el.addEventListener('pointermove', e => { el.style.cursor = pick(e) ? 'pointer' : 'default'; });
+  el.addEventListener('pointerdown', e => {
+    knobMoved = 0;
+    if (pick(e) === 'knob') { knobDrag = { x0: e.clientX, v0: Sound.getVolume() }; try { el.setPointerCapture(e.pointerId); } catch (x) {} }
+  });
+  el.addEventListener('pointermove', e => {
+    if (knobDrag) {   /* turning the volume knob: drag left or right */
+      const dx = e.clientX - knobDrag.x0;
+      knobMoved = Math.max(knobMoved, Math.abs(dx));
+      setKnob(Sound.setVolume(knobDrag.v0 + dx / 150));
+      return;
+    }
+    const tag = pick(e);
+    el.style.cursor = tag ? 'pointer' : 'default';
+    knobHover = tag === 'knob';
+  });
+  const endKnob = () => { knobDrag = null; };
+  el.addEventListener('pointerup', endKnob);
+  el.addEventListener('pointercancel', endKnob);
+  el.addEventListener('lostpointercapture', endKnob);
+  el.addEventListener('pointerleave', () => { knobHover = false; });
   el.addEventListener('click', e => {
     const tag = pick(e);
     if (tag === 'coin') doFlip();
     else if (tag === 'die') doRoll();
-    else if (tag === 'bust') pickObj.userData.bust.userData.spin = performance.now();
+    else if (tag === 'bust') {
+      pickObj.userData.bust.userData.spin = performance.now();
+      jumpToKits(Math.max(REDUCE ? 1 : 900, Sound.oneUp()) + 350);
+    }
+    else if (tag === 'radio') { if (Sound.toggleRadio()) toast('Now playing: The Endless Jam (unreleased)'); }
+    else if (tag === 'knob') {   /* a plain tap on the knob steps the volume; dragging turns it */
+      if (knobMoved < 5) { const cur = Sound.getVolume(); setKnob(Sound.setVolume(cur >= 0.99 ? 0 : Math.min(1, Math.round(cur * 4) / 4 + 0.25))); }
+    }
     else if (tag === 'tv' && !v.tvT && !v.navigated) v.tvT = performance.now();
   });
   window.addEventListener('pageshow', () => {
@@ -1472,6 +1942,18 @@ function makeDesk(el) {
   v.onFrame = function (t) {
     const now = performance.now();
     place(t);
+    /* TV glass flicker (a brief dip every so often) and the blue spill light */
+    const fl = REDUCE ? 1 : 0.9 + 0.06 * Math.sin(t / 83) + 0.04 * Math.sin(t / 37 + 1.3) - (Math.sin(t / 2300) > 0.985 ? 0.3 : 0);
+    glowM.material.opacity = 0.8 * fl;
+    barM.material.opacity = 0.9 * fl;
+    barTex.offset.y = REDUCE ? 0 : -((t / 7000) % 1);
+    tvLight.intensity = 0.55 * fl;
+    /* radio: knob glows on hover or while turning, the light pulses while the song plays */
+    const kg = knobGlow.material;
+    kg.opacity += ((knobHover || knobDrag ? 0.85 : 0) - kg.opacity) * 0.2;
+    knobMat.emissive.setHex(0xffc27a);
+    knobMat.emissiveIntensity = kg.opacity * 0.8;
+    ledHalo.material.opacity = ledOn ? 0.7 + (REDUCE ? 0 : 0.2 * Math.sin(t / 220)) : 0;
     crew.forEach((h, i) => {
       let r = REDUCE ? 0 : Math.sin(t / 1400 + i * 1.7) * 0.16 + (i - 1) * -0.14;
       if (h.userData.spin) {
@@ -1486,7 +1968,7 @@ function makeDesk(el) {
       flipper.rotation.x = flip.a0 + (flip.a1 - flip.a0) * ease(k);
       coinRoot.position.y = COIN_H + Math.abs(Math.sin(flipper.rotation.x)) * COIN_R + Math.sin(Math.PI * k) * (REDUCE ? 0 : 1.1);   /* lift so the spinning edge never dips into the desk */
       shade(coinShadow, coinRoot.position.y - COIN_H);
-      if (k >= 1) { flipper.rotation.x = flip.a1; coinRoot.position.y = COIN_H; shade(coinShadow, 0); toast(flip.result); flip = null; }
+      if (k >= 1) { flipper.rotation.x = flip.a1; coinRoot.position.y = COIN_H; shade(coinShadow, 0); flip = null; }
     }
     if (roll) {
       const k = Math.min(1, (now - roll.t0) / roll.dur);
@@ -1502,7 +1984,6 @@ function makeDesk(el) {
         die.rotation.set(roll.tgt[0], roll.tgt[1], roll.tgt[2]);
         dieRoot.position.y = dieBaseY;
         shade(dieShadow, 0);
-        toast('Rolled ' + roll.n);
         roll = null;
       }
     }
@@ -1553,11 +2034,15 @@ function goldPipTexture(n) {
 function makeDichroicDie() {
   const g = new THREE.Group();
   const geo = roundedBox(0.46, 0.07, 12);
-  const body = new THREE.Mesh(geo, FACES.map(() => new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.12, metalness: 0.45 })));
+  const mc = rainbowMatcap();
+  /* see-through glass again (half transparent) whose color shifts with the angle, like dichroic glass */
+  const body = new THREE.Mesh(geo, FACES.map(() => new THREE.MeshMatcapMaterial({ matcap: mc, transparent: true, opacity: 0.5, side: THREE.DoubleSide, depthWrite: false })));
   const pips = new THREE.Mesh(geo, FACES.map(n => new THREE.MeshBasicMaterial({ map: goldPipTexture(n), transparent: true, depthWrite: false })));
   pips.scale.setScalar(1.006);
+  body.renderOrder = 1;
+  pips.renderOrder = 2;
   g.add(body, pips);
-  g.userData.tint = h => body.material.forEach((m, i) => m.color.setHSL((((h + i * 0.09) % 1) + 1) % 1, 0.8, 0.58));
+  g.userData.tint = h => body.material.forEach((m, i) => m.color.setHSL((((h + i * 0.09) % 1) + 1) % 1, 0.55, 0.78));
   g.userData.tint(0);
   return g;
 }
@@ -1570,6 +2055,7 @@ function makeTitleDie(el) {
     el.appendChild(canvas);
     v.renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
     v.renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+    canvas.addEventListener('webglcontextlost', ev => ev.preventDefault(), false);   /* lets the browser restore the 3D view if a phone drops it */
   } catch (err) { return null; }
   v.scene = new THREE.Scene();
   v.camera = new THREE.PerspectiveCamera(30, 1, 0.1, 50);
@@ -1603,6 +2089,7 @@ function makeTitleDie(el) {
     roll = { t0: performance.now(), dur: REDUCE ? 250 : 1000, n, tgt,
       e0: [die.rotation.x, die.rotation.y, die.rotation.z],
       e1: tgt.map(a => a + TAU * (1 + Math.floor(Math.random() * 2))) };
+    Sound.dice();
   }
   el.addEventListener('click', doRoll);
   el.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); doRoll(); } });
@@ -1614,7 +2101,7 @@ function makeTitleDie(el) {
       const k = Math.min(1, (performance.now() - roll.t0) / roll.dur), e = ease(k);
       die.rotation.set(roll.e0[0] + (roll.e1[0] - roll.e0[0]) * e, roll.e0[1] + (roll.e1[1] - roll.e0[1]) * e, roll.e0[2] + (roll.e1[2] - roll.e0[2]) * e);
       lift.position.y += Math.sin(Math.PI * k) * (REDUCE ? 0 : 0.35);
-      if (k >= 1) { die.rotation.set(roll.tgt[0], roll.tgt[1], roll.tgt[2]); toast('Rolled ' + roll.n); roll = null; }
+      if (k >= 1) { die.rotation.set(roll.tgt[0], roll.tgt[1], roll.tgt[2]); roll = null; }
     }
   };
   if ('IntersectionObserver' in window) {
@@ -1630,37 +2117,47 @@ function makeViewer(el, p) {
     el.insertBefore(canvas, el.firstChild);
     v.renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
     v.renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+    canvas.addEventListener('webglcontextlost', ev => ev.preventDefault(), false);   /* lets the browser restore the 3D view if a phone drops it */
   } catch (err) {
     el.classList.add('nogl');
     return null;
   }
   v.scene = new THREE.Scene();
   v.camera = new THREE.PerspectiveCamera(35, 4 / 3, 0.1, 100);
-  v.scene.add(new THREE.HemisphereLight(0xffffff, 0x6b4a42, 0.95));
-  const key = new THREE.DirectionalLight(0xffffff, 0.85); key.position.set(3, 5, 4); v.scene.add(key);
-  const rim = new THREE.DirectionalLight(0xffd9b0, 0.45); rim.position.set(-4, 2, -3); v.scene.add(rim);
+  addSoftLights(v.scene);
   v.stage = new THREE.Group();
   v.scene.add(v.stage);
 
   v.fit = function () {
     const w = el.clientWidth || 300, h = el.clientHeight || 225;
     v.renderer.setSize(w, h, false);
-    v.camera.aspect = w / h;
+    const mr = v.mainRect || { w: 1, h: 1 };   /* kit cards give the pieces tray only part of the canvas */
+    v.camera.aspect = (w * mr.w) / (h * mr.h);
     v.camera.updateProjectionMatrix();
     const t = Math.tan(THREE.MathUtils.degToRad(17.5));
     const d = Math.max((v.radius + 0.5) / (t * v.camera.aspect), 1.25 / t);
     v.camera.position.set(0, 0.7 + d * 0.3, d * 0.95);
     v.camera.lookAt(0, 0.65, 0);
+    (v.subs || []).forEach(sc => {   /* the small die and coin trays */
+      const a = (w * sc.rect.w) / (h * sc.rect.h), tt = Math.tan(THREE.MathUtils.degToRad(15));
+      sc.camera.aspect = a;
+      sc.camera.updateProjectionMatrix();
+      const dd = Math.max(1.0 / (tt * a), 1.5 / tt);
+      sc.camera.position.set(0, 0.6 + dd * 0.3, dd * 0.95);
+      sc.camera.lookAt(0, 0.6, 0);
+    });
   };
   if (window.ResizeObserver) new ResizeObserver(() => v.fit()).observe(el);
 
   el.addEventListener('pointerdown', e => {
-    v.dragging = true; v.lastX = e.clientX; v.moved = 0; v.vel = 0;
+    if (v.regionAt && v.regionAt(e) !== 'main') return;   /* the die and coin trays do not start a drag */
+    v.dragging = true; v.lastX = e.clientX; v.moved = 0; v.vel = 0; v.lastMoveT = performance.now();
     el.classList.add('grabbing');
     try { el.setPointerCapture(e.pointerId); } catch (x) {}
   });
   el.addEventListener('pointermove', e => {
-    if (!v.dragging) return;
+    if (!v.dragging) { if (v.regionAt) el.style.cursor = v.regionAt(e) === 'main' ? '' : 'pointer'; return; }
+    v.lastMoveT = performance.now();
     const dx = e.clientX - v.lastX;
     v.lastX = e.clientX;
     v.moved += Math.abs(dx);
@@ -1675,6 +2172,13 @@ function makeViewer(el, p) {
   };
   el.addEventListener('pointerup', end);
   el.addEventListener('pointercancel', end);
+  el.addEventListener('lostpointercapture', end);   /* iPhone can drop the pointer mid-drag, which used to leave the auto spin stuck off */
+  el.addEventListener('click', e => {   /* tap the small trays: roll the die, flip the coin */
+    if (!v.regionAt) return;
+    const rg = v.regionAt(e);
+    if (rg === 'die' && v.rollDie) v.rollDie();
+    else if (rg === 'coin' && v.flipCoin) v.flipCoin();
+  });
 
   if ('IntersectionObserver' in window) {
     new IntersectionObserver(es => { v.visible = es[0].isIntersecting; if (v.visible) kickLoads(v); }, { threshold: 0.05 }).observe(el);
@@ -1693,15 +2197,16 @@ function frame(t) {
     const v = viewers[id];
     if (!v || !v.visible) continue;
     if (!v.fixed) {
+      if (v.dragging && t - v.lastMoveT > 1500) { v.dragging = false; v.el.classList.remove('grabbing'); }   /* safety: never stay stuck in "dragging" */
       if (!v.dragging) {
         v.rotY += v.vel * dt;
         v.vel *= Math.pow(0.95, dt);
-        if (Math.abs(v.vel) < 0.004 && !REDUCE) v.rotY += 0.006 * dt;
+        if (Math.abs(v.vel) < 0.004) v.rotY += (REDUCE ? 0.002 : 0.006) * dt;   /* slow turn even with "reduce motion" on (iPhone setting), just slower */
       }
       v.stage.rotation.y = v.rotY;
     }
     if (v.onFrame) v.onFrame(t);
-    v.renderer.render(v.scene, v.camera);
+    if (v.render) v.render(); else v.renderer.render(v.scene, v.camera);
   }
 }
 
@@ -1711,7 +2216,7 @@ if (HAVE_GL) {
     viewers[p.id] = makeViewer(el, p);
   });
   viewers['desk'] = makeDesk($('[data-viewer="desk"]'));
-  viewers['title'] = makeTitleDie($('[data-title-die]'));
+  $$('[data-title-die]').forEach((tel, i) => { viewers['title' + i] = makeTitleDie(tel); });
   requestAnimationFrame(frame);
 } else {
   $$('.viewer').forEach(el => el.classList.add('nogl'));
@@ -1937,6 +2442,31 @@ list.addEventListener('click', e => {
 });
 
 $$('.section h2').forEach(symifyNode);
+
+/* ---------- sound: first tap wakes the audio engine (needed on iPhone), mute button ---------- */
+const armSound = () => {
+  Sound.unlock();
+  if (Sound.ready()) ['touchend', 'pointerup', 'click', 'keydown'].forEach(t => document.removeEventListener(t, armSound, true));
+};
+['touchend', 'pointerup', 'click', 'keydown'].forEach(t => document.addEventListener(t, armSound, true));
+
+const muteBtn = $('#muteBtn');
+muteBtn.addEventListener('click', () => {
+  const m = Sound.setMuted(!Sound.isMuted());
+  muteBtn.setAttribute('aria-pressed', String(m));
+  muteBtn.textContent = m ? 'Muted' : 'Mute';
+});
+
+/* ---------- credits box: at the very top or bottom, keep scrolling and the page moves instead of getting stuck ---------- */
+list.addEventListener('wheel', e => {
+  if (list.scrollHeight <= list.clientHeight + 1) return;
+  const atTop = list.scrollTop <= 0, atBottom = list.scrollTop + list.clientHeight >= list.scrollHeight - 1;
+  if ((e.deltaY < 0 && atTop) || (e.deltaY > 0 && atBottom)) {
+    e.preventDefault();
+    const dy = e.deltaMode === 1 ? e.deltaY * 16 : e.deltaMode === 2 ? e.deltaY * window.innerHeight : e.deltaY;
+    try { window.scrollBy({ top: dy, behavior: 'instant' }); } catch (x) { window.scrollBy(0, dy); }
+  }
+}, { passive: false });
 
 refreshCards();
 })();
