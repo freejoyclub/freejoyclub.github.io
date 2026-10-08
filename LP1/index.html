@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- LP1 v15 -->
+<!-- LP1 v16 -->
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
@@ -527,6 +527,9 @@ width: 100%;
 box-sizing: border-box;
 }
 .sheet textarea { min-height: 64px; resize: vertical; }
+.shipopts { display: flex; flex-direction: column; gap: 8px; margin-top: 6px; }
+.sheet .shipopts label { flex-direction: row; align-items: center; gap: 10px; text-transform: none; letter-spacing: 0.3px; font-size: 0.95rem; opacity: 1; cursor: var(--hand); }
+.sheet .shipopts input { width: 18px; height: 18px; padding: 0; margin: 0; flex: none; accent-color: #ffd36b; cursor: var(--hand); }
 .sheet .totals { background: rgba(0,0,0,0.25); border-radius: 18px; padding: 12px 16px; font-size: 1.05rem; line-height: 1.7; }
 .sheet .totals .row { display: flex; justify-content: space-between; }
 .sheet .totals .tot { font-family: 'KCOraleSans', sans-serif; font-size: 1.5rem; border-top: 1px solid rgba(255,255,255,0.2); margin-top: 4px; padding-top: 6px; }
@@ -548,12 +551,6 @@ box-sizing: border-box;
 .viewer.has-trays .hint { top: 8px; bottom: auto; left: 0; right: 0; text-align: center; }
 /* single piece card: a shorter preview with less empty room around it */
 .product.single .viewer { aspect-ratio: 3 / 2; }
-/* secret popup (rolling a 6 and flipping JOY on the desk) */
-.secret { position: fixed; left: 50%; bottom: 168px; transform: translateX(-50%) translateY(10px); z-index: 310; display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 6px 14px; max-width: 90vw; padding: 12px 20px; border-radius: 40px; background: rgba(0,0,0,0.9); border: 1px solid rgba(255,211,107,0.7); box-shadow: 0 0 18px rgba(255,211,107,0.3); font-family: 'KCPelletierLight', 'Courier New', monospace; color: #fff; opacity: 0; transition: opacity 0.35s ease, transform 0.35s ease; }
-.secret.show { opacity: 1; transform: translateX(-50%) translateY(0); }
-.secret[hidden] { display: none; }
-.secret a { font-family: 'KCStrikerSans', sans-serif; color: #ffd36b; text-decoration: underline; }
-.secret button { background: none; border: 0; color: #fff; font-size: 1.3rem; line-height: 1; cursor: var(--hand); opacity: 0.7; padding: 0 4px; }
 
 /* single piece card: the piece picker sits on top */
 .top-opts { display: flex; flex-direction: column; gap: 8px; padding: 0 6px; }
@@ -574,9 +571,9 @@ box-shadow: 0 -6px 24px rgba(0,0,0,0.55), inset 0 1px 0 rgba(255,255,255,0.2);
 }
 .rack-in { position: relative; display: flex; align-items: center; gap: 8px; max-width: 1180px; margin: 0 auto; }
 /* rack ears: a screw at each end */
-.rack::before, .rack::after { content: ""; position: absolute; top: 50%; width: 13px; height: 13px; margin-top: -6px; border-radius: 50%; background: radial-gradient(circle at 35% 30%, #d6d6db, #5a5a60 60%, #222); box-shadow: 0 1px 2px rgba(0,0,0,0.8); }
+.rack::before, .rack::after { content: ""; position: absolute; top: 50%; width: 13px; height: 13px; margin-top: -6px; border-radius: 50%; background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 10'%3E%3Cpath d='M2.7 3.1 7.3 7.7M7.3 3.1 2.7 7.7' stroke='%23ffffff' stroke-opacity='.3' stroke-width='1.5' stroke-linecap='round'/%3E%3Cpath d='M2.7 2.6 7.3 7.2M7.3 2.6 2.7 7.2' stroke='%23141416' stroke-width='1.6' stroke-linecap='round'/%3E%3C/svg%3E") center / 74% no-repeat, radial-gradient(circle at 35% 30%, #d6d6db, #5a5a60 60%, #222); box-shadow: 0 1px 2px rgba(0,0,0,0.8); }
 .rack::before { left: 10px; }
-.rack::after { right: 10px; }
+.rack::after { right: 10px; transform: rotate(35deg); }   /* turned a bit, like a real screw */
 .rack-nav, .rack-ctl { display: flex; align-items: center; gap: 8px; }
 .rack-ctl { margin-left: auto; }
 /* chunky 3D rounded buttons. Pressed in and lit in their own color when clicked or switched on. */
@@ -733,6 +730,7 @@ try { if (location.hash) history.replaceState(null, '', location.pathname + loca
 <button class="x" type="button" id="sheetClose" aria-label="Close">×</button>
 <h3 id="sheetTitle"></h3>
 <div id="sheetOptions"></div>
+<div id="shipOpts"></div>
 <label>Your name<input id="oName" type="text" autocomplete="name"></label>
 <label>Email or Instagram<input id="oContact" type="text" autocomplete="email"></label>
 <label>Ship to (or we'll ask)<textarea id="oShip" autocomplete="street-address"></textarea></label>
@@ -790,12 +788,6 @@ try { if (location.hash) history.replaceState(null, '', location.pathname + loca
 </dialog>
 
 <div class="toast" id="toast" role="status"></div>
-<div class="secret" id="secret" role="status" hidden>
-<span>Secret unlocked: THREEJOY</span>
-<a id="secretLink" href="/sfx/endless-jam-jgg-1.mp3" download="endless-jam-jgg-1.mp3">Download The Endless Jam (mp3)</a>
-<button type="button" id="secretClose" aria-label="Close">&times;</button>
-</div>
-
 <div class="rack" role="toolbar" aria-label="Site menu and music">
 <div class="rack-in">
 <button type="button" class="rk c-menu" id="rackMenu" aria-label="Open the menu" aria-expanded="false" aria-controls="rackNav"><span class="burger"></span></button>
@@ -819,7 +811,7 @@ try { if (location.hash) history.replaceState(null, '', location.pathname + loca
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/STLLoader.js"></script>
 <script>
-// LP1 v15
+// LP1 v16
 const toTop = () => { try { window.scrollTo({ top: 0, left: 0, behavior: 'instant' }); } catch (e) { window.scrollTo(0, 0); } };
 toTop();
 window.addEventListener('load', toTop);
@@ -845,6 +837,7 @@ const CONFIG = {
   loreVideos: ['game sfx story.mp4', 'j-drum-tracking.mp4', 'js-mistake.mp4', 'sploinky-garret.mp4', 'story harmony hunting tunnel.mp4', 'story mu nightdrive 3.mp4'],                  // lore videos (.mp4) in the same folder. Add file names here. They download quietly in the background after the page loads (thin bar along the bottom of the TV) and join the channel changes once ready
   loreVideoMax: 25,                // a lore video stops after this many seconds even if it is longer
   lorePics: ['1st band promo.png', 'CP-30.jpg', 'Chilis.jpg', 'IMG_20200116_191840_549.jpg', 'creepin.JPG', 'fine-china.jpg', 'fj stone.png', 'foot only.jpg', 'forbidden-stache.jpg', 'g j wed.jpeg', 'g sticker.png', 'g-wedding.jpg', 'game v1.png', 'j dusty 1.jpg', 'j-g-18.jpg', 'marco lay.jpg', 'milwaukeedee grant.jpg', 'miramar wheel bunz ariel.jpg', 'morganshootsthings Grant & jesse 2.jpg', 'morganshootsthings Grant & jesse.jpg', 'morganshootsthings Grant ok.jpg', 'the 3 straights.jpg', 'walkin.JPG', 'yung-jesse.jpg'],   // pictures (no .heic). Add new file names here.
+  shipUS: 7,                       // continental US shipping, in dollars (added to the Venmo amount)
   shippingNote: 'Shipping is confirmed by reply before you pay.'
 };
 
@@ -956,23 +949,6 @@ function toast(msg) {
   clearTimeout(toastTimer);
   toastTimer = setTimeout(() => t.classList.remove('show'), 2600);
 }
-
-/* secret popup: shown when a 6 and JOY are both rolled on the desk */
-let secretTimer = 0;
-function showSecret() {
-  const el = $('#secret');
-  el.hidden = false;
-  requestAnimationFrame(() => el.classList.add('show'));
-  clearTimeout(secretTimer);
-  secretTimer = setTimeout(hideSecret, 20000);
-}
-function hideSecret() {
-  const el = $('#secret');
-  el.classList.remove('show');
-  setTimeout(() => { if (!el.classList.contains('show')) el.hidden = true; }, 400);
-}
-$('#secretClose').addEventListener('click', hideSecret);
-$('#secretLink').href = CONFIG.sfxFolder + 'endless-jam-jgg-1.mp3';
 
 /* =====================================================================
    SOUND. Everything starts from a tap or click, which is what phones require.
@@ -1903,7 +1879,7 @@ function makeDesk(el) {
 
   /* camera: fixed, looking down at the table. The distance is worked out from a few key points so the TV fills the width on any screen shape. */
   const EL = THREE.MathUtils.degToRad(36), LOOK = new THREE.Vector3(0, 1.85, 0);
-  const FIT_PTS = [[3.15, 4.0, -1.5], [0, 5.6, -2.1], [2.75, 0, 2.6], [2.65, -1.0, 2.5], [-2.65, -1.0, 2.5]];
+  const FIT_PTS = [[3.15, 4.0, -1.5], [1.05, 5.75, -2.1], [2.75, 0, 2.6], [2.65, -1.0, 2.5], [-2.65, -1.0, 2.5]];
   v.fit = function () {
     const w = el.clientWidth || 640, h = el.clientHeight || 400;
     v.renderer.setSize(w, h, false);
@@ -2015,13 +1991,14 @@ function makeDesk(el) {
   const antBase = new THREE.Mesh(new THREE.SphereGeometry(0.13, 20, 10, 0, Math.PI * 2, 0, Math.PI / 2), grayBezel);
   antBase.position.set(0.1, 1.9, -0.1);
   tv.add(antBase);
-  [-0.55, 0.5].forEach(a => {
-    const rod = new THREE.Mesh(new THREE.CylinderGeometry(0.018, 0.018, 0.4, 8), std(0x2a2c2e, 0.4, 0.5));
-    rod.rotation.z = a;
-    rod.position.set(0.1 - Math.sin(a) * 0.2, 1.92 + Math.cos(a) * 0.2, -0.1);
-    tv.add(rod);
-    const tip = new THREE.Mesh(new THREE.SphereGeometry(0.04, 10, 8), std(0x2a2c2e, 0.4, 0.5));
-    tip.position.set(0.1 - Math.sin(a) * 0.4, 1.92 + Math.cos(a) * 0.4, -0.1);
+  const antMat = std(0x2a2c2e, 0.4, 0.5);
+  [-1, 1].forEach(sd => {   /* two short bendy ears: each rises, then curls outward */
+    const pts = [[0, 0], [0.04, 0.12], [0.13, 0.2], [0.25, 0.22], [0.33, 0.17]].map(q => new THREE.Vector3(sd * q[0], q[1], 0));
+    const ear = new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts), 18, 0.02, 6, false), antMat);
+    ear.position.set(0.1, 1.95, -0.1);
+    tv.add(ear);
+    const tip = new THREE.Mesh(new THREE.SphereGeometry(0.036, 10, 8), antMat);
+    tip.position.set(0.1 + pts[4].x, 1.95 + pts[4].y, -0.1);
     tv.add(tip);
   });
   /* speaker panel + knobs */
@@ -2188,11 +2165,14 @@ function makeDesk(el) {
   const loreM = new THREE.Mesh(scrGeo, loreMat);
   loreM.position.z = 0.126; loreM.renderOrder = 5; loreM.visible = false;
   screenGrp.add(loreM);
-  /* channel bar along the bottom: CH number and the title of the picture or video (file name without the extension) */
+  const loreBg = new THREE.Mesh(scrGeo, new THREE.MeshBasicMaterial({ color: 0x000000 }));   /* black behind the lore, so the whole picture shows with bars on the sides or top and bottom */
+  loreBg.position.z = 0.1245; loreBg.renderOrder = 4; loreBg.visible = false;
+  screenGrp.add(loreBg);
+  /* channel bar along the top: CH number and the title of the picture or video (file name without the extension) */
   const tbCv = document.createElement('canvas'); tbCv.width = 512; tbCv.height = 48;
   const tbTex = new THREE.CanvasTexture(tbCv);
   const titleM = noHit(new THREE.Mesh(new THREE.PlaneGeometry(1.1, 0.103), new THREE.MeshBasicMaterial({ map: tbTex, transparent: true, depthWrite: false })));
-  titleM.position.set(0, -0.585, 0.128); titleM.renderOrder = 7; titleM.visible = false;
+  titleM.position.set(0, 0.585, 0.128); titleM.renderOrder = 7; titleM.visible = false;
   screenGrp.add(titleM);
   function drawTitle(text, ch) {
     const g = tbCv.getContext('2d'), W = tbCv.width, H = tbCv.height, mono = "'Courier New', Courier, monospace";
@@ -2213,6 +2193,56 @@ function makeDesk(el) {
   const loadM = noHit(new THREE.Mesh(loadGeo, new THREE.MeshBasicMaterial({ color: 0x64ff8f, transparent: true, opacity: 0.85, depthWrite: false })));
   loadM.position.set(-0.5, -0.655, 0.129); loadM.renderOrder = 8; loadM.visible = false;
   screenGrp.add(loadM);
+
+
+  /* ---------- THREEJOY secret: shown on the TV screen for 6 seconds, or until you tap it away. The button downloads the song. ---------- */
+  const SEC_PX = 512, SEC_DL = { x0: 66, x1: 446, y0: 318, y1: 394 };
+  const secCv = document.createElement('canvas'); secCv.width = secCv.height = SEC_PX;
+  const secTex = new THREE.CanvasTexture(secCv);
+  const secM = new THREE.Mesh(scrGeo, new THREE.MeshBasicMaterial({ map: secTex }));
+  secM.position.z = 0.13; secM.renderOrder = 9; secM.visible = false;
+  screenGrp.add(secM);
+  let secret = 0;
+  function drawSecret() {
+    const g = secCv.getContext('2d'), W = SEC_PX;
+    g.fillStyle = '#070b1c'; g.fillRect(0, 0, W, W);
+    g.strokeStyle = 'rgba(90,140,255,0.14)'; g.lineWidth = 1;
+    for (let i = 0; i <= W; i += 32) { g.beginPath(); g.moveTo(i, 0); g.lineTo(i, W); g.stroke(); g.beginPath(); g.moveTo(0, i); g.lineTo(W, i); g.stroke(); }
+    g.strokeStyle = '#ffd36b'; g.lineWidth = 6; g.strokeRect(24, 24, W - 48, W - 48);
+    g.strokeStyle = '#ff7a59'; g.lineWidth = 2; g.strokeRect(38, 38, W - 76, W - 76);
+    g.textAlign = 'center'; g.textBaseline = 'middle';
+    g.fillStyle = '#7fb0ff'; fitText(g, 'SECRET UNLOCKED', 380, 36, "'KCStrikerSans', 'Arial Black', sans-serif"); g.fillText('SECRET UNLOCKED', W / 2, 98);
+    fitText(g, 'THREEJOY', 400, 96, "'KCOraleSans', 'Arial Black', sans-serif");
+    g.fillStyle = '#ff7a59'; g.fillText('THREEJOY', W / 2 + 4, 190 + 4);
+    g.fillStyle = '#ffffff'; g.fillText('THREEJOY', W / 2, 190);
+    g.fillStyle = '#7fb0ff'; g.font = "24px 'KCPelletierTyped', 'Courier New', monospace"; g.fillText('a free song for you', W / 2, 266);
+    g.fillStyle = '#ffd36b'; g.fillRect(SEC_DL.x0, SEC_DL.y0, SEC_DL.x1 - SEC_DL.x0, SEC_DL.y1 - SEC_DL.y0);
+    g.fillStyle = '#12162e'; fitText(g, 'DOWNLOAD THE ENDLESS JAM', 340, 30, "'KCStrikerSans', 'Arial Black', sans-serif"); g.fillText('DOWNLOAD THE ENDLESS JAM', W / 2, (SEC_DL.y0 + SEC_DL.y1) / 2 + 2);
+    g.fillStyle = '#7fb0ff'; g.font = "18px 'KCPelletierTyped', 'Courier New', monospace"; g.fillText('mp3 - tap anywhere else to close', W / 2, 438);
+    secTex.needsUpdate = true;
+  }
+  if (document.fonts && document.fonts.load) Promise.all([document.fonts.load("36px 'KCStrikerSans'"), document.fonts.load("96px 'KCOraleSans'"), document.fonts.load("20px 'KCPelletierTyped'")]).then(() => { if (secret) drawSecret(); }).catch(() => {});
+  function showSecretTV() {
+    endLore(); drawSecret();
+    secM.visible = true; jesse.visible = false; secret = performance.now();
+    Sound.oneUp();
+  }
+  function hideSecretTV() { if (!secret) return; secret = 0; secM.visible = false; jesse.visible = !menuOn; }
+  function secretAt(e) {   /* '' (not on it), 'dl' (the download button) or 'panel' (anywhere else on the secret screen) */
+    if (!secret) return '';
+    const r = el.getBoundingClientRect();
+    ndc.set(((e.clientX - r.left) / r.width) * 2 - 1, -((e.clientY - r.top) / r.height) * 2 + 1);
+    ray.setFromCamera(ndc, v.camera);
+    const h = ray.intersectObject(secM, false)[0];
+    if (!h || !h.uv) return '';
+    const px = h.uv.x * SEC_PX, py = (1 - h.uv.y) * SEC_PX;
+    return px >= SEC_DL.x0 && px <= SEC_DL.x1 && py >= SEC_DL.y0 && py <= SEC_DL.y1 ? 'dl' : 'panel';
+  }
+  function downloadSong() {
+    const a = document.createElement('a');
+    a.href = CONFIG.sfxFolder + 'endless-jam-jgg-1.mp3'; a.download = 'endless-jam-jgg-1.mp3';
+    document.body.appendChild(a); a.click(); a.remove();
+  }
 
   const loreDlg = document.getElementById('loreDlg');
   let lore = null, loreLast = '';
@@ -2267,11 +2297,9 @@ function makeDesk(el) {
     staticCtx.putImageData(staticImg, 0, 0);
     staticTex.needsUpdate = true;
   }
-  function cropTo(tex, w, h) {   /* fill the square screen, cropping the long side */
-    const a = w && h ? w / h : 1;
+  function fitTo(cur, tex, w, h) {   /* remember the picture's shape: showLore shrinks the plane to match, so nothing is cropped */
+    cur.a = w && h ? w / h : 1;
     tex.repeat.set(1, 1); tex.offset.set(0, 0);
-    if (a > 1) { tex.repeat.x = 1 / a; tex.offset.x = (1 - 1 / a) / 2; }
-    else if (a < 1) { tex.repeat.y = a; tex.offset.y = (1 - a) / 2; }
   }
   function failLore(cur) {   /* a bad or missing file: try another, and after 3 misses just go back to the game screen */
     if (lore !== cur) return;
@@ -2284,7 +2312,7 @@ function makeDesk(el) {
       vidEl.onloadeddata = () => {
         if (lore !== cur) return;
         if (!vidTex) { vidTex = new THREE.VideoTexture(vidEl); vidTex.minFilter = vidTex.magFilter = THREE.LinearFilter; vidTex.generateMipmaps = false; }
-        cropTo(vidTex, vidEl.videoWidth, vidEl.videoHeight);
+        fitTo(cur, vidTex, vidEl.videoWidth, vidEl.videoHeight);
         cur.tex = vidTex;
       };
       vidEl.onerror = () => failLore(cur);
@@ -2294,7 +2322,7 @@ function makeDesk(el) {
     }
     new THREE.TextureLoader().load(loreUrl(item.name), tex => {
       if (lore !== cur) { tex.dispose(); return; }
-      cropTo(tex, tex.image && tex.image.width, tex.image && tex.image.height);
+      fitTo(cur, tex, tex.image && tex.image.width, tex.image && tex.image.height);
       cur.tex = tex;
     }, undefined, () => failLore(cur));
   }
@@ -2303,21 +2331,22 @@ function makeDesk(el) {
     if (lore.video) { try { vidEl.pause(); vidEl.removeAttribute('src'); vidEl.load(); } catch (e) {} Sound.duck(false); }
     else if (lore.tex) lore.tex.dispose();
     loreMat.map = null; loreMat.needsUpdate = true;
-    loreM.visible = false; staticM.visible = false; titleM.visible = false;
-    jesse.visible = !menuOn;
+    loreM.visible = false; loreBg.visible = false; staticM.visible = false; titleM.visible = false;
+    jesse.visible = !menuOn && !secret;
     lore = null;
   }
   function startLore() {
-    if (menuOn || v.tvT || v.navigated) return;
+    if (menuOn || v.tvT || v.navigated || secret) return;
     const item = pickLore();
     if (!item) return;
     endLore();
     lore = { phase: 'in', t0: performance.now(), tex: null, item, video: false, failed: 0, paused: false, ended: false, silent: false, file: null };
-    jesse.visible = false; staticM.visible = !REDUCE; loreM.visible = false; titleM.visible = false;
+    jesse.visible = false; staticM.visible = !REDUCE; loreM.visible = false; loreBg.visible = false; titleM.visible = false;
     loadLore(lore, item);
   }
   function showLore(now) {   /* static is over: the lore appears with its channel bar (a video starts playing and the song fades out) */
     loreMat.map = lore.tex; loreMat.needsUpdate = true; loreM.visible = true; staticM.visible = false;
+    const la = lore.a || 1; loreM.scale.set(la > 1 ? 1 : la, la > 1 ? 1 / la : 1, 1); loreBg.visible = true;
     lore.phase = 'show'; lore.t0 = now;
     const n = Math.max(1, loreItems().findIndex(i => i.name === lore.item.name) + 1);
     drawTitle(lore.item.name.replace(/\.[^.]+$/, ''), String(n).padStart(2, '0'));
@@ -2338,6 +2367,7 @@ function makeDesk(el) {
     if (lore.video) { try { vidEl.pause(); } catch (e) {} Sound.duck(false); }
   }
   function loreTick(now) {   /* called every frame */
+    if (secret && now - secret > 6000) hideSecretTV();
     const bar = vidLoading && !menuOn;
     loadM.visible = bar;
     if (bar) loadM.scale.x = Math.max(0.01, (vidDone + vidFrac) / vidNames.length);
@@ -2347,7 +2377,7 @@ function makeDesk(el) {
     if (lore.phase === 'in') {
       if (!REDUCE) drawStatic();
       if (dt > stMs && lore.tex) showLore(now);
-      else if (dt > 8000) leaveLore(now);
+      else if (dt > 3000) leaveLore(now);   /* nothing loaded (a bad file?): the static ends after 3 seconds */
     } else if (lore.phase === 'show') {
       if (!lore.paused && (lore.video ? (lore.ended || dt > CONFIG.loreVideoMax * 1000) : dt > CONFIG.loreSeconds * 1000)) leaveLore(now);
     } else {
@@ -2360,7 +2390,7 @@ function makeDesk(el) {
     const r = el.getBoundingClientRect();
     ndc.set(((e.clientX - r.left) / r.width) * 2 - 1, -((e.clientY - r.top) / r.height) * 2 + 1);
     ray.setFromCamera(ndc, v.camera);
-    return ray.intersectObject(loreM, false).length > 0;
+    return ray.intersectObject(loreBg, false).length > 0;   /* the whole screen counts, bars included */
   }
   function openLoreDlg() {
     lore.paused = true;
@@ -2553,8 +2583,8 @@ function makeDesk(el) {
     Sound.dice();
   }
 
-  /* a 3 on the die and JOY on the coin (both from real rolls and flips) unlock the secret download: THREEJOY */
-  function checkSecret() { if (lastDie === 3 && lastCoin === 'JOY') { lastDie = 0; lastCoin = ''; showSecret(); } }
+  /* a 3 on the die and JOY on the coin (both from real rolls and flips) unlock the secret download: THREEJOY, shown on the TV screen */
+  function checkSecret() { if (lastDie === 3 && lastCoin === 'JOY' && !menuOn && !v.tvT) { lastDie = 0; lastCoin = ''; showSecretTV(); } }
 
   /* ---------- clicking ---------- */
   const ray = new THREE.Raycaster(), ndc = new THREE.Vector2();
@@ -2578,6 +2608,7 @@ function makeDesk(el) {
       setKnob(Sound.setVolume(knobDrag.v0 + d / 150));
       return;
     }
+    if (secret && secretAt(e)) { el.style.cursor = 'var(--hand)'; hoverGroup = null; return; }
     if (menuOn && !v.tvT) {   /* retro menu: hover picks a choice and the cursor turns into the pixel arrow */
       const o = menuAt(e);
       if (o) { if (o !== menuSel) { menuSel = o; menuBlink = true; menuBlinkT = performance.now(); drawMenu(); Sound.slide(); } el.style.cursor = MENU_CURSOR; hoverGroup = null; return; }
@@ -2593,6 +2624,7 @@ function makeDesk(el) {
   el.addEventListener('lostpointercapture', endKnob);
   el.addEventListener('pointerleave', () => { hoverGroup = null; });
   el.addEventListener('click', e => {
+    if (secret) { const o = secretAt(e); if (o) { if (o === 'dl') downloadSong(); hideSecretTV(); return; } }
     if (menuOn && !v.tvT) { const o = menuAt(e); if (o) { if (o === 'start') startGame(); else closeMenu(); return; } }
     if (loreAt(e)) { openLoreDlg(); return; }
     const tag = pick(e);
@@ -2612,7 +2644,7 @@ function makeDesk(el) {
       if (knobMoved < 5) { const cur = Sound.getVolume(); setKnob(Sound.setVolume(cur >= 0.99 ? 0 : Math.min(1, Math.round(cur * 4) / 4 + 0.25))); }
     }
     else if (tag === 'tvknob') { pickObj.userData.knob.userData.press = performance.now(); startLore(); }
-    else if (tag === 'tv' && !menuOn && !v.tvT && !v.navigated) { endLore(); Sound.oneUp(); v.tvMode = 'open'; v.tvSwapped = false; v.tvT = performance.now(); }
+    else if (tag === 'tv' && !menuOn && !v.tvT && !v.navigated) { hideSecretTV(); endLore(); Sound.oneUp(); v.tvMode = 'open'; v.tvSwapped = false; v.tvT = performance.now(); }
   });
   window.addEventListener('pageshow', () => {
     v.tvT = 0; v.navigated = false;
@@ -3048,13 +3080,35 @@ function sheetOptionsHTML(p) {
   return '<p class="note">One of one. We confirm it is still available before any payment.</p>';
 }
 
+/* shipping choices on the order sheet: one is always picked, and it is added to the Venmo amount */
+const SHIP = [
+  { id: 'us', label: 'Continental US shipping (' + money(CONFIG.shipUS) + ')', short: 'Continental US', cost: CONFIG.shipUS },
+  { id: 'pickup', label: 'Local Milwaukee pickup ($0)', short: 'Milwaukee pickup', cost: 0 },
+  { id: 'other', label: 'Other (please inquire)', short: 'Other', cost: null }
+];
+let shipId = 'us';
+const shipPick = () => SHIP.find(x => x.id === shipId) || SHIP[0];
+function renderShip() {
+  const box = $('#shipOpts');
+  box.innerHTML = cur && cur.type !== 'deluxe'
+    ? '<div class="optlabel">Shipping</div><div class="shipopts">' + SHIP.map(x => `<label><input type="checkbox" data-ship="${x.id}"${x.id === shipId ? ' checked' : ''}>${x.label}</label>`).join('') + '</div>'
+    : '';
+}
+$('#shipOpts').addEventListener('click', e => {
+  const b = e.target.closest('input[data-ship]');
+  if (!b) return;
+  shipId = b.dataset.ship;
+  $$('#shipOpts input').forEach(i => { i.checked = i.dataset.ship === shipId; });   /* works like a checkbox, but one is always on */
+  if (cur) updateSheet();
+});
+
 function orderText(p) {
-  const st = S[p.id], c = calc(p);
+  const st = S[p.id], c = calc(p), sh = shipPick();
   const lines = [`LP1 ORDER: ${p.name}`];
   if (p.type === 'kit') lines.push(`Die color: ${(DIE_COLORS.find(x => x.id === st.die) || {}).name}`, `Kits: ${c.qty}`);
   if (p.type === 'single') lines.push(`Pieces: ${PEOPLE.filter(pp => st.pick.has(pp.id)).map(pp => pp.name).join(', ') || '(none picked yet)'}`);
   if (p.type !== 'deluxe') {
-    lines.push(`Total: ${money(c.total)} plus shipping`);
+    lines.push(`Shipping: ${sh.label}`, sh.cost == null ? `Total: ${money(c.total)} plus shipping (to be quoted)` : `Total: ${money(c.total + sh.cost)}${sh.cost ? ' (includes shipping)' : ''}`);
   } else lines.push(`Price: ${money(p.price)}`);
   lines.push('', `Name: ${$('#oName').value}`, `Contact: ${$('#oContact').value}`, `Ship to: ${$('#oShip').value}`);
   return lines.join('\n');
@@ -3070,8 +3124,10 @@ function updateSheet() {
   if (p.type === 'deluxe') {
     rows = `<div class="row tot"><span>Price</span><span>${symHTML(money(p.price))}</span></div>`;
   } else {
+    const sh = shipPick();
     rows = `<div class="row"><span>${c.qty} x ${money(p.price)}</span><span>${money(c.sub)}</span></div>`;
-    rows += `<div class="row tot"><span>Total</span><span>${symHTML(money(c.total))}</span></div>`;
+    rows += `<div class="row"><span>Shipping: ${sh.short}</span><span>${sh.cost == null ? 'to be quoted' : money(sh.cost)}</span></div>`;
+    rows += `<div class="row tot"><span>${sh.cost == null ? 'Total so far' : 'Total'}</span><span>${symHTML(money(c.total + (sh.cost || 0)))}</span></div>`;
   }
   $('#sheetTotals').innerHTML = rows;
 
@@ -3086,10 +3142,13 @@ function updateSheet() {
   if (p.type === 'deluxe') {
     venmo.style.display = 'none';
     note.textContent = 'We will reply to confirm it is available, then send payment details.';
+  } else if (shipPick().cost == null) {
+    venmo.style.display = 'none';
+    note.textContent = 'We will reply with the shipping price and a Venmo request.';
   } else if (CONFIG.venmo) {
     venmo.style.display = '';
     const vn = encodeURIComponent(`LP1 ${p.name} ${$('#oName').value}`.trim());
-    venmo.href = `https://venmo.com/${encodeURIComponent(CONFIG.venmo)}?txn=pay&amount=${c.total.toFixed(2)}&note=${vn}`;
+    venmo.href = `https://venmo.com/${encodeURIComponent(CONFIG.venmo)}?txn=pay&amount=${(c.total + shipPick().cost).toFixed(2)}&note=${vn}`;
     note.textContent = CONFIG.shippingNote + ' Send the order first, then pay once we reply.';
   } else {
     venmo.style.display = 'none';
@@ -3104,6 +3163,7 @@ function openSheet(pid) {
   if (cur.type === 'single' && st.pick.size === 0) st.pick.add(st.view);
   $('#sheetTitle').innerHTML = symHTML(cur.type === 'deluxe' ? 'Angel Investor inquiry' : `Order: ${cur.name}`);
   $('#sheetOptions').innerHTML = sheetOptionsHTML(cur);
+  renderShip();
   refreshCards();
   if (dlg.showModal) dlg.showModal(); else dlg.setAttribute('open', '');
 }
