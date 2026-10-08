@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- LP1 v12 -->
+<!-- LP1 v14 -->
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
@@ -119,7 +119,7 @@ text-transform: uppercase;
 
 /* Title: FEARJOY [die] THE GAME on one line, stacked on narrow screens */
 h1.title { margin-bottom: 0.25em; display: flex; flex-wrap: nowrap; align-items: center; justify-content: center; gap: 0 0.14em; font-size: min(5.2rem, 5.6vw); line-height: 1.1; }
-h1.title .title-die { display: block; flex: none; width: 1.3em; height: 1.3em; margin: -0.12em 0; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+h1.title .title-die { display: block; flex: none; width: 1.3em; height: 1.3em; margin: -0.12em 0; cursor: var(--hand); -webkit-tap-highlight-color: transparent; }
 h1.title .title-die:empty { display: none; }
 h1.title .title-die canvas { display: block; width: 100%; height: 100%; }
 @media (max-width: 760px) {
@@ -129,7 +129,7 @@ h1.title .title-die { width: 1.7em; height: 1.7em; margin: -0.2em 0; }
 
 /* Credits & Lyrics heading: same idea as the main title (die in the middle, stacked on narrow screens), die a little smaller */
 .section h2.title { display: flex; flex-wrap: nowrap; align-items: center; justify-content: center; gap: 0 0.14em; line-height: 1.1; }
-.section h2.title .title-die { display: block; flex: none; width: 1.05em; height: 1.05em; margin: -0.1em 0; cursor: pointer; }
+.section h2.title .title-die { display: block; flex: none; width: 1.05em; height: 1.05em; margin: -0.1em 0; cursor: var(--hand); }
 .section h2.title .title-die:empty { display: none; }
 .section h2.title .title-die canvas { display: block; width: 100%; height: 100%; }
 @media (max-width: 760px) {
@@ -173,7 +173,7 @@ transition: all 0.3s ease;
 display: flex;
 justify-content: center;
 align-items: center;
-cursor: pointer;
+cursor: var(--hand);
 font-size: 1.6rem;
 animation: subtleFloat 7s ease-in-out infinite;
 box-sizing: border-box;
@@ -250,6 +250,8 @@ line-height: 1.5;
 margin: 0 0 26px;
 text-shadow: 0 0 10px var(--glow-color);
 }
+
+.section .sub .sub-small { font-size: 1rem; font-weight: 300; opacity: 0.82; }
 
 .glass {
 background: rgba(0, 0, 0, 0.28);
@@ -398,7 +400,7 @@ height: 30px;
 border-radius: 50%;
 border: 2px solid rgba(255,255,255,0.35);
 padding: 0;
-cursor: pointer;
+cursor: var(--hand);
 transition: transform 0.2s;
 }
 .sw:hover { transform: scale(1.15); }
@@ -411,14 +413,17 @@ background: rgba(255,255,255,0.08);
 border: 1px solid rgba(255,255,255,0.35);
 padding: 6px 14px;
 border-radius: 30px;
-cursor: pointer;
+cursor: var(--hand);
 transition: all 0.2s;
 }
 .chip:hover { background: rgba(255,255,255,0.18); }
 .chip.sel { background: linear-gradient(135deg, var(--btn-tan-start), var(--btn-tan-end)); color: #000; border-color: #000; }
 
 details.stl { font-family: 'KCStrikerSans', sans-serif; font-size: 0.95rem; }
-details.stl summary { cursor: pointer; opacity: 0.9; }
+.product details.more { font-family: 'KCStrikerSans', sans-serif; font-size: 0.95rem; }
+.product details.more summary { opacity: 0.9; }
+.product details.more ul.inc { margin: 8px 0 0; }
+details.stl summary { cursor: var(--hand); opacity: 0.9; }
 details.stl .stl-links { display: flex; flex-wrap: wrap; gap: 8px 16px; margin-top: 8px; }
 details.stl a { color: #ffecd2; }
 
@@ -451,7 +456,7 @@ padding: 16px 4px;
 background: none;
 border: none;
 color: #fff;
-cursor: pointer;
+cursor: var(--hand);
 text-align: left;
 font-family: 'KCPelletierTyped', 'Courier New', monospace;
 font-size: 1.25rem;
@@ -507,7 +512,7 @@ border: 1px solid rgba(255,255,255,0.35);
 background: rgba(0,0,0,0.25);
 color: #fff;
 font-size: 1.3rem;
-cursor: pointer;
+cursor: var(--hand);
 }
 .sheet label { display: flex; flex-direction: column; gap: 4px; font-size: 0.85rem; letter-spacing: 1.5px; text-transform: uppercase; opacity: 0.9; }
 .sheet input, .sheet textarea {
@@ -527,7 +532,7 @@ box-sizing: border-box;
 .sheet .note { font-size: 0.9rem; line-height: 1.5; opacity: 0.85; margin: 0; }
 .sheet .note a { color: #ffecd2; }
 .sheet .stepper { display: flex; align-items: center; gap: 14px; font-size: 1.3rem; }
-.sheet .stepper button { width: 38px; height: 38px; border-radius: 50%; border: 1px solid rgba(255,255,255,0.4); background: rgba(255,255,255,0.1); color: #fff; font-size: 1.3rem; cursor: pointer; }
+.sheet .stepper button { width: 38px; height: 38px; border-radius: 50%; border: 1px solid rgba(255,255,255,0.4); background: rgba(255,255,255,0.1); color: #fff; font-size: 1.3rem; cursor: var(--hand); }
 .sheet .btn { width: 100%; font-size: 1.25rem; padding: 14px 18px; animation: none; }
 .sheet .ok { color: #b6ffb0; }
 
@@ -547,21 +552,26 @@ box-sizing: border-box;
 .secret.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 .secret[hidden] { display: none; }
 .secret a { font-family: 'KCStrikerSans', sans-serif; color: #ffd36b; text-decoration: underline; }
-.secret button { background: none; border: 0; color: #fff; font-size: 1.3rem; line-height: 1; cursor: pointer; opacity: 0.7; padding: 0 4px; }
+.secret button { background: none; border: 0; color: #fff; font-size: 1.3rem; line-height: 1; cursor: var(--hand); opacity: 0.7; padding: 0 4px; }
 
 /* single piece card: the piece picker sits on top */
 .top-opts { display: flex; flex-direction: column; gap: 8px; padding: 0 6px; }
 
-/* ============ v12: rack bar along the very bottom (replaces the floating nav pill) ============ */
+/* ============ v13: stylized pixel hand pointer for anything clickable (same look as the pixel arrow on the TV menu) ============ */
+:root { --hand: url("data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20width%3D%2728%27%20height%3D%2730%27%20shape-rendering%3D%27crispEdges%27%3E%3Cpath%20d%3D%27M9%202%20L13%202%20L14%204%20L14%2012%20L16%2011%20L19%2011%20L20%2012%20L23%2012%20L24%2013%20L26%2014%20L26%2022%20L22%2028%20L11%2028%20L7%2022%20L3%2016%20L4%2014%20L6%2014%20L8%2016%20L9%2016%20Z%27%20fill%3D%27%23ffd36b%27%20stroke%3D%27%23000%27%20stroke-width%3D%272%27%20stroke-linejoin%3D%27miter%27%2F%3E%3Cpath%20d%3D%27M14%2014%20L14%2019%20M18%2014%20L18%2019%20M22%2015%20L22%2019%27%20stroke%3D%27%23000%27%20stroke-width%3D%271.5%27%20fill%3D%27none%27%2F%3E%3C%2Fsvg%3E") 11 2, pointer; }
+a[href], button, summary, [role="button"] { cursor: var(--hand); }
+button:disabled { cursor: default; }
+
+/* ============ v12: rack bar along the very bottom (replaces the floating nav pill). v13: content is centered with a max width, and on narrow screens it shrinks to one thin row with a slide-out menu ============ */
 body { padding-bottom: 96px; }
 .rack {
 position: fixed; left: 0; right: 0; bottom: 0; z-index: 100;
-display: flex; align-items: center; flex-wrap: wrap; gap: 6px 12px;
 padding: 7px 34px calc(7px + env(safe-area-inset-bottom));
 background: linear-gradient(#3b3b40, #202023 16%, #151517 84%, #0a0a0b);
 border-top: 2px solid #5a5a60;
 box-shadow: 0 -6px 24px rgba(0,0,0,0.55), inset 0 1px 0 rgba(255,255,255,0.2);
 }
+.rack-in { position: relative; display: flex; align-items: center; gap: 8px; max-width: 1180px; margin: 0 auto; }
 /* rack ears: a screw at each end */
 .rack::before, .rack::after { content: ""; position: absolute; top: 50%; width: 13px; height: 13px; margin-top: -6px; border-radius: 50%; background: radial-gradient(circle at 35% 30%, #d6d6db, #5a5a60 60%, #222); box-shadow: 0 1px 2px rgba(0,0,0,0.8); }
 .rack::before { left: 10px; }
@@ -575,7 +585,7 @@ font-family: 'KCStrikerSans', sans-serif; font-size: 0.72rem; letter-spacing: 1.
 color: #e9e9ee; background: linear-gradient(#70707a, #4a4a52 55%, #3a3a41);
 border: 1px solid #141416; border-radius: 10px; padding: 7px 12px 7px 10px;
 display: inline-flex; align-items: center; justify-content: center; gap: 7px;
-cursor: pointer; position: relative; top: 0;
+cursor: var(--hand); position: relative; top: 0;
 box-shadow: 0 3px 0 #131315, 0 5px 7px rgba(0,0,0,0.55), inset 0 1px 0 rgba(255,255,255,0.3);
 transition: transform 0.06s, box-shadow 0.06s, background 0.15s, color 0.15s;
 -webkit-tap-highlight-color: transparent;
@@ -591,32 +601,49 @@ box-shadow: 0 0 0 #131315, inset 0 3px 8px rgba(0,0,0,0.8), 0 0 12px var(--c);
 .rk:active::before, .rk.lit::before, .rk[aria-pressed="true"]::before { background: var(--c); box-shadow: 0 0 8px 2px var(--c); }
 .c-home { --c: #6fb4ff; } .c-game { --c: #6dff9a; } .c-breathe { --c: #5ff0e0; } .c-move { --c: #ffb35a; } .c-store { --c: #d28bff; } .c-play { --c: #6dff9a; } .c-bg { --c: #ffd36b; }
 .c-play { min-width: 44px; padding: 7px 10px; font-size: 0.8rem; }
+.c-menu { display: none; }
+.burger { display: block; width: 14px; height: 9px; background: linear-gradient(currentColor, currentColor) 0 0 / 100% 2px no-repeat, linear-gradient(currentColor, currentColor) 0 50% / 100% 2px no-repeat, linear-gradient(currentColor, currentColor) 0 100% / 100% 2px no-repeat; }
 /* mute: glows red; pressed = inverted, depressed */
-.c-mute { --c: #ff3b30; color: #ff6a5c; border-color: #ff3b30; text-shadow: 0 0 8px rgba(255,59,48,0.9); box-shadow: 0 3px 0 #131315, 0 0 10px rgba(255,59,48,0.7), inset 0 0 6px rgba(255,59,48,0.35); }
+.c-mute { --c: #ff3b30; min-width: 80px; color: #ff6a5c; border-color: #ff3b30; text-shadow: 0 0 8px rgba(255,59,48,0.9); box-shadow: 0 3px 0 #131315, 0 0 10px rgba(255,59,48,0.7), inset 0 0 6px rgba(255,59,48,0.35); }
 .c-mute::before { background: #ff3b30; box-shadow: 0 0 6px 1px #ff3b30; }
 .c-mute:active, .c-mute[aria-pressed="true"] { background: #ff3b30; color: #2a0705; text-shadow: none; box-shadow: inset 0 3px 8px rgba(0,0,0,0.7), inset 0 0 0 1px rgba(0,0,0,0.35); }
 .c-mute:active::before, .c-mute[aria-pressed="true"]::before { background: #2a0705; box-shadow: none; }
 /* little LCD that scrolls the song title */
-.rack-lcd { flex: 1 1 170px; min-width: 120px; height: 30px; position: relative; overflow: hidden; border-radius: 6px; background: #07140b; border: 1px solid #000; box-shadow: inset 0 2px 6px rgba(0,0,0,0.9), 0 1px 0 rgba(255,255,255,0.14); }
-.rack-lcd span { position: absolute; left: 0; top: 0; padding-left: 100%; white-space: nowrap; line-height: 30px; font-family: 'Courier New', Courier, monospace; font-weight: 700; font-size: 0.85rem; letter-spacing: 2px; color: #64ff8f; text-shadow: 0 0 6px rgba(100,255,143,0.8); opacity: 0.5; animation: lcdScroll 16s linear infinite; }
-.rack-lcd.on span { opacity: 1; }
-@keyframes lcdScroll { to { transform: translateX(-100%); } }
+.rack-lcd { flex: 1 1 170px; min-width: 70px; height: 30px; position: relative; overflow: hidden; border-radius: 6px; background: #07140b; border: 1px solid #000; box-shadow: inset 0 2px 6px rgba(0,0,0,0.9), 0 1px 0 rgba(255,255,255,0.14); }
+/* three copies of the title side by side, sliding left one copy at a time, so the scroll never restarts or leaves a gap */
+.lcd-track { position: absolute; left: 0; top: 0; display: flex; white-space: nowrap; opacity: 0.5; animation: lcdScroll 11s linear infinite; will-change: transform; }
+.lcd-track span { flex: none; padding-right: 3.5em; line-height: 30px; font-family: 'Courier New', Courier, monospace; font-weight: 700; font-size: 0.85rem; letter-spacing: 2px; color: #64ff8f; text-shadow: 0 0 6px rgba(100,255,143,0.8); }
+.rack-lcd.on .lcd-track { opacity: 1; }
+@keyframes lcdScroll { to { transform: translateX(-33.3333%); } }
 /* volume knob */
 .rk-vol { display: inline-flex; align-items: center; gap: 6px; font-family: 'KCStrikerSans', sans-serif; font-size: 0.6rem; letter-spacing: 1.2px; text-transform: uppercase; color: #b8b8c0; }
 .rk-knob { position: relative; width: 38px; height: 38px; border-radius: 50%; background: conic-gradient(#5a5a62, #26262a, #707078, #26262a, #5a5a62); border: 2px solid #101012; box-shadow: 0 3px 6px rgba(0,0,0,0.7), inset 0 1px 0 rgba(255,255,255,0.3); cursor: grab; touch-action: none; -webkit-tap-highlight-color: transparent; outline: none; }
 .rk-knob::after { content: ""; position: absolute; left: 50%; top: 3px; width: 3px; height: 13px; margin-left: -1.5px; border-radius: 2px; background: #fff; box-shadow: 0 0 6px #fff; transform-origin: 50% 16px; transform: rotate(var(--a, 0deg)); }
 .rk-knob:hover, .rk-knob:focus-visible, .rk-knob.turning { box-shadow: 0 3px 6px rgba(0,0,0,0.7), inset 0 1px 0 rgba(255,255,255,0.3), 0 0 12px rgba(255,194,122,0.75); }
 .rk-knob.turning { cursor: grabbing; }
-@media (max-width: 700px) {
-body { padding-bottom: 118px; }
-.rack { padding: 7px 24px calc(7px + env(safe-area-inset-bottom)); gap: 7px 8px; }
-.rack-nav { flex: 1 0 100%; justify-content: center; gap: 6px; }
-.rack-ctl { margin-left: 0; gap: 6px; flex: 1 1 auto; justify-content: flex-end; }
-.rk { font-size: 0.62rem; letter-spacing: 0.8px; padding: 6px 8px 6px 7px; gap: 5px; }
-.rk-vol-label { display: none; }
-.rack-lcd { min-width: 80px; }
+@media (max-width: 860px) {   /* narrow screens: one thin row, Game / Breathe / Move / Store move into the slide-out menu */
+body { padding-bottom: 64px; }
+.rack { padding: 6px 8px calc(6px + env(safe-area-inset-bottom)); }
+.rack::before, .rack::after { display: none; }
+.rack-in { gap: 6px; }
+.c-menu { display: inline-flex; }
+.rack-nav { position: absolute; left: 0; bottom: calc(100% + 16px); flex-direction: column; align-items: stretch; gap: 8px; padding: 10px; border-radius: 14px; background: linear-gradient(#2c2c31, #151517); border: 1px solid #4a4a50; box-shadow: 0 8px 22px rgba(0,0,0,0.6); opacity: 0; transform: translateY(14px); pointer-events: none; visibility: hidden; transition: opacity 0.18s, transform 0.18s, visibility 0s 0.18s; }
+.rack.open .rack-nav { opacity: 1; transform: none; pointer-events: auto; visibility: visible; transition: opacity 0.18s, transform 0.18s; }
+.rack-nav .rk { font-size: 0.8rem; letter-spacing: 1px; padding: 9px 18px 9px 12px; justify-content: flex-start; min-width: 150px; }
+.rack-ctl { gap: 6px; }
+.rk { font-size: 0.6rem; letter-spacing: 0.6px; padding: 6px 8px 6px 7px; gap: 5px; }
+.rk-vol-label, .rk .more { display: none; }
+.c-play { min-width: 36px; padding: 6px 8px; }
+.c-mute { min-width: 62px; }
+.rack-lcd { min-width: 50px; flex-basis: 60px; height: 26px; }
+.rack-lcd .lcd-track span { line-height: 26px; font-size: 0.72rem; letter-spacing: 1.5px; }
+.rk-knob { width: 30px; height: 30px; }
+.rk-knob::after { height: 10px; transform-origin: 50% 10px; }
 }
-@media (prefers-reduced-motion: reduce) { .rack-lcd span { animation: none; padding-left: 8px; } }
+@media (min-width: 861px) and (max-width: 1000px) { .rk-vol-label { display: none; } }
+@media (max-width: 380px) { .rack-in, .rack-ctl { gap: 4px; } .rk { padding: 6px 6px 6px 5px; } .c-mute { min-width: 58px; } .rack-lcd { min-width: 34px; flex-basis: 34px; } }
+@media (max-width: 340px) { .c-bg { display: none; } }
+@media (prefers-reduced-motion: reduce) { .lcd-track { animation: none; } .lcd-track span + span { display: none; } }
 
 /* how-to-play popup and its click-to-zoom picture */
 dialog.wide { width: min(96vw, 1100px); }
@@ -659,7 +686,7 @@ try { if (location.hash) history.replaceState(null, '', location.pathname + loca
 <!-- ============ KITS (mini storefront) ============ -->
 <section class="section" id="kits">
 <h2>Game Pieces</h2>
-<p class="sub">Handmade pieces: by the band, of the band.<br>3D-scanned and printed by Jesse.</p>
+<p class="sub">Handmade by Jesse:<br>Mini sculptures of the band (~2").<br><span class="sub-small">Collectible limited-edition companion to The Game.</span></p>
 
 <div class="grid" id="productGrid"></div>
 </section>
@@ -719,7 +746,7 @@ try { if (location.hash) history.replaceState(null, '', location.pathname + loca
 <dialog id="loreDlg">
 <div class="sheet">
 <h3>Mystery lore</h3>
-<p>Save the mystery lore?</p>
+<p>Save this rare lore to camera roll?</p>
 <div class="lore-actions">
 <button class="btn" id="loreYes" type="button">Yes, save it</button>
 <button class="btn" id="loreNo" type="button">No thanks</button>
@@ -740,6 +767,17 @@ try { if (location.hash) history.replaceState(null, '', location.pathname + loca
 <div class="zoom" id="zoom" hidden><img alt=""></div>
 </dialog>
 
+<dialog id="goDlg">
+<div class="sheet">
+<h3>Quick check</h3>
+<p id="goMsg"></p>
+<div class="lore-actions">
+<button class="btn" id="goYes" type="button">Yes, go</button>
+<button class="btn" id="goNo" type="button">Stay here</button>
+</div>
+</div>
+</dialog>
+
 <div class="toast" id="toast" role="status"></div>
 <div class="secret" id="secret" role="status" hidden>
 <span>Secret unlocked: THREEJOY</span>
@@ -748,26 +786,29 @@ try { if (location.hash) history.replaceState(null, '', location.pathname + loca
 </div>
 
 <div class="rack" role="toolbar" aria-label="Site menu and music">
-<nav class="rack-nav">
-<a class="rk c-home" href="https://freejoy.club">Home</a>
-<a class="rk c-game" href="/game">Game</a>
-<a class="rk c-breathe" href="/breathe">Breathe</a>
-<a class="rk c-move" href="/move">Move</a>
-<a class="rk c-store" href="/store">Store</a>
+<div class="rack-in">
+<button type="button" class="rk c-menu" id="rackMenu" aria-label="Open the menu" aria-expanded="false" aria-controls="rackNav"><span class="burger"></span></button>
+<a class="rk c-home" href="https://freejoy.club" data-go="Go to Fearjoy's home page?">Home</a>
+<nav class="rack-nav" id="rackNav">
+<a class="rk c-game" href="/game" data-go="Go play the game online?">Game</a>
+<a class="rk c-breathe" href="/breathe" data-go="Go to a page full of free, easy breathing exercises to feel your best?">Breathe</a>
+<a class="rk c-move" href="/move" data-go="Go to a page full of free, easy movement exercises to feel your best?">Move</a>
+<a class="rk c-store" href="/store" data-go="Go to the full Fearjoy store?">Store</a>
 </nav>
-<div class="rack-lcd" id="rackLcd"><span>&#9654; THE ENDLESS JAM (UNRELEASED) - FEARJOY</span></div>
+<div class="rack-lcd" id="rackLcd"><div class="lcd-track"><span>&#9654; THE ENDLESS JAM (UNRELEASED) - FEARJOY</span><span aria-hidden="true">&#9654; THE ENDLESS JAM (UNRELEASED) - FEARJOY</span><span aria-hidden="true">&#9654; THE ENDLESS JAM (UNRELEASED) - FEARJOY</span></div></div>
 <div class="rack-ctl">
 <button type="button" class="rk c-play" id="rackPlay" aria-pressed="false" aria-label="Play or pause The Endless Jam">&#9654;</button>
 <span class="rk-vol"><span class="rk-vol-label">Vol</span><span class="rk-knob" id="rackKnob" role="slider" tabindex="0" aria-label="Music volume" aria-valuemin="0" aria-valuemax="100" aria-valuenow="50"></span></span>
-<button type="button" class="rk c-bg" id="rackBg" aria-pressed="false" aria-label="Keep the music playing in the background">BG play</button>
+<button type="button" class="rk c-bg" id="rackBg" aria-pressed="false" aria-label="Keep the music playing in the background">BG<span class="more"> play</span></button>
 <button type="button" class="rk c-mute" id="muteBtn" aria-pressed="false" aria-label="Mute all sound">Mute</button>
+</div>
 </div>
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/STLLoader.js"></script>
 <script>
-// LP1 v12
+// LP1 v14
 const toTop = () => { try { window.scrollTo({ top: 0, left: 0, behavior: 'instant' }); } catch (e) { window.scrollTo(0, 0); } };
 toTop();
 window.addEventListener('load', toTop);
@@ -786,11 +827,13 @@ const CONFIG = {
   useRealStl: true,                // busts load from each person's "stl" path below. false = placeholder shapes only
   preferLite: true,                // try Jesse_Bust_lite.stl etc. first (about 1 MB each), then fall back to the full files
   stlFolders: ['./', '/LP1/', '/images/'],  // where to look for the STL files, in order. './' = the same folder as this page
-  tvImage: '/images/34_Board_temp.png?v=8',  // game board picture on the desk TV. The ?v=8 makes browsers fetch the newest copy: bump the number whenever you swap the file
+  tvImage: '/images/35-board.png?v=9',  // game board picture on the desk TV. The ?v=9 makes browsers fetch the newest copy: bump the number whenever you swap the file
   sfxFolder: '/sfx/',              // sound effects (coinflip, dice1, dice2, dice5, 1up, slide1) and the radio song (endless-jam-jgg-1.mp3)
   loreFolder: '/game/bucket/',     // the lore bucket: pictures that flash on the desk TV
   loreSeconds: 3,                  // how long a lore picture stays on the TV
-  lorePics: ['1st band promo.png', 'CP-30.jpg', 'Chilis.jpg', 'IMG_20200116_191840_549.jpg', 'creepin.JPG', 'fine-china.jpg', 'fj stone.png', 'foot only.jpg', 'forbidden-stache.jpg', 'g j wed.jpeg', 'g sticker.png', 'g-wedding.jpg', 'game v1.png', 'j dusty 1.jpg', 'j-g-18.jpg', 'marco lay.jpg', 'milwaukeedee grant.jpg', 'miramar wheel bunz ariel.jpg', 'morganshootsthings Grant & jesse 2.jpg', 'morganshootsthings Grant & jesse.jpg', 'morganshootsthings Grant ok.jpg', 'the 3 straights.jpg', 'walkin.JPG', 'yung-jesse.jpg'],   // pictures only (no videos, no .heic). Add new file names here.
+  loreVideos: ['game sfx story.mp4', 'j-drum-tracking.mp4', 'js-mistake.mp4', 'sploinky-garret.mp4', 'story harmony hunting tunnel.mp4', 'story mu nightdrive 3.mp4'],                  // lore videos (.mp4) in the same folder. Add file names here. They download quietly in the background after the page loads (thin bar along the bottom of the TV) and join the channel changes once ready
+  loreVideoMax: 25,                // a lore video stops after this many seconds even if it is longer
+  lorePics: ['1st band promo.png', 'CP-30.jpg', 'Chilis.jpg', 'IMG_20200116_191840_549.jpg', 'creepin.JPG', 'fine-china.jpg', 'fj stone.png', 'foot only.jpg', 'forbidden-stache.jpg', 'g j wed.jpeg', 'g sticker.png', 'g-wedding.jpg', 'game v1.png', 'j dusty 1.jpg', 'j-g-18.jpg', 'marco lay.jpg', 'milwaukeedee grant.jpg', 'miramar wheel bunz ariel.jpg', 'morganshootsthings Grant & jesse 2.jpg', 'morganshootsthings Grant & jesse.jpg', 'morganshootsthings Grant ok.jpg', 'the 3 straights.jpg', 'walkin.JPG', 'yung-jesse.jpg'],   // pictures (no .heic). Add new file names here.
   shippingNote: 'Shipping is confirmed by reply before you pay.'
 };
 
@@ -844,7 +887,8 @@ const PRODUCTS = [
     id: 'deluxe', type: 'deluxe', name: 'Angel Investor Edition', price: 444, cta: 'Inquire', badge: 'One of one',
     pieces: ['jesse', 'marco', 'grant'],
     blurb: 'The only one ever made. This hand-finished edition is the best way to support our fully-independent art.',
-    includes: ['Custom-painted player pieces: Jesse, Marco and Grant', 'Heads are resin printed, not plastic', 'Dichroic glass die (color-shifting, iridescent)', 'Handmade custom real-bronze Fear/Joy coin', 'Signed record', 'Free entry to any future show', 'Only one exists']
+    includes: ['Custom-painted player pieces: Jesse, Marco and Grant', 'Dichroic glass die (color-shifting, iridescent)', 'Handmade custom real-bronze Fear/Joy coin', 'Free entry to any future show'],
+    more: ['Heads are resin printed, not plastic', 'Signed record', 'Fully unique, collectible, handmade', 'Any piece of clothing from the full store', 'Handwritten lyric sheet', 'Added to the album credits']
   }
 ];
 
@@ -933,7 +977,7 @@ const Sound = (() => {
   let ctx = null, master = null, muted = false, vol = 0.5, el = null, musicGain = null, playing = false, bgPlay = false;
   const raw = {}, bufs = {}, decoding = {};
   const DICE_SFX = ['dice1.wav', 'dice2.wav', 'dice5.wav'];
-  const VOL = { coin: 0.3, dice: 0.5, oneUp: 0.25, slide: 1 };   /* coin 30%, dice 50% and 1up 25% of the original file volume */
+  const VOL = { coin: 0.3, dice: 0.8, oneUp: 0.25, slide: 0.64 };   /* share of each file's original volume: coin 30%, dice 80%, 1up 25%, slide 64% */
   const radioCbs = [], volCbs = [];
   let lastSlide = 0;
   const emitRadio = on => radioCbs.forEach(f => { try { f(on); } catch (e) {} });
@@ -945,7 +989,7 @@ const Sound = (() => {
       navigator.mediaSession.playbackState = on ? 'playing' : 'paused';
     } catch (e) {}
   }
-  let diceN = 0, resumeRadio = false;   /* dice sounds go 1, 2, 5, 1, 2, 5 ... */
+  let diceN = 0, resumeRadio = false, ducked = false, duckT = 0;   /* dice sounds go 1, 2, 5, 1, 2, 5 ... */
 
   /* start downloading the effects right away (decoding has to wait for the first tap) */
   SFX.forEach(n => { raw[n] = fetch(DIR + n).then(r => (r.ok ? r.arrayBuffer() : null)).catch(() => null); });
@@ -1012,7 +1056,7 @@ const Sound = (() => {
     getVolume: () => vol,
     setVolume(v) {
       vol = Math.max(0, Math.min(1, v));
-      if (musicGain) { try { musicGain.gain.setTargetAtTime(vol, ctx.currentTime, 0.02); } catch (e) { musicGain.gain.value = vol; } }
+      if (musicGain && !ducked) { try { musicGain.gain.setTargetAtTime(vol, ctx.currentTime, 0.02); } catch (e) { musicGain.gain.value = vol; } }
       else if (el) el.volume = vol;
       volCbs.forEach(f => { try { f(vol); } catch (e) {} });
       return vol;
@@ -1034,6 +1078,22 @@ const Sound = (() => {
     onRadio(fn) { radioCbs.push(fn); },
     onVolume(fn) { volCbs.push(fn); },
     isPlaying: () => playing,
+    /* lore videos: duck(true) fades the song out and pauses it while the video's own audio plays, duck(false) brings it back quickly */
+    duck(on) {
+      if (on) {
+        if (ducked || !playing || !el || el.paused) return;
+        ducked = true;
+        if (musicGain) { try { musicGain.gain.setTargetAtTime(0, ctx.currentTime, 0.07); } catch (e) {} }
+        clearTimeout(duckT);
+        duckT = setTimeout(() => { if (ducked && el) el.pause(); }, 260);
+      } else {
+        if (!ducked) return;
+        ducked = false;
+        clearTimeout(duckT);
+        if (musicGain) { try { musicGain.gain.setValueAtTime(0, ctx.currentTime); musicGain.gain.setTargetAtTime(vol, ctx.currentTime, 0.1); } catch (e) { musicGain.gain.value = vol; } }
+        if (el && playing) { const p = el.play(); if (p && p.catch) p.catch(() => {}); }
+      }
+    },
     setBackground(on) { bgPlay = !!on; return bgPlay; },
     isBackground: () => bgPlay,
     /* radio: first call starts the song (at half volume), next call pauses it. Returns true while playing. */
@@ -1063,6 +1123,7 @@ const Sound = (() => {
         } catch (e) {}
       }
       resumeRadio = false;
+      if (ducked) { ducked = false; clearTimeout(duckT); if (musicGain) musicGain.gain.value = vol; }   /* pressing play or pause during a lore video ends the fade */
       if (playing) { el.pause(); playing = false; }
       else {
         playing = true;
@@ -1126,6 +1187,7 @@ function productCard(p) {
       <h3>${symHTML(p.name)}</h3>
       <p class="blurb">${esc(p.blurb)}</p>
       <ul class="inc">${p.includes.map(i => `<li>${esc(i)}</li>`).join('')}</ul>
+      ${p.more ? `<details class="more"><summary>More benefits</summary><ul class="inc">${p.more.map(i => `<li>${esc(i)}</li>`).join('')}</ul></details>` : ''}
       ${opts}
       <div class="buyrow">
         <div class="price" data-price="${p.id}"></div>
@@ -1486,15 +1548,28 @@ function makeCoin(bronze, tone) {
   return new THREE.Mesh(geo, mats);
 }
 
-function pedestal(r) {
+function pedestal(r, glow) {
   const g = new THREE.Group();
-  const d = new THREE.Mesh(new THREE.CylinderGeometry(r, r, 0.06, 64), new THREE.MeshStandardMaterial({ color: 0x2a1714, roughness: 0.8 }));
+  const d = new THREE.Mesh(new THREE.CylinderGeometry(r, r, 0.06, 64), new THREE.MeshStandardMaterial({ color: glow ? 0x34181c : 0x2a1714, roughness: glow ? 0.5 : 0.8, metalness: glow ? 0.3 : 0 }));
   d.position.y = -0.03;
   g.add(d);
-  const ring = new THREE.Mesh(new THREE.TorusGeometry(r - 0.02, 0.012, 8, 96), new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.35 }));
+  const ring = new THREE.Mesh(new THREE.TorusGeometry(r - 0.02, glow ? 0.03 : 0.012, 8, 96), new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: glow ? 0.95 : 0.35, blending: glow ? THREE.AdditiveBlending : THREE.NormalBlending }));
   ring.rotation.x = Math.PI / 2;
   ring.position.y = 0.005;
   g.add(ring);
+  if (glow) {   /* Angel edition trays: glowing rim, a faint inner ring, a soft halo outside, and a slightly lit top. The color slowly drifts like the card border. */
+    const mk = (geo, op) => { const m = new THREE.Mesh(geo, new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: op, blending: THREE.AdditiveBlending, depthWrite: false, side: THREE.DoubleSide })); m.rotation.x = -Math.PI / 2; m.position.y = 0.004; g.add(m); return m; };
+    const inner = mk(new THREE.RingGeometry(r * 0.8, r * 0.82, 96), 0.45);
+    const halo1 = mk(new THREE.RingGeometry(r, r * 1.14, 96), 0.28);
+    const halo2 = mk(new THREE.RingGeometry(r * 1.14, r * 1.32, 96), 0.1);
+    const phase = Math.random();
+    g.userData.tint = t => {
+      const c = new THREE.Color().setHSL(((t / 7000) + phase) % 1, 0.75, 0.62);
+      ring.material.color.copy(c); inner.material.color.copy(c); halo1.material.color.copy(c); halo2.material.color.copy(c);
+      d.material.emissive.setHSL(((t / 7000) + phase) % 1, 0.7, 0.3); d.material.emissiveIntensity = 0.45;
+    };
+    g.userData.tint(0);
+  }
   return g;
 }
 
@@ -1523,7 +1598,9 @@ function bounceAt(ms, amp) { const u = ms / BOUNCE_MS; return u >= 1 ? 0 : amp *
 const TRAYS = {
   main: { x: 0, y: 0, w: 1, h: 1 },
   die:  { x: 0.03, y: 0.5, w: 0.29, h: 0.5 },
-  coin: { x: 0.68, y: 0.5, w: 0.29, h: 0.5 }
+  coin: { x: 0.68, y: 0.5, w: 0.29, h: 0.5 },
+  ticket: { x: 0.03, y: 0.03, w: 0.28, h: 0.42 },   /* Angel edition only: small trays behind the pieces tray, in the back corners */
+  shirt:  { x: 0.69, y: 0.03, w: 0.28, h: 0.42 }
 };
 const FU6 = { 1: [0, 0, 0], 6: [Math.PI, 0, 0], 3: [0, 0, Math.PI / 2], 4: [0, 0, -Math.PI / 2], 2: [-Math.PI / 2, 0, 0], 5: [Math.PI / 2, 0, 0] };
 function buildExtras(v, painted, st) {
@@ -1550,7 +1627,8 @@ function buildExtras(v, painted, st) {
   else { die = makeDie('#ffffff', '#111111'); v.die = die; recolorDie(die, st.die); }
   die.scale.setScalar(1.8);
   dieLift.add(die);
-  dieS.stage.add(pedestal(0.75));
+  v.glowSub = [];
+  const dp = pedestal(0.75, painted); dieS.stage.add(dp); if (painted) v.glowSub.push(dp);
   let roll = null, dieLand = 0, coinLand = 0;
   v.rollDie = () => {
     if (roll) return;
@@ -1573,7 +1651,7 @@ function buildExtras(v, painted, st) {
   coin.material[1].map.center.set(0.5, 0.5); coin.material[1].map.rotation = Math.PI / 2;      /* keeps the lettering upright on both faces */
   coin.material[2].map.center.set(0.5, 0.5); coin.material[2].map.rotation = -Math.PI / 2;
   cFlip.add(coin);
-  coinS.stage.add(pedestal(0.75));
+  const cp = pedestal(0.75, painted); coinS.stage.add(cp); if (painted) v.glowSub.push(cp);
   let half = 1, flip = null;
   cFlip.rotation.x = Math.PI;   /* JOY faces you first */
   v.flipCoin = () => {
@@ -1586,8 +1664,69 @@ function buildExtras(v, painted, st) {
     Sound.coin();
   };
 
+  /* ----- Angel edition only: a golden ticket and a shirt on small trays in the back corners ----- */
+  let backAnim = null;
+  if (painted) {
+    const tkS = mkSub(TRAYS.ticket), shS = mkSub(TRAYS.shirt);
+    v.backSubs = [tkS, shS];
+    [tkS, shS].forEach(sc => { const bp = pedestal(0.8, true); sc.stage.add(bp); v.glowSub.push(bp); });
+    const FONT_S = "'KCStrikerSans', 'Arial Black', sans-serif";
+    /* the ticket: a notched gold slab with a printed face */
+    const hw = 0.85, hh = 0.45, nr = 0.1, tkShape = new THREE.Shape();
+    tkShape.moveTo(-hw, -hh); tkShape.lineTo(hw, -hh); tkShape.lineTo(hw, -nr); tkShape.absarc(hw, 0, nr, -Math.PI / 2, Math.PI / 2, true);
+    tkShape.lineTo(hw, hh); tkShape.lineTo(-hw, hh); tkShape.lineTo(-hw, nr); tkShape.absarc(-hw, 0, nr, Math.PI / 2, -Math.PI / 2, true);
+    const tkGeo = new THREE.ExtrudeGeometry(tkShape, { depth: 0.04, bevelEnabled: false, curveSegments: 12 });
+    tkGeo.translate(0, 0, -0.02);
+    const tkCv = document.createElement('canvas'); tkCv.width = 512; tkCv.height = 271;
+    const tkTex = new THREE.CanvasTexture(tkCv);
+    tkTex.repeat.set(1 / (2 * hw), 1 / (2 * hh)); tkTex.offset.set(0.5, 0.5);   /* the extruded faces use real-world coordinates as UVs, this maps them onto 0..1 */
+    const drawTicket = () => {
+      const g = tkCv.getContext('2d'), W = tkCv.width, H = tkCv.height;
+      const gr = g.createLinearGradient(0, 0, W, H); gr.addColorStop(0, '#fff0a8'); gr.addColorStop(0.45, '#e9b73a'); gr.addColorStop(1, '#fbe58a');
+      g.fillStyle = gr; g.fillRect(0, 0, W, H);
+      g.strokeStyle = '#8a5a08'; g.lineWidth = 4; g.setLineDash([10, 7]); g.strokeRect(16, 16, W - 32, H - 32); g.setLineDash([]);
+      g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillStyle = '#5a3604';
+      g.font = "62px " + FONT_S; g.fillText('ADMIT ONE', W / 2, H * 0.4);
+      g.font = "28px 'KCPelletierTyped', 'Courier New', monospace"; g.fillText('any fearjoy show', W / 2, H * 0.7);
+      tkTex.needsUpdate = true;
+    };
+    drawTicket();
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(drawTicket);
+    const gold = new THREE.MeshStandardMaterial({ color: 0xe0a82e, roughness: 0.35, metalness: 0.7 });
+    const ticket = new THREE.Mesh(tkGeo, [new THREE.MeshStandardMaterial({ map: tkTex, roughness: 0.35, metalness: 0.35 }), gold]);
+    const tkRoot = new THREE.Group(); tkRoot.position.y = 0.62; tkRoot.rotation.x = -0.22; tkRoot.scale.setScalar(1.05); tkRoot.add(ticket); tkS.stage.add(tkRoot);
+    /* the shirt: a tee outline that fades through black, white, gray and blue, with "ANY MERCH" in whichever color shows */
+    const sh = new THREE.Shape();
+    sh.moveTo(-0.22, 0.62); sh.quadraticCurveTo(0, 0.4, 0.22, 0.62);
+    [[0.58, 0.52], [0.98, 0.22], [0.8, -0.04], [0.56, 0.1], [0.56, -0.72], [-0.56, -0.72], [-0.56, 0.1], [-0.8, -0.04], [-0.98, 0.22], [-0.58, 0.52]].forEach(p => sh.lineTo(p[0], p[1]));
+    const shGeo = new THREE.ExtrudeGeometry(sh, { depth: 0.06, bevelEnabled: true, bevelThickness: 0.02, bevelSize: 0.02, bevelSegments: 2 });
+    shGeo.translate(0, 0, -0.03);
+    const shirtMat = new THREE.MeshStandardMaterial({ color: 0x151515, roughness: 0.85 });
+    const shirt = new THREE.Mesh(shGeo, shirtMat);
+    const txCv = document.createElement('canvas'); txCv.width = 260; txCv.height = 215;
+    const txTex = new THREE.CanvasTexture(txCv);
+    const drawShirtText = () => { const g = txCv.getContext('2d'), W = txCv.width, H = txCv.height; g.clearRect(0, 0, W, H); g.fillStyle = '#fff'; g.textAlign = 'center'; g.textBaseline = 'middle'; let px = 120; g.font = px + 'px ' + FONT_S; while (px > 20 && g.measureText('MERCH').width > W - 12) { px -= 2; g.font = px + 'px ' + FONT_S; } g.fillText('ANY', W / 2, H * 0.3); g.fillText('MERCH', W / 2, H * 0.72); txTex.needsUpdate = true; };
+    drawShirtText();
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(drawShirtText);
+    const txMat = new THREE.MeshBasicMaterial({ map: txTex, transparent: true, depthWrite: false, color: 0xffffff });
+    const tx = new THREE.Mesh(new THREE.PlaneGeometry(1.04, 0.86), txMat); tx.position.set(0, -0.14, 0.056);
+    const shRoot = new THREE.Group(); shRoot.position.y = 0.78; shRoot.scale.setScalar(0.72); shRoot.add(shirt); shRoot.add(tx); shS.stage.add(shRoot);
+    const SHIRT_COLORS = [0x151515, 0xf2f2f2, 0x8c8c90, 0x2d5bd1].map(h => new THREE.Color(h)), SHIRT_MS = 2600, tmpC = new THREE.Color();
+    backAnim = (t) => {
+      tkRoot.rotation.y = REDUCE ? 0.25 : Math.sin(t / 1700) * 0.4;
+      tkRoot.position.y = 0.62 + (REDUCE ? 0 : Math.sin(t / 900) * 0.04);
+      shRoot.rotation.y = REDUCE ? -0.2 : Math.sin(t / 2100 + 1) * 0.35;
+      shRoot.position.y = 0.78 + (REDUCE ? 0 : Math.sin(t / 1000 + 2) * 0.04);
+      const seg = Math.floor(t / SHIRT_MS), f = (t % SHIRT_MS) / SHIRT_MS, k = Math.max(0, (f - 0.6) / 0.4), sm = k * k * (3 - 2 * k);
+      tmpC.copy(SHIRT_COLORS[seg % 4]).lerp(SHIRT_COLORS[(seg + 1) % 4], sm);
+      shirtMat.color.copy(tmpC);
+      txMat.color.setHex(0.2126 * tmpC.r + 0.7152 * tmpC.g + 0.0722 * tmpC.b > 0.35 ? 0x111111 : 0xffffff);
+    };
+  }
+
   v.onFrame = t => {
     const now = performance.now();
+    if (painted) { if (backAnim) backAnim(t); (v.glowSub || []).concat(v.glowMain || []).forEach(g => g.userData.tint && g.userData.tint(t)); }
     dieSpin.rotation.y = REDUCE ? 0.4 : t * 0.00035;
     dieLift.position.y = REDUCE ? 0 : Math.sin(t / 900) * 0.05;
     if (painted) die.userData.tint((t / 9000) % 1);
@@ -1634,13 +1773,16 @@ function buildExtras(v, painted, st) {
   v.render = () => {
     const r = v.renderer, w = v.el.clientWidth, h = v.el.clientHeight;
     if (!w || !h) return;
+    r.setScissorTest(false);
+    r.setViewport(0, 0, w, h);
+    r.autoClear = false;
+    r.clear();   /* wipe the whole canvas once, then draw every tray on top of the last: back corner trays first, then the pieces tray, then the die and coin in front */
     r.setScissorTest(true);
-    [{ rect: TRAYS.main, scene: v.scene, camera: v.camera }, dieS, coinS].forEach((sc, i) => {
+    (v.backSubs || []).concat([{ rect: TRAYS.main, scene: v.scene, camera: v.camera }, dieS, coinS]).forEach(sc => {
       const q = sc.rect, pw = q.w * w, ph = q.h * h, px = q.x * w, py = h - q.y * h - ph;
       r.setViewport(px, py, pw, ph);
       r.setScissor(px, py, pw, ph);
-      r.autoClear = i === 0;   /* the die and coin are drawn on top of the pieces tray without wiping it */
-      if (i) r.clearDepth();
+      r.clearDepth();
       r.render(sc.scene, sc.camera);
     });
     r.autoClear = true;
@@ -1659,11 +1801,14 @@ function buildScene(v, p) {
   if (p.type === 'deluxe') painted = true;
 
   const n = ids.length;
-  const R = n === 1 ? 0 : (n <= 3 ? 1.2 : 1.6);
+  const R = n === 1 ? 0 : (n <= 3 ? (painted ? 1.0 : 1.2) : 1.6);   /* Angel edition: the painted pieces sit a little closer together */
+  v.zoom = painted ? 0.96 : 1;   /* and the camera moves in, so they look a little bigger than on the other cards */
+  v.glowMain = [];
   ids.forEach((id, i) => {
     const idx = PEOPLE.findIndex(x => x.id === id);
     const mat = painted ? new THREE.MeshStandardMaterial({ color: PAINT[idx % PAINT.length], roughness: 0.42 }) : marble();
     const head = headFor(idx, mat);
+    if (painted) head.scale.multiplyScalar(1.06);   /* Angel edition pieces are a little bigger */
     const a = (i / n) * Math.PI * 2;
     head.position.set(Math.sin(a) * R, 0, Math.cos(a) * R);
     head.rotation.y = a;
@@ -1673,7 +1818,9 @@ function buildScene(v, p) {
   if (withExtras) buildExtras(v, painted, st);   /* die + coin now live on their own trays */
 
   const pr = (n === 1 ? 1.1 : R + 0.85);
-  v.stage.add(pedestal(pr));
+  const mainPed = pedestal(pr, painted);
+  v.stage.add(mainPed);
+  if (painted) v.glowMain.push(mainPed);
   v.radius = pr;
   v.fit();
   if (v.visible) kickLoads(v);
@@ -1988,8 +2135,9 @@ function makeDesk(el) {
     else if (e.key === 'ArrowUp' || e.key === 'ArrowDown') { e.preventDefault(); menuSel = menuSel === 'start' ? 'cancel' : 'start'; drawMenu(); }
   });
 
-  /* ---------- channel change: a burst of static, then a random lore picture for 3 seconds, then back to the game screen.
-     Triggered by the die landing or a click on one of the two TV knobs. Click the picture to be asked if you want to save it. ---------- */
+  /* ---------- channel change: static, then a random lore drop (a picture for about 3 seconds, a video until it ends), then back to the game screen.
+     Triggered by the die landing or a click on a TV knob. Click the lore to be asked if you want to save it.
+     Every drop shows once before any repeats. Videos download quietly in the background after the page loads (thin bar along the bottom of the screen). ---------- */
   const staticCanvas = document.createElement('canvas');
   staticCanvas.width = staticCanvas.height = 96;
   const staticCtx = staticCanvas.getContext('2d'), staticImg = staticCtx.createImageData(96, 96);
@@ -2002,50 +2150,172 @@ function makeDesk(el) {
   const loreM = new THREE.Mesh(scrGeo, loreMat);
   loreM.position.z = 0.126; loreM.renderOrder = 5; loreM.visible = false;
   screenGrp.add(loreM);
+  /* channel bar along the bottom: CH number and the title of the picture or video (file name without the extension) */
+  const tbCv = document.createElement('canvas'); tbCv.width = 512; tbCv.height = 48;
+  const tbTex = new THREE.CanvasTexture(tbCv);
+  const titleM = noHit(new THREE.Mesh(new THREE.PlaneGeometry(1.1, 0.103), new THREE.MeshBasicMaterial({ map: tbTex, transparent: true, depthWrite: false })));
+  titleM.position.set(0, -0.585, 0.128); titleM.renderOrder = 7; titleM.visible = false;
+  screenGrp.add(titleM);
+  function drawTitle(text, ch) {
+    const g = tbCv.getContext('2d'), W = tbCv.width, H = tbCv.height, mono = "'Courier New', Courier, monospace";
+    g.clearRect(0, 0, W, H);
+    g.fillStyle = 'rgba(0,0,0,0.68)'; g.fillRect(0, 0, W, H);
+    g.fillStyle = '#ffd36b'; g.fillRect(0, 0, 6, H);
+    g.textBaseline = 'middle'; g.textAlign = 'left'; g.font = 'bold 27px ' + mono;
+    const chTxt = 'CH ' + ch;
+    g.fillStyle = '#64ff8f'; g.fillText(chTxt, 18, H / 2 + 1);
+    const x0 = 18 + g.measureText(chTxt).width + 16, maxW = W - x0 - 14;
+    let t = text;
+    if (g.measureText(t).width > maxW) { while (t.length > 1 && g.measureText(t + '...').width > maxW) t = t.slice(0, -1); t = t.trimEnd() + '...'; }
+    g.fillStyle = '#ffffff'; g.fillText(t, x0, H / 2 + 1);
+    tbTex.needsUpdate = true;
+  }
+  /* thin download bar for the background video loading */
+  const loadGeo = new THREE.PlaneGeometry(1, 0.014); loadGeo.translate(0.5, 0, 0);
+  const loadM = noHit(new THREE.Mesh(loadGeo, new THREE.MeshBasicMaterial({ color: 0x64ff8f, transparent: true, opacity: 0.85, depthWrite: false })));
+  loadM.position.set(-0.5, -0.655, 0.129); loadM.renderOrder = 8; loadM.visible = false;
+  screenGrp.add(loadM);
+
   const loreDlg = document.getElementById('loreDlg');
   let lore = null, loreLast = '';
   const loreUrl = n => CONFIG.loreFolder + encodeURIComponent(n);
+  const loreUsed = new Set();
+  /* videos: downloaded one after another into memory, so they play instantly when picked */
+  const vidNames = REDUCE ? [] : (CONFIG.loreVideos || []).slice();
+  const vids = {};
+  let vidDone = 0, vidFrac = 0, vidLoading = false, vidTex = null;
+  const vidEl = document.createElement('video');
+  vidEl.playsInline = true; vidEl.setAttribute('playsinline', ''); vidEl.preload = 'auto';
+  vidEl.addEventListener('ended', () => { if (lore && lore.video) lore.ended = true; });
+  Sound.onVolume(vol => { vidEl.volume = vol; });
+  async function preloadVideos() {
+    if (!vidNames.length || vidLoading) return;
+    const net = navigator.connection || {};
+    if (net.saveData || /(^|-)2g$/.test(net.effectiveType || '')) return;   /* data saver or a very slow connection: skip the videos */
+    vidLoading = true;
+    for (let i = 0; i < vidNames.length; i++) {
+      try {
+        const res = await fetch(loreUrl(vidNames[i]));
+        if (!res.ok) throw new Error('missing');
+        const total = +res.headers.get('Content-Length') || 0;
+        let blob;
+        if (res.body && res.body.getReader) {
+          const rd = res.body.getReader(), chunks = []; let got = 0;
+          for (;;) { const r = await rd.read(); if (r.done) break; chunks.push(r.value); got += r.value.length; vidFrac = total ? Math.min(1, got / total) : 0.5; }
+          blob = new Blob(chunks, { type: res.headers.get('Content-Type') || 'video/mp4' });
+        } else blob = await res.blob();
+        vids[vidNames[i]] = URL.createObjectURL(blob);
+      } catch (e) {}
+      vidDone = i + 1; vidFrac = 0;
+    }
+    vidLoading = false;
+  }
+  const kickVids = () => setTimeout(preloadVideos, 1500);
+  if (document.readyState === 'complete') kickVids(); else window.addEventListener('load', kickVids);
+
+  const loreItems = () => (CONFIG.lorePics || []).map(n => ({ name: n, video: false })).concat(Object.keys(vids).map(n => ({ name: n, video: true })));
+  function pickLore() {   /* random, and nothing repeats until every picture and ready video has been shown once */
+    const all = loreItems();
+    if (!all.length) return null;
+    let pool = all.filter(i => !loreUsed.has(i.name));
+    if (!pool.length) { loreUsed.clear(); pool = all.filter(i => i.name !== loreLast); if (!pool.length) pool = all; }
+    const it = pool[Math.floor(Math.random() * pool.length)];
+    loreUsed.add(it.name); loreLast = it.name;
+    return it;
+  }
   function drawStatic() {
     const d = staticImg.data;
     for (let i = 0; i < d.length; i += 4) { const g = (Math.random() * 255) | 0; d[i] = d[i + 1] = d[i + 2] = g; d[i + 3] = 255; }
     staticCtx.putImageData(staticImg, 0, 0);
     staticTex.needsUpdate = true;
   }
-  function pickLore() {
-    const list = CONFIG.lorePics || [];
-    if (!list.length) return '';
-    let n;
-    do { n = list[Math.floor(Math.random() * list.length)]; } while (list.length > 1 && n === loreLast);
-    return (loreLast = n);
+  function cropTo(tex, w, h) {   /* fill the square screen, cropping the long side */
+    const a = w && h ? w / h : 1;
+    tex.repeat.set(1, 1); tex.offset.set(0, 0);
+    if (a > 1) { tex.repeat.x = 1 / a; tex.offset.x = (1 - 1 / a) / 2; }
+    else if (a < 1) { tex.repeat.y = a; tex.offset.y = (1 - a) / 2; }
   }
-  function loadLore(cur, name) {
-    cur.name = name;
-    new THREE.TextureLoader().load(loreUrl(name), tex => {
+  function failLore(cur) {   /* a bad or missing file: try another, and after 3 misses just go back to the game screen */
+    if (lore !== cur) return;
+    if (++cur.failed < 3) { const it = pickLore(); if (it) { loadLore(cur, it); return; } }
+    cur.phase = 'out'; cur.t0 = performance.now(); staticM.visible = !REDUCE;
+  }
+  function loadLore(cur, item) {
+    cur.item = item; cur.video = item.video; cur.tex = null; cur.ended = false;
+    if (item.video) {
+      vidEl.onloadeddata = () => {
+        if (lore !== cur) return;
+        if (!vidTex) { vidTex = new THREE.VideoTexture(vidEl); vidTex.minFilter = vidTex.magFilter = THREE.LinearFilter; vidTex.generateMipmaps = false; }
+        cropTo(vidTex, vidEl.videoWidth, vidEl.videoHeight);
+        cur.tex = vidTex;
+      };
+      vidEl.onerror = () => failLore(cur);
+      vidEl.src = vids[item.name];
+      vidEl.load();
+      return;
+    }
+    new THREE.TextureLoader().load(loreUrl(item.name), tex => {
       if (lore !== cur) { tex.dispose(); return; }
-      const img = tex.image, a = img && img.width && img.height ? img.width / img.height : 1;   /* fill the square screen, cropping the long side */
-      if (a > 1) { tex.repeat.x = 1 / a; tex.offset.x = (1 - 1 / a) / 2; }
-      else if (a < 1) { tex.repeat.y = a; tex.offset.y = (1 - a) / 2; }
+      cropTo(tex, tex.image && tex.image.width, tex.image && tex.image.height);
       cur.tex = tex;
-    }, undefined, () => {
-      if (lore !== cur) return;
-      if (++cur.failed < 3) loadLore(cur, pickLore());   /* a bad file name: try another picture */
-      else { cur.phase = 'out'; cur.t0 = performance.now(); staticM.visible = !REDUCE; }
-    });
+    }, undefined, () => failLore(cur));
   }
   function endLore() {
     if (!lore) return;
-    if (lore.tex) lore.tex.dispose();
+    if (lore.video) { try { vidEl.pause(); vidEl.removeAttribute('src'); vidEl.load(); } catch (e) {} Sound.duck(false); }
+    else if (lore.tex) lore.tex.dispose();
     loreMat.map = null; loreMat.needsUpdate = true;
-    loreM.visible = false; staticM.visible = false;
+    loreM.visible = false; staticM.visible = false; titleM.visible = false;
     jesse.visible = !menuOn;
     lore = null;
   }
   function startLore() {
-    if (menuOn || v.tvT || v.navigated || !(CONFIG.lorePics || []).length) return;
+    if (menuOn || v.tvT || v.navigated) return;
+    const item = pickLore();
+    if (!item) return;
     endLore();
-    lore = { phase: 'in', t0: performance.now(), tex: null, name: '', failed: 0, paused: false };
-    jesse.visible = false; staticM.visible = !REDUCE; loreM.visible = false;
-    loadLore(lore, pickLore());
+    lore = { phase: 'in', t0: performance.now(), tex: null, item, video: false, failed: 0, paused: false, ended: false, silent: false, file: null };
+    jesse.visible = false; staticM.visible = !REDUCE; loreM.visible = false; titleM.visible = false;
+    loadLore(lore, item);
+  }
+  function showLore(now) {   /* static is over: the lore appears with its channel bar (a video starts playing and the song fades out) */
+    loreMat.map = lore.tex; loreMat.needsUpdate = true; loreM.visible = true; staticM.visible = false;
+    lore.phase = 'show'; lore.t0 = now;
+    const n = Math.max(1, loreItems().findIndex(i => i.name === lore.item.name) + 1);
+    drawTitle(lore.item.name.replace(/\.[^.]+$/, ''), String(n).padStart(2, '0'));
+    titleM.visible = true;
+    if (lore.video) {
+      vidEl.currentTime = 0; vidEl.volume = Sound.getVolume(); vidEl.muted = Sound.isMuted();
+      Sound.duck(true);
+      const p = vidEl.play();
+      if (p && p.catch) p.catch(() => {   /* the browser would not play it with sound: play it silently and keep the song going */
+        lore.silent = true; vidEl.muted = true; Sound.duck(false);
+        const q = vidEl.play(); if (q && q.catch) q.catch(() => {});
+      });
+    }
+  }
+  function leaveLore(now) {   /* back to the game screen through a little static (a video stops and the song fades back in) */
+    if (!lore || lore.phase === 'out') return;
+    lore.phase = 'out'; lore.t0 = now || performance.now(); staticM.visible = !REDUCE; titleM.visible = false;
+    if (lore.video) { try { vidEl.pause(); } catch (e) {} Sound.duck(false); }
+  }
+  function loreTick(now) {   /* called every frame */
+    const bar = vidLoading && !menuOn;
+    loadM.visible = bar;
+    if (bar) loadM.scale.x = Math.max(0.01, (vidDone + vidFrac) / vidNames.length);
+    if (!lore) return;
+    const dt = now - lore.t0, stMs = REDUCE ? 0 : 420;
+    if (lore.video && !lore.silent) vidEl.muted = Sound.isMuted();
+    if (lore.phase === 'in') {
+      if (!REDUCE) drawStatic();
+      if (dt > stMs && lore.tex) showLore(now);
+      else if (dt > 8000) leaveLore(now);
+    } else if (lore.phase === 'show') {
+      if (!lore.paused && (lore.video ? (lore.ended || dt > CONFIG.loreVideoMax * 1000) : dt > CONFIG.loreSeconds * 1000)) leaveLore(now);
+    } else {
+      if (!REDUCE) drawStatic();
+      if (dt > (REDUCE ? 0 : 380)) endLore();
+    }
   }
   function loreAt(e) {   /* is the pointer on the lore picture? */
     if (!lore || lore.phase !== 'show' || lore.paused) return false;
@@ -2056,16 +2326,33 @@ function makeDesk(el) {
   }
   function openLoreDlg() {
     lore.paused = true;
+    if (lore.video) { try { vidEl.pause(); } catch (e) {} }
+    if (window.matchMedia && matchMedia('(pointer: coarse)').matches && navigator.canShare) {   /* phones: get the file ready now so Save can open the share sheet (Save Image / Save Video goes to the camera roll) */
+      const it = lore.item, url = it.video ? vids[it.name] : loreUrl(it.name);
+      lore.file = fetch(url).then(r => r.blob()).then(b => new File([b], it.name, { type: b.type || (it.video ? 'video/mp4' : 'image/jpeg') })).catch(() => null);
+    }
     try { loreDlg.showModal(); } catch (x) { loreDlg.setAttribute('open', ''); }
   }
+  async function saveLore(it, filePromise) {
+    if (filePromise) {
+      try {
+        const f = await filePromise;
+        if (f && navigator.canShare({ files: [f] })) { await navigator.share({ files: [f] }); return; }
+      } catch (e) { if (e && e.name === 'AbortError') return; }
+    }
+    const a = document.createElement('a');
+    a.href = it.video ? vids[it.name] : loreUrl(it.name); a.download = it.name;
+    document.body.appendChild(a); a.click(); a.remove();
+  }
   loreDlg.addEventListener('close', () => {   /* yes or no, the TV then goes back to the game screen */
-    if (lore && lore.paused) { lore.paused = false; lore.phase = 'out'; lore.t0 = performance.now(); staticM.visible = !REDUCE; }
+    if (lore && lore.paused) { lore.paused = false; leaveLore(performance.now()); }
   });
   loreDlg.addEventListener('click', e => { if (e.target === loreDlg) loreDlg.close(); });
   document.getElementById('loreNo').addEventListener('click', () => loreDlg.close());
   document.getElementById('loreYes').addEventListener('click', () => {
-    if (lore) { const a = document.createElement('a'); a.href = loreUrl(lore.name); a.download = lore.name; document.body.appendChild(a); a.click(); a.remove(); }
+    const it = lore && lore.item, fp = lore && lore.file;
     loreDlg.close();
+    if (it) saveLore(it, fp);
   });
   const tvLight = new THREE.PointLight(0xa8d4ff, 0.55, 7);   /* faint blue spill onto the desk and the crew */
   tvLight.position.set(-0.18, 2.2, 0.35);
@@ -2141,13 +2428,15 @@ function makeDesk(el) {
   });
 
   /* ---------- coin: lies flat on the desk, real 50/50 ---------- */
-  const COIN_ROT_TOP = Math.PI / 2, COIN_ROT_BOT = Math.PI / 2;   /* keeps the text upright on both faces (JOY is turned the other way so it also reads upright while the coin spins on its edge; a JOY landing adds a half turn of yaw to put it right side up when flat) */
+  const COIN_ROT_TOP = Math.PI / 2, COIN_ROT_BOT = Math.PI / 2;   /* keeps the text upright on both faces: JOY is turned the other way so it reads upright while the coin spins on its edge and after a sideways flip */
   const COIN_SCALE = 1.9, COIN_H = 0.03 * COIN_SCALE, COIN_R = 0.3 * COIN_SCALE;
   const coinRoot = new THREE.Group();
   coinRoot.position.set(1.1, COIN_H, 1.6);
   stage.add(coinRoot);
+  const rollG = new THREE.Group();   /* the sideways flip: turns the coin over around the front-to-back axis, so it flips left over right every time */
+  coinRoot.add(rollG);
   const spinG = new THREE.Group();   /* spins the coin on its edge until it is flipped */
-  coinRoot.add(spinG);
+  rollG.add(spinG);
   const flipper = new THREE.Group();
   spinG.add(flipper);
   const coin = makeCoin(true, { base: '#e0b878', ink: '#6b4420', color: 0xe0b878, metalness: 0.25, roughness: 0.5 });   /* light bronze */
@@ -2164,11 +2453,11 @@ function makeDesk(el) {
     if (flip) return;
     const result = Math.random() < 0.5 ? 'FEAR' : 'JOY';
     const want = result === 'JOY' ? 1 : 0;
-    const a0 = flipper.rotation.x;
-    let n = Math.ceil(a0 / Math.PI) + 6;   /* whole half turns: even = FEAR up, odd = JOY up */
+    const z0 = rollG.rotation.z;
+    let n = Math.round(z0 / Math.PI) + 6;   /* at least 6 sideways half turns every time: an even total leaves FEAR up, an odd total leaves JOY up */
     if (n % 2 !== want) n++;
-    const off = want ? Math.PI : 0, y0 = spinG.rotation.y, y1 = Math.round((y0 - off) / (Math.PI * 2)) * Math.PI * 2 + off;   /* straighten out the edge spin on the way down (JOY lands a half turn round, so its text is upright) */
-    flip = { t0: performance.now(), dur: REDUCE ? 250 : 1320, a0, a1: n * Math.PI, result, y0, y1, fromEdge: idle, py0: coinRoot.position.y };
+    const y0 = spinG.rotation.y, y1 = Math.round(y0 / (Math.PI * 2)) * Math.PI * 2;   /* straighten out the edge spin on the way down */
+    flip = { t0: performance.now(), dur: REDUCE ? 250 : 1320, a0: flipper.rotation.x, z0, z1: n * Math.PI, result, y0, y1, fromEdge: idle, py0: coinRoot.position.y };
     idle = false;
     coinLand = 0;
     Sound.coin();
@@ -2230,11 +2519,11 @@ function makeDesk(el) {
     }
     if (menuOn && !v.tvT) {   /* retro menu: hover picks a choice and the cursor turns into the pixel arrow */
       const o = menuAt(e);
-      if (o) { if (o !== menuSel) { menuSel = o; menuBlink = true; menuBlinkT = performance.now(); drawMenu(); } el.style.cursor = MENU_CURSOR; hoverGroup = null; return; }
+      if (o) { if (o !== menuSel) { menuSel = o; menuBlink = true; menuBlinkT = performance.now(); drawMenu(); Sound.slide(); } el.style.cursor = MENU_CURSOR; hoverGroup = null; return; }
     }
-    if (loreAt(e)) { el.style.cursor = 'pointer'; hoverGroup = null; return; }   /* a lore picture is on the TV: click it to save it */
+    if (loreAt(e)) { el.style.cursor = 'var(--hand)'; hoverGroup = null; return; }   /* a lore picture is on the TV: click it to save it */
     const tag = pick(e);
-    el.style.cursor = tag && !(menuOn && tag === 'tv') ? 'pointer' : 'default';
+    el.style.cursor = tag && !(menuOn && tag === 'tv') ? 'var(--hand)' : 'default';
     hoverGroup = tag === 'tvknob' ? pickObj.userData.knob : tag === 'tv' ? (menuOn ? null : tv) : tag === 'bust' ? pickObj.userData.bust : tag === 'coin' ? coinRoot : tag === 'die' ? dieRoot : tag === 'radio' ? radio : tag === 'knob' ? knob : null;
   });
   const endKnob = () => { knobDrag = null; };
@@ -2290,19 +2579,7 @@ function makeDesk(el) {
     });
     if (menuOn && now - menuBlinkT > 500) { menuBlinkT = now; menuBlink = !menuBlink; drawMenu(); }   /* selector arrow blinks */
     tvKnobs.forEach(k => { const pt = k.userData.press ? Math.max(0, 1 - (now - k.userData.press) / 160) : 0; k.position.z = 0.51 - 0.03 * pt; });   /* TV buttons press in */
-    if (lore) {   /* channel change: static, picture, static, back to the game screen */
-      const dt = now - lore.t0, stMs = REDUCE ? 0 : 420;
-      if (lore.phase === 'in') {
-        if (!REDUCE) drawStatic();
-        if (dt > stMs && lore.tex) { loreMat.map = lore.tex; loreMat.needsUpdate = true; loreM.visible = true; staticM.visible = false; lore.phase = 'show'; lore.t0 = now; }
-        else if (dt > 8000) { lore.phase = 'out'; lore.t0 = now; }
-      } else if (lore.phase === 'show') {
-        if (!lore.paused && dt > CONFIG.loreSeconds * 1000) { lore.phase = 'out'; lore.t0 = now; staticM.visible = !REDUCE; }
-      } else {
-        if (!REDUCE) drawStatic();
-        if (dt > (REDUCE ? 0 : 380)) endLore();
-      }
-    }
+    loreTick(now);   /* channel change: static, lore, static, back to the game screen */
     /* radio light pulses while the song plays */
     ledHalo.material.opacity = ledOn ? 0.7 + (REDUCE ? 0 : 0.2 * Math.sin(t / 220)) : 0;
     crew.forEach((h, i) => {
@@ -2323,12 +2600,13 @@ function makeDesk(el) {
     }
     if (flip) {
       const k = Math.min(1, (now - flip.t0) / flip.dur);
-      flipper.rotation.x = flip.a0 + (flip.a1 - flip.a0) * ease(k);
+      flipper.rotation.x = flip.a0 * (1 - ease(k));   /* from standing on its edge (if it was) down to lying flat */
+      rollG.rotation.z = flip.z0 + (flip.z1 - flip.z0) * ease(k);
       spinG.rotation.y = flip.y0 + (flip.y1 - flip.y0) * ease(k);
-      const yFlip = COIN_H + Math.abs(Math.sin(flipper.rotation.x)) * COIN_R + Math.sin(Math.PI * k) * (REDUCE ? 0 : 1.1);   /* lift so the spinning edge never dips into the desk */
+      const yFlip = COIN_H + (Math.abs(Math.sin(flipper.rotation.x)) + Math.abs(Math.sin(rollG.rotation.z))) * COIN_R + Math.sin(Math.PI * k) * (REDUCE ? 0 : 1.1);   /* lift so the spinning edge never dips into the desk */
       coinRoot.position.y = flip.fromEdge ? flip.py0 + (yFlip - flip.py0) * Math.min(1, k * 6) : yFlip;
       shade(coinShadow, coinRoot.position.y - COIN_H);
-      if (k >= 1) { flipper.rotation.x = flip.a1; coinRoot.position.y = COIN_H; shade(coinShadow, 0); spinG.rotation.y = flip.y1; lastCoin = flip.result; flip = null; coinLand = now; checkSecret(); }
+      if (k >= 1) { flipper.rotation.x = 0; rollG.rotation.z = flip.z1; coinRoot.position.y = COIN_H; shade(coinShadow, 0); spinG.rotation.y = flip.y1; lastCoin = flip.result; flip = null; coinLand = now; checkSecret(); }
     } else if (coinLand) {   /* little landing bounce */
       const ms = now - coinLand, b = REDUCE ? 0 : bounceAt(ms, 0.09);
       coinRoot.position.y = COIN_H + b; shade(coinShadow, b);
@@ -2409,7 +2687,7 @@ function goldPipTexture(n) {
 }
 function makeDichroicDie() {
   const g = new THREE.Group();
-  const geo = roundedBox(0.46, 0.07, 12);
+  const geo = new THREE.BoxGeometry(0.46, 0.46, 0.46);   /* straight edges and sharp corners, not rounded */
   const mc = rainbowMatcap();
   /* see-through glass again (half transparent) whose color shifts with the angle, like dichroic glass */
   const body = new THREE.Mesh(geo, FACES.map(() => new THREE.MeshMatcapMaterial({ matcap: mc, transparent: true, opacity: 0.5, side: THREE.DoubleSide, depthWrite: false })));
@@ -2512,10 +2790,10 @@ function makeViewer(el, p) {
     v.camera.updateProjectionMatrix();
     const t = Math.tan(THREE.MathUtils.degToRad(17.5));
     const d0 = Math.max((v.radius + 0.5) / (t * v.camera.aspect), (v.p && v.p.type === 'single' ? 1.12 : 1.25) / t);
-    const d = v.subs ? d0 * 1.22 : d0;   /* kit cards: pieces tray a little smaller, sitting back and up so the die and coin can float in front */
+    const d = (v.subs ? d0 * 1.22 : d0) * (v.zoom || 1);   /* kit cards: pieces tray a little smaller, sitting back and up so the die and coin can float in front. v.zoom < 1 moves the camera closer (Angel edition) */
     v.camera.position.set(0, 0.7 + d * 0.3, d * 0.95);
     v.camera.lookAt(0, v.subs ? -0.15 : 0.65, 0);
-    (v.subs || []).forEach(sc => {   /* the small die and coin trays */
+    (v.subs || []).concat(v.backSubs || []).forEach(sc => {   /* the small die and coin trays (and the Angel ticket and shirt trays) */
       const a = (w * sc.rect.w) / (h * sc.rect.h), tt = Math.tan(THREE.MathUtils.degToRad(15));
       sc.camera.aspect = a;
       sc.camera.updateProjectionMatrix();
@@ -2542,7 +2820,7 @@ function makeViewer(el, p) {
       el.classList.add('grabbing');
       try { el.setPointerCapture(e.pointerId); } catch (x) {}
     }
-    if (!v.dragging) { if (v.regionAt) el.style.cursor = v.regionAt(e) === 'main' ? '' : 'pointer'; return; }
+    if (!v.dragging) { if (v.regionAt) el.style.cursor = v.regionAt(e) === 'main' ? '' : 'var(--hand)'; return; }
     v.lastMoveT = performance.now();
     const dx = e.clientX - v.lastX;
     v.lastX = e.clientX;
@@ -2850,7 +3128,24 @@ muteBtn.addEventListener('click', () => {
 });
 
 /* ---------- rack bar: lit buttons, play/pause, volume knob, background play ---------- */
-$$('.rack-nav a').forEach(a => a.addEventListener('click', () => a.classList.add('lit')));
+const rack = $('.rack'), rackMenu = $('#rackMenu');
+const setRackMenu = on => { rack.classList.toggle('open', on); rackMenu.classList.toggle('lit', on); rackMenu.setAttribute('aria-expanded', String(on)); };   /* the slide-out menu on narrow screens */
+rackMenu.addEventListener('click', e => { e.stopPropagation(); setRackMenu(!rack.classList.contains('open')); });
+document.addEventListener('click', e => { if (rack.classList.contains('open') && !e.target.closest('.rack-nav')) setRackMenu(false); });
+document.addEventListener('keydown', e => { if (e.key === 'Escape') setRackMenu(false); });
+/* every rack link asks first ("Go to ...?") before leaving the page */
+const goDlg = $('#goDlg');
+let goHref = '', goBtn = null, goGoing = false;
+$$('.rack a.rk').forEach(a => a.addEventListener('click', e => {
+  e.preventDefault(); setRackMenu(false);
+  goHref = a.href; goBtn = a; goGoing = false; a.classList.add('lit');
+  $('#goMsg').textContent = a.dataset.go || 'Leave this page?';
+  try { goDlg.showModal(); } catch (x) { goDlg.setAttribute('open', ''); }
+}));
+$('#goYes').addEventListener('click', () => { goGoing = true; location.href = goHref; goDlg.close(); });
+$('#goNo').addEventListener('click', () => goDlg.close());
+goDlg.addEventListener('click', e => { if (e.target === goDlg) goDlg.close(); });
+goDlg.addEventListener('close', () => { if (goBtn && !goGoing) goBtn.classList.remove('lit'); });
 const rackPlay = $('#rackPlay'), rackLcd = $('#rackLcd'), rackBg = $('#rackBg'), rackKnob = $('#rackKnob');
 Sound.onRadio(on => { rackPlay.setAttribute('aria-pressed', String(on)); rackPlay.innerHTML = on ? '&#10074;&#10074;' : '&#9654;'; rackLcd.classList.toggle('on', on); });
 rackPlay.addEventListener('click', () => { if (Sound.toggleRadio()) toast('Now playing: The Endless Jam (unreleased)'); });
