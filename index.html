@@ -1,12 +1,13 @@
 <!DOCTYPE html>
+<!-- HOME (v1) -->
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>FEARJOY</title>
-<link rel="icon" type="image/png" href="favicon.png">
+<link rel="icon" type="image/png" href="/favicon.png">
 <style>
-/* Font Definitions */
+/* ============ Font Definitions (same as home) ============ */
 @font-face {
 font-family: 'KCOraleSans';
 src: url('/KCOraleSans.otf') format('opentype');
@@ -14,13 +15,29 @@ src: url('/KCOraleSans.otf') format('opentype');
 @font-face {
 font-family: 'KCStrikerSans';
 src: url('/KCStrikerSans.otf') format('opentype');
+unicode-range: U+0020-0022, U+0024, U+0026-0029, U+002B-002E, U+0030-003B, U+003D, U+003F, U+0041-005A, U+0061-007A, U+00C0-00FF, U+2018-2019, U+201C-201D;
+}
+/* Body text. unicode-range = only the characters this font really draws. Characters it shows as a filler logo (# & * + ; < > @ [ \ ] ^ ` { | } ~) fall through to Courier New. */
+@font-face {
+font-family: 'KCPelletierLight';
+src: url('/KCPelletierTyped-Light.otf') format('opentype');
+unicode-range: U+0020-0022, U+0024-0025, U+0027-0029, U+002C-003A, U+003D, U+003F, U+0041-005A, U+005F, U+0061-007A, U+00C0-00FF, U+2018-2019, U+201C-201D;
+}
+/* Body headers (Verse 1, Chorus, Credits, Lyrics). Same filler-character rule as above. */
+@font-face {
+font-family: 'KCPelletierTyped';
+src: url('/KCPelletierTyped(typewriter-cool).otf') format('opentype');
+unicode-range: U+0020-0022, U+0024-0025, U+0027-0029, U+002C-003A, U+003D, U+003F, U+0041-005A, U+005F, U+0061-007A, U+00C0-00FF, U+2018-2019, U+201C-201D;
 }
 
 :root {
 --glow-color: rgba(255, 215, 130, 0.75);
+--btn-glow: rgba(255, 215, 130, 0.75);
 --btn-tan-start: #e8dcc4;
 --btn-tan-end: #d2b48c;
 }
+
+html { scroll-behavior: smooth; }
 
 html, body {
 margin: 0;
@@ -33,14 +50,14 @@ overflow-x: hidden;
 position: relative;
 }
 
-/* Darker Sweeping Gradient, dipping to black */
+/* Darker sweeping gradient, dipping to black */
 body {
 background: linear-gradient(45deg, #3a1f1a, #1a0d0b, #2a1512, #000000);
 background-size: 400% 400%;
 animation: sweep 20s ease infinite;
 }
 
-/* Vignette Overlay */
+/* Vignette overlay (same as home) */
 body::before {
 content: "";
 position: fixed;
@@ -59,12 +76,11 @@ z-index: 1;
 100% { background-position: 0% 50%; }
 }
 
-/* Slowed / reduced Float Animation Distance */
 @keyframes subtleFloat {
 0% { transform: translate(0, 0) rotate(0deg); }
-25% { transform: translate(3px, -6px) rotate(0.8deg); }
-50% { transform: translate(-1.5px, -3px) rotate(-0.8deg); }
-75% { transform: translate(-4px, 2px) rotate(0.4deg); }
+25% { transform: translate(6px, -12px) rotate(1.5deg); }
+50% { transform: translate(-3px, -6px) rotate(-1.5deg); }
+75% { transform: translate(-8px, 4px) rotate(0.8deg); }
 100% { transform: translate(0, 0) rotate(0deg); }
 }
 
@@ -72,6 +88,12 @@ z-index: 1;
 0% { left: -150%; }
 30% { left: 150%; }
 100% { left: 150%; }
+}
+
+@keyframes flicker {
+0%, 100% { text-shadow: 0 0 8px var(--glow-color), 0 0 15px var(--glow-color); opacity: 1; }
+33% { text-shadow: 0 0 12px var(--glow-color), 0 0 22px var(--glow-color); opacity: 0.9; }
+66% { text-shadow: 0 0 5px var(--glow-color); opacity: 1; }
 }
 
 .content {
@@ -85,41 +107,32 @@ min-height: 100vh;
 box-sizing: border-box;
 }
 
-/* Typography & Glow */
-@keyframes flicker {
-0%, 100% { text-shadow: 0 0 8px var(--glow-color), 0 0 15px var(--glow-color); opacity: 1; }
-33% { text-shadow: 0 0 12px var(--glow-color), 0 0 22px var(--glow-color); opacity: 0.9; }
-66% { text-shadow: 0 0 5px var(--glow-color); opacity: 1; }
-}
-
 h1 {
 font-family: 'KCOraleSans', sans-serif;
 font-size: 4.2rem;
 margin: 0;
-color: #fff;
 animation: flicker 6s infinite, subtleFloat 10s ease-in-out infinite;
 letter-spacing: 4px;
 text-transform: uppercase;
 }
 
 .floating-text {
-font-family: 'KCStrikerSans', sans-serif;
+font-family: 'KCPelletierLight', 'Courier New', monospace;
 font-size: 1.6rem;
-margin: 20px 0 40px 0;
-color: #fff;
+margin: 20px 0 30px 0;
 text-shadow: 0 0 10px var(--glow-color);
 letter-spacing: 1px;
 line-height: 1.6;
-animation: subtleFloat 13s ease-in-out infinite reverse;
+animation: subtleFloat 8s ease-in-out infinite reverse;
 }
 
-/* Button Styling */
+/* ============ Buttons (same as home) ============ */
 .button-stack {
 display: flex;
 flex-direction: column;
 gap: 15px;
 align-items: center;
-margin-top: 2rem;
+margin-top: 1rem;
 width: 100%;
 max-width: 400px;
 }
@@ -136,36 +149,17 @@ border-radius: 50px;
 width: 100%;
 max-width: 372px;
 background: linear-gradient(135deg, var(--btn-tan-start), var(--btn-tan-end));
-box-shadow: 0 0 12px var(--glow-color);
+box-shadow: 0 0 12px var(--btn-glow);
 transition: all 0.3s ease;
 display: flex;
 justify-content: center;
 align-items: center;
-cursor: pointer;
+cursor: var(--hand);
 font-size: clamp(1.1rem, 4.5vw, 1.6rem);
+animation: subtleFloat 7s ease-in-out infinite;
 box-sizing: border-box;
 }
 
-.btn:nth-child(1) { animation: subtleFloat 8s ease-in-out infinite; }
-
-.btn-game {
-flex-direction: column;
-gap: 10px;
-padding: 16px 20px 20px 20px;
-height: auto;
-}
-
-.btn-game-img {
-width: 90%;
-max-width: 335px;
-height: auto;
-display: block;
-border-radius: 12px;
-}
-.btn:nth-child(2) { animation: subtleFloat 9.5s ease-in-out infinite reverse; }
-.btn:nth-child(3) { animation: subtleFloat 11s ease-in-out infinite; }
-
-/* Shine Effect */
 .btn::after {
 content: "";
 position: absolute;
@@ -180,7 +174,7 @@ animation: shineLoop 6s infinite ease-in-out;
 
 .btn:hover {
 transform: translateY(-5px) scale(1.05);
-box-shadow: 0 0 22px var(--glow-color);
+box-shadow: 0 0 22px var(--btn-glow);
 }
 
 .btn:hover::after {
@@ -188,172 +182,436 @@ animation: shineLoop 2s infinite linear;
 background: linear-gradient(90deg, transparent, rgba(255,255,255,0.7), transparent);
 }
 
-/* Form Styling */
-form {
-display: none;
-flex-direction: column;
-align-items: center;
-margin-top: 2rem;
-background: rgba(0, 0, 0, 0.15);
-padding: 25px;
-border-radius: 30px;
-backdrop-filter: blur(8px);
-animation: subtleFloat 10s ease-in-out infinite;
+.btn.small { width: auto; font-size: 1.15rem; padding: 10px 22px; animation: none; }
+.btn.flat { animation: none; }
+.btn[aria-disabled="true"] { opacity: 0.55; }
+
+@media (max-width: 600px) {
+h1 { font-size: 3.5rem; }
 }
 
-form input, form textarea {
-font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+/* ============ New: sections ============ */
+.section {
+width: 100%;
+max-width: 980px;
+margin: 90px auto 0;
+scroll-margin-top: 30px;
+}
+
+.section h2 {
+font-family: 'KCOraleSans', sans-serif;
+font-size: 2.9rem;
+letter-spacing: 3px;
+text-transform: uppercase;
+margin: 0 0 8px;
+animation: flicker 5s infinite;
+}
+
+.section .sub {
+font-family: 'KCPelletierLight', 'Courier New', monospace;
+font-size: 1.2rem;
+line-height: 1.5;
+margin: 0 0 26px;
+text-shadow: 0 0 10px var(--glow-color);
+}
+
+.section .sub .sub-small { font-size: 1rem; font-weight: 300; opacity: 0.82; }
+
+.glass {
+background: rgba(0, 0, 0, 0.28);
+backdrop-filter: blur(10px);
+border: 1px solid rgba(255, 255, 255, 0.15);
+border-radius: 28px;
+color: #fff;
+box-shadow: 0 10px 40px rgba(0,0,0,0.35);
+}
+
+.toast {
+position: fixed;
+left: 50%;
+bottom: 110px;
+transform: translateX(-50%) translateY(10px);
+background: rgba(0,0,0,0.8);
+color: #fff;
+font-family: 'KCPelletierLight', 'Courier New', monospace;
+padding: 12px 22px;
+border-radius: 40px;
+border: 1px solid rgba(255,255,255,0.2);
+opacity: 0;
+pointer-events: none;
+transition: all 0.35s ease;
+z-index: 300;
+max-width: 88vw;
+}
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+/* ============ Desk scene (3D) ============ */
+.desk-scene { width: 100%; max-width: max(300px, min(600px, calc((100svh - 150px) * 0.7))); margin: 0 auto; }
+@media (max-width: 600px) { .desk-scene { width: calc(100% + 24px); max-width: none; margin: 0 -12px; } }
+.viewer.desk-viewer { aspect-ratio: 7 / 10; background: none; cursor: default; border-radius: 0; }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+/* Print-your-own STL button, under the single piece display */
+.diy-row { display: flex; justify-content: center; margin: -4px 0 0; }
+.btn.diy-btn { width: auto; max-width: 100%; padding: 8px 18px; font-family: 'KCPelletierLight', 'Courier New', monospace; font-size: 1rem; animation: none; }
+.diy-btn[aria-disabled="true"] { pointer-events: none; }
+
+/* Symbols the heading font does not have: plain outlined sans-serif */
+.sym { font-family: Arial, Helvetica, sans-serif; font-weight: 700; -webkit-text-fill-color: transparent; -webkit-text-stroke: 0.05em currentColor; }
+
+/* ============ Product grid + cards (reusable) ============ */
+.grid {
+display: grid;
+grid-template-columns: 1fr;
+gap: 22px;
+}
+@media (min-width: 820px) {
+.grid { grid-template-columns: 1fr 1fr; }
+.product.deluxe { grid-column: 1 / -1; flex-direction: row; align-items: stretch; }
+.product.deluxe .viewer { flex: 1.1; aspect-ratio: auto; min-height: 340px; }
+.product.deluxe .info { flex: 1; justify-content: center; }
+}
+
+.product {
+display: flex;
+flex-direction: column;
+gap: 14px;
+padding: 14px;
+color: #fff;
+background: rgba(0, 0, 0, 0.28);
+backdrop-filter: blur(10px);
+border: 1px solid rgba(255,255,255,0.15);
+border-radius: 28px;
+box-shadow: 0 10px 40px rgba(0,0,0,0.35);
+text-align: left;
+}
+
+.product.deluxe {
+border: 1.5px solid transparent;
+background:
+linear-gradient(rgb(34, 18, 16), rgb(34, 18, 16)) padding-box,
+linear-gradient(120deg, #ff9ad5, #9ad1ff, #b6ffb0, #ffe28a, #ff9ad5, #9ad1ff) border-box;
+background-size: 100% 100%, 300% 300%;
+animation: irid 8s linear infinite;
+}
+@keyframes irid { to { background-position: 0 0, 300% 0; } }
+
+.viewer {
+position: relative;
+width: 100%;
+aspect-ratio: 4 / 3;
+border-radius: 20px;
+overflow: hidden;
+background: radial-gradient(circle at 50% 40%, rgba(255,255,255,0.16), rgba(0,0,0,0.3));
+cursor: grab;
+touch-action: pan-y;
+user-select: none;
+-webkit-user-select: none;
+}
+.viewer.grabbing { cursor: grabbing; }
+.viewer canvas { width: 100%; height: 100%; display: block; }
+.viewer .hint {
+position: absolute;
+bottom: 8px;
+right: 14px;
+font-family: 'KCPelletierLight', 'Courier New', monospace;
+font-size: 0.75rem;
+letter-spacing: 1px;
+opacity: 0.7;
+pointer-events: none;
+}
+.viewer.nogl::before {
+content: "3D preview unavailable";
+position: absolute;
+inset: 0;
+display: flex;
+align-items: center;
+justify-content: center;
+font-family: 'KCPelletierLight', 'Courier New', monospace;
+opacity: 0.7;
+}
+
+.product .info { display: flex; flex-direction: column; gap: 10px; padding: 4px 6px 6px; }
+.product h3 {
+font-family: 'KCOraleSans', sans-serif;
+font-size: 2.1rem;
+letter-spacing: 2px;
+text-transform: uppercase;
+margin: 0;
+}
+.badge {
+align-self: flex-start;
+font-family: 'KCPelletierLight', 'Courier New', monospace;
+font-size: 0.8rem;
+letter-spacing: 1.5px;
+text-transform: uppercase;
+padding: 4px 12px;
+border-radius: 30px;
+background: linear-gradient(135deg, var(--btn-tan-start), var(--btn-tan-end));
+color: #000;
+}
+.product .blurb { font-family: 'KCPelletierLight', 'Courier New', monospace; font-size: 1.05rem; line-height: 1.45; margin: 0; }
+.product ul.inc { margin: 0; padding-left: 20px; font-family: 'KCPelletierLight', 'Courier New', monospace; font-size: 0.95rem; line-height: 1.6; opacity: 0.9; }
+.optlabel { font-family: 'KCPelletierTyped', 'Courier New', monospace; font-size: 0.85rem; letter-spacing: 1.5px; text-transform: uppercase; opacity: 0.8; margin-top: 4px; }
+
+.buyrow { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 4px; }
+.price { font-family: 'KCOraleSans', sans-serif; font-size: 2.3rem; }
+.price s { font-size: 1.1rem; opacity: 0.55; margin-right: 8px; }
+
+.swatches, .chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.sw {
+width: 30px;
+height: 30px;
+border-radius: 50%;
+border: 2px solid rgba(255,255,255,0.35);
+padding: 0;
+cursor: var(--hand);
+transition: transform 0.2s;
+}
+.sw:hover { transform: scale(1.15); }
+.sw.sel { border-color: #fff; box-shadow: 0 0 0 3px rgba(255,255,255,0.35); }
+.chip {
+font-family: 'KCStrikerSans', sans-serif;
+font-size: 0.95rem;
+color: #fff;
+background: rgba(255,255,255,0.08);
+border: 1px solid rgba(255,255,255,0.35);
+padding: 6px 14px;
+border-radius: 30px;
+cursor: var(--hand);
+transition: all 0.2s;
+}
+.chip:hover { background: rgba(255,255,255,0.18); }
+.chip.sel { background: linear-gradient(135deg, var(--btn-tan-start), var(--btn-tan-end)); color: #000; border-color: #000; }
+
+details.stl { font-family: 'KCStrikerSans', sans-serif; font-size: 0.95rem; }
+.product details.more { font-family: 'KCStrikerSans', sans-serif; font-size: 0.95rem; }
+.product details.more summary { opacity: 0.9; }
+.product details.more ul.inc { margin: 8px 0 0; }
+details.stl summary { cursor: var(--hand); opacity: 0.9; }
+details.stl .stl-links { display: flex; flex-wrap: wrap; gap: 8px 16px; margin-top: 8px; }
+details.stl a { color: #ffecd2; }
+
+/* ============ Order sheet ============ */
+dialog {
+border: none;
+padding: 0;
+border-radius: 28px;
+width: min(92vw, 460px);
+max-height: 90vh;
+background: linear-gradient(160deg, #6a3328, #3a1a16);
+color: #fff;
+box-shadow: 0 20px 60px rgba(0,0,0,0.7);
+}
+dialog::backdrop { background: rgba(0,0,0,0.6); backdrop-filter: blur(4px); }
+.sheet { padding: 24px 22px 26px; text-align: left; font-family: 'KCPelletierLight', 'Courier New', monospace; display: flex; flex-direction: column; gap: 12px; }
+.sheet h3 { font-family: 'KCOraleSans', sans-serif; font-size: 2rem; letter-spacing: 2px; text-transform: uppercase; margin: 0; padding-right: 36px; }
+.sheet .x {
+position: absolute;
+top: 14px;
+right: 16px;
+width: 36px;
+height: 36px;
+border-radius: 50%;
+border: 1px solid rgba(255,255,255,0.35);
+background: rgba(0,0,0,0.25);
+color: #fff;
+font-size: 1.3rem;
+cursor: var(--hand);
+}
+.sheet label { display: flex; flex-direction: column; gap: 4px; font-size: 0.85rem; letter-spacing: 1.5px; text-transform: uppercase; opacity: 0.9; }
+.sheet input, .sheet textarea {
+font-family: 'KCPelletierLight', 'Courier New', monospace;
 padding: 12px;
 border-radius: 15px;
 border: 1px solid #000;
-margin-bottom: 10px;
-width: 250px;
-background: rgba(255, 255, 255, 0.8);
+background: rgba(255,255,255,0.85);
 font-size: 1rem;
-}
-
-.success-message {
-display: none;
-font-family: 'KCStrikerSans', sans-serif;
-color: #fff;
-margin-top: 1rem;
-text-shadow: 0 0 10px green;
-font-size: 1.2rem;
-}
-
-/* Nav Cluster centered, adaptive */
-.nav-cluster {
-position: fixed;
-bottom: 40px;
-left: 50%;
-transform: translateX(-50%);
-display: flex;
-background: rgba(0, 0, 0, 0.3);
-backdrop-filter: blur(12px);
-border: 1px solid rgba(255, 255, 255, 0.15);
-border-radius: 100px;
-padding: 8px 15px;
-box-shadow: 0 10px 40px rgba(0,0,0,0.6);
-z-index: 100;
-max-width: 94vw;
+width: 100%;
 box-sizing: border-box;
 }
+.sheet textarea { min-height: 64px; resize: vertical; }
+.shipopts { display: flex; flex-direction: column; gap: 8px; margin-top: 6px; }
+.sheet .shipopts label { flex-direction: row; align-items: center; gap: 10px; text-transform: none; letter-spacing: 0.3px; font-size: 0.95rem; opacity: 1; cursor: var(--hand); }
+.sheet .shipopts input { width: 18px; height: 18px; padding: 0; margin: 0; flex: none; accent-color: #ffd36b; cursor: var(--hand); }
+.sheet .totals { background: rgba(0,0,0,0.25); border-radius: 18px; padding: 12px 16px; font-size: 1.05rem; line-height: 1.7; }
+.sheet .totals .row { display: flex; justify-content: space-between; }
+.sheet .totals .tot { font-family: 'KCOraleSans', sans-serif; font-size: 1.5rem; border-top: 1px solid rgba(255,255,255,0.2); margin-top: 4px; padding-top: 6px; }
+.sheet .note { font-size: 0.9rem; line-height: 1.5; opacity: 0.85; margin: 0; }
+.sheet .note a { color: #ffecd2; }
+.sheet .stepper { display: flex; align-items: center; gap: 14px; font-size: 1.3rem; }
+.sheet .stepper button { width: 38px; height: 38px; border-radius: 50%; border: 1px solid rgba(255,255,255,0.4); background: rgba(255,255,255,0.1); color: #fff; font-size: 1.3rem; cursor: var(--hand); }
+.sheet .btn { width: 100%; font-size: 1.25rem; padding: 14px 18px; animation: none; }
+.sheet .ok { color: #b6ffb0; }
 
-.nav-cluster a {
-font-family: 'KCStrikerSans', sans-serif;
-text-decoration: none;
-color: #fff;
-padding: 8px 12px;
-font-size: 0.8rem;
-text-transform: uppercase;
-letter-spacing: 1.5px;
-transition: all 0.3s;
-white-space: nowrap;
-}
+/* ============ v8 additions ============ */
+/* no blue flash when tapping the 3D scenes on phones */
+.viewer, .viewer *, .title-die, .title-die * { -webkit-tap-highlight-color: transparent; -webkit-touch-callout: none; -webkit-user-select: none; user-select: none; outline: none; }
 
-.nav-cluster a:hover {
-color: #ffecd2;
-text-shadow: 0 0 12px var(--glow-color);
-transform: scale(1.1);
-}
+/* desk sits right under the title now */
+#play { margin-top: 14px; }
 
-.nav-divider {
-width: 1px;
-height: 14px;
-background: rgba(255, 255, 255, 0.2);
-align-self: center;
-margin: 0 4px;
-}
+/* kit cards: the die and the coin float in the front corners of the same 3D space (no boxes), so the hint moves to the top */
+.viewer.has-trays .hint { top: 8px; bottom: auto; left: 0; right: 0; text-align: center; }
+/* single piece card: a shorter preview with less empty room around it */
+.product.single .viewer { aspect-ratio: 3 / 2; }
 
-@media (max-width: 600px) {
-.nav-cluster {
-padding: 6px 8px;
-width: 94%;
-justify-content: space-between;
-}
-.nav-cluster a {
-font-size: 0.62rem;
-padding: 8px 4px;
-}
-.nav-divider {
-margin: 0 2px;
-}
-}
+/* single piece card: the piece picker sits on top */
+.top-opts { display: flex; flex-direction: column; gap: 8px; padding: 0 6px; }
 
-@media (max-width: 400px) {
-.nav-cluster a {
-font-size: 0.55rem;
-padding: 6px 3px;
-}
-}
+/* ============ v13: stylized pixel hand pointer for anything clickable (same look as the pixel arrow on the TV menu) ============ */
+:root { --hand: url("data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20width%3D%2728%27%20height%3D%2730%27%20shape-rendering%3D%27crispEdges%27%3E%3Cpath%20d%3D%27M9%202%20L13%202%20L14%204%20L14%2012%20L16%2011%20L19%2011%20L20%2012%20L23%2012%20L24%2013%20L26%2014%20L26%2022%20L22%2028%20L11%2028%20L7%2022%20L3%2016%20L4%2014%20L6%2014%20L8%2016%20L9%2016%20Z%27%20fill%3D%27%23ffd36b%27%20stroke%3D%27%23000%27%20stroke-width%3D%272%27%20stroke-linejoin%3D%27miter%27%2F%3E%3Cpath%20d%3D%27M14%2014%20L14%2019%20M18%2014%20L18%2019%20M22%2015%20L22%2019%27%20stroke%3D%27%23000%27%20stroke-width%3D%271.5%27%20fill%3D%27none%27%2F%3E%3C%2Fsvg%3E") 11 2, pointer; }
+a[href], button, summary, [role="button"] { cursor: var(--hand); }
+button:disabled { cursor: default; }
 
-/* Tin Egg Easter Egg */
-#tinEgg {
-display: block;
-width: 55px;
-height: 55px;
-margin-top: 30px;
-opacity: 0;
-transform: translateY(40px);
-transition: opacity 0.9s ease, transform 0.9s cubic-bezier(0.34, 1.56, 0.64, 1);
+/* ============ v12: rack bar along the very bottom (replaces the floating nav pill). v13: content is centered with a max width, and on narrow screens it shrinks to one thin row with a slide-out menu ============ */
+body { padding-bottom: 96px; }
+.rack {
+position: fixed; left: 0; right: 0; bottom: 0; z-index: 100;
+padding: 7px 34px calc(7px + env(safe-area-inset-bottom));
+background: linear-gradient(#3b3b40, #202023 16%, #151517 84%, #0a0a0b);
+border-top: 2px solid #5a5a60;
+box-shadow: 0 -6px 24px rgba(0,0,0,0.55), inset 0 1px 0 rgba(255,255,255,0.2);
 }
-
-#tinEgg img {
-width: 100%;
-height: 100%;
-object-fit: contain;
-display: block;
-filter: drop-shadow(0 0 10px var(--glow-color));
+.rack-in { position: relative; display: flex; align-items: center; gap: 8px; max-width: 1180px; margin: 0 auto; }
+/* rack ears: a screw at each end */
+.rack::before, .rack::after { content: ""; position: absolute; top: 50%; width: 13px; height: 13px; margin-top: -6px; border-radius: 50%; background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 10'%3E%3Cpath d='M2.7 3.1 7.3 7.7M7.3 3.1 2.7 7.7' stroke='%23ffffff' stroke-opacity='.3' stroke-width='1.5' stroke-linecap='round'/%3E%3Cpath d='M2.7 2.6 7.3 7.2M7.3 2.6 2.7 7.2' stroke='%23141416' stroke-width='1.6' stroke-linecap='round'/%3E%3C/svg%3E") center / 74% no-repeat, radial-gradient(circle at 35% 30%, #d6d6db, #5a5a60 60%, #222); box-shadow: 0 1px 2px rgba(0,0,0,0.8); }
+.rack::before { left: 10px; }
+.rack::after { right: 10px; transform: rotate(35deg); }   /* turned a bit, like a real screw */
+.rack-nav, .rack-ctl { display: flex; align-items: center; gap: 8px; }
+.rack-ctl { margin-left: auto; }
+/* chunky 3D rounded buttons. Pressed in and lit in their own color when clicked or switched on. */
+.rk {
+--c: #9ad1ff;
+font-family: 'KCStrikerSans', sans-serif; font-size: 0.72rem; letter-spacing: 1.2px; text-transform: uppercase; text-decoration: none; white-space: nowrap;
+color: #e9e9ee; background: linear-gradient(#70707a, #4a4a52 55%, #3a3a41);
+border: 1px solid #141416; border-radius: 10px; padding: 7px 12px 7px 10px;
+display: inline-flex; align-items: center; justify-content: center; gap: 7px;
+cursor: var(--hand); position: relative; top: 0;
+box-shadow: 0 3px 0 #131315, 0 5px 7px rgba(0,0,0,0.55), inset 0 1px 0 rgba(255,255,255,0.3);
+transition: transform 0.06s, box-shadow 0.06s, background 0.15s, color 0.15s;
+-webkit-tap-highlight-color: transparent;
 }
-
-#tinEgg.peek {
-opacity: 1;
-animation: eggFloat 6s ease-in-out infinite 0.9s;
+.rk::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: #1c1c1f; box-shadow: inset 0 1px 1px rgba(0,0,0,0.8); transition: all 0.15s; }
+.rk:hover { filter: brightness(1.14); }
+.rk:active, .rk.lit, .rk[aria-pressed="true"] {
+transform: translateY(3px); color: var(--c); text-shadow: 0 0 8px var(--c);
+background: linear-gradient(#2a2a2f, #3a3a40);
+border-color: var(--c);
+box-shadow: 0 0 0 #131315, inset 0 3px 8px rgba(0,0,0,0.8), 0 0 12px var(--c);
 }
-
-#tinEgg.peek img {
-transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-transform: scale(1);
+.rk:active::before, .rk.lit::before, .rk[aria-pressed="true"]::before { background: var(--c); box-shadow: 0 0 8px 2px var(--c); }
+.c-home { --c: #6fb4ff; } .c-game { --c: #6dff9a; } .c-breathe { --c: #5ff0e0; } .c-move { --c: #ffb35a; } .c-play { --c: #6dff9a; }
+.c-play { min-width: 44px; padding: 7px 10px; font-size: 0.8rem; }
+.c-menu { display: none; }
+.burger { display: block; width: 14px; height: 9px; background: linear-gradient(currentColor, currentColor) 0 0 / 100% 2px no-repeat, linear-gradient(currentColor, currentColor) 0 50% / 100% 2px no-repeat, linear-gradient(currentColor, currentColor) 0 100% / 100% 2px no-repeat; }
+/* mute: glows red; pressed = inverted, depressed */
+.c-mute { --c: #ff3b30; min-width: 80px; color: #ff6a5c; border-color: #ff3b30; text-shadow: 0 0 8px rgba(255,59,48,0.9); box-shadow: 0 3px 0 #131315, 0 0 10px rgba(255,59,48,0.7), inset 0 0 6px rgba(255,59,48,0.35); }
+.c-mute::before { background: #ff3b30; box-shadow: 0 0 6px 1px #ff3b30; }
+.c-mute:active, .c-mute[aria-pressed="true"] { background: #ff3b30; color: #2a0705; text-shadow: none; box-shadow: inset 0 3px 8px rgba(0,0,0,0.7), inset 0 0 0 1px rgba(0,0,0,0.35); }
+.c-mute:active::before, .c-mute[aria-pressed="true"]::before { background: #2a0705; box-shadow: none; }
+/* little LCD that scrolls the song title */
+.rack-lcd { flex: 1 1 170px; min-width: 70px; height: 30px; position: relative; overflow: hidden; border-radius: 6px; background: #07140b; border: 1px solid #000; box-shadow: inset 0 2px 6px rgba(0,0,0,0.9), 0 1px 0 rgba(255,255,255,0.14); }
+/* three copies of the title side by side, sliding left one copy at a time, so the scroll never restarts or leaves a gap */
+.lcd-track { position: absolute; left: 0; top: 0; display: flex; white-space: nowrap; opacity: 0.5; animation: lcdScroll 11s linear infinite; will-change: transform; }
+.lcd-track span { flex: none; padding-right: 3.5em; line-height: 30px; font-family: 'Courier New', Courier, monospace; font-weight: 700; font-size: 0.85rem; letter-spacing: 2px; color: #64ff8f; text-shadow: 0 0 6px rgba(100,255,143,0.8); }
+.rack-lcd.on .lcd-track { opacity: 1; }
+@keyframes lcdScroll { to { transform: translateX(-33.3333%); } }
+/* volume knob */
+.rk-vol { display: inline-flex; align-items: center; gap: 6px; font-family: 'KCStrikerSans', sans-serif; font-size: 0.6rem; letter-spacing: 1.2px; text-transform: uppercase; color: #b8b8c0; }
+.rk-knob { position: relative; width: 38px; height: 38px; border-radius: 50%; background: conic-gradient(#5a5a62, #26262a, #707078, #26262a, #5a5a62); border: 2px solid #101012; box-shadow: 0 3px 6px rgba(0,0,0,0.7), inset 0 1px 0 rgba(255,255,255,0.3); cursor: grab; touch-action: none; -webkit-tap-highlight-color: transparent; outline: none; }
+.rk-knob::after { content: ""; position: absolute; left: 50%; top: 3px; width: 3px; height: 13px; margin-left: -1.5px; border-radius: 2px; background: #fff; box-shadow: 0 0 6px #fff; transform-origin: 50% 16px; transform: rotate(var(--a, 0deg)); }
+.rk-knob:hover, .rk-knob:focus-visible, .rk-knob.turning { box-shadow: 0 3px 6px rgba(0,0,0,0.7), inset 0 1px 0 rgba(255,255,255,0.3), 0 0 12px rgba(255,194,122,0.75); }
+.rk-knob.turning { cursor: grabbing; }
+@media (max-width: 860px) {   /* narrow screens: one thin row, Game / Breathe / Move / Store move into the slide-out menu */
+body { padding-bottom: 64px; }
+.rack { padding: 6px 8px calc(6px + env(safe-area-inset-bottom)); }
+.rack::before, .rack::after { display: none; }
+.rack-in { gap: 6px; }
+.c-menu { display: inline-flex; }
+.rack-nav { position: absolute; left: 0; bottom: calc(100% + 16px); flex-direction: column; align-items: stretch; gap: 8px; padding: 10px; border-radius: 14px; background: linear-gradient(#2c2c31, #151517); border: 1px solid #4a4a50; box-shadow: 0 8px 22px rgba(0,0,0,0.6); opacity: 0; transform: translateY(14px); pointer-events: none; visibility: hidden; transition: opacity 0.18s, transform 0.18s, visibility 0s 0.18s; }
+.rack.open .rack-nav { opacity: 1; transform: none; pointer-events: auto; visibility: visible; transition: opacity 0.18s, transform 0.18s; }
+.rack-nav .rk { font-size: 0.8rem; letter-spacing: 1px; padding: 9px 18px 9px 12px; justify-content: flex-start; min-width: 150px; }
+.rack-ctl { gap: 6px; }
+.rk { font-size: 0.6rem; letter-spacing: 0.6px; padding: 6px 8px 6px 7px; gap: 5px; }
+.rk-vol-label, .rk .more { display: none; }
+.c-play { min-width: 36px; padding: 6px 8px; }
+.c-mute { min-width: 62px; }
+.rack-lcd { min-width: 50px; flex-basis: 60px; height: 26px; }
+.rack-lcd .lcd-track span { line-height: 26px; font-size: 0.72rem; letter-spacing: 1.5px; }
+.rk-knob { width: 30px; height: 30px; }
+.rk-knob::after { height: 10px; transform-origin: 50% 10px; }
 }
+@media (min-width: 861px) and (max-width: 1000px) { .rk-vol-label { display: none; } }
+@media (max-width: 380px) { .rack-in, .rack-ctl { gap: 4px; } .rk { padding: 6px 6px 6px 5px; } .c-mute { min-width: 58px; } .rack-lcd { min-width: 34px; flex-basis: 34px; } }
+@media (prefers-reduced-motion: reduce) { .lcd-track { animation: none; } .lcd-track span + span { display: none; } }
 
-#tinEgg.peek:hover img {
-transform: scale(1.15);
-}
+.lore-actions { display: flex; gap: 10px; flex-wrap: wrap; }
 
-@keyframes eggFloat {
-0%, 100% { transform: translateY(0); }
-50% { transform: translateY(-8px); }
-}
+/* ============ Home page additions ============ */
+.desk-hint { font-family: 'KCPelletierLight', 'Courier New', monospace; font-size: 1rem; line-height: 1.5; margin: -34px 0 0; position: relative; pointer-events: none; opacity: 0.78; text-shadow: 0 0 10px var(--glow-color); }
+/* the game pieces shop stays hidden until the die rolls, the coin flips or a crew member is tapped */
+#kits[hidden] { display: none; }
+#kits { opacity: 0; transform: translateY(24px); transition: opacity 0.6s ease, transform 0.6s ease; }
+#kits.show { opacity: 1; transform: none; }
+#kits #shopClose { margin-top: 26px; }
+#links { margin-top: 40px; display: flex; flex-direction: column; align-items: center; }
+.btn-album { flex-direction: column; gap: 2px; line-height: 1.15; }
+.btn-album .btn-sub { font-family: 'KCPelletierLight', 'Courier New', monospace; font-size: 0.62em; letter-spacing: 1.5px; text-transform: uppercase; }
+/* mailing list form (from the old home page) */
+#emailForm { display: none; flex-direction: column; align-items: center; margin-top: 2rem; background: rgba(0, 0, 0, 0.15); padding: 25px; border-radius: 30px; backdrop-filter: blur(8px); animation: subtleFloat 10s ease-in-out infinite; }
+#emailForm input, #emailForm textarea { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; padding: 12px; border-radius: 15px; border: 1px solid #000; margin-bottom: 10px; width: 250px; max-width: 100%; box-sizing: border-box; background: rgba(255, 255, 255, 0.8); font-size: 1rem; }
+.success-message { display: none; font-family: 'KCStrikerSans', sans-serif; color: #fff; margin-top: 1rem; text-shadow: 0 0 10px green; font-size: 1.2rem; }
+/* tin egg easter egg (from the old home page) */
+#tinEgg { display: block; width: 55px; height: 55px; margin-top: 30px; opacity: 0; transform: translateY(40px); transition: opacity 0.9s ease, transform 0.9s cubic-bezier(0.34, 1.56, 0.64, 1); }
+#tinEgg img { width: 100%; height: 100%; object-fit: contain; display: block; filter: drop-shadow(0 0 10px var(--glow-color)); }
+#tinEgg.peek { opacity: 1; animation: eggFloat 6s ease-in-out infinite 0.9s; }
+#tinEgg.peek img { transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); transform: scale(1); }
+#tinEgg.peek:hover img { transform: scale(1.15); }
+@keyframes eggFloat { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
 
-@keyframes eggBounce {
-0%, 100% { transform: translateY(0) scale(1); }
-50% { transform: translateY(-10px) scale(1.1); }
+/* ============ Reduced motion ============ */
+@media (prefers-reduced-motion: reduce) {
+html { scroll-behavior: auto; }
+body, h1, .floating-text, .btn, .section h2, .product.deluxe, #emailForm { animation: none !important; }
 }
 </style>
+<script>
+/* v10: every load, refresh or return starts at the very top (no remembered scroll spot, no #section jump) */
+try { if ('scrollRestoration' in history) history.scrollRestoration = 'manual'; } catch (e) {}
+try { if (location.hash) history.replaceState(null, '', location.pathname + location.search); } catch (e) {}
+</script>
 </head>
 <body>
 
 <div class="content">
-<h1>FEARJOY</h1>
 
-<p class="floating-text">
-THE DEBUT ALBUM: COMING 2026.<br>
-HERE'S A PREVIEW:
-</p>
+<!-- ============ HERO ============ -->
+<h1>Fearjoy</h1>
 
-<iframe 
-src="https://samply.app/embed/347SJuDJQmYf8BWVJWvf?si=aWCKXAv7EaaWRvnvWdSXZ7TC4G93" 
-frameborder="0"
-allowtransparency="true"
-style="width: 85%; max-width: 500px; height: 256px; border-radius: 25px; border: 10px solid rgba(255, 255, 255, 0.12); box-shadow: 0 0 25px rgba(0,0,0,0.4); animation: subtleFloat 12s ease-in-out infinite;"
-></iframe>
+<!-- ============ TABLE (3D scene, the main attraction). TV: play the game. Crew, die, coin: the game pieces. Vinyl: the record (soon). Radio and the rack bar play button: streaming (soon). ============ -->
+<section class="section" id="play">
+<div class="desk-scene">
+<div class="viewer desk-viewer" data-viewer="desk"></div>
+<a class="sr-only" href="/game">Play the game online</a>
+</div>
+<p class="desk-hint">Tap the TV to play.<br>Tap the crew to see the game pieces.</p>
+</section>
 
+<!-- ============ GAME PIECES (hidden until the die rolls, the coin flips or a crew member is tapped) ============ -->
+<section class="section" id="kits" hidden>
+<h2>Game Pieces</h2>
+<p class="sub">Handmade by Jesse:<br>Mini sculptures of the band (~2").<br><span class="sub-small">Collectible limited-edition companion to The Game.</span></p>
+
+<div class="grid" id="productGrid"></div>
+<button type="button" class="btn small" id="shopClose">Back to the table</button>
+</section>
+
+<!-- ============ BUTTONS ============ -->
+<section class="section" id="links">
 <div class="button-stack">
-<button class="btn" id="mailingListButton">🎧 NOTIFY ME WHEN IT DROPS!</button>
-<a href="/game" class="btn btn-game">
-  🎲 PLAY THE GAME (FREE)
-  <img src="31_WEB_GAME.png" alt="" class="btn-game-img">
-</a>
+<button class="btn" id="mailingListButton" type="button">🎧 NOTIFY ME WHEN IT DROPS!</button>
+<a href="/LP1/" class="btn btn-album">💿 FEARJOY: THE GAME<span class="btn-sub">the debut album</span></a>
 <a href="mailto:grant@freejoy.club" class="btn">📧 CONTACT US</a>
 </div>
 
@@ -366,76 +624,2126 @@ style="width: 85%; max-width: 500px; height: 256px; border-radius: 25px; border:
 <p class="success-message" id="successMessage">Thanks! We'll send it over when it's done.</p>
 
 <a href="/clemmy-g" id="tinEgg" aria-label="???">
-<img src="images/tin-egg.png" alt="">
+<img src="/images/tin-egg.png" alt="">
 </a>
+</section>
+
+<noscript><p class="floating-text" style="font-size:1.1rem">This page needs JavaScript for the table. The game is at <a href="/game">/game</a>.</p></noscript>
 </div>
 
-<div class="nav-cluster">
-<a href="https://freejoy.club">Home</a>
-<div class="nav-divider"></div>
-<a href="/game">Game</a>
-<div class="nav-divider"></div>
-<a href="/breathe">Breathe</a>
-<div class="nav-divider"></div>
-<a href="/move">Move</a>
+<!-- ============ ORDER SHEET ============ -->
+<dialog id="orderDlg">
+<div class="sheet">
+<button class="x" type="button" id="sheetClose" aria-label="Close">×</button>
+<h3 id="sheetTitle"></h3>
+<div id="sheetOptions"></div>
+<div id="shipOpts"></div>
+<label>Your name<input id="oName" type="text" autocomplete="name"></label>
+<label>Email or Instagram<input id="oContact" type="text" autocomplete="email"></label>
+<label>Ship to (or we'll ask)<textarea id="oShip" autocomplete="street-address"></textarea></label>
+<div class="totals" id="sheetTotals"></div>
+<a class="btn" id="sendEmail" href="#">1. Email the order</a>
+<button class="btn" id="copyDM" type="button">Or copy it for a DM</button>
+<a class="btn" id="venmoBtn" href="#" target="_blank" rel="noopener">2. Pay with Venmo</a>
+<p class="note" id="sheetNote"></p>
+</div>
+</dialog>
+
+<dialog id="soonDlg">
+<div class="sheet">
+<h3 id="soonTitle">Streaming</h3>
+<p id="soonMsg">Streaming links coming soon.</p>
+<div class="lore-actions">
+<button class="btn" id="soonOk" type="button">Close</button>
+</div>
+</div>
+</dialog>
+
+<dialog id="goDlg">
+<div class="sheet">
+<h3>Quick check</h3>
+<p id="goMsg"></p>
+<div class="lore-actions">
+<button class="btn" id="goYes" type="button">Yes, go</button>
+<button class="btn" id="goNo" type="button">Stay here</button>
+</div>
+</div>
+</dialog>
+
+<div class="toast" id="toast" role="status"></div>
+<div class="rack" role="toolbar" aria-label="Site menu and music">
+<div class="rack-in">
+<button type="button" class="rk c-menu" id="rackMenu" aria-label="Open the menu" aria-expanded="false" aria-controls="rackNav"><span class="burger"></span></button>
+<a class="rk c-home lit" href="/" id="rackHome" aria-current="page">Home</a>
+<nav class="rack-nav" id="rackNav">
+<a class="rk c-game" href="/game" data-go="Go play the game online?">Game</a>
+<a class="rk c-breathe" href="/breathe" data-go="Go to a page full of free, easy breathing exercises to feel your best?">Breathe</a>
+<a class="rk c-move" href="/move" data-go="Go to a page full of free, easy movement exercises to feel your best?">Move</a>
+</nav>
+<div class="rack-lcd on" id="rackLcd"><div class="lcd-track"><span>&#9654; FEARJOY - THE GAME (DEBUT ALBUM) - STREAMING SOON</span><span aria-hidden="true">&#9654; FEARJOY - THE GAME (DEBUT ALBUM) - STREAMING SOON</span><span aria-hidden="true">&#9654; FEARJOY - THE GAME (DEBUT ALBUM) - STREAMING SOON</span></div></div>
+<div class="rack-ctl">
+<button type="button" class="rk c-play" id="rackPlay" aria-label="Stream the music (coming soon)">&#9654;</button>
+<span class="rk-vol"><span class="rk-vol-label">Vol</span><span class="rk-knob" id="rackKnob" role="slider" tabindex="0" aria-label="Sound volume" aria-valuemin="0" aria-valuemax="100" aria-valuenow="50"></span></span>
+<button type="button" class="rk c-mute" id="muteBtn" aria-pressed="false" aria-label="Mute all sound">Mute</button>
+</div>
+</div>
 </div>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/STLLoader.js"></script>
 <script>
-const mailingListButton = document.getElementById('mailingListButton');
-const emailForm = document.getElementById('emailForm');
-const successMessage = document.getElementById('successMessage');
+// HOME (v1)
+const toTop = () => { try { window.scrollTo({ top: 0, left: 0, behavior: 'instant' }); } catch (e) { window.scrollTo(0, 0); } };
+toTop();
+window.addEventListener('load', toTop);
+window.addEventListener('pageshow', e => { if (e.persisted) toTop(); });
+(function () {
+'use strict';
 
-mailingListButton.addEventListener('click', () => {
-emailForm.style.display = 'flex';
-emailForm.scrollIntoView({ behavior: 'smooth' });
+/* =====================================================================
+   EASY EDIT AREA
+   ===================================================================== */
+const CONFIG = {
+  email: 'grant@freejoy.club',
+  venmo: 'grantclementi',          // Venmo handle, no @. Empty = we send a Venmo request after the order email.
+  instagramDM: 'https://ig.me/m/fearjoymusic',
+  useRealStl: true,                // busts load from each person's "stl" path below. false = placeholder shapes only
+  preferLite: true,                // try Jesse_Bust_lite.stl etc. first (about 1 MB each), then fall back to the full files
+  stlFolders: ['/LP1/', '/images/', './'],  // where to look for the STL files, in order. './' = the same folder as this page
+  tvImage: '/images/35-board.png?v=9',  // game board picture on the desk TV. The ?v=9 makes browsers fetch the newest copy: bump the number whenever you swap the file
+  sfxFolder: '/sfx/',              // sound effects (coinflip, dice1, dice2, dice5, 1up, slide1)
+  shipUS: 7,                       // continental US shipping, in dollars (added to the Venmo amount)
+  shippingNote: 'Shipping is confirmed by reply before you pay.'
+};
+
+const PEOPLE = [
+  { id: 'jesse',   name: 'Jesse',   stl: 'Jesse Bust.stl' },
+  { id: 'marco',   name: 'Marco',   stl: 'Marco Bust.stl' },
+  { id: 'grant',   name: 'Grant',   stl: 'Grant Bust.stl' },
+  { id: 'garrett', name: 'Garrett' },
+  { id: 'matt',    name: 'Matt' },
+  { id: 'isaac',   name: 'Isaac' }
+];
+
+const DIE_COLORS = [
+  { id: 'black',    name: 'Black',        hex: '#1c1c1c' },
+  { id: 'dkblue',   name: 'Dark blue',    hex: '#1f3f9e' },
+  { id: 'ltblue',   name: 'Light blue',   hex: '#6bb8f0' },
+  { id: 'purple',   name: 'Purple',       hex: '#7a3fc4' },
+  { id: 'red',      name: 'Red',          hex: '#d8342c' },
+  { id: 'rose',     name: 'Rose red',     hex: '#e0426f' },
+  { id: 'lime',     name: 'Yellow-green', hex: '#a8d62f' },
+  { id: 'green',    name: 'Green',        hex: '#2f9e44' },
+  { id: 'ltyellow', name: 'Light yellow', hex: '#f7ea7a' },
+  { id: 'orange',   name: 'Orange',       hex: '#f08a1c' }
+];
+
+/* Products. This array is the reusable storefront piece: later it can move to a JSON file. */
+const PRODUCTS = [
+  {
+    id: 'core-trio', type: 'kit', name: 'Core Trio Kit', price: 14, cta: 'Order',
+    pieces: ['jesse', 'marco', 'grant'],
+    colors: ['red', 'ltyellow', 'green', 'dkblue'],
+    blurb: 'Jesse, Marco and Grant, plus colored dice and the Fearjoy coin.',
+    includes: ['3 player pieces (3D printed)', 'Die in red, yellow, green or blue', 'Fearjoy coin']
+  },
+  {
+    id: 'full-band', type: 'kit', name: 'Full Band Kit', price: 18, cta: 'Order',
+    pieces: ['jesse', 'marco', 'grant', 'garrett', 'matt', 'isaac'],
+    colors: ['black', 'dkblue', 'ltblue', 'purple', 'red', 'rose', 'lime', 'green', 'ltyellow', 'orange'],
+    defaultDie: 'orange',
+    blurb: 'The whole band. Garrett, Matt and Isaac join the trio.',
+    includes: ['6 player pieces (3D printed)', 'Die in any of 10 colors', 'Fearjoy coin']
+  },
+  {
+    id: 'single', type: 'single', name: 'Single Piece', price: 6, cta: 'Pick pieces',
+    pieces: ['jesse'],
+    blurb: 'Just want one head? Grab as many as you like. No die or coin.',
+    includes: ['One 3D printed player piece each'],
+    diy: true
+  },
+  {
+    id: 'deluxe', type: 'deluxe', name: 'Angel Investor Edition', price: 444, cta: 'Inquire', badge: 'One of one',
+    pieces: ['jesse', 'marco', 'grant'],
+    blurb: 'The only one ever made. This hand-finished edition is the best way to support our fully-independent art.',
+    includes: ['Custom-painted player pieces: Jesse, Marco and Grant', 'Dichroic glass die (color-shifting, iridescent)', 'Handmade custom real-bronze Fear/Joy coin', 'Free entry to any future show'],
+    more: ['Heads are resin printed, not plastic', 'Signed record', 'Fully unique, collectible, handmade', 'Any piece of clothing from the full store', 'Handwritten lyric sheet', 'Added to the album credits']
+  }
+];
+
+/* ===================================================================== */
+
+const $ = (s, r) => (r || document).querySelector(s);
+const $$ = (s, r) => Array.from((r || document).querySelectorAll(s));
+const REDUCE = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+function money(n) {
+  const c = Math.round(n * 100);
+  return '$' + (c % 100 === 0 ? c / 100 : (c / 100).toFixed(2));
+}
+function esc(s) {
+  return String(s).replace(/[&<>"']/g, ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[ch]));
+}
+/* The heading font only has letters and numbers. Every other character is wrapped so it shows in plain outlined sans-serif. */
+function symHTML(str) {
+  return String(str).replace(/[^A-Za-z0-9\s]/g, ch => '<span class="sym">' + esc(ch) + '</span>');
+}
+function symifyNode(root) {
+  const w = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+  const nodes = [];
+  while (w.nextNode()) nodes.push(w.currentNode);
+  nodes.forEach(n => {
+    if (!/[^A-Za-z0-9\s]/.test(n.nodeValue)) return;
+    const span = document.createElement('span');
+    span.innerHTML = symHTML(n.nodeValue);
+    n.replaceWith(span);
+  });
+}
+
+let toastTimer;
+function toast(msg) {
+  const t = $('#toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 2600);
+}
+
+/* "coming soon" popup: used by the vinyl (the record) and by the radio and the rack bar play button (streaming) */
+const soonDlg = $('#soonDlg');
+function openSoon(title, msg) {
+  $('#soonTitle').textContent = title; $('#soonMsg').textContent = msg;
+  if (!soonDlg.open) { try { soonDlg.showModal(); } catch (x) { soonDlg.setAttribute('open', ''); } }
+}
+soonDlg.addEventListener('click', e => { if (e.target === soonDlg) soonDlg.close(); });
+$('#soonOk').addEventListener('click', () => soonDlg.close());
+
+/* =====================================================================
+   SOUND. Everything starts from a tap or click, which is what phones require.
+   - One shared AudioContext, created and resumed on the first tap (Safari and iPhone need this).
+   - Sound effects are decoded to buffers and played through one master volume (the volume knobs set it; the middle is the normal level).
+   ===================================================================== */
+const Sound = (() => {
+  const DIR = CONFIG.sfxFolder;
+  const AC = window.AudioContext || window.webkitAudioContext;
+  const SFX = ['coinflip.wav', 'dice1.wav', 'dice2.wav', 'dice5.wav', '1up.wav', 'slide1.wav'];
+  let ctx = null, master = null, muted = false, vol = 0.5;
+  const raw = {}, bufs = {}, decoding = {};
+  const DICE_SFX = ['dice1.wav', 'dice2.wav', 'dice5.wav'];
+  const VOL = { coin: 0.3, dice: 0.8, oneUp: 0.25, slide: 0.64 };   /* share of each file's original volume: coin 30%, dice 80%, 1up 25%, slide 64% */
+  const volCbs = [];
+  const level = () => (muted ? 0 : Math.min(1.5, vol * 2));
+  let lastSlide = 0, diceN = 0;   /* dice sounds go 1, 2, 5, 1, 2, 5 ... */
+
+  /* start downloading the effects right away (decoding has to wait for the first tap) */
+  SFX.forEach(n => { raw[n] = fetch(DIR + n).then(r => (r.ok ? r.arrayBuffer() : null)).catch(() => null); });
+
+  function ensure() {
+    if (!AC) return null;
+    if (!ctx) {
+      try {
+        ctx = new AC();
+        master = ctx.createGain();
+        master.gain.value = level();
+        master.connect(ctx.destination);
+      } catch (e) { ctx = null; return null; }
+      try { if (navigator.audioSession) navigator.audioSession.type = 'playback'; } catch (e) {}   /* iPhone: play even with the silent switch on */
+    }
+    if (ctx.state !== 'running') { try { const p = ctx.resume(); if (p && p.catch) p.catch(() => {}); } catch (e) {} }
+    return ctx;
+  }
+  function decode(name) {
+    if (bufs[name]) return Promise.resolve(bufs[name]);
+    if (decoding[name]) return decoding[name];
+    const c = ensure();
+    if (!c) return Promise.resolve(null);
+    const src = raw[name] || (raw[name] = fetch(DIR + name).then(r => (r.ok ? r.arrayBuffer() : null)).catch(() => null));
+    return (decoding[name] = src.then(ab => (ab ? new Promise((res, rej) => c.decodeAudioData(ab, res, rej)) : null))
+      .then(b => (bufs[name] = b)).catch(() => null));
+  }
+  function unlock() {
+    const c = ensure();
+    if (!c) return;
+    try { const s = c.createBufferSource(); s.buffer = c.createBuffer(1, 1, 22050); s.connect(c.destination); s.start(0); } catch (e) {}   /* silent blip wakes the audio engine on iPhone */
+    SFX.forEach(decode);
+  }
+  /* plays an effect and returns how long it lasts in ms (0 if it is not loaded yet) */
+  function play(name, gain) {
+    gain = gain == null ? 1 : gain;
+    const c = ensure();
+    if (!c) {   /* very old browser: plain audio element */
+      if (!muted) { try { const a = new Audio(DIR + name); a.volume = Math.min(1, gain); a.play().catch(() => {}); } catch (e) {} }
+      return 0;
+    }
+    const go = b => {
+      if (!b || muted) return;
+      try { const s = c.createBufferSource(), gn = c.createGain(); s.buffer = b; gn.gain.value = gain; s.connect(gn); gn.connect(master); s.start(0); } catch (e) {}
+    };
+    if (bufs[name]) { go(bufs[name]); return bufs[name].duration * 1000; }
+    decode(name).then(go);
+    return 0;
+  }
+  return {
+    unlock,
+    ready: () => !!ctx && ctx.state === 'running',
+    coin: () => play('coinflip.wav', VOL.coin),
+    dice: () => play(DICE_SFX[diceN++ % DICE_SFX.length], VOL.dice),
+    oneUp: () => play('1up.wav', VOL.oneUp),
+    slide: () => { const n = performance.now(); if (n - lastSlide < 250) return 0; lastSlide = n; return play('slide1.wav', VOL.slide); },   /* never stacks more than 4 a second */
+    isMuted: () => muted,
+    setMuted(m) { muted = !!m; if (master) master.gain.value = level(); return muted; },
+    getVolume: () => vol,
+    setVolume(v) {
+      vol = Math.max(0, Math.min(1, v));
+      if (master) master.gain.value = level();
+      volCbs.forEach(f => { try { f(vol); } catch (e) {} });
+      return vol;
+    },
+    /* tab hidden or page left: go quiet; it wakes up again when you return */
+    hide() { if (ctx && ctx.state === 'running') { try { ctx.suspend(); } catch (e) {} } },
+    show() { if (ctx && ctx.state !== 'running') { try { const r = ctx.resume(); if (r && r.catch) r.catch(() => {}); } catch (e) {} } },
+    onVolume(fn) { volCbs.push(fn); }
+  };
+})();
+
+/* ---------- State ---------- */
+const S = {};
+PRODUCTS.forEach(p => { S[p.id] = { die: p.defaultDie || 'red', qty: 1, view: 'jesse', pick: new Set() }; });
+const getP = id => PRODUCTS.find(p => p.id === id);
+
+/* =====================================================================
+   PRODUCT CARDS
+   ===================================================================== */
+function swatchesHTML(pid) {
+  return '<div class="swatches" role="group" aria-label="Die color">' + (getP(pid).colors || []).map(cid => DIE_COLORS.find(x => x.id === cid)).map(c =>
+    `<button type="button" class="sw" data-die="${pid}:${c.id}" style="background:${c.hex}" aria-label="${c.name}" title="${c.name}"></button>`
+  ).join('') + '</div>';
+}
+function chipsHTML(pid) {
+  return '<div class="chips" role="group" aria-label="Preview a piece">' + PEOPLE.map(pp =>
+    `<button type="button" class="chip" data-view="${pid}:${pp.id}">${pp.name}</button>`
+  ).join('') + '</div>';
+}
+
+function productCard(p) {
+  const el = document.createElement('article');
+  el.className = 'product ' + p.type;
+  el.id = 'p-' + p.id;
+  let opts = '', topOpts = '';
+  if (p.type === 'kit') opts = '<div class="optlabel">Die color</div>' + swatchesHTML(p.id);
+  if (p.type === 'single') topOpts = '<div class="top-opts"><div class="optlabel">Preview a piece</div>' + chipsHTML(p.id) + '</div>';
+  const diyBtn = p.diy ? '<div class="diy-row"><a class="btn small diy-btn" data-diy="' + p.id + '"></a></div>' : '';
+  el.innerHTML = `
+    ${topOpts}
+    <div class="viewer" data-viewer="${p.id}"><span class="hint">drag or tap to spin</span></div>
+    ${diyBtn}
+    <div class="info">
+      ${p.badge ? `<span class="badge">${esc(p.badge)}</span>` : ''}
+      <h3>${symHTML(p.name)}</h3>
+      <p class="blurb">${esc(p.blurb)}</p>
+      <ul class="inc">${p.includes.map(i => `<li>${esc(i)}</li>`).join('')}</ul>
+      ${p.more ? `<details class="more"><summary>More benefits</summary><ul class="inc">${p.more.map(i => `<li>${esc(i)}</li>`).join('')}</ul></details>` : ''}
+      ${opts}
+      <div class="buyrow">
+        <div class="price" data-price="${p.id}"></div>
+        <button type="button" class="btn small" data-order="${p.id}">${esc(p.cta)}</button>
+      </div>
+    </div>`;
+  return el;
+}
+
+const grid = $('#productGrid');
+PRODUCTS.forEach(p => grid.appendChild(productCard(p)));
+
+/* =====================================================================
+   3D VIEWERS
+   ===================================================================== */
+const viewers = {};
+const HAVE_GL = !!window.THREE;
+
+function makeMarbleCanvas(size) {
+  const c = document.createElement('canvas');
+  c.width = c.height = size;
+  const g = c.getContext('2d');
+  const img = g.createImageData(size, size);
+  let seed = 7;
+  const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+  const grid2 = new Float32Array(256);
+  for (let i = 0; i < 256; i++) grid2[i] = rnd();
+  const h = (a, b) => grid2[((a * 73856093) ^ (b * 19349663)) & 255];
+  const sm = t => t * t * (3 - 2 * t);
+  function noise(x, y) {
+    const xi = Math.floor(x), yi = Math.floor(y);
+    const xf = sm(x - xi), yf = sm(y - yi);
+    const a = h(xi, yi), b = h(xi + 1, yi), c2 = h(xi, yi + 1), d = h(xi + 1, yi + 1);
+    return (a + (b - a) * xf) + ((c2 + (d - c2) * xf) - (a + (b - a) * xf)) * yf;
+  }
+  function fbm(x, y) {
+    let v = 0, amp = 0.5;
+    for (let o = 0; o < 5; o++) { v += noise(x, y) * amp; x *= 2; y *= 2; amp *= 0.5; }
+    return v;
+  }
+  for (let y = 0; y < size; y++) {
+    for (let x = 0; x < size; x++) {
+      const u = x / size, v = y / size;
+      const t = u * 3 + fbm(u * 4, v * 4) * 3.2;
+      const vein = Math.pow(1 - Math.abs(Math.sin(t * Math.PI)), 9);
+      const cloud = fbm(u * 6 + 9, v * 6 + 3);
+      const base = 238 - cloud * 18 - vein * 55;
+      const i = (y * size + x) * 4;
+      img.data[i] = base;
+      img.data[i + 1] = base;
+      img.data[i + 2] = base + 3;
+      img.data[i + 3] = 255;
+    }
+  }
+  g.putImageData(img, 0, 0);
+  return c;
+}
+
+let MARBLE_CANVAS, marbleMat;
+function marble() {
+  if (!marbleMat) {
+    MARBLE_CANVAS = makeMarbleCanvas(256);
+    const tex = new THREE.CanvasTexture(MARBLE_CANVAS);
+    marbleMat = new THREE.MeshStandardMaterial({ map: tex, roughness: 0.92, metalness: 0 });
+  }
+  return marbleMat;
+}
+
+/* Placeholder head: base, neck, head, nose, plus a different hat per person */
+function makeHead(idx, mat) {
+  const g = new THREE.Group();
+  const add = (geo, x, y, z) => { const m = new THREE.Mesh(geo, mat); m.position.set(x, y, z); g.add(m); return m; };
+  add(new THREE.CylinderGeometry(0.42, 0.48, 0.12, 40), 0, 0.06, 0);
+  add(new THREE.CylinderGeometry(0.2, 0.3, 0.45, 32), 0, 0.34, 0);
+  const head = add(new THREE.SphereGeometry(0.38, 40, 32), 0, 0.86, 0);
+  head.scale.set(1, 1.12, 1);
+  const nose = add(new THREE.ConeGeometry(0.06, 0.16, 16), 0, 0.84, 0.4);
+  nose.rotation.x = Math.PI / 2;
+  const hat = idx % 6;
+  if (hat === 0) { const b = add(new THREE.SphereGeometry(0.4, 32, 16, 0, Math.PI * 2, 0, Math.PI / 2), 0, 0.98, 0); b.scale.set(1, 1.1, 1); }
+  if (hat === 1) { add(new THREE.SphereGeometry(0.12, 16, 12), 0, 1.3, 0); }
+  if (hat === 2) { add(new THREE.CylinderGeometry(0.4, 0.4, 0.1, 32), 0, 1.16, 0); add(new THREE.BoxGeometry(0.5, 0.04, 0.3), 0, 1.14, 0.4); }
+  if (hat === 4) { add(new THREE.SphereGeometry(0.13, 16, 12), -0.2, 1.28, 0); add(new THREE.SphereGeometry(0.13, 16, 12), 0.2, 1.28, 0); add(new THREE.SphereGeometry(0.14, 16, 12), 0, 1.36, 0.05); }
+  if (hat === 5) { const t = add(new THREE.TorusGeometry(0.38, 0.045, 12, 40), 0, 1.1, 0); t.rotation.x = Math.PI / 2; }
+  return g;
+}
+
+/* Real STL busts. Anyone without an "stl" path keeps the placeholder shape. */
+const stlCache = {};
+
+/* STL files have no UVs, so the marble would render flat. Project UVs per triangle from its dominant axis. */
+function addTriplanarUV(geo) {
+  geo.computeBoundingBox();
+  const bb = geo.boundingBox, P = geo.attributes.position.array, n = P.length / 3;
+  const inv = 1 / Math.max(bb.max.x - bb.min.x, bb.max.y - bb.min.y, bb.max.z - bb.min.z);
+  const uv = new Float32Array(n * 2);
+  for (let t = 0; t < n; t += 3) {
+    const o = t * 3;
+    const e1x = P[o + 3] - P[o], e1y = P[o + 4] - P[o + 1], e1z = P[o + 5] - P[o + 2];
+    const e2x = P[o + 6] - P[o], e2y = P[o + 7] - P[o + 1], e2z = P[o + 8] - P[o + 2];
+    const nx = Math.abs(e1y * e2z - e1z * e2y), ny = Math.abs(e1z * e2x - e1x * e2z), nz = Math.abs(e1x * e2y - e1y * e2x);
+    for (let k = 0; k < 3; k++) {
+      const x = (P[o + k * 3] - bb.min.x) * inv, y = (P[o + k * 3 + 1] - bb.min.y) * inv, z = (P[o + k * 3 + 2] - bb.min.z) * inv;
+      let u, v;
+      if (nx >= ny && nx >= nz) { u = y; v = z; } else if (ny >= nz) { u = x; v = z; } else { u = x; v = y; }
+      uv[(t + k) * 2] = u;
+      uv[(t + k) * 2 + 1] = v;
+    }
+  }
+  geo.setAttribute('uv', new THREE.BufferAttribute(uv, 2));
+}
+
+function loadStl(person) {
+  if (!stlCache[person.id]) {
+    const file = person.stl.split('/').pop();
+    /* tries "Jesse Bust.stl" and "Jesse_Bust.stl", each in every folder, lite copy first. Spaces are URL-encoded. */
+    const bases = [file, file.replace(/ /g, '_')].filter((b, i, a) => a.indexOf(b) === i);
+    const tries = [];
+    CONFIG.stlFolders.forEach(f => bases.forEach(b => {
+      if (CONFIG.preferLite) tries.push({ url: encodeURI(f + b.replace(/\.stl$/i, (b.indexOf(' ') > -1 ? ' lite' : '_lite') + '.stl')), folder: f, base: b });
+      tries.push({ url: encodeURI(f + b), folder: f, base: b });
+    }));
+    stlCache[person.id] = new Promise((res, rej) => {
+      let i = 0;
+      const next = () => {
+        if (i >= tries.length) { rej(new Error('not found at: ' + tries.map(t => t.url).join(', '))); return; }
+        const t = tries[i++];
+        new THREE.STLLoader().load(t.url, geo => {
+          if (!geo.attributes.position || !geo.attributes.position.count) { next(); return; }
+          geo.computeVertexNormals();
+          addTriplanarUV(geo);
+          geo.userData.shared = true;
+          person.stlFolder = t.folder; person.stlBase = t.base;
+          if (typeof refreshCards === 'function') refreshCards();
+          res(geo);
+        }, undefined, next);
+      };
+      next();
+    });
+  }
+  return stlCache[person.id];
+}
+
+/* Placeholder shows first. The real bust is only downloaded once its viewer scrolls into view (see kickLoads). */
+function headFor(idx, mat) {
+  const g = makeHead(idx, mat);
+  const person = PEOPLE[idx];
+  if (CONFIG.useRealStl && person.stl && THREE.STLLoader) {
+    g.userData.load = () => loadStl(person).then(geo => {
+      const m = new THREE.Mesh(geo, mat);
+      m.rotation.x = -Math.PI / 2;               /* STL is Z-up, the busts face -Y, so after this they face the camera */
+      const box = new THREE.Box3().setFromObject(m);
+      const size = box.getSize(new THREE.Vector3());
+      m.scale.setScalar(1.5 / size.y);
+      box.setFromObject(m);
+      m.position.set(-(box.min.x + box.max.x) / 2, -box.min.y, -(box.min.z + box.max.z) / 2);
+      g.clear();
+      g.add(m);
+    }).catch(err => console.warn('LP1: could not load ' + person.stl + ' (placeholder shape stays)', err));
+  }
+  return g;
+}
+function kickLoads(v) {
+  v.stage.traverse(o => {
+    if (o.userData && o.userData.load) { const f = o.userData.load; o.userData.load = null; f(); }
+  });
+}
+
+/* Die with pips baked into the face textures */
+const FACES = [3, 4, 1, 6, 2, 5];
+const PIPS = {
+  1: [[0.5, 0.5]],
+  2: [[0.25, 0.25], [0.75, 0.75]],
+  3: [[0.25, 0.25], [0.5, 0.5], [0.75, 0.75]],
+  4: [[0.25, 0.25], [0.75, 0.25], [0.25, 0.75], [0.75, 0.75]],
+  5: [[0.25, 0.25], [0.75, 0.25], [0.5, 0.5], [0.25, 0.75], [0.75, 0.75]],
+  6: [[0.25, 0.22], [0.75, 0.22], [0.25, 0.5], [0.75, 0.5], [0.25, 0.78], [0.75, 0.78]]
+};
+const pipCache = {};
+function hexA(hex, a) {
+  const n = parseInt(hex.slice(1), 16);
+  return 'rgba(' + ((n >> 16) & 255) + ',' + ((n >> 8) & 255) + ',' + (n & 255) + ',' + a + ')';
+}
+function pipTexture(n, bg, pip, alpha) {
+  const key = n + '|' + bg + '|' + pip + '|' + alpha;
+  if (pipCache[key]) return pipCache[key];
+  const c = document.createElement('canvas');
+  c.width = c.height = 128;
+  const g = c.getContext('2d');
+  g.fillStyle = hexA(bg, alpha);
+  g.fillRect(0, 0, 128, 128);
+  g.fillStyle = pip;
+  PIPS[n].forEach(p => { g.beginPath(); g.arc(p[0] * 128, p[1] * 128, 11, 0, Math.PI * 2); g.fill(); });
+  return (pipCache[key] = new THREE.CanvasTexture(c));
+}
+function lum(hex) {
+  const n = parseInt(hex.slice(1), 16);
+  return ((n >> 16) & 255) * 0.299 + ((n >> 8) & 255) * 0.587 + (n & 255) * 0.114;
+}
+/* Cube with rounded corners: push every vertex of a subdivided box out from an inner box */
+function roundedBox(size, radius, seg) {
+  const geo = new THREE.BoxGeometry(size, size, size, seg, seg, seg);
+  const pos = geo.attributes.position, nor = geo.attributes.normal;
+  const h = size / 2 - radius;
+  const p = new THREE.Vector3(), q = new THREE.Vector3(), n = new THREE.Vector3();
+  for (let i = 0; i < pos.count; i++) {
+    p.fromBufferAttribute(pos, i);
+    q.set(Math.max(-h, Math.min(h, p.x)), Math.max(-h, Math.min(h, p.y)), Math.max(-h, Math.min(h, p.z)));
+    n.copy(p).sub(q);
+    if (n.lengthSq() > 1e-9) {
+      n.normalize();
+      p.copy(q).addScaledVector(n, radius);
+      nor.setXYZ(i, n.x, n.y, n.z);
+    }
+    pos.setXYZ(i, p.x, p.y, p.z);
+  }
+  return geo;
+}
+const DIE_ALPHA = 0.8;   /* mostly see-through, but solid enough to tell which way it turns */
+function makeDie(bg, pip, rough) {
+  const mats = FACES.map(n => new THREE.MeshStandardMaterial({
+    map: pipTexture(n, bg, pip, DIE_ALPHA),
+    transparent: true,
+    side: THREE.DoubleSide,
+    depthWrite: false,
+    roughness: rough == null ? 0.18 : rough,
+    metalness: 0.05
+  }));
+  return new THREE.Mesh(roundedBox(0.46, 0.07, 12), mats);
+}
+function recolorDie(mesh, colorId) {
+  const c = DIE_COLORS.find(x => x.id === colorId) || DIE_COLORS[0];
+  const pip = lum(c.hex) < 140 ? '#ffffff' : '#111111';
+  mesh.material.forEach((m, i) => { m.map = pipTexture(FACES[i], c.hex, pip, DIE_ALPHA); m.needsUpdate = true; });
+}
+
+/* Coin: FEAR on one face, JOY on the other. Lettering is the Striker Sans subheader font; the textures redraw once that font has loaded. */
+const COIN_FONT = "'KCStrikerSans', 'Arial Black', Arial, sans-serif";
+const COIN_REDRAW = [];
+function setCoinFont(g, text) {
+  let px = 64;
+  g.font = px + 'px ' + COIN_FONT;
+  while (px > 24 && g.measureText(text).width > 170) { px -= 4; g.font = px + 'px ' + COIN_FONT; }
+}
+if (document.fonts && document.fonts.load) document.fonts.load("64px 'KCStrikerSans'").then(() => COIN_REDRAW.forEach(f => f())).catch(() => {});
+function coinFace(text, base, ink, useMarble) {
+  const c = document.createElement('canvas');
+  c.width = c.height = 256;
+  const g = c.getContext('2d');
+  const draw = () => {
+    if (useMarble && MARBLE_CANVAS) g.drawImage(MARBLE_CANVAS, 0, 0);
+    else { g.fillStyle = base; g.fillRect(0, 0, 256, 256); }
+    g.strokeStyle = ink;
+    g.lineWidth = 8;
+    g.beginPath(); g.arc(128, 128, 112, 0, Math.PI * 2); g.stroke();
+    g.fillStyle = ink;
+    setCoinFont(g, text);
+    g.textAlign = 'center';
+    g.textBaseline = 'middle';
+    g.fillText(text, 128, 132);
+  };
+  draw();
+  const tex = new THREE.CanvasTexture(c);
+  COIN_REDRAW.push(() => { draw(); tex.needsUpdate = true; });
+  return tex;
+}
+/* ---- shiny bronze. A "matcap" is a pre-lit sphere picture; wrapping it on the coin gives a polished-metal sheen that sweeps across as the coin turns. ---- */
+function shadeHex(hex, f) {   /* f > 0 mixes toward white, f < 0 toward black */
+  const n = parseInt(hex.slice(1), 16), t = f > 0 ? 255 : 0, a = Math.abs(f);
+  const ch = sh => Math.round(((n >> sh) & 255) * (1 - a) + t * a);
+  return 'rgb(' + ch(16) + ',' + ch(8) + ',' + ch(0) + ')';
+}
+function matcapTexture(shadeFn) {
+  const S = 128, c = document.createElement('canvas');
+  c.width = c.height = S;
+  const g = c.getContext('2d'), img = g.createImageData(S, S);
+  for (let y = 0; y < S; y++) for (let x = 0; x < S; x++) {
+    let nx = (x + 0.5) / S * 2 - 1, ny = 1 - (y + 0.5) / S * 2;
+    const r2 = nx * nx + ny * ny;
+    if (r2 > 1) { const r = Math.sqrt(r2); nx /= r; ny /= r; }
+    const nz = Math.sqrt(Math.max(0, 1 - nx * nx - ny * ny)), col = shadeFn(nx, ny, nz), i = (y * S + x) * 4;
+    img.data[i] = Math.max(0, Math.min(255, col[0]));
+    img.data[i + 1] = Math.max(0, Math.min(255, col[1]));
+    img.data[i + 2] = Math.max(0, Math.min(255, col[2]));
+    img.data[i + 3] = 255;
+  }
+  g.putImageData(img, 0, 0);
+  return new THREE.CanvasTexture(c);
+}
+const MATCAP_LIGHT = (() => { const v = new THREE.Vector3(-0.45, 0.55, 0.7).normalize(); return v; })();
+function specAt(nx, ny, nz, power) {   /* highlight toward the light, viewed head-on */
+  const hx = MATCAP_LIGHT.x, hy = MATCAP_LIGHT.y, hz = MATCAP_LIGHT.z + 1, hl = Math.sqrt(hx * hx + hy * hy + hz * hz);
+  return Math.pow(Math.max(0, (nx * hx + ny * hy + nz * hz) / hl), power);
+}
+let bronzeMatcapTex, rainbowMatcapTex;
+function bronzeMatcap() {
+  if (!bronzeMatcapTex) bronzeMatcapTex = matcapTexture((nx, ny, nz) => {
+    const d = Math.max(0, nx * MATCAP_LIGHT.x + ny * MATCAP_LIGHT.y + nz * MATCAP_LIGHT.z);
+    const v = 120 + 95 * d + 30 * nz + 230 * specAt(nx, ny, nz, 40);
+    return [v, v * 0.97, v * 0.92];
+  });
+  return bronzeMatcapTex;
+}
+function rainbowMatcap() {   /* dichroic glass: hue changes with the angle you look at the face, so it shimmers as the die turns */
+  if (!rainbowMatcapTex) rainbowMatcapTex = matcapTexture((nx, ny, nz) => {
+    const hue = (((Math.atan2(ny, nx) / (Math.PI * 2)) + 0.5 + nz * 0.35) % 1 + 1) % 1;
+    const c = new THREE.Color().setHSL(hue, 0.85, 0.5 + 0.12 * nz);
+    const sp = 255 * specAt(nx, ny, nz, 30) * 0.9;
+    return [c.r * 255 + sp, c.g * 255 + sp, c.b * 255 + sp];
+  });
+  return rainbowMatcapTex;
+}
+function coinFaceShiny(text, base, ink) {
+  const c = document.createElement('canvas');
+  c.width = c.height = 256;
+  const g = c.getContext('2d');
+  const draw = () => {
+  const rg = g.createRadialGradient(96, 90, 8, 128, 128, 160);
+  rg.addColorStop(0, shadeHex(base, 0.35)); rg.addColorStop(0.5, base); rg.addColorStop(1, shadeHex(base, -0.3));
+  g.fillStyle = rg; g.fillRect(0, 0, 256, 256);
+  const st = g.createLinearGradient(40, 0, 216, 256);   /* polished streak */
+  st.addColorStop(0.28, 'rgba(255,255,255,0)'); st.addColorStop(0.42, 'rgba(255,250,235,0.32)'); st.addColorStop(0.55, 'rgba(255,255,255,0)');
+  g.fillStyle = st; g.fillRect(0, 0, 256, 256);
+  g.lineWidth = 7; g.strokeStyle = shadeHex(base, 0.45); g.beginPath(); g.arc(128, 128, 114, 0, Math.PI * 2); g.stroke();   /* raised rim */
+  g.lineWidth = 3; g.strokeStyle = shadeHex(base, -0.45); g.beginPath(); g.arc(128, 128, 106, 0, Math.PI * 2); g.stroke();
+  setCoinFont(g, text);
+  g.textAlign = 'center';
+  g.textBaseline = 'middle';
+  g.fillStyle = 'rgba(255,245,220,0.55)'; g.fillText(text, 130, 135);   /* lettering: highlight, then ink */
+  g.fillStyle = ink; g.fillText(text, 128, 132);
+  };
+  draw();
+  const tex = new THREE.CanvasTexture(c);
+  COIN_REDRAW.push(() => { draw(); tex.needsUpdate = true; });
+  return tex;
+}
+function makeCoin(bronze, tone) {
+  const geo = new THREE.CylinderGeometry(0.3, 0.3, 0.06, 48);
+  let mats;
+  if (bronze) {
+    tone = tone || {};
+    const base = tone.base || '#c98b4a', ink = tone.ink || '#5a3512';
+    const mc = bronzeMatcap();
+    const mk = (map, col) => new THREE.MeshMatcapMaterial({ matcap: mc, map: map, color: col || new THREE.Color(1.3, 1.3, 1.3) });
+    mats = [
+      mk(null, new THREE.Color(tone.color || 0xc98b4a).multiplyScalar(1.45)),
+      mk(coinFaceShiny('FEAR', base, ink)),
+      mk(coinFaceShiny('JOY', base, ink))
+    ];
+  } else {
+    marble();
+    mats = [
+      marble(),
+      new THREE.MeshStandardMaterial({ map: coinFace('FEAR', '#e8e8e8', '#6b6b6b', true), roughness: 0.92 }),
+      new THREE.MeshStandardMaterial({ map: coinFace('JOY', '#e8e8e8', '#6b6b6b', true), roughness: 0.92 })
+    ];
+  }
+  return new THREE.Mesh(geo, mats);
+}
+
+function pedestal(r, glow) {
+  const g = new THREE.Group();
+  const d = new THREE.Mesh(new THREE.CylinderGeometry(r, r, 0.06, 64), new THREE.MeshStandardMaterial({ color: glow ? 0x34181c : 0x2a1714, roughness: glow ? 0.5 : 0.8, metalness: glow ? 0.3 : 0 }));
+  d.position.y = -0.03;
+  g.add(d);
+  const ring = new THREE.Mesh(new THREE.TorusGeometry(r - 0.02, glow ? 0.03 : 0.012, 8, 96), new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: glow ? 0.95 : 0.35, blending: glow ? THREE.AdditiveBlending : THREE.NormalBlending }));
+  ring.rotation.x = Math.PI / 2;
+  ring.position.y = 0.005;
+  g.add(ring);
+  if (glow) {   /* Angel edition trays: glowing rim, a faint inner ring, a soft halo outside, and a slightly lit top. The color slowly drifts like the card border. */
+    const mk = (geo, op) => { const m = new THREE.Mesh(geo, new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: op, blending: THREE.AdditiveBlending, depthWrite: false, side: THREE.DoubleSide })); m.rotation.x = -Math.PI / 2; m.position.y = 0.004; g.add(m); return m; };
+    const inner = mk(new THREE.RingGeometry(r * 0.8, r * 0.82, 96), 0.45);
+    const halo1 = mk(new THREE.RingGeometry(r, r * 1.14, 96), 0.28);
+    const halo2 = mk(new THREE.RingGeometry(r * 1.14, r * 1.32, 96), 0.1);
+    const phase = Math.random();
+    g.userData.tint = t => {
+      const c = new THREE.Color().setHSL(((t / 7000) + phase) % 1, 0.75, 0.62);
+      ring.material.color.copy(c); inner.material.color.copy(c); halo1.material.color.copy(c); halo2.material.color.copy(c);
+      d.material.emissive.setHSL(((t / 7000) + phase) % 1, 0.7, 0.3); d.material.emissiveIntensity = 0.45;
+    };
+    g.userData.tint(0);
+  }
+  return g;
+}
+
+const PAINT = ['#e2b996', '#c9966b', '#deb18c', '#e0b793', '#dcae89', '#e5bf9f'];   /* skin tones in PEOPLE order: Jesse, Marco (a bit more tan), Grant, Garrett, Matt, Isaac */
+
+function clearStage(stage) {
+  while (stage.children.length) {
+    const ch = stage.children[0];
+    ch.traverse(o => { if (o.geometry && !o.geometry.userData.shared) o.geometry.dispose(); });
+    stage.remove(ch);
+  }
+}
+
+/* Gentler studio light: less key light and more even fill, so the white marble stops blowing out into glare */
+function addSoftLights(scene) {
+  scene.add(new THREE.HemisphereLight(0xffffff, 0x8a6a60, 0.75));
+  const key = new THREE.DirectionalLight(0xffffff, 0.4); key.position.set(3, 5, 4); scene.add(key);
+  const rim = new THREE.DirectionalLight(0xffd9b0, 0.25); rim.position.set(-4, 2, -3); scene.add(rim);
+}
+
+/* Kit cards: the pieces tray sits back and center, and the die and the coin float on small trays in the front left and right
+   corners of the same 3D space (a slight overlap is fine). All three are drawn into the one canvas. Tap the die to roll it, tap the coin to flip it. */
+/* tiny landing bounce: two small hops that die out (ms since landing, amp = height of the first hop) */
+const BOUNCE_MS = 380;
+function bounceAt(ms, amp) { const u = ms / BOUNCE_MS; return u >= 1 ? 0 : amp * (1 - u) * Math.abs(Math.sin(u * Math.PI * 2)); }
+const TRAYS = {
+  main: { x: 0, y: 0, w: 1, h: 1 },
+  die:  { x: 0.03, y: 0.5, w: 0.29, h: 0.5 },
+  coin: { x: 0.68, y: 0.5, w: 0.29, h: 0.5 },
+  ticket: { x: 0.03, y: 0.03, w: 0.28, h: 0.42 },   /* Angel edition only: small trays behind the pieces tray, in the back corners */
+  shirt:  { x: 0.69, y: 0.03, w: 0.28, h: 0.42 }
+};
+const FU6 = { 1: [0, 0, 0], 6: [Math.PI, 0, 0], 3: [0, 0, Math.PI / 2], 4: [0, 0, -Math.PI / 2], 2: [-Math.PI / 2, 0, 0], 5: [Math.PI / 2, 0, 0] };
+function buildExtras(v, painted, st) {
+  if (v.subs) return;
+  v.mainRect = TRAYS.main;
+  v.el.classList.add('has-trays');
+  const mkSub = rect => {
+    const sub = { rect, scene: new THREE.Scene(), camera: new THREE.PerspectiveCamera(30, 1, 0.1, 50), stage: new THREE.Group() };
+    addSoftLights(sub.scene);
+    sub.scene.add(sub.stage);
+    return sub;
+  };
+  const dieS = mkSub(TRAYS.die), coinS = mkSub(TRAYS.coin);
+  v.subs = [dieS, coinS];
+
+  const ease = k => 1 - Math.pow(1 - k, 3), TAU = Math.PI * 2;
+
+  /* ----- die tray ----- */
+  const dieTilt = new THREE.Group(); dieTilt.rotation.x = 0.5; dieTilt.position.y = 0.85; dieS.stage.add(dieTilt);
+  const dieSpin = new THREE.Group(); dieTilt.add(dieSpin);
+  const dieLift = new THREE.Group(); dieSpin.add(dieLift);
+  let die;
+  if (painted) die = makeDichroicDie();
+  else { die = makeDie('#ffffff', '#111111'); v.die = die; recolorDie(die, st.die); }
+  die.scale.setScalar(1.8);
+  dieLift.add(die);
+  v.glowSub = [];
+  const dp = pedestal(0.75, painted); dieS.stage.add(dp); if (painted) v.glowSub.push(dp);
+  let roll = null, dieLand = 0, coinLand = 0;
+  v.rollDie = () => {
+    if (roll) return;
+    dieLand = 0;
+    const tgt = FU6[1 + Math.floor(Math.random() * 6)];
+    roll = { t0: performance.now(), dur: REDUCE ? 250 : 1000, tgt,
+      e0: [die.rotation.x, die.rotation.y, die.rotation.z],
+      e1: tgt.map(a => a + TAU * (1 + Math.floor(Math.random() * 2))) };
+    Sound.dice();
+  };
+
+  /* ----- coin tray (the coin leans back on its pedestal so the lettering faces you) ----- */
+  const COIN_S = 2.0, COIN_R = 0.3 * COIN_S, TILT = 1.05, baseY = COIN_R * Math.sin(TILT) + 0.05;
+  const cLift = new THREE.Group(); cLift.position.y = baseY; coinS.stage.add(cLift);
+  const cTilt = new THREE.Group(); cTilt.rotation.x = TILT; cLift.add(cTilt);
+  const cYaw = new THREE.Group(); cTilt.add(cYaw);
+  const cFlip = new THREE.Group(); cYaw.add(cFlip);
+  const coin = makeCoin(painted);
+  coin.scale.setScalar(COIN_S);
+  coin.material[1].map.center.set(0.5, 0.5); coin.material[1].map.rotation = Math.PI / 2;      /* keeps the lettering upright on both faces */
+  coin.material[2].map.center.set(0.5, 0.5); coin.material[2].map.rotation = -Math.PI / 2;
+  cFlip.add(coin);
+  const cp = pedestal(0.75, painted); coinS.stage.add(cp); if (painted) v.glowSub.push(cp);
+  let half = 1, flip = null;
+  cFlip.rotation.x = Math.PI;   /* JOY faces you first */
+  v.flipCoin = () => {
+    if (flip) return;
+    const want = Math.random() < 0.5 ? 0 : 1;
+    const k = 6 + ((((want - half) % 2) + 2) % 2);
+    flip = { t0: performance.now(), dur: REDUCE ? 250 : 1320, a0: half * Math.PI, a1: (half + k) * Math.PI };
+    coinLand = 0;
+    half += k;
+    Sound.coin();
+  };
+
+  /* ----- Angel edition only: a golden ticket and a shirt on small trays in the back corners ----- */
+  let backAnim = null;
+  if (painted) {
+    const tkS = mkSub(TRAYS.ticket), shS = mkSub(TRAYS.shirt);
+    v.backSubs = [tkS, shS];
+    [tkS, shS].forEach(sc => { const bp = pedestal(0.8, true); sc.stage.add(bp); v.glowSub.push(bp); });
+    const FONT_S = "'KCStrikerSans', 'Arial Black', sans-serif";
+    /* the ticket: a notched gold slab with a printed face */
+    const hw = 0.85, hh = 0.45, nr = 0.1, tkShape = new THREE.Shape();
+    tkShape.moveTo(-hw, -hh); tkShape.lineTo(hw, -hh); tkShape.lineTo(hw, -nr); tkShape.absarc(hw, 0, nr, -Math.PI / 2, Math.PI / 2, true);
+    tkShape.lineTo(hw, hh); tkShape.lineTo(-hw, hh); tkShape.lineTo(-hw, nr); tkShape.absarc(-hw, 0, nr, Math.PI / 2, -Math.PI / 2, true);
+    const tkGeo = new THREE.ExtrudeGeometry(tkShape, { depth: 0.04, bevelEnabled: false, curveSegments: 12 });
+    tkGeo.translate(0, 0, -0.02);
+    const tkCv = document.createElement('canvas'); tkCv.width = 512; tkCv.height = 271;
+    const tkTex = new THREE.CanvasTexture(tkCv);
+    tkTex.repeat.set(1 / (2 * hw), 1 / (2 * hh)); tkTex.offset.set(0.5, 0.5);   /* the extruded faces use real-world coordinates as UVs, this maps them onto 0..1 */
+    const drawTicket = () => {
+      const g = tkCv.getContext('2d'), W = tkCv.width, H = tkCv.height;
+      const gr = g.createLinearGradient(0, 0, W, H); gr.addColorStop(0, '#fff0a8'); gr.addColorStop(0.45, '#e9b73a'); gr.addColorStop(1, '#fbe58a');
+      g.fillStyle = gr; g.fillRect(0, 0, W, H);
+      g.strokeStyle = '#8a5a08'; g.lineWidth = 4; g.setLineDash([10, 7]); g.strokeRect(16, 16, W - 32, H - 32); g.setLineDash([]);
+      g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillStyle = '#5a3604';
+      g.font = "62px " + FONT_S; g.fillText('ADMIT ONE', W / 2, H * 0.4);
+      g.font = "28px 'KCPelletierTyped', 'Courier New', monospace"; g.fillText('any fearjoy show', W / 2, H * 0.7);
+      tkTex.needsUpdate = true;
+    };
+    drawTicket();
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(drawTicket);
+    const gold = new THREE.MeshStandardMaterial({ color: 0xe0a82e, roughness: 0.35, metalness: 0.7 });
+    const ticket = new THREE.Mesh(tkGeo, [new THREE.MeshStandardMaterial({ map: tkTex, roughness: 0.35, metalness: 0.35 }), gold]);
+    const tkRoot = new THREE.Group(); tkRoot.position.y = 0.62; tkRoot.rotation.x = -0.22; tkRoot.scale.setScalar(1.05); tkRoot.add(ticket); tkS.stage.add(tkRoot);
+    /* the shirt: a tee outline that fades through black, white, gray and blue, with "ANY MERCH" in whichever color shows */
+    const sh = new THREE.Shape();
+    sh.moveTo(-0.22, 0.62); sh.quadraticCurveTo(0, 0.4, 0.22, 0.62);
+    [[0.58, 0.52], [0.98, 0.22], [0.8, -0.04], [0.56, 0.1], [0.56, -0.72], [-0.56, -0.72], [-0.56, 0.1], [-0.8, -0.04], [-0.98, 0.22], [-0.58, 0.52]].forEach(p => sh.lineTo(p[0], p[1]));
+    const shGeo = new THREE.ExtrudeGeometry(sh, { depth: 0.06, bevelEnabled: true, bevelThickness: 0.02, bevelSize: 0.02, bevelSegments: 2 });
+    shGeo.translate(0, 0, -0.03);
+    const shirtMat = new THREE.MeshStandardMaterial({ color: 0x151515, roughness: 0.85 });
+    const shirt = new THREE.Mesh(shGeo, shirtMat);
+    const txCv = document.createElement('canvas'); txCv.width = 260; txCv.height = 215;
+    const txTex = new THREE.CanvasTexture(txCv);
+    const drawShirtText = () => { const g = txCv.getContext('2d'), W = txCv.width, H = txCv.height; g.clearRect(0, 0, W, H); g.fillStyle = '#fff'; g.textAlign = 'center'; g.textBaseline = 'middle'; let px = 120; g.font = px + 'px ' + FONT_S; while (px > 20 && g.measureText('MERCH').width > W - 12) { px -= 2; g.font = px + 'px ' + FONT_S; } g.fillText('ANY', W / 2, H * 0.3); g.fillText('MERCH', W / 2, H * 0.72); txTex.needsUpdate = true; };
+    drawShirtText();
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(drawShirtText);
+    const txMat = new THREE.MeshBasicMaterial({ map: txTex, transparent: true, depthWrite: false, color: 0xffffff });
+    const tx = new THREE.Mesh(new THREE.PlaneGeometry(1.04, 0.86), txMat); tx.position.set(0, -0.14, 0.056);
+    const shRoot = new THREE.Group(); shRoot.position.y = 0.78; shRoot.scale.setScalar(0.72); shRoot.add(shirt); shRoot.add(tx); shS.stage.add(shRoot);
+    const SHIRT_COLORS = [0x151515, 0xf2f2f2, 0x8c8c90, 0x2d5bd1].map(h => new THREE.Color(h)), SHIRT_MS = 2600, tmpC = new THREE.Color();
+    backAnim = (t) => {
+      tkRoot.rotation.y = REDUCE ? 0.25 : Math.sin(t / 1700) * 0.4;
+      tkRoot.position.y = 0.62 + (REDUCE ? 0 : Math.sin(t / 900) * 0.04);
+      shRoot.rotation.y = REDUCE ? -0.2 : Math.sin(t / 2100 + 1) * 0.35;
+      shRoot.position.y = 0.78 + (REDUCE ? 0 : Math.sin(t / 1000 + 2) * 0.04);
+      const seg = Math.floor(t / SHIRT_MS), f = (t % SHIRT_MS) / SHIRT_MS, k = Math.max(0, (f - 0.6) / 0.4), sm = k * k * (3 - 2 * k);
+      tmpC.copy(SHIRT_COLORS[seg % 4]).lerp(SHIRT_COLORS[(seg + 1) % 4], sm);
+      shirtMat.color.copy(tmpC);
+      txMat.color.setHex(0.2126 * tmpC.r + 0.7152 * tmpC.g + 0.0722 * tmpC.b > 0.35 ? 0x111111 : 0xffffff);
+    };
+  }
+
+  v.onFrame = t => {
+    const now = performance.now();
+    if (painted) { if (backAnim) backAnim(t); (v.glowSub || []).concat(v.glowMain || []).forEach(g => g.userData.tint && g.userData.tint(t)); }
+    dieSpin.rotation.y = REDUCE ? 0.4 : t * 0.00035;
+    dieLift.position.y = REDUCE ? 0 : Math.sin(t / 900) * 0.05;
+    if (painted) die.userData.tint((t / 9000) % 1);
+    if (roll) {
+      const k = Math.min(1, (now - roll.t0) / roll.dur), e = ease(k);
+      die.rotation.set(roll.e0[0] + (roll.e1[0] - roll.e0[0]) * e, roll.e0[1] + (roll.e1[1] - roll.e0[1]) * e, roll.e0[2] + (roll.e1[2] - roll.e0[2]) * e);
+      dieLift.position.y += Math.sin(Math.PI * k) * (REDUCE ? 0 : 0.45);
+      if (k >= 1) { die.rotation.set(roll.tgt[0], roll.tgt[1], roll.tgt[2]); roll = null; dieLand = now; }
+    } else if (dieLand) {   /* little landing bounce */
+      const ms = now - dieLand;
+      dieLift.position.y += REDUCE ? 0 : bounceAt(ms, 0.12);
+      if (ms >= BOUNCE_MS) dieLand = 0;
+    }
+    cYaw.rotation.y = REDUCE ? 0 : Math.sin(t / 1600) * 0.4;
+    cLift.position.y = baseY + (REDUCE ? 0 : Math.sin(t / 900) * 0.03);
+    if (flip) {
+      const k = Math.min(1, (now - flip.t0) / flip.dur);
+      cFlip.rotation.x = flip.a0 + (flip.a1 - flip.a0) * ease(k);
+      cLift.position.y = baseY + Math.sin(Math.PI * k) * (REDUCE ? 0 : 0.9);
+      if (k >= 1) { cFlip.rotation.x = flip.a1; flip = null; coinLand = now; }
+    } else if (coinLand) {
+      const ms = now - coinLand;
+      cLift.position.y += REDUCE ? 0 : bounceAt(ms, 0.1);
+      if (ms >= BOUNCE_MS) coinLand = 0;
+    }
+  };
+
+  /* is the pointer on the die or the coin itself? (a ray into each little scene; anything else counts as the pieces tray) */
+  const tapRay = new THREE.Raycaster(), tapNdc = new THREE.Vector2();
+  v.regionAt = e => {
+    const r = v.el.getBoundingClientRect(), fx = (e.clientX - r.left) / r.width, fy = (e.clientY - r.top) / r.height;
+    const list = [['die', dieS, die], ['coin', coinS, coin]];
+    for (let i = 0; i < list.length; i++) {
+      const name = list[i][0], sc = list[i][1], obj = list[i][2], q = sc.rect;
+      if (fx < q.x || fx > q.x + q.w || fy < q.y || fy > q.y + q.h) continue;
+      tapNdc.set(((fx - q.x) / q.w) * 2 - 1, -(((fy - q.y) / q.h) * 2 - 1));
+      tapRay.setFromCamera(tapNdc, sc.camera);
+      if (tapRay.intersectObject(obj, true).length) return name;
+    }
+    return 'main';
+  };
+
+  /* draw the three trays into the one canvas */
+  v.render = () => {
+    const r = v.renderer, w = v.el.clientWidth, h = v.el.clientHeight;
+    if (!w || !h) return;
+    r.setScissorTest(false);
+    r.setViewport(0, 0, w, h);
+    r.autoClear = false;
+    r.clear();   /* wipe the whole canvas once, then draw every tray on top of the last: back corner trays first, then the pieces tray, then the die and coin in front */
+    r.setScissorTest(true);
+    (v.backSubs || []).concat([{ rect: TRAYS.main, scene: v.scene, camera: v.camera }, dieS, coinS]).forEach(sc => {
+      const q = sc.rect, pw = q.w * w, ph = q.h * h, px = q.x * w, py = h - q.y * h - ph;
+      r.setViewport(px, py, pw, ph);
+      r.setScissor(px, py, pw, ph);
+      r.clearDepth();
+      r.render(sc.scene, sc.camera);
+    });
+    r.autoClear = true;
+    r.setScissorTest(false);
+  };
+}
+
+function buildScene(v, p) {
+  const st = S[p.id];
+  clearStage(v.stage);
+  v.die = null;
+  v.onFrame = null;
+  let ids, withExtras = false, painted = false;
+  if (p.type === 'single') ids = [st.view];
+  else { ids = p.pieces; withExtras = true; }
+  if (p.type === 'deluxe') painted = true;
+
+  const n = ids.length;
+  const R = n === 1 ? 0 : (n <= 3 ? (painted ? 1.0 : 1.2) : 1.6);   /* Angel edition: the painted pieces sit a little closer together */
+  v.zoom = painted ? 0.96 : 1;   /* and the camera moves in, so they look a little bigger than on the other cards */
+  v.glowMain = [];
+  ids.forEach((id, i) => {
+    const idx = PEOPLE.findIndex(x => x.id === id);
+    const mat = painted ? new THREE.MeshStandardMaterial({ color: PAINT[idx % PAINT.length], roughness: 0.42 }) : marble();
+    const head = headFor(idx, mat);
+    if (painted) head.scale.multiplyScalar(1.06);   /* Angel edition pieces are a little bigger */
+    const a = (i / n) * Math.PI * 2;
+    head.position.set(Math.sin(a) * R, 0, Math.cos(a) * R);
+    head.rotation.y = a;
+    v.stage.add(head);
+  });
+
+  if (withExtras) buildExtras(v, painted, st);   /* die + coin now live on their own trays */
+
+  const pr = (n === 1 ? 1.1 : R + 0.85);
+  const mainPed = pedestal(pr, painted);
+  v.stage.add(mainPed);
+  if (painted) v.glowMain.push(mainPed);
+  v.radius = pr;
+  v.fit();
+  if (v.visible) kickLoads(v);
+}
+
+/* Rounded shapes for the tube TV */
+function roundedRectShape(w, h, r) {
+  const s = new THREE.Shape(), x0 = -w / 2, y0 = -h / 2, x1 = w / 2, y1 = h / 2;
+  s.moveTo(x0 + r, y0);
+  s.lineTo(x1 - r, y0); s.absarc(x1 - r, y0 + r, r, -Math.PI / 2, 0, false);
+  s.lineTo(x1, y1 - r); s.absarc(x1 - r, y1 - r, r, 0, Math.PI / 2, false);
+  s.lineTo(x0 + r, y1); s.absarc(x0 + r, y1 - r, r, Math.PI / 2, Math.PI, false);
+  s.lineTo(x0, y0 + r); s.absarc(x0 + r, y0 + r, r, Math.PI, Math.PI * 1.5, false);
+  return s;
+}
+/* a box with rounded corners (seen from the front) and softly rounded edges. r = corner radius, b = edge rounding */
+function roundedSlab(w, h, d, r, b) {
+  const iw = w - 2 * b, ih = h - 2 * b, rr = Math.max(0.005, Math.min(r, iw / 2 - 0.001, ih / 2 - 0.001));
+  const g = new THREE.ExtrudeGeometry(roundedRectShape(iw, ih, rr), { depth: d - 2 * b, bevelEnabled: true, bevelThickness: b, bevelSize: b, bevelOffset: 0, bevelSegments: 5, curveSegments: 14 });
+  g.translate(0, 0, -(d - 2 * b) / 2);
+  g.computeVertexNormals();
+  return g;
+}
+/* flat rounded-corner face with 0..1 UVs, for the TV picture and the glass layers on top of it */
+function roundedScreenGeo(w, h, r) {
+  const g = new THREE.ShapeGeometry(roundedRectShape(w, h, r), 14), P = g.attributes.position, uv = new Float32Array(P.count * 2);
+  for (let i = 0; i < P.count; i++) { uv[i * 2] = (P.getX(i) + w / 2) / w; uv[i * 2 + 1] = (P.getY(i) + h / 2) / h; }
+  g.setAttribute('uv', new THREE.BufferAttribute(uv, 2));
+  return g;
+}
+
+/* Soft hover glow: warms every lit material under `group` by k (0 to 1). Shiny matcap materials get a little brighter instead. */
+const GLOW_COLOR = new THREE.Color(0xffe0b0), glowBase = new WeakMap();
+function applyGlow(group, k, strength) {
+  group.traverse(o => {
+    if (!o.material) return;
+    (Array.isArray(o.material) ? o.material : [o.material]).forEach(m => {
+      if (m.isSprite || m.isMeshBasicMaterial) return;
+      let b = glowBase.get(m);
+      if (!b) { b = { c: m.color ? m.color.clone() : null, e: m.emissive ? m.emissive.clone() : null, i: m.emissiveIntensity }; glowBase.set(m, b); }
+      if (m.isMeshMatcapMaterial) { if (b.c) m.color.copy(b.c).multiplyScalar(1 + k * 0.18 * strength); }
+      else if (m.emissive) { if (k > 0) { m.emissive.copy(GLOW_COLOR); m.emissiveIntensity = k * 0.11 * strength; } else { m.emissive.copy(b.e); m.emissiveIntensity = b.i; } }
+    });
+  });
+}
+
+/* 3D desk: semi-side-view desk with the tube TV, the crew, one coin and one die on top.
+   Click the TV to play, click the coin to flip it (real 50/50), click the die to roll it. */
+function makeDesk(el) {
+  const v = { el, visible: false, fixed: true, tvT: 0, navigated: false, onFrame: null };
+  try {
+    const canvas = document.createElement('canvas');
+    el.insertBefore(canvas, el.firstChild);
+    v.renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
+    v.renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+    canvas.addEventListener('webglcontextlost', ev => ev.preventDefault(), false);   /* lets the browser restore the 3D view if a phone drops it */
+  } catch (err) {
+    el.classList.add('nogl');
+    return null;
+  }
+  v.scene = new THREE.Scene();
+  v.camera = new THREE.PerspectiveCamera(30, 16 / 10, 0.1, 100);
+  v.scene.add(new THREE.HemisphereLight(0xffffff, 0x6b4a42, 0.78));
+  const key = new THREE.DirectionalLight(0xffffff, 0.58); key.position.set(3, 6, 5); v.scene.add(key);
+  const rim = new THREE.DirectionalLight(0xffd9b0, 0.34); rim.position.set(-4, 3, -3); v.scene.add(rim);
+  v.stage = new THREE.Group();
+  v.scene.add(v.stage);
+  const stage = v.stage;
+
+  /* camera: fixed, looking down at the table. The distance is worked out from a few key points so the TV fills the width on any screen shape. */
+  const EL = THREE.MathUtils.degToRad(36), LOOK = new THREE.Vector3(0, 1.85, 0);
+  const FIT_PTS = [[3.15, 4.0, -1.5], [1.05, 5.75, -2.1], [2.75, 0, 2.6], [2.65, -1.0, 2.5], [-2.65, -1.0, 2.5]];
+  v.fit = function () {
+    const w = el.clientWidth || 640, h = el.clientHeight || 400;
+    v.renderer.setSize(w, h, false);
+    v.camera.aspect = w / h;
+    v.camera.updateProjectionMatrix();
+    const t = Math.tan(THREE.MathUtils.degToRad(15)) * 0.97, sn = Math.sin(EL), cs = Math.cos(EL);
+    let d = 0;
+    FIT_PTS.forEach(p => {
+      const dy = p[1] - LOOK.y, dz = p[2] - LOOK.z;
+      d = Math.max(d, dy * sn + dz * cs + Math.abs(p[0]) / (t * v.camera.aspect), dy * sn + dz * cs + Math.abs(dy * cs - dz * sn) / t);
+    });
+    v.base = new THREE.Vector3(0, LOOK.y + d * sn, LOOK.z + d * cs);
+    v.camera.position.copy(v.base);
+    v.camera.lookAt(LOOK);
+  };
+
+  /* ---------- small helpers ---------- */
+  const noHit = m => { m.raycast = () => {}; return m; };
+  const std = (color, rough, metal) => new THREE.MeshStandardMaterial({ color, roughness: rough == null ? 0.7 : rough, metalness: metal || 0 });
+  function box(w, h, d, mat, x, y, z, parent) {
+    const m = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), mat);
+    m.position.set(x, y, z);
+    (parent || stage).add(m);
+    return m;
+  }
+  const blobTex = (() => {
+    const c = document.createElement('canvas'); c.width = c.height = 64;
+    const g = c.getContext('2d');
+    const gr = g.createRadialGradient(32, 32, 2, 32, 32, 32);
+    gr.addColorStop(0, 'rgba(0,0,0,0.55)'); gr.addColorStop(1, 'rgba(0,0,0,0)');
+    g.fillStyle = gr; g.fillRect(0, 0, 64, 64);
+    return new THREE.CanvasTexture(c);
+  })();
+  function blob(w, d, x, z, op, par) {
+    const m = noHit(new THREE.Mesh(new THREE.PlaneGeometry(w, d), new THREE.MeshBasicMaterial({ map: blobTex, transparent: true, opacity: op == null ? 1 : op, depthWrite: false })));
+    m.rotation.x = -Math.PI / 2;
+    m.position.set(x, 0.004, z);
+    m.userData.op = op == null ? 1 : op;
+    (par || stage).add(m);
+    return m;
+  }
+  /* shadow shrinks and fades a little as the object goes up (h = height above the desk) */
+  function shade(m, h) {
+    const k = 1 / (1 + 0.5 * h);
+    m.scale.set(k, k, 1);
+    m.material.opacity = m.userData.op * (0.4 + 0.6 * k);
+  }
+  /* invisible click target, so we never raycast the 90k-triangle busts */
+  const hitMat = new THREE.MeshBasicMaterial({ visible: false });
+  const hits = [];
+  function hitBox(w, h, d, x, y, z, tag, parent) {
+    const m = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), hitMat);
+    m.position.set(x, y, z);
+    m.userData.tag = tag;
+    (parent || stage).add(m);
+    hits.push(m);
+    return m;
+  }
+
+  /* ---------- small wooden table in front of the TV, with the game board on it ---------- */
+  const wood = (() => {
+    const c = document.createElement('canvas'); c.width = 512; c.height = 256;
+    const g = c.getContext('2d');
+    g.fillStyle = '#8b5e3c'; g.fillRect(0, 0, 512, 256);
+    for (let i = 0; i < 90; i++) {
+      const y = Math.random() * 256;
+      g.strokeStyle = Math.random() < 0.5 ? 'rgba(60,30,12,0.22)' : 'rgba(255,220,170,0.10)';
+      g.lineWidth = 0.6 + Math.random() * 1.8;
+      g.beginPath(); g.moveTo(0, y);
+      for (let x = 0; x <= 512; x += 64) g.lineTo(x, y + Math.sin(x * 0.02 + i) * 3 + (Math.random() - 0.5) * 2);
+      g.stroke();
+    }
+    return new THREE.CanvasTexture(c);
+  })();
+  const woodSide = std(0x5e3d25, 0.8), legWood = std(0x7a5233, 0.75);
+  const TW = 5.4, TD = 3.6, TZ = 0.8, FLOOR = -1.0;   /* table top is at y = 0 */
+  const tableTop = new THREE.Mesh(new THREE.BoxGeometry(TW, 0.16, TD),
+    [woodSide, woodSide, new THREE.MeshStandardMaterial({ map: wood, roughness: 0.75 }), woodSide, woodSide, woodSide]);
+  tableTop.position.set(0, -0.08, TZ);
+  tableTop.userData.tag = 'block';   /* blocks clicks to the TV behind it */
+  stage.add(tableTop); hits.push(tableTop);
+  [[-2.5, TZ - 1.5], [2.5, TZ - 1.5], [-2.5, TZ + 1.5], [2.5, TZ + 1.5]].forEach(p => box(0.22, -0.16 - FLOOR, 0.22, legWood, p[0], (FLOOR - 0.16) / 2, p[1]));
+  blob(6.6, 4.6, 0, TZ, 0.55).position.y = FLOOR + 0.004;   /* shadow on the floor under the table */
+
+  /* the board game: a white square, half an inch thick, with the TV picture on top. Everything else sits on `deck`, the board's top surface. */
+  const BS = 3.1, BT = 0.13, BX = -0.9, VT = 0.04, BROT = 0.09;   /* VT = thickness of the record under the board; BROT = board is a little askew */
+  const boardWhite = std(0xf4f1ea, 0.6), boardTop = new THREE.MeshStandardMaterial({ color: 0xf4f1ea, roughness: 0.55 });
+  const board = new THREE.Mesh(new THREE.BoxGeometry(BS, BT, BS), [boardWhite, boardWhite, boardTop, boardWhite, boardWhite, boardWhite]);
+  board.position.set(BX, BT / 2 + VT, TZ);
+  board.rotation.y = BROT;
+  board.userData.tag = 'block';
+  stage.add(board); hits.push(board);
+  blob(BS + 0.8, BS + 0.8, BX, TZ, 0.6);
+  const deck = new THREE.Group();
+  deck.position.set(BX, BT + VT, TZ);
+  deck.rotation.y = BROT;
+  stage.add(deck);
+
+  /* ---------- tube TV (gray) ---------- */
+  const tv = new THREE.Group();
+  tv.position.set(0, -0.8, -2.15);   /* behind the table; its base is hidden by the table */
+  tv.scale.set(3, 3, 1.6);   /* big TV: the screen takes up most of the front */
+  stage.add(tv);
+  const grayBody = std(0x9a9ea3, 0.55), grayDark = std(0x5d6165, 0.6), grayBezel = std(0x34373a, 0.5);
+  const slabAt = (w, h, d, r, b, mat, x, y, z) => { const m = new THREE.Mesh(roundedSlab(w, h, d, r, b), mat); m.position.set(x, y, z); tv.add(m); return m; };
+  slabAt(2.1, 1.8, 0.95, 0.22, 0.08, grayBody, 0, 1.0, 0);
+  slabAt(1.6, 1.35, 0.5, 0.2, 0.07, grayDark, 0, 1.0, -0.72);
+  /* antenna */
+  const antBase = new THREE.Mesh(new THREE.SphereGeometry(0.13, 20, 10, 0, Math.PI * 2, 0, Math.PI / 2), grayBezel);
+  antBase.position.set(0.1, 1.9, -0.1);
+  tv.add(antBase);
+  const antMat = std(0x2a2c2e, 0.4, 0.5);
+  [-1, 1].forEach(sd => {   /* two short bendy ears: each rises, then curls outward */
+    const pts = [[0, 0], [0.04, 0.12], [0.13, 0.2], [0.25, 0.22], [0.33, 0.17]].map(q => new THREE.Vector3(sd * q[0], q[1], 0));
+    const ear = new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts), 18, 0.02, 6, false), antMat);
+    ear.position.set(0.1, 1.95, -0.1);
+    tv.add(ear);
+    const tip = new THREE.Mesh(new THREE.SphereGeometry(0.036, 10, 8), antMat);
+    tip.position.set(0.1 + pts[4].x, 1.95 + pts[4].y, -0.1);
+    tv.add(tip);
+  });
+  /* speaker panel + knobs */
+  const spk = (() => {
+    const c = document.createElement('canvas'); c.width = c.height = 256;
+    const g = c.getContext('2d');
+    g.fillStyle = '#4a4d51'; g.fillRect(0, 0, 256, 256);
+    g.fillStyle = '#25272a';
+    for (let y = 24; y < 240; y += 22) g.fillRect(22, y, 212, 9);
+    return new THREE.CanvasTexture(c);
+  })();
+  const spkM = new THREE.Mesh(roundedScreenGeo(0.26, 0.46, 0.07), new THREE.MeshStandardMaterial({ map: spk, roughness: 0.7 }));   /* small rounded speaker panel */
+  spkM.position.set(0.85, 1.42, 0.476);
+  tv.add(spkM);
+  const tvKnobs = [];   /* the two TV knobs are buttons: click one to change the channel */
+  [0.8, 0.6].forEach(y => {
+    const k = new THREE.Mesh(new THREE.CylinderGeometry(0.06, 0.06, 0.07, 24), std(0x2a2c2e, 0.4, 0.3));
+    k.rotation.x = Math.PI / 2;
+    k.position.set(0.85, y, 0.51);
+    tv.add(k);
+    tvKnobs.push(k);
+    hitBox(0.22, 0.22, 0.2, 0.85, y, 0.52, 'tvknob', tv).userData.knob = k;
+  });
+  /* square screen */
+  slabAt(1.66, 1.66, 0.08, 0.2, 0.025, grayBezel, -0.18, 1.0, 0.475);   /* rounded screen bezel */
+  const screenHolder = new THREE.Group();   /* sets the screen size (a little bigger than 1.35); screenGrp inside is what the click animation squashes */
+  screenHolder.position.set(-0.18, 1.0, 0.518);
+  screenHolder.scale.setScalar(1.074);
+  tv.add(screenHolder);
+  const screenGrp = new THREE.Group();
+  screenHolder.add(screenGrp);
+  const screenMat = new THREE.MeshBasicMaterial({ color: 0xffffff });
+  screenMat.color.setHex(0x0e2a1e);
+  const scrGeo = roundedScreenGeo(1.35, 1.35, 0.15);   /* rounded screen corners, shared by the picture and the glass layers */
+  const screen = new THREE.Mesh(scrGeo, screenMat);
+  screenGrp.add(screen);
+  new THREE.TextureLoader().load(CONFIG.tvImage, tex => {
+    const img = tex.image, a = img && img.width && img.height ? img.width / img.height : 1;
+    if (a > 1) { tex.repeat.x = 1 / a; tex.offset.x = (1 - 1 / a) / 2; }
+    else if (a < 1) { tex.repeat.y = a; tex.offset.y = (1 - a) / 2; }
+    screenMat.map = tex;
+    screenMat.color.setHex(0xffffff);
+    screenMat.needsUpdate = true;
+    const bt = tex.clone(); bt.needsUpdate = true; bt.anisotropy = 4;   /* the same picture on top of the board */
+    boardTop.map = bt; boardTop.color.setHex(0xe0e0e0); boardTop.needsUpdate = true;
+  }, undefined, () => {});
+  const vig = (() => {
+    const c = document.createElement('canvas'); c.width = c.height = 128;
+    const g = c.getContext('2d');
+    const gr = g.createRadialGradient(64, 64, 40, 64, 64, 92);
+    gr.addColorStop(0, 'rgba(0,0,0,0)'); gr.addColorStop(1, 'rgba(0,0,0,0.5)');
+    g.fillStyle = gr; g.fillRect(0, 0, 128, 128);
+    return new THREE.CanvasTexture(c);
+  })();
+  const vigM = noHit(new THREE.Mesh(scrGeo, new THREE.MeshBasicMaterial({ map: vig, transparent: true, depthWrite: false })));
+  vigM.position.z = 0.002;
+  screenGrp.add(vigM);
+  hitBox(2.2, 1.95, 1.1, 0, 1.0, 0, 'tv', tv);
+
+  /* ---------- CRT glass on top of Jesse and the picture: scanlines, a flickering glow, a slow rolling bar ---------- */
+  const mkTex = (w, h, draw) => { const c = document.createElement('canvas'); c.width = w; c.height = h; draw(c.getContext('2d'), w, h); return new THREE.CanvasTexture(c); };
+  const scanTex = mkTex(4, 4, g => { g.fillStyle = 'rgba(0,0,0,0.32)'; g.fillRect(0, 0, 4, 1); });
+  scanTex.wrapS = scanTex.wrapT = THREE.RepeatWrapping;
+  scanTex.repeat.set(1, 64);
+  const glowTex = mkTex(256, 256, (g, w, h) => {
+    const rg = g.createRadialGradient(w * 0.42, h * 0.4, 4, w / 2, h / 2, w * 0.7);
+    rg.addColorStop(0, 'rgba(210,235,255,0.55)'); rg.addColorStop(0.6, 'rgba(120,170,255,0.18)'); rg.addColorStop(1, 'rgba(60,100,200,0)');
+    g.fillStyle = rg; g.fillRect(0, 0, w, h);
+    const st = g.createLinearGradient(0, 0, w, h);   /* glass reflection */
+    st.addColorStop(0.12, 'rgba(255,255,255,0)'); st.addColorStop(0.24, 'rgba(255,255,255,0.28)'); st.addColorStop(0.36, 'rgba(255,255,255,0)');
+    g.fillStyle = st; g.fillRect(0, 0, w, h);
+  });
+  const barTex = mkTex(8, 256, (g, w, h) => {
+    const lg = g.createLinearGradient(0, 0, 0, h);
+    lg.addColorStop(0.35, 'rgba(255,255,255,0)'); lg.addColorStop(0.5, 'rgba(255,255,255,0.2)'); lg.addColorStop(0.65, 'rgba(255,255,255,0)');
+    g.fillStyle = lg; g.fillRect(0, 0, w, h);
+  });
+  barTex.wrapS = barTex.wrapT = THREE.RepeatWrapping;
+  const glassLayer = (map, add, z, order) => {
+    const m = noHit(new THREE.Mesh(scrGeo, new THREE.MeshBasicMaterial({ map, transparent: true, depthWrite: false, blending: add ? THREE.AdditiveBlending : THREE.NormalBlending })));
+    m.position.z = z; m.renderOrder = order; screenGrp.add(m);
+    return m;
+  };
+  glassLayer(scanTex, false, 0.14, 10);
+  const glowM = glassLayer(glowTex, true, 0.15, 11), barM = glassLayer(barTex, true, 0.16, 12);
+
+  /* ---------- retro start menu on the TV: click the TV, the picture flattens and pops, then NEW GAME / CANCEL ---------- */
+  const MENU_PX = 512, MENU_X0 = 96, MENU_X1 = 416;
+  const MENU_OPTS = [{ id: 'start', label: 'NEW GAME', y0: 304, y1: 368 }, { id: 'cancel', label: 'CANCEL', y0: 386, y1: 450 }];
+  const menuCanvas = document.createElement('canvas');
+  menuCanvas.width = menuCanvas.height = MENU_PX;
+  const menuTex = new THREE.CanvasTexture(menuCanvas);
+  const menuM = new THREE.Mesh(scrGeo, new THREE.MeshBasicMaterial({ map: menuTex }));
+  menuM.position.z = 0.125; menuM.renderOrder = 5; menuM.visible = false;
+  screenGrp.add(menuM);
+  /* the pointer turns into a little pixel arrow over the menu choices (drawn in code, no image file needed) */
+  const MENU_CURSOR = 'url("data:image/svg+xml,' + encodeURIComponent("<svg xmlns='http://www.w3.org/2000/svg' width='26' height='26' shape-rendering='crispEdges'><path d='M3 3 L3 21 L8 16 L12 24 L15 22.5 L11 14.5 L18 14.5 Z' fill='#ffd36b' stroke='#000' stroke-width='2' stroke-linejoin='miter'/></svg>") + '") 3 3, pointer';
+  let menuOn = false, menuSel = 'start', menuBlink = true, menuBlinkT = 0;
+  function fitText(g, text, maxW, px, family) {
+    g.font = px + 'px ' + family;
+    while (px > 16 && g.measureText(text).width > maxW) { px -= 2; g.font = px + 'px ' + family; }
+  }
+  function drawMenu() {
+    const g = menuCanvas.getContext('2d'), W = MENU_PX;
+    g.fillStyle = '#070b1c'; g.fillRect(0, 0, W, W);
+    g.strokeStyle = 'rgba(90,140,255,0.14)'; g.lineWidth = 1;   /* faint grid */
+    for (let i = 0; i <= W; i += 32) { g.beginPath(); g.moveTo(i, 0); g.lineTo(i, W); g.stroke(); g.beginPath(); g.moveTo(0, i); g.lineTo(W, i); g.stroke(); }
+    g.strokeStyle = '#ffd36b'; g.lineWidth = 6; g.strokeRect(24, 24, W - 48, W - 48);
+    g.strokeStyle = '#ff7a59'; g.lineWidth = 2; g.strokeRect(38, 38, W - 76, W - 76);
+    g.textAlign = 'center'; g.textBaseline = 'middle';
+    [['FEARJOY', 112], ['THE GAME', 190]].forEach(([txt, y]) => {   /* title in the header font */
+      fitText(g, txt, 400, 80, "'KCOraleSans', 'Arial Black', sans-serif");
+      g.fillStyle = '#ff7a59'; g.fillText(txt, W / 2 + 4, y + 4);
+      g.fillStyle = '#ffffff'; g.fillText(txt, W / 2, y);
+    });
+    g.fillStyle = '#7fb0ff'; g.font = "24px 'KCPelletierTyped', 'Courier New', 'Apple Color Emoji', 'Segoe UI Emoji', 'Noto Color Emoji', monospace";
+    g.fillText('free 🎲 1-6 players', W / 2, 252);
+    MENU_OPTS.forEach(o => {
+      const on = menuSel === o.id, cy = (o.y0 + o.y1) / 2;
+      if (on) { g.fillStyle = '#ffd36b'; g.fillRect(MENU_X0, o.y0, MENU_X1 - MENU_X0, o.y1 - o.y0); }
+      g.fillStyle = on ? '#12162e' : '#ffd36b';
+      fitText(g, o.label, 230, 42, "'KCStrikerSans', 'Arial Black', sans-serif");
+      g.fillText(o.label, W / 2 + 12, cy + 2);
+      if (on && menuBlink) { g.beginPath(); g.moveTo(MENU_X0 + 22, cy - 13); g.lineTo(MENU_X0 + 22, cy + 13); g.lineTo(MENU_X0 + 46, cy); g.closePath(); g.fill(); }   /* blinking selector arrow */
+    });
+    menuTex.needsUpdate = true;
+  }
+  if (document.fonts && document.fonts.load) Promise.all([document.fonts.load("66px 'KCOraleSans'"), document.fonts.load("36px 'KCStrikerSans'"), document.fonts.load("20px 'KCPelletierTyped'")]).then(() => { if (menuOn) drawMenu(); }).catch(() => {});
+  function showMenu(on) {
+    menuOn = on; menuM.visible = on; jesse.visible = !on;
+    if (on) { menuSel = 'start'; menuBlink = true; menuBlinkT = performance.now(); drawMenu(); }
+  }
+  function menuAt(e) {   /* which menu choice is under the pointer ('' if none) */
+    const r = el.getBoundingClientRect();
+    ndc.set(((e.clientX - r.left) / r.width) * 2 - 1, -((e.clientY - r.top) / r.height) * 2 + 1);
+    ray.setFromCamera(ndc, v.camera);
+    const h = ray.intersectObject(menuM, false)[0];
+    if (!h || !h.uv) return '';
+    const px = h.uv.x * MENU_PX, py = (1 - h.uv.y) * MENU_PX;
+    const o = MENU_OPTS.find(q => py >= q.y0 && py <= q.y1 && px >= MENU_X0 && px <= MENU_X1);
+    return o ? o.id : '';
+  }
+  function startGame() { if (v.tvT || v.navigated) return; v.tvMode = 'start'; v.tvT = performance.now(); }
+  function closeMenu() { if (v.tvT || v.navigated) return; v.tvMode = 'close'; v.tvSwapped = false; v.tvT = performance.now(); }
+  window.addEventListener('keydown', e => {   /* keyboard: up/down to choose, Enter to start, Esc to cancel */
+    if (!menuOn || v.tvT || v.navigated) return;
+    if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); if (menuSel === 'start') startGame(); else closeMenu(); }
+    else if (e.key === 'Escape') { e.preventDefault(); closeMenu(); }
+    else if (e.key === 'ArrowUp' || e.key === 'ArrowDown') { e.preventDefault(); menuSel = menuSel === 'start' ? 'cancel' : 'start'; drawMenu(); }
+  });
+
+  const tvLight = new THREE.PointLight(0xa8d4ff, 0.55, 7);   /* faint blue spill onto the desk and the crew */
+  tvLight.position.set(-0.2, 2.6, -0.2);
+  stage.add(tvLight);
+
+  /* ---------- little radio, on the table next to the board: click for streaming (soon), drag the knob for volume ---------- */
+  const radio = new THREE.Group();
+  radio.position.set(1.8, VT, 0.9);   /* partly on top of the record */
+  radio.rotation.y = -0.25;
+  radio.scale.setScalar(1.25);
+  stage.add(radio);
+  blob(2.1, 1.1, 1.8, 0.95, 0.7).position.y = VT + 0.004;
+  const cream = std(0xb09a72, 0.55), brown = std(0x5a3a26, 0.75), chrome = std(0xa8adb3, 0.3, 0.6);
+  const rBody = new THREE.Mesh(roundedSlab(1.3, 0.78, 0.5, 0.12, 0.05), cream);
+  rBody.position.y = 0.45; radio.add(rBody);
+  [-0.5, 0.5].forEach(x => { const f = new THREE.Mesh(roundedSlab(0.2, 0.06, 0.34, 0.02, 0.015), brown); f.position.set(x, 0.03, 0); radio.add(f); });
+  const grilleTex = mkTex(128, 128, (g, w, h) => { g.fillStyle = '#4a3020'; g.fillRect(0, 0, w, h); g.fillStyle = '#1e120a'; for (let y = 10; y < h; y += 14) g.fillRect(8, y, w - 16, 6); });
+  const grille = new THREE.Mesh(roundedScreenGeo(0.6, 0.56, 0.09), new THREE.MeshStandardMaterial({ map: grilleTex, roughness: 0.8 }));   /* rounded so it stays inside the radio's corners */
+  grille.position.set(-0.28, 0.42, 0.256); radio.add(grille);
+  const dialTex = mkTex(256, 128, (g, w, h) => {
+    g.fillStyle = '#f4ecd0'; g.fillRect(0, 0, w, h);
+    g.strokeStyle = '#6b4a2a'; g.lineWidth = 3;
+    for (let i = 0, x = 16; x < w - 8; x += 12, i++) { g.beginPath(); g.moveTo(x, h - 14); g.lineTo(x, h - (i % 3 === 0 ? 56 : 38)); g.stroke(); }
+    g.strokeStyle = '#c0392b'; g.lineWidth = 6; g.beginPath(); g.moveTo(w * 0.62, 8); g.lineTo(w * 0.62, h - 8); g.stroke();
+  });
+  const dial = new THREE.Mesh(new THREE.PlaneGeometry(0.4, 0.2), new THREE.MeshStandardMaterial({ map: dialTex, roughness: 0.4 }));
+  dial.position.set(0.3, 0.66, 0.256); radio.add(dial);
+  const knobMat = std(0x2b2b2e, 0.35, 0.3);
+  const knob = new THREE.Group(); knob.position.set(0.3, 0.32, 0.27); radio.add(knob);
+  const kc = new THREE.Mesh(new THREE.CylinderGeometry(0.17, 0.18, 0.1, 32), knobMat); kc.rotation.x = Math.PI / 2; knob.add(kc);
+  const notch = new THREE.Mesh(new THREE.BoxGeometry(0.035, 0.11, 0.02), new THREE.MeshBasicMaterial({ color: 0xffffff })); notch.position.set(0, 0.09, 0.055); knob.add(notch);
+  const haloTex = mkTex(64, 64, (g, w, h) => { const rg = g.createRadialGradient(32, 32, 1, 32, 32, 32); rg.addColorStop(0, 'rgba(255,255,255,1)'); rg.addColorStop(1, 'rgba(255,255,255,0)'); g.fillStyle = rg; g.fillRect(0, 0, w, h); });
+  const ledMat = new THREE.MeshBasicMaterial({ color: 0x4a0d0a });
+  const led = new THREE.Mesh(new THREE.SphereGeometry(0.035, 12, 10), ledMat); led.position.set(0.58, 0.32, 0.262); radio.add(led);
+  const ledHalo = new THREE.Sprite(new THREE.SpriteMaterial({ map: haloTex, color: 0xff3a2a, transparent: true, opacity: 0, blending: THREE.AdditiveBlending, depthWrite: false }));
+  ledHalo.scale.set(0.4, 0.4, 1); ledHalo.position.set(0.58, 0.32, 0.3); radio.add(ledHalo);
+  const handle = new THREE.Mesh(new THREE.TorusGeometry(0.32, 0.022, 8, 28, Math.PI), chrome); handle.position.set(0, 0.84, 0); radio.add(handle);
+  const ant = new THREE.Mesh(new THREE.CylinderGeometry(0.012, 0.012, 0.8, 8), chrome); ant.position.set(0.64, 1.24, -0.1); ant.rotation.z = -0.35; radio.add(ant);
+  hitBox(1.4, 0.95, 0.65, 0, 0.47, 0, 'radio', radio);
+  hitBox(0.5, 0.5, 0.3, 0.3, 0.32, 0.3, 'knob', radio);
+
+  /* ---------- cream vinyl record lying on the table, poking out from under the board. Hover: it slides out a little. Click: it wiggles, then the streaming sheet opens. ---------- */
+  const VR = 1.45, VX = BX + 1.1, VZ = TZ + 0.1;
+  const vinylTex = mkTex(256, 256, (g, w, h) => {
+    g.fillStyle = '#e6d6a6'; g.fillRect(0, 0, w, h);
+    g.strokeStyle = 'rgba(90,60,30,0.10)'; g.lineWidth = 1;
+    for (let r = 50; r < 126; r += 3) { g.beginPath(); g.arc(128, 128, r, 0, Math.PI * 2); g.stroke(); }
+    g.fillStyle = '#c8442a'; g.beginPath(); g.arc(128, 128, 44, 0, Math.PI * 2); g.fill();
+    g.fillStyle = '#f6ecd0'; g.font = 'bold 11px sans-serif'; g.textAlign = 'center';
+    g.fillText('FEARJOY', 128, 112); g.fillText('THE GAME', 128, 156);
+    g.fillStyle = '#2a1a14'; g.beginPath(); g.arc(128, 128, 5, 0, Math.PI * 2); g.fill();
+  });
+  const vinylG = new THREE.Group();
+  vinylG.position.set(VX, VT / 2 + 0.002, VZ);
+  stage.add(vinylG);
+  const vCap = new THREE.MeshStandardMaterial({ map: vinylTex, color: 0xc4c4c4, roughness: 0.35, metalness: 0.1 });   /* the grey tint keeps the cream from washing out to white under the lights */
+  vinylG.add(new THREE.Mesh(new THREE.CylinderGeometry(VR, VR, VT, 72), [std(0xb8a878, 0.5), vCap, vCap]));
+  hitBox(VR * 2, VT * 2, VR * 2, 0, 0, 0, 'vinyl', vinylG);
+  let vSlide = 0;
+  let hoverGroup = null, glowItems = null, knobDrag = null, knobMoved = 0, ledOn = false, coinLand = 0, dieLand = 0;
+  const setKnob = vol => { knob.rotation.z = 2.35 - vol * 4.7; };   /* quiet = turned left, loud = turned right */
+  setKnob(Sound.getVolume());
+  Sound.onVolume(setKnob);   /* the rack bar knob turns this one too */
+
+  /* Jesse hovers slowly around the game board on the screen */
+  const jIdx = Math.max(0, PEOPLE.findIndex(x => x.id === 'jesse'));
+  const jesse = headFor(jIdx, marble().clone());
+  jesse.scale.setScalar(0.22);
+  screenGrp.add(jesse);
+  const path = new THREE.CatmullRomCurve3([[22, 32], [58, 24], [78, 46], [60, 74], [30, 70], [16, 50]]
+    .map(p => new THREE.Vector3((p[0] - 50) / 100 * 1.35, (50 - p[1]) / 100 * 1.35, 0.04)), true);
+  const PATH_MS = 36000;
+  const place = t => {
+    const u = REDUCE ? 0 : (t % PATH_MS) / PATH_MS;
+    const p = path.getPoint(u);
+    jesse.position.set(p.x, p.y - 0.17 + (REDUCE ? 0 : Math.sin(t / 900) * 0.02), p.z);
+    jesse.rotation.y = REDUCE ? 0 : Math.sin(t / 1500) * 0.45;
+  };
+  place(0);
+
+  /* ---------- the crew ---------- */
+  const crew = [];
+  ['jesse', 'marco', 'grant'].forEach((id, i) => {
+    const idx = Math.max(0, PEOPLE.findIndex(x => x.id === id));
+    const h = headFor(idx, marble().clone());   /* its own material copy, so only the hovered bust glows */
+    h.scale.setScalar(0.7);
+    h.position.set((i - 1) * 0.78, 0, -0.7 + (i === 1 ? 0.1 : 0));
+    deck.add(h);
+    crew.push(h);
+    blob(0.96, 0.76, h.position.x, h.position.z, 0.8, deck);
+    hitBox(0.8, 1.15, 0.72, h.position.x, 0.57, h.position.z, 'bust', deck).userData.bust = h;   /* click target sits on the stage, because the bust group is cleared when the real STL loads */
+  });
+
+  /* ---------- coin: lies flat on the desk, real 50/50 ---------- */
+  const COIN_ROT_TOP = Math.PI / 2, COIN_ROT_BOT = Math.PI / 2;   /* keeps the text upright on both faces: JOY is turned the other way so it reads upright while the coin spins on its edge and after a sideways flip */
+  const COIN_SCALE = 1.9, COIN_H = 0.03 * COIN_SCALE, COIN_R = 0.3 * COIN_SCALE;
+  const coinRoot = new THREE.Group();
+  coinRoot.position.set(0.72, COIN_H, 0.72);
+  deck.add(coinRoot);
+  const rollG = new THREE.Group();   /* the sideways flip: turns the coin over around the front-to-back axis, so it flips left over right every time */
+  coinRoot.add(rollG);
+  const spinG = new THREE.Group();   /* spins the coin on its edge until it is flipped */
+  rollG.add(spinG);
+  const flipper = new THREE.Group();
+  spinG.add(flipper);
+  const coin = makeCoin(true, { base: '#e0b878', ink: '#6b4420', color: 0xe0b878, metalness: 0.25, roughness: 0.5 });   /* light bronze */
+  coin.scale.setScalar(COIN_SCALE);
+  coin.material[1].map.center.set(0.5, 0.5); coin.material[1].map.rotation = COIN_ROT_TOP;
+  coin.material[2].map.center.set(0.5, 0.5); coin.material[2].map.rotation = COIN_ROT_BOT;
+  flipper.add(coin);
+  hitBox(1.2, 1.2, 1.2, 0, 0, 0, 'coin', coinRoot);   /* tall enough for the coin standing on its edge */
+  const coinShadow = blob(1.5, 1.5, 0.72, 0.72, 0.6, deck);
+  let flip = null, idle = true;   /* idle = the coin stands on its edge and spins slowly until you click it */
+  flipper.rotation.x = Math.PI / 2;
+  coinRoot.position.y = COIN_R + 0.012;
+  function doFlip() {
+    if (flip) return;
+    const result = Math.random() < 0.5 ? 'FEAR' : 'JOY';
+    const want = result === 'JOY' ? 1 : 0;
+    const z0 = rollG.rotation.z;
+    let n = Math.round(z0 / Math.PI) + 6;   /* at least 6 sideways half turns every time: an even total leaves FEAR up, an odd total leaves JOY up */
+    if (n % 2 !== want) n++;
+    const y0 = spinG.rotation.y, y1 = Math.round(y0 / (Math.PI * 2)) * Math.PI * 2;   /* straighten out the edge spin on the way down */
+    flip = { t0: performance.now(), dur: REDUCE ? 250 : 1320, a0: flipper.rotation.x, z0, z1: n * Math.PI, result, y0, y1, fromEdge: idle, py0: coinRoot.position.y };
+    idle = false;
+    coinLand = 0;
+    Sound.coin();
+  }
+
+  /* ---------- die: one dichroic glass die with gold pips, resting on the desk ---------- */
+  const DIE_SCALE = 1.4, DIE_H = 0.23 * DIE_SCALE;
+  const dieRoot = new THREE.Group();
+  dieRoot.position.set(-0.6, DIE_H, 0.75);
+  deck.add(dieRoot);
+  const yawG = new THREE.Group();
+  dieRoot.add(yawG);
+  const die = makeClearDie('red', 1);   /* opaque red, white pips */
+  die.scale.setScalar(DIE_SCALE);
+  yawG.add(die);
+  hitBox(0.8, 0.8, 0.8, 0, 0, 0, 'die', dieRoot);
+  const dieShadow = blob(0.9, 0.9, -0.6, 0.75, 0.8, deck);
+  const FACE_UP = { 1: [0, 0, 0], 6: [Math.PI, 0, 0], 3: [0, 0, Math.PI / 2], 4: [0, 0, -Math.PI / 2], 2: [-Math.PI / 2, 0, 0], 5: [Math.PI / 2, 0, 0] };
+  const dieBaseY = DIE_H;
+  let roll = null;
+  function doRoll() {
+    if (roll) return;
+    dieLand = 0;
+    const n = 1 + Math.floor(Math.random() * 6);
+    const tgt = FACE_UP[n], TAU = Math.PI * 2;
+    roll = {
+      t0: performance.now(), dur: REDUCE ? 250 : 1000, n, tgt,
+      e0: [die.rotation.x, die.rotation.y, die.rotation.z],
+      e1: tgt.map(a => a + TAU * (1 + Math.floor(Math.random() * 2))),
+      y0: yawG.rotation.y, y1: yawG.rotation.y + (Math.random() - 0.5) * 3
+    };
+    Sound.dice();
+  }
+
+
+  /* ---------- clicking ---------- */
+  const ray = new THREE.Raycaster(), ndc = new THREE.Vector2();
+  let pickObj = null;
+  function pick(e) {
+    const r = el.getBoundingClientRect();
+    ndc.set(((e.clientX - r.left) / r.width) * 2 - 1, -((e.clientY - r.top) / r.height) * 2 + 1);
+    ray.setFromCamera(ndc, v.camera);
+    const h = ray.intersectObjects(hits, false)[0];
+    pickObj = h && h.object.userData.tag !== 'block' ? h.object : null;   /* the table and board hide whatever is behind them */
+    return pickObj ? pickObj.userData.tag : null;
+  }
+  el.addEventListener('pointerdown', e => {
+    knobMoved = 0;
+    if (pick(e) === 'knob') { knobDrag = { x0: e.clientX, y0: e.clientY, v0: Sound.getVolume() }; try { el.setPointerCapture(e.pointerId); } catch (x) {} }
+  });
+  el.addEventListener('pointermove', e => {
+    if (knobDrag) {   /* turning the volume knob: right or up = louder, left or down = quieter (diagonal counts too) */
+      const d = (e.clientX - knobDrag.x0) - (e.clientY - knobDrag.y0);
+      knobMoved = Math.max(knobMoved, Math.abs(d));
+      setKnob(Sound.setVolume(knobDrag.v0 + d / 150));
+      return;
+    }
+    if (menuOn && !v.tvT) {   /* retro menu: hover picks a choice and the cursor turns into the pixel arrow */
+      const o = menuAt(e);
+      if (o) { if (o !== menuSel) { menuSel = o; menuBlink = true; menuBlinkT = performance.now(); drawMenu(); Sound.slide(); } el.style.cursor = MENU_CURSOR; hoverGroup = null; return; }
+    }
+    const tag = pick(e);
+    el.style.cursor = tag && !(menuOn && tag === 'tv') ? 'var(--hand)' : 'default';
+    hoverGroup = tag === 'tvknob' ? pickObj.userData.knob : tag === 'tv' ? (menuOn ? null : tv) : tag === 'bust' ? pickObj.userData.bust : tag === 'coin' ? coinRoot : tag === 'die' ? dieRoot : tag === 'vinyl' ? vinylG : tag === 'radio' ? radio : tag === 'knob' ? knob : null;
+  });
+  const endKnob = () => { knobDrag = null; };
+  el.addEventListener('pointerup', endKnob);
+  el.addEventListener('pointercancel', endKnob);
+  el.addEventListener('lostpointercapture', endKnob);
+  el.addEventListener('pointerleave', () => { hoverGroup = null; });
+  el.addEventListener('click', e => {
+    if (menuOn && !v.tvT) { const o = menuAt(e); if (o) { if (o === 'start') startGame(); else closeMenu(); return; } }
+    const tag = pick(e);
+    if (tag === 'coin') doFlip();
+    else if (tag === 'die') doRoll();
+    else if (tag === 'bust') {
+      pickObj.userData.bust.userData.spin = performance.now();
+      Sound.slide();
+      setTimeout(openShop, REDUCE ? 0 : 500);
+    }
+    else if (tag === 'vinyl') {
+      vinylG.userData.wig = performance.now();
+      Sound.slide();
+      setTimeout(() => openSoon('Vinyl', 'The vinyl is coming soon. The link to get it will be right here.'), REDUCE ? 0 : 650);
+    }
+    else if (tag === 'radio') openSoon('Streaming', 'Streaming links coming soon.');
+    else if (tag === 'knob') {   /* a plain tap on the knob steps the volume; dragging turns it */
+      if (knobMoved < 5) { const cur = Sound.getVolume(); setKnob(Sound.setVolume(cur >= 0.99 ? 0 : Math.min(1, Math.round(cur * 4) / 4 + 0.25))); }
+    }
+    else if (tag === 'tvknob') { pickObj.userData.knob.userData.press = performance.now(); Sound.slide(); }
+    else if (tag === 'tv' && !menuOn && !v.tvT && !v.navigated) { Sound.oneUp(); v.tvMode = 'open'; v.tvSwapped = false; v.tvT = performance.now(); }
+  });
+  window.addEventListener('pageshow', () => {
+    v.tvT = 0; v.navigated = false;
+    showMenu(false);
+    screenGrp.scale.set(1, 1, 1);
+    screenMat.color.setHex(0xffffff);
+    menuM.material.color.setRGB(1, 1, 1);
+  });
+
+  /* ---------- per-frame ---------- */
+  const ease = k => 1 - Math.pow(1 - k, 3);
+  v.onFrame = function (t) {
+    const now = performance.now();
+    place(t);
+    if (!REDUCE && v.base) {   /* tiny parallax: the camera drifts as the page scrolls, so the table and the TV behind it slide a little against each other */
+      const r = el.getBoundingClientRect(), sp = Math.max(-1, Math.min(1, (r.top + r.height / 2 - innerHeight / 2) / innerHeight));
+      v.camera.position.set(v.base.x + sp * 0.5, v.base.y + sp * 0.7, v.base.z);
+      v.camera.lookAt(LOOK);
+    }
+    vSlide += ((hoverGroup === vinylG ? 1 : 0) - vSlide) * 0.14;   /* hover: slides out toward you; click: a quick wiggle */
+    const wk = vinylG.userData.wig ? Math.min(1, (now - vinylG.userData.wig) / 650) : 1, wg = REDUCE ? 0 : Math.sin(wk * Math.PI * 7) * (1 - wk);
+    vinylG.position.set(VX + wg * 0.07, vinylG.position.y, VZ + vSlide * 0.2);
+    vinylG.rotation.y = wg * 0.1;
+    if (wk >= 1) vinylG.userData.wig = 0;
+    /* TV glass flicker (a brief dip every so often) and the blue spill light */
+    const fl = REDUCE ? 1 : 0.9 + 0.06 * Math.sin(t / 83) + 0.04 * Math.sin(t / 37 + 1.3) - (Math.sin(t / 2300) > 0.985 ? 0.3 : 0);
+    glowM.material.opacity = 0.8 * fl;
+    barM.material.opacity = 0.9 * fl;
+    barTex.offset.y = REDUCE ? 0 : -((t / 7000) % 1);
+    tvLight.intensity = 0.55 * fl;
+    /* hover glow: whatever is under the pointer warms up slightly (the radio knob too, while it is turned) */
+    if (!glowItems) glowItems = [tv, radio, knob, coinRoot, dieRoot, vinylG].concat(crew, tvKnobs).map(g => ({ g, k: 0, s: g === knob || tvKnobs.indexOf(g) >= 0 ? 1.2 : 1 }));
+    const hg = knobDrag ? knob : hoverGroup;
+    glowItems.forEach(it => {
+      const tgt = it.g === hg ? 1 : 0;
+      if (it.k === tgt) return;
+      it.k += (tgt - it.k) * 0.18;
+      if (Math.abs(tgt - it.k) < 0.01) it.k = tgt;
+      applyGlow(it.g, it.k, it.s);
+    });
+    if (menuOn && now - menuBlinkT > 500) { menuBlinkT = now; menuBlink = !menuBlink; drawMenu(); }   /* selector arrow blinks */
+    tvKnobs.forEach(k => { const pt = k.userData.press ? Math.max(0, 1 - (now - k.userData.press) / 160) : 0; k.position.z = 0.51 - 0.03 * pt; });   /* TV buttons press in */
+    /* radio light pulses while the song plays */
+    ledHalo.material.opacity = ledOn ? 0.7 + (REDUCE ? 0 : 0.2 * Math.sin(t / 220)) : 0;
+    crew.forEach((h, i) => {
+      let r = REDUCE ? 0 : Math.sin(t / 1400 + i * 1.7) * 0.16 + (i - 1) * -0.14;
+      if (h.userData.spin) {
+        const k = Math.min(1, (now - h.userData.spin) / (REDUCE ? 1 : 900));
+        r += Math.PI * 2 * ease(k);
+        if (k >= 1) h.userData.spin = 0;
+      }
+      h.rotation.y = r;
+    });
+    if (idle) {   /* standing on its edge, slowly spinning */
+      const sp = REDUCE ? 0 : t * 0.0011;
+      spinG.rotation.y = sp;
+      coinRoot.position.y = COIN_R + 0.012;
+      coinShadow.scale.set(0.15 + 0.7 * Math.abs(Math.cos(sp)), 0.15 + 0.7 * Math.abs(Math.sin(sp)), 1);
+      coinShadow.material.opacity = coinShadow.userData.op * 0.8;
+    }
+    if (flip) {
+      const k = Math.min(1, (now - flip.t0) / flip.dur);
+      flipper.rotation.x = flip.a0 * (1 - ease(k));   /* from standing on its edge (if it was) down to lying flat */
+      rollG.rotation.z = flip.z0 + (flip.z1 - flip.z0) * ease(k);
+      spinG.rotation.y = flip.y0 + (flip.y1 - flip.y0) * ease(k);
+      const yFlip = COIN_H + (Math.abs(Math.sin(flipper.rotation.x)) + Math.abs(Math.sin(rollG.rotation.z))) * COIN_R + Math.sin(Math.PI * k) * (REDUCE ? 0 : 1.1);   /* lift so the spinning edge never dips into the desk */
+      coinRoot.position.y = flip.fromEdge ? flip.py0 + (yFlip - flip.py0) * Math.min(1, k * 6) : yFlip;
+      shade(coinShadow, coinRoot.position.y - COIN_H);
+      if (k >= 1) { flipper.rotation.x = 0; rollG.rotation.z = flip.z1; coinRoot.position.y = COIN_H; shade(coinShadow, 0); spinG.rotation.y = flip.y1; flip = null; coinLand = now; openShop(); }
+    } else if (coinLand) {   /* little landing bounce */
+      const ms = now - coinLand, b = REDUCE ? 0 : bounceAt(ms, 0.09);
+      coinRoot.position.y = COIN_H + b; shade(coinShadow, b);
+      if (ms >= BOUNCE_MS) { coinLand = 0; coinRoot.position.y = COIN_H; shade(coinShadow, 0); }
+    }
+    if (roll) {
+      const k = Math.min(1, (now - roll.t0) / roll.dur);
+      const e = ease(k);
+      die.rotation.set(
+        roll.e0[0] + (roll.e1[0] - roll.e0[0]) * e,
+        roll.e0[1] + (roll.e1[1] - roll.e0[1]) * e,
+        roll.e0[2] + (roll.e1[2] - roll.e0[2]) * e);
+      yawG.rotation.y = roll.y0 + (roll.y1 - roll.y0) * e;
+      dieRoot.position.y = dieBaseY + (REDUCE ? 0 : Math.sin(Math.PI * k) * 0.9 + 0.22 * Math.min(1, Math.sin(Math.PI * k) * 6));
+      shade(dieShadow, dieRoot.position.y - dieBaseY);
+      if (k >= 1) {
+        die.rotation.set(roll.tgt[0], roll.tgt[1], roll.tgt[2]);
+        dieRoot.position.y = dieBaseY;
+        shade(dieShadow, 0);
+        roll = null; dieLand = now; openShop();
+      }
+    } else if (dieLand) {
+      const ms = now - dieLand, b = REDUCE ? 0 : bounceAt(ms, 0.1);
+      dieRoot.position.y = dieBaseY + b; shade(dieShadow, b);
+      if (ms >= BOUNCE_MS) { dieLand = 0; dieRoot.position.y = dieBaseY; shade(dieShadow, 0); }
+    }
+    if (v.tvT && !v.navigated) {
+      const mode = v.tvMode || 'open', dur = REDUCE ? 150 : (mode === 'start' ? 420 : 750);
+      const p = Math.min(1, (t - v.tvT) / dur);
+      const setBright = b => { if (screenMat.map) screenMat.color.setRGB(b, b, b); else screenMat.color.setRGB(0.055 * b, 0.165 * b, 0.118 * b); menuM.material.color.setRGB(b, b, b); };
+      if (mode === 'start') {   /* NEW GAME: the picture collapses to a bright line, then the game page opens */
+        if (REDUCE) screenGrp.scale.set(1, 1, 1);
+        else { screenGrp.scale.set(1 + p * 0.04, Math.max(0.02, 1 - p * 0.98), 1); setBright(1 + p); }
+        if (p >= 1) { v.navigated = true; location.href = '/game'; }
+      } else {   /* TV click (open) or CANCEL (close): flatten and pop back, swapping the menu in or out at the flat moment */
+        if (REDUCE) screenGrp.scale.set(1, 1, 1);
+        else if (p < 0.4) { const q = p / 0.4; screenGrp.scale.set(1 + q * 0.04, Math.max(0.02, 1 - q * 0.98), 1); setBright(1 + q); }
+        else { const q = (p - 0.4) / 0.6; screenGrp.scale.set(1.04 - q * 0.04, 0.02 + q * 0.98, 1); setBright(2 - q); }
+        if (p >= 0.4 && !v.tvSwapped) { v.tvSwapped = true; showMenu(mode === 'open'); }
+        if (p >= 1) { v.tvT = 0; screenGrp.scale.set(1, 1, 1); setBright(1); }
+      }
+    }
+  };
+
+  /* start on the placeholder shapes, download the real busts once the desk is on screen */
+  if ('IntersectionObserver' in window) {
+    new IntersectionObserver(es => { v.visible = es[0].isIntersecting; if (v.visible) kickLoads(v); else if (menuOn && !v.tvT) showMenu(false); }, { threshold: 0.05 }).observe(el);
+  } else v.visible = true;
+  if (window.ResizeObserver) new ResizeObserver(() => v.fit()).observe(el);
+  v.fit();
+  return v;
+}
+
+/* Clearer translucent die: front faces only, so the pips on the far side no longer show through and hide the top number */
+function makeClearDie(colorId, alpha) {
+  const c = DIE_COLORS.find(x => x.id === colorId) || DIE_COLORS[0];
+  const pip = lum(c.hex) < 140 ? '#ffffff' : '#111111';
+  const mats = FACES.map(n => new THREE.MeshStandardMaterial({
+    map: pipTexture(n, c.hex, pip, alpha), transparent: true, roughness: 0.18, metalness: 0.05
+  }));
+  return new THREE.Mesh(roundedBox(0.46, 0.07, 12), mats);
+}
+
+/* Dichroic glass die: the body color-shifts, the pips are gold. Two meshes: a tinted body and a gold-pip skin on top. */
+const goldPipCache = {};
+function goldPipTexture(n) {
+  if (goldPipCache[n]) return goldPipCache[n];
+  const c = document.createElement('canvas');
+  c.width = c.height = 128;
+  const g = c.getContext('2d');
+  PIPS[n].forEach(p => {
+    const gr = g.createRadialGradient(p[0] * 128 - 3, p[1] * 128 - 3, 1, p[0] * 128, p[1] * 128, 13);
+    gr.addColorStop(0, '#fff2a8'); gr.addColorStop(0.6, '#f2c230'); gr.addColorStop(1, '#a8740a');
+    g.fillStyle = gr;
+    g.beginPath(); g.arc(p[0] * 128, p[1] * 128, 12, 0, Math.PI * 2); g.fill();
+  });
+  return (goldPipCache[n] = new THREE.CanvasTexture(c));
+}
+function makeDichroicDie() {
+  const g = new THREE.Group();
+  const geo = new THREE.BoxGeometry(0.46, 0.46, 0.46);   /* straight edges and sharp corners, not rounded */
+  const mc = rainbowMatcap();
+  /* see-through glass again (half transparent) whose color shifts with the angle, like dichroic glass */
+  const body = new THREE.Mesh(geo, FACES.map(() => new THREE.MeshMatcapMaterial({ matcap: mc, transparent: true, opacity: 0.5, side: THREE.DoubleSide, depthWrite: false })));
+  const pips = new THREE.Mesh(geo, FACES.map(n => new THREE.MeshBasicMaterial({ map: goldPipTexture(n), transparent: true, depthWrite: false })));
+  pips.scale.setScalar(1.006);
+  body.renderOrder = 1;
+  pips.renderOrder = 2;
+  g.add(body, pips);
+  g.userData.tint = h => body.material.forEach((m, i) => m.color.setHSL((((h + i * 0.09) % 1) + 1) % 1, 0.55, 0.78));
+  g.userData.tint(0);
+  return g;
+}
+
+function makeViewer(el, p) {
+  const v = { el, p, visible: false, rotY: 0, vel: 0, dragging: false, lastX: 0, moved: 0, radius: 1.6, die: null, onFrame: null };
+  try {
+    const canvas = document.createElement('canvas');
+    el.insertBefore(canvas, el.firstChild);
+    v.renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
+    v.renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+    canvas.addEventListener('webglcontextlost', ev => ev.preventDefault(), false);   /* lets the browser restore the 3D view if a phone drops it */
+  } catch (err) {
+    el.classList.add('nogl');
+    return null;
+  }
+  v.scene = new THREE.Scene();
+  v.camera = new THREE.PerspectiveCamera(35, 4 / 3, 0.1, 100);
+  addSoftLights(v.scene);
+  v.stage = new THREE.Group();
+  v.scene.add(v.stage);
+
+  v.fit = function () {
+    const w = el.clientWidth || 300, h = el.clientHeight || 225;
+    v.renderer.setSize(w, h, false);
+    const mr = v.mainRect || { w: 1, h: 1 };   /* kit cards give the pieces tray only part of the canvas */
+    v.camera.aspect = (w * mr.w) / (h * mr.h);
+    v.camera.updateProjectionMatrix();
+    const t = Math.tan(THREE.MathUtils.degToRad(17.5));
+    const d0 = Math.max((v.radius + 0.5) / (t * v.camera.aspect), (v.p && v.p.type === 'single' ? 1.12 : 1.25) / t);
+    const d = (v.subs ? d0 * 1.22 : d0) * (v.zoom || 1);   /* kit cards: pieces tray a little smaller, sitting back and up so the die and coin can float in front. v.zoom < 1 moves the camera closer (Angel edition) */
+    v.camera.position.set(0, 0.7 + d * 0.3, d * 0.95);
+    v.camera.lookAt(0, v.subs ? -0.15 : 0.65, 0);
+    (v.subs || []).concat(v.backSubs || []).forEach(sc => {   /* the small die and coin trays (and the Angel ticket and shirt trays) */
+      const a = (w * sc.rect.w) / (h * sc.rect.h), tt = Math.tan(THREE.MathUtils.degToRad(15));
+      sc.camera.aspect = a;
+      sc.camera.updateProjectionMatrix();
+      const dd = Math.max(1.0 / (tt * a), 1.5 / tt);
+      sc.camera.position.set(0, 0.6 + dd * 0.3, dd * 0.95);
+      sc.camera.lookAt(0, 0.6, 0);
+    });
+  };
+  if (window.ResizeObserver) new ResizeObserver(() => v.fit()).observe(el);
+
+  el.addEventListener('pointerdown', e => {
+    v.tap = null;
+    const rg = v.regionAt ? v.regionAt(e) : 'main';
+    if (rg !== 'main') { v.tap = { rg, x: e.clientX, y: e.clientY }; return; }   /* on the die or coin itself: wait and see if it is a tap or the start of a drag */
+    v.dragging = true; v.lastX = e.clientX; v.moved = 0; v.vel = 0; v.lastMoveT = performance.now();
+    el.classList.add('grabbing');
+    try { el.setPointerCapture(e.pointerId); } catch (x) {}
+  });
+  el.addEventListener('pointermove', e => {
+    if (v.tap) {
+      if (Math.hypot(e.clientX - v.tap.x, e.clientY - v.tap.y) < 8) return;
+      v.tap = null;   /* it moved, so it is a drag, not a tap: spin the pieces and leave the die and coin alone */
+      v.dragging = true; v.lastX = e.clientX; v.moved = 0; v.vel = 0; v.lastMoveT = performance.now();
+      el.classList.add('grabbing');
+      try { el.setPointerCapture(e.pointerId); } catch (x) {}
+    }
+    if (!v.dragging) { if (v.regionAt) el.style.cursor = v.regionAt(e) === 'main' ? '' : 'var(--hand)'; return; }
+    v.lastMoveT = performance.now();
+    const dx = e.clientX - v.lastX;
+    v.lastX = e.clientX;
+    v.moved += Math.abs(dx);
+    v.rotY += dx * 0.012;
+    v.vel = dx * 0.012;
+  });
+  const end = () => {
+    if (!v.dragging) return;
+    v.dragging = false;
+    el.classList.remove('grabbing');
+    if (v.moved < 6) { v.vel = 0.22; Sound.slide(); }   /* tap = spin kick */
+    else if (Math.abs(v.vel) > 0.04) Sound.slide();   /* a flick of the pieces */
+  };
+  el.addEventListener('pointerup', end);
+  el.addEventListener('pointercancel', end);
+  el.addEventListener('lostpointercapture', end);   /* iPhone can drop the pointer mid-drag, which used to leave the auto spin stuck off */
+  el.addEventListener('pointercancel', () => { v.tap = null; });
+  el.addEventListener('click', () => {   /* only a real tap that started on the die or coin itself rolls or flips it */
+    const tp = v.tap; v.tap = null;
+    if (!tp) return;
+    if (tp.rg === 'die' && v.rollDie) v.rollDie();
+    else if (tp.rg === 'coin' && v.flipCoin) v.flipCoin();
+  });
+
+  if ('IntersectionObserver' in window) {
+    new IntersectionObserver(es => { v.visible = es[0].isIntersecting; if (v.visible) kickLoads(v); }, { threshold: 0.05 }).observe(el);
+  } else v.visible = true;
+
+  buildScene(v, p);
+  return v;
+}
+
+let lastT = 0;
+function frame(t) {
+  requestAnimationFrame(frame);
+  const dt = Math.min((t - lastT) / 16.67, 3) || 1;
+  lastT = t;
+  for (const id in viewers) {
+    const v = viewers[id];
+    if (!v || !v.visible) continue;
+    if (!v.fixed) {
+      if (v.dragging && t - v.lastMoveT > 1500) { v.dragging = false; v.el.classList.remove('grabbing'); }   /* safety: never stay stuck in "dragging" */
+      if (!v.dragging) {
+        v.rotY += v.vel * dt;
+        v.vel *= Math.pow(0.95, dt);
+        if (Math.abs(v.vel) < 0.004) v.rotY += (REDUCE ? 0.002 : 0.006) * dt;   /* slow turn even with "reduce motion" on (iPhone setting), just slower */
+      }
+      v.stage.rotation.y = v.rotY;
+    }
+    if (v.onFrame) v.onFrame(t);
+    if (v.render) v.render(); else v.renderer.render(v.scene, v.camera);
+  }
+}
+
+/* the game pieces shop is hidden until the die rolls, the coin flips or a crew member is tapped. Its 3D viewers are only built the first time it opens. */
+const shop = $('#kits');
+let shopReady = false;
+function initShop() {
+  if (shopReady) return;
+  shopReady = true;
+  if (HAVE_GL) PRODUCTS.forEach(p => { viewers[p.id] = makeViewer($(`[data-viewer="${p.id}"]`), p); });
+  else $$('#kits .viewer').forEach(el => el.classList.add('nogl'));
+}
+function openShop() {
+  if (!shop.hidden) return;
+  initShop();
+  shop.hidden = false;
+  requestAnimationFrame(() => requestAnimationFrame(() => shop.classList.add('show')));
+  setTimeout(() => shop.scrollIntoView({ behavior: REDUCE ? 'auto' : 'smooth', block: 'start' }), REDUCE ? 0 : 750);
+}
+$('#shopClose').addEventListener('click', () => {
+  shop.classList.remove('show');
+  $('#play').scrollIntoView({ behavior: REDUCE ? 'auto' : 'smooth', block: 'start' });
+  setTimeout(() => { shop.hidden = true; }, REDUCE ? 0 : 700);
 });
 
-emailForm.addEventListener('submit', async (event) => {
-event.preventDefault();
-const formData = new FormData(emailForm);
-
-try {
-const response = await fetch('https://formspree.io/f/mpwwljpd', {
-method: 'POST',
-headers: { Accept: 'application/json' },
-body: formData,
-});
-
-if (response.ok) {
-successMessage.style.display = 'block';
-emailForm.reset();
-emailForm.style.display = 'none';
-setTimeout(() => successMessage.style.display = 'none', 4000);
+if (HAVE_GL) {
+  viewers['desk'] = makeDesk($('[data-viewer="desk"]'));
+  requestAnimationFrame(frame);
 } else {
-alert('Problem submitting. Try again?');
+  $$('.viewer').forEach(el => el.classList.add('nogl'));
 }
-} catch (error) {
-alert('Submission error. Try again?');
+
+/* =====================================================================
+   PRICES, OPTIONS
+   ===================================================================== */
+function qtyOf(p) {
+  const st = S[p.id];
+  if (p.type === 'kit') return st.qty;
+  if (p.type === 'single') return st.pick.size;
+  return 1;
 }
+function calc(p) {
+  const qty = qtyOf(p);
+  const sub = Math.round(p.price * 100) * qty;
+  return { qty, sub: sub / 100, total: sub / 100 };
+}
+
+function refreshCards() {
+  PRODUCTS.forEach(p => {
+    const price = $(`[data-price="${p.id}"]`);
+    price.innerHTML = symHTML(money(p.price));
+  });
+  /* Print-your-own button follows the piece being previewed */
+  PRODUCTS.filter(p => p.diy).forEach(p => {
+    const a = $(`[data-diy="${p.id}"]`);
+    const who = PEOPLE.find(x => x.id === S[p.id].view);
+    if (who.stl) {
+      a.href = encodeURI((who.stlFolder || './') + (who.stlBase || who.stl));
+      a.setAttribute('download', (who.stlBase || who.stl).split('/').pop());
+      a.removeAttribute('aria-disabled');
+      a.textContent = `Print your own: free ${who.name} STL`;
+    } else {
+      a.removeAttribute('href');
+      a.removeAttribute('download');
+      a.setAttribute('aria-disabled', 'true');
+      a.textContent = `${who.name} STL coming soon`;
+    }
+  });
+  $$('[data-die]').forEach(b => {
+    const [pid, c] = b.dataset.die.split(':');
+    b.classList.toggle('sel', S[pid].die === c);
+  });
+  $$('[data-view]').forEach(b => {
+    const [pid, who] = b.dataset.view.split(':');
+    b.classList.toggle('sel', S[pid].view === who);
+  });
+  $$('[data-pickchip]').forEach(b => {
+    const [pid, who] = b.dataset.pickchip.split(':');
+    b.classList.toggle('sel', S[pid].pick.has(who));
+  });
+  if (cur) updateSheet();
+}
+
+function setDie(pid, colorId) {
+  S[pid].die = colorId;
+  const v = viewers[pid];
+  if (v && v.die) recolorDie(v.die, colorId);
+  refreshCards();
+}
+function setView(pid, who) {
+  S[pid].view = who;
+  const v = viewers[pid];
+  if (v) buildScene(v, getP(pid));
+  refreshCards();
+}
+
+/* =====================================================================
+   ORDER SHEET
+   ===================================================================== */
+const dlg = $('#orderDlg');
+let cur = null;
+
+function sheetOptionsHTML(p) {
+  const st = S[p.id];
+  if (p.type === 'kit') {
+    return `<div class="optlabel">Die color</div>${swatchesHTML(p.id)}
+      <div class="optlabel" style="margin-top:12px">How many kits</div>
+      <div class="stepper"><button type="button" data-qty="${p.id}:-1" aria-label="Fewer">-</button><span id="qtyNum">${st.qty}</span><button type="button" data-qty="${p.id}:1" aria-label="More">+</button></div>`;
+  }
+  if (p.type === 'single') {
+    return '<div class="optlabel">Pick your pieces</div><div class="chips">' + PEOPLE.map(pp =>
+      `<button type="button" class="chip" data-pickchip="${p.id}:${pp.id}">${pp.name}</button>`).join('') + '</div>';
+  }
+  return '<p class="note">One of one. We confirm it is still available before any payment.</p>';
+}
+
+/* shipping choices on the order sheet: one is always picked, and it is added to the Venmo amount */
+const SHIP = [
+  { id: 'us', label: 'Continental US shipping (' + money(CONFIG.shipUS) + ')', short: 'Continental US', cost: CONFIG.shipUS },
+  { id: 'pickup', label: 'Local Milwaukee pickup ($0)', short: 'Milwaukee pickup', cost: 0 },
+  { id: 'other', label: 'Other (please inquire)', short: 'Other', cost: null }
+];
+let shipId = 'us';
+const shipPick = () => SHIP.find(x => x.id === shipId) || SHIP[0];
+function renderShip() {
+  const box = $('#shipOpts');
+  box.innerHTML = cur && cur.type !== 'deluxe'
+    ? '<div class="optlabel">Shipping</div><div class="shipopts">' + SHIP.map(x => `<label><input type="checkbox" data-ship="${x.id}"${x.id === shipId ? ' checked' : ''}>${x.label}</label>`).join('') + '</div>'
+    : '';
+}
+$('#shipOpts').addEventListener('click', e => {
+  const b = e.target.closest('input[data-ship]');
+  if (!b) return;
+  shipId = b.dataset.ship;
+  $$('#shipOpts input').forEach(i => { i.checked = i.dataset.ship === shipId; });   /* works like a checkbox, but one is always on */
+  if (cur) updateSheet();
 });
 
-// Tin egg easter egg: peeks in on scroll-near-bottom OR after 4s, whichever first
+function orderText(p) {
+  const st = S[p.id], c = calc(p), sh = shipPick();
+  const lines = [`LP1 ORDER: ${p.name}`];
+  if (p.type === 'kit') lines.push(`Die color: ${(DIE_COLORS.find(x => x.id === st.die) || {}).name}`, `Kits: ${c.qty}`);
+  if (p.type === 'single') lines.push(`Pieces: ${PEOPLE.filter(pp => st.pick.has(pp.id)).map(pp => pp.name).join(', ') || '(none picked yet)'}`);
+  if (p.type !== 'deluxe') {
+    lines.push(`Shipping: ${sh.label}`, sh.cost == null ? `Total: ${money(c.total)} plus shipping (to be quoted)` : `Total: ${money(c.total + sh.cost)}${sh.cost ? ' (includes shipping)' : ''}`);
+  } else lines.push(`Price: ${money(p.price)}`);
+  lines.push('', `Name: ${$('#oName').value}`, `Contact: ${$('#oContact').value}`, `Ship to: ${$('#oShip').value}`);
+  return lines.join('\n');
+}
+
+function updateSheet() {
+  const p = cur;
+  const c = calc(p);
+  const st = S[p.id];
+  const qn = $('#qtyNum'); if (qn) qn.textContent = st.qty;
+
+  let rows = '';
+  if (p.type === 'deluxe') {
+    rows = `<div class="row tot"><span>Price</span><span>${symHTML(money(p.price))}</span></div>`;
+  } else {
+    const sh = shipPick();
+    rows = `<div class="row"><span>${c.qty} x ${money(p.price)}</span><span>${money(c.sub)}</span></div>`;
+    rows += `<div class="row"><span>Shipping: ${sh.short}</span><span>${sh.cost == null ? 'to be quoted' : money(sh.cost)}</span></div>`;
+    rows += `<div class="row tot"><span>${sh.cost == null ? 'Total so far' : 'Total'}</span><span>${symHTML(money(c.total + (sh.cost || 0)))}</span></div>`;
+  }
+  $('#sheetTotals').innerHTML = rows;
+
+  const subject = encodeURIComponent(p.type === 'deluxe' ? 'LP1 inquiry: Angel Investor Edition' : `LP1 order: ${p.name}`);
+  const body = encodeURIComponent(orderText(p));
+  const send = $('#sendEmail');
+  send.href = `mailto:${CONFIG.email}?subject=${subject}&body=${body}`;
+  send.textContent = p.type === 'deluxe' ? 'Email us to claim it' : '1. Email the order';
+
+  const venmo = $('#venmoBtn');
+  const note = $('#sheetNote');
+  if (p.type === 'deluxe') {
+    venmo.style.display = 'none';
+    note.textContent = 'We will reply to confirm it is available, then send payment details.';
+  } else if (shipPick().cost == null) {
+    venmo.style.display = 'none';
+    note.textContent = 'We will reply with the shipping price and a Venmo request.';
+  } else if (CONFIG.venmo) {
+    venmo.style.display = '';
+    const vn = encodeURIComponent(`LP1 ${p.name} ${$('#oName').value}`.trim());
+    venmo.href = `https://venmo.com/${encodeURIComponent(CONFIG.venmo)}?txn=pay&amount=${(c.total + shipPick().cost).toFixed(2)}&note=${vn}`;
+    note.textContent = CONFIG.shippingNote + ' Send the order first, then pay once we reply.';
+  } else {
+    venmo.style.display = 'none';
+    note.textContent = CONFIG.shippingNote + ' We will reply with a Venmo request.';
+  }
+  $('#copyDM').style.display = p.type === 'deluxe' ? 'none' : '';
+}
+
+function openSheet(pid) {
+  cur = getP(pid);
+  const st = S[pid];
+  if (cur.type === 'single' && st.pick.size === 0) st.pick.add(st.view);
+  $('#sheetTitle').innerHTML = symHTML(cur.type === 'deluxe' ? 'Angel Investor inquiry' : `Order: ${cur.name}`);
+  $('#sheetOptions').innerHTML = sheetOptionsHTML(cur);
+  renderShip();
+  refreshCards();
+  if (dlg.showModal) dlg.showModal(); else dlg.setAttribute('open', '');
+}
+function closeSheet() { if (dlg.close) dlg.close(); else dlg.removeAttribute('open'); }
+
+$('#sheetClose').addEventListener('click', closeSheet);
+dlg.addEventListener('click', e => { if (e.target === dlg) closeSheet(); });
+dlg.addEventListener('close', () => { cur = null; });
+['#oName', '#oContact', '#oShip'].forEach(s => $(s).addEventListener('input', () => cur && updateSheet()));
+
+$('#copyDM').addEventListener('click', async () => {
+  const text = orderText(cur);
+  try { await navigator.clipboard.writeText(text); }
+  catch (err) {
+    const ta = document.createElement('textarea');
+    ta.value = text; document.body.appendChild(ta); ta.select();
+    try { document.execCommand('copy'); } catch (e2) {}
+    ta.remove();
+  }
+  toast('Copied. Paste it into a DM.');
+  setTimeout(() => window.open(CONFIG.instagramDM, '_blank', 'noopener'), 700);
+});
+
+/* One delegated click handler for all the little option buttons */
+document.addEventListener('click', e => {
+  const b = e.target.closest('button');
+  if (!b) return;
+  if (b.dataset.die) { const [pid, c] = b.dataset.die.split(':'); setDie(pid, c); }
+  else if (b.dataset.view) { const [pid, who] = b.dataset.view.split(':'); setView(pid, who); }
+  else if (b.dataset.pickchip) {
+    const [pid, who] = b.dataset.pickchip.split(':');
+    const set = S[pid].pick;
+    set.has(who) ? set.delete(who) : set.add(who);
+    refreshCards();
+  }
+  else if (b.dataset.qty) {
+    const [pid, d] = b.dataset.qty.split(':');
+    S[pid].qty = Math.max(1, Math.min(9, S[pid].qty + Number(d)));
+    refreshCards();
+  }
+  else if (b.dataset.order) { Sound.oneUp(); openSheet(b.dataset.order); }
+});
+
+$$('.section h2').forEach(symifyNode);
+
+/* ---------- sound: first tap wakes the audio engine (needed on iPhone), mute button ---------- */
+const armSound = () => {
+  Sound.unlock();
+  if (Sound.ready()) ['touchend', 'pointerup', 'click', 'keydown'].forEach(t => document.removeEventListener(t, armSound, true));
+};
+['touchend', 'pointerup', 'click', 'keydown'].forEach(t => document.addEventListener(t, armSound, true));
+/* leaving the tab or page silences everything; the radio resumes when you come back */
+document.addEventListener('visibilitychange', () => { if (document.hidden) Sound.hide(); else Sound.show(); });
+window.addEventListener('pagehide', () => Sound.hide(true));
+window.addEventListener('pageshow', e => { if (e.persisted) Sound.show(); });
+
+const muteBtn = $('#muteBtn');
+muteBtn.addEventListener('click', () => {
+  const m = Sound.setMuted(!Sound.isMuted());
+  muteBtn.setAttribute('aria-pressed', String(m));
+  muteBtn.textContent = m ? 'Muted' : 'Mute';
+});
+
+/* ---------- rack bar: lit buttons, streaming (soon) button, volume knob ---------- */
+const rack = $('.rack'), rackMenu = $('#rackMenu');
+const setRackMenu = on => { rack.classList.toggle('open', on); rackMenu.classList.toggle('lit', on); rackMenu.setAttribute('aria-expanded', String(on)); };   /* the slide-out menu on narrow screens */
+rackMenu.addEventListener('click', e => { e.stopPropagation(); setRackMenu(!rack.classList.contains('open')); });
+document.addEventListener('click', e => { if (rack.classList.contains('open') && !e.target.closest('.rack-nav')) setRackMenu(false); });
+document.addEventListener('keydown', e => { if (e.key === 'Escape') setRackMenu(false); });
+/* every rack link asks first ("Go to ...?") before leaving the page */
+const goDlg = $('#goDlg');
+let goHref = '', goBtn = null, goGoing = false;
+$$('.rack a.rk:not(#rackHome)').forEach(a => a.addEventListener('click', e => {
+  e.preventDefault(); setRackMenu(false);
+  goHref = a.href; goBtn = a; goGoing = false; a.classList.add('lit');
+  $('#goMsg').textContent = a.dataset.go || 'Leave this page?';
+  try { goDlg.showModal(); } catch (x) { goDlg.setAttribute('open', ''); }
+}));
+$('#goYes').addEventListener('click', () => { goGoing = true; location.href = goHref; goDlg.close(); });
+$('#goNo').addEventListener('click', () => goDlg.close());
+goDlg.addEventListener('click', e => { if (e.target === goDlg) goDlg.close(); });
+goDlg.addEventListener('close', () => { if (goBtn && !goGoing) goBtn.classList.remove('lit'); });
+const rackPlay = $('#rackPlay'), rackKnob = $('#rackKnob');
+rackPlay.addEventListener('click', () => openSoon('Streaming', 'Streaming links coming soon.'));
+$('#rackHome').addEventListener('click', e => { e.preventDefault(); setRackMenu(false); try { window.scrollTo({ top: 0, left: 0, behavior: REDUCE ? 'auto' : 'smooth' }); } catch (x) { window.scrollTo(0, 0); } });   /* already home: just go back to the top */
+const showRackKnob = v => { rackKnob.style.setProperty('--a', (-135 + v * 270) + 'deg'); rackKnob.setAttribute('aria-valuenow', String(Math.round(v * 100))); };
+showRackKnob(Sound.getVolume());
+Sound.onVolume(showRackKnob);
+let rackDrag = null;   /* drag right or up = louder, left or down = quieter (diagonal counts) */
+rackKnob.addEventListener('pointerdown', e => { rackDrag = { x: e.clientX, y: e.clientY, v: Sound.getVolume() }; rackKnob.classList.add('turning'); try { rackKnob.setPointerCapture(e.pointerId); } catch (x) {} e.preventDefault(); });
+rackKnob.addEventListener('pointermove', e => { if (rackDrag) Sound.setVolume(rackDrag.v + ((e.clientX - rackDrag.x) - (e.clientY - rackDrag.y)) / 120); });
+const rackDragEnd = () => { rackDrag = null; rackKnob.classList.remove('turning'); };
+['pointerup', 'pointercancel', 'lostpointercapture'].forEach(t => rackKnob.addEventListener(t, rackDragEnd));
+rackKnob.addEventListener('wheel', e => { e.preventDefault(); Sound.setVolume(Sound.getVolume() + (e.deltaY < 0 ? 0.05 : -0.05)); }, { passive: false });
+rackKnob.addEventListener('keydown', e => {
+  if (e.key === 'ArrowUp' || e.key === 'ArrowRight') { e.preventDefault(); Sound.setVolume(Sound.getVolume() + 0.05); }
+  else if (e.key === 'ArrowDown' || e.key === 'ArrowLeft') { e.preventDefault(); Sound.setVolume(Sound.getVolume() - 0.05); }
+});
+/* ---------- mailing list + contact (from the old home page) ---------- */
+const mailingListButton = $('#mailingListButton'), emailForm = $('#emailForm'), successMessage = $('#successMessage');
+mailingListButton.addEventListener('click', () => {
+  emailForm.style.display = 'flex';
+  emailForm.scrollIntoView({ behavior: 'smooth' });
+});
+emailForm.addEventListener('submit', async event => {
+  event.preventDefault();
+  const formData = new FormData(emailForm);
+  try {
+    const response = await fetch('https://formspree.io/f/mpwwljpd', { method: 'POST', headers: { Accept: 'application/json' }, body: formData });
+    if (response.ok) {
+      successMessage.style.display = 'block';
+      emailForm.reset();
+      emailForm.style.display = 'none';
+      setTimeout(() => { successMessage.style.display = 'none'; }, 4000);
+    } else alert('Problem submitting. Try again?');
+  } catch (error) {
+    alert('Submission error. Try again?');
+  }
+});
+
+/* ---------- tin egg easter egg: peeks in on scroll-near-bottom OR after 4s, whichever first ---------- */
 (() => {
-const tinEgg = document.getElementById('tinEgg');
-let revealed = false;
+  const tinEgg = $('#tinEgg');
+  let revealed = false;
+  function revealEgg() {
+    if (revealed) return;
+    revealed = true;
+    tinEgg.classList.add('peek');
+    window.removeEventListener('scroll', checkScroll);
+  }
+  function checkScroll() {
+    if (window.innerHeight + window.scrollY >= document.body.scrollHeight - 300) revealEgg();
+  }
+  window.addEventListener('scroll', checkScroll, { passive: true });
+  checkScroll();
+  setTimeout(revealEgg, 4000);
+})();
 
-function revealEgg() {
-if (revealed) return;
-revealed = true;
-tinEgg.classList.add('peek');
-window.removeEventListener('scroll', checkScroll);
-}
-
-function checkScroll() {
-const scrolledToBottom = window.innerHeight + window.scrollY >= document.body.scrollHeight - 300;
-if (scrolledToBottom) revealEgg();
-}
-
-window.addEventListener('scroll', checkScroll, { passive: true });
-checkScroll(); // in case page loads already scrolled/short
-setTimeout(revealEgg, 4000);
+refreshCards();
 })();
 </script>
-
 </body>
 </html>
