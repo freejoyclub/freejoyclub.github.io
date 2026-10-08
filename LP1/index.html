@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- LP1 v14 -->
+<!-- LP1 v15 -->
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
@@ -282,8 +282,9 @@ max-width: 88vw;
 .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
 /* ============ Desk scene (3D) ============ */
-.desk-scene { width: 100%; max-width: 900px; margin: 0 auto; }
-.viewer.desk-viewer { aspect-ratio: 4 / 3; background: none; cursor: default; }
+.desk-scene { width: 100%; max-width: max(300px, min(600px, calc((100svh - 150px) * 0.7))); margin: 0 auto; }
+@media (max-width: 600px) { .desk-scene { width: calc(100% + 24px); max-width: none; margin: 0 -12px; } }
+.viewer.desk-viewer { aspect-ratio: 7 / 10; background: none; cursor: default; border-radius: 0; }
 .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 
 /* Print-your-own STL button, under the single piece display */
@@ -767,6 +768,16 @@ try { if (location.hash) history.replaceState(null, '', location.pathname + loca
 <div class="zoom" id="zoom" hidden><img alt=""></div>
 </dialog>
 
+<dialog id="streamDlg">
+<div class="sheet">
+<h3>Streaming</h3>
+<p>Streaming links coming soon.</p>
+<div class="lore-actions">
+<button class="btn" id="streamOk" type="button">Close</button>
+</div>
+</div>
+</dialog>
+
 <dialog id="goDlg">
 <div class="sheet">
 <h3>Quick check</h3>
@@ -808,7 +819,7 @@ try { if (location.hash) history.replaceState(null, '', location.pathname + loca
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/STLLoader.js"></script>
 <script>
-// LP1 v14
+// LP1 v15
 const toTop = () => { try { window.scrollTo({ top: 0, left: 0, behavior: 'instant' }); } catch (e) { window.scrollTo(0, 0); } };
 toTop();
 window.addEventListener('load', toTop);
@@ -1890,17 +1901,23 @@ function makeDesk(el) {
   v.scene.add(v.stage);
   const stage = v.stage;
 
-  /* camera: fixed, slightly above the desk, looking at the middle of the set */
+  /* camera: fixed, looking down at the table. The distance is worked out from a few key points so the TV fills the width on any screen shape. */
+  const EL = THREE.MathUtils.degToRad(36), LOOK = new THREE.Vector3(0, 1.85, 0);
+  const FIT_PTS = [[3.15, 4.0, -1.5], [0, 5.6, -2.1], [2.75, 0, 2.6], [2.65, -1.0, 2.5], [-2.65, -1.0, 2.5]];
   v.fit = function () {
     const w = el.clientWidth || 640, h = el.clientHeight || 400;
     v.renderer.setSize(w, h, false);
     v.camera.aspect = w / h;
     v.camera.updateProjectionMatrix();
-    const t = Math.tan(THREE.MathUtils.degToRad(15));
-    const d = Math.max(4.6 / (t * v.camera.aspect), 3.7 / t);
-    const el_ = THREE.MathUtils.degToRad(26);
-    v.camera.position.set(0, 2.3 + d * Math.sin(el_), d * Math.cos(el_));
-    v.camera.lookAt(0, 2.3, 0);
+    const t = Math.tan(THREE.MathUtils.degToRad(15)) * 0.97, sn = Math.sin(EL), cs = Math.cos(EL);
+    let d = 0;
+    FIT_PTS.forEach(p => {
+      const dy = p[1] - LOOK.y, dz = p[2] - LOOK.z;
+      d = Math.max(d, dy * sn + dz * cs + Math.abs(p[0]) / (t * v.camera.aspect), dy * sn + dz * cs + Math.abs(dy * cs - dz * sn) / t);
+    });
+    v.base = new THREE.Vector3(0, LOOK.y + d * sn, LOOK.z + d * cs);
+    v.camera.position.copy(v.base);
+    v.camera.lookAt(LOOK);
   };
 
   /* ---------- small helpers ---------- */
@@ -1920,12 +1937,12 @@ function makeDesk(el) {
     g.fillStyle = gr; g.fillRect(0, 0, 64, 64);
     return new THREE.CanvasTexture(c);
   })();
-  function blob(w, d, x, z, op) {
+  function blob(w, d, x, z, op, par) {
     const m = noHit(new THREE.Mesh(new THREE.PlaneGeometry(w, d), new THREE.MeshBasicMaterial({ map: blobTex, transparent: true, opacity: op == null ? 1 : op, depthWrite: false })));
     m.rotation.x = -Math.PI / 2;
     m.position.set(x, 0.004, z);
     m.userData.op = op == null ? 1 : op;
-    stage.add(m);
+    (par || stage).add(m);
     return m;
   }
   /* shadow shrinks and fades a little as the object goes up (h = height above the desk) */
@@ -1946,7 +1963,7 @@ function makeDesk(el) {
     return m;
   }
 
-  /* ---------- desk ---------- */
+  /* ---------- small wooden table in front of the TV, with the game board on it ---------- */
   const wood = (() => {
     const c = document.createElement('canvas'); c.width = 512; c.height = 256;
     const g = c.getContext('2d');
@@ -1961,34 +1978,50 @@ function makeDesk(el) {
     }
     return new THREE.CanvasTexture(c);
   })();
-  const woodSide = std(0x5e3d25, 0.8);
-  const slab = new THREE.Mesh(new THREE.BoxGeometry(7.8, 0.26, 4.6),
+  const woodSide = std(0x5e3d25, 0.8), legWood = std(0x7a5233, 0.75);
+  const TW = 5.4, TD = 3.6, TZ = 0.8, FLOOR = -1.0;   /* table top is at y = 0 */
+  const tableTop = new THREE.Mesh(new THREE.BoxGeometry(TW, 0.16, TD),
     [woodSide, woodSide, new THREE.MeshStandardMaterial({ map: wood, roughness: 0.75 }), woodSide, woodSide, woodSide]);
-  slab.position.y = -0.13;
-  stage.add(slab);
-  [[-3.5, -2.0], [3.5, -2.0], [-3.5, 2.0], [3.5, 2.0]].forEach(p => box(0.24, 1.3, 0.24, woodSide, p[0], -0.91, p[1]));
+  tableTop.position.set(0, -0.08, TZ);
+  tableTop.userData.tag = 'block';   /* blocks clicks to the TV behind it */
+  stage.add(tableTop); hits.push(tableTop);
+  [[-2.5, TZ - 1.5], [2.5, TZ - 1.5], [-2.5, TZ + 1.5], [2.5, TZ + 1.5]].forEach(p => box(0.22, -0.16 - FLOOR, 0.22, legWood, p[0], (FLOOR - 0.16) / 2, p[1]));
+  blob(6.6, 4.6, 0, TZ, 0.55).position.y = FLOOR + 0.004;   /* shadow on the floor under the table */
+
+  /* the board game: a white square, half an inch thick, with the TV picture on top. Everything else sits on `deck`, the board's top surface. */
+  const BS = 3.1, BT = 0.13, BX = -0.9, VT = 0.04, BROT = 0.09;   /* VT = thickness of the record under the board; BROT = board is a little askew */
+  const boardWhite = std(0xf4f1ea, 0.6), boardTop = new THREE.MeshStandardMaterial({ color: 0xf4f1ea, roughness: 0.55 });
+  const board = new THREE.Mesh(new THREE.BoxGeometry(BS, BT, BS), [boardWhite, boardWhite, boardTop, boardWhite, boardWhite, boardWhite]);
+  board.position.set(BX, BT / 2 + VT, TZ);
+  board.rotation.y = BROT;
+  board.userData.tag = 'block';
+  stage.add(board); hits.push(board);
+  blob(BS + 0.8, BS + 0.8, BX, TZ, 0.6);
+  const deck = new THREE.Group();
+  deck.position.set(BX, BT + VT, TZ);
+  deck.rotation.y = BROT;
+  stage.add(deck);
 
   /* ---------- tube TV (gray) ---------- */
   const tv = new THREE.Group();
-  tv.position.set(0.15, -0.33, -1.25);   /* sits right on the desk, no stand feet */
-  tv.scale.set(2.2, 2.2, 1.3);   /* big TV, but no deeper than before (z scale stays small) */
+  tv.position.set(0, -0.8, -2.15);   /* behind the table; its base is hidden by the table */
+  tv.scale.set(3, 3, 1.6);   /* big TV: the screen takes up most of the front */
   stage.add(tv);
-  blob(5.5, 2.2, 0.15, -1.15, 0.55);   /* soft shadow under the TV */
   const grayBody = std(0x9a9ea3, 0.55), grayDark = std(0x5d6165, 0.6), grayBezel = std(0x34373a, 0.5);
   const slabAt = (w, h, d, r, b, mat, x, y, z) => { const m = new THREE.Mesh(roundedSlab(w, h, d, r, b), mat); m.position.set(x, y, z); tv.add(m); return m; };
-  slabAt(2.3, 1.7, 0.95, 0.24, 0.08, grayBody, 0, 1.0, 0);
-  slabAt(1.7, 1.3, 0.5, 0.2, 0.07, grayDark, 0, 1.0, -0.72);
+  slabAt(2.1, 1.8, 0.95, 0.22, 0.08, grayBody, 0, 1.0, 0);
+  slabAt(1.6, 1.35, 0.5, 0.2, 0.07, grayDark, 0, 1.0, -0.72);
   /* antenna */
   const antBase = new THREE.Mesh(new THREE.SphereGeometry(0.13, 20, 10, 0, Math.PI * 2, 0, Math.PI / 2), grayBezel);
-  antBase.position.set(0.1, 1.85, -0.1);
+  antBase.position.set(0.1, 1.9, -0.1);
   tv.add(antBase);
   [-0.55, 0.5].forEach(a => {
-    const rod = new THREE.Mesh(new THREE.CylinderGeometry(0.018, 0.018, 0.6, 8), std(0x2a2c2e, 0.4, 0.5));
+    const rod = new THREE.Mesh(new THREE.CylinderGeometry(0.018, 0.018, 0.4, 8), std(0x2a2c2e, 0.4, 0.5));
     rod.rotation.z = a;
-    rod.position.set(0.1 - Math.sin(a) * 0.3, 1.88 + Math.cos(a) * 0.3, -0.1);
+    rod.position.set(0.1 - Math.sin(a) * 0.2, 1.92 + Math.cos(a) * 0.2, -0.1);
     tv.add(rod);
     const tip = new THREE.Mesh(new THREE.SphereGeometry(0.04, 10, 8), std(0x2a2c2e, 0.4, 0.5));
-    tip.position.set(0.1 - Math.sin(a) * 0.6, 1.88 + Math.cos(a) * 0.6, -0.1);
+    tip.position.set(0.1 - Math.sin(a) * 0.4, 1.92 + Math.cos(a) * 0.4, -0.1);
     tv.add(tip);
   });
   /* speaker panel + knobs */
@@ -2000,23 +2033,26 @@ function makeDesk(el) {
     for (let y = 24; y < 240; y += 22) g.fillRect(22, y, 212, 9);
     return new THREE.CanvasTexture(c);
   })();
-  const spkM = new THREE.Mesh(roundedScreenGeo(0.34, 0.6, 0.08), new THREE.MeshStandardMaterial({ map: spk, roughness: 0.7 }));   /* small rounded speaker panel */
-  spkM.position.set(0.83, 1.4, 0.476);
+  const spkM = new THREE.Mesh(roundedScreenGeo(0.26, 0.46, 0.07), new THREE.MeshStandardMaterial({ map: spk, roughness: 0.7 }));   /* small rounded speaker panel */
+  spkM.position.set(0.85, 1.42, 0.476);
   tv.add(spkM);
   const tvKnobs = [];   /* the two TV knobs are buttons: click one to change the channel */
-  [0.78, 0.56].forEach(y => {
-    const k = new THREE.Mesh(new THREE.CylinderGeometry(0.075, 0.075, 0.07, 24), std(0x2a2c2e, 0.4, 0.3));
+  [0.8, 0.6].forEach(y => {
+    const k = new THREE.Mesh(new THREE.CylinderGeometry(0.06, 0.06, 0.07, 24), std(0x2a2c2e, 0.4, 0.3));
     k.rotation.x = Math.PI / 2;
-    k.position.set(0.83, y, 0.51);
+    k.position.set(0.85, y, 0.51);
     tv.add(k);
     tvKnobs.push(k);
-    hitBox(0.26, 0.26, 0.2, 0.83, y, 0.52, 'tvknob', tv).userData.knob = k;
+    hitBox(0.22, 0.22, 0.2, 0.85, y, 0.52, 'tvknob', tv).userData.knob = k;
   });
   /* square screen */
-  slabAt(1.55, 1.55, 0.08, 0.2, 0.025, grayBezel, -0.2, 1.0, 0.475);   /* rounded screen bezel */
+  slabAt(1.66, 1.66, 0.08, 0.2, 0.025, grayBezel, -0.18, 1.0, 0.475);   /* rounded screen bezel */
+  const screenHolder = new THREE.Group();   /* sets the screen size (a little bigger than 1.35); screenGrp inside is what the click animation squashes */
+  screenHolder.position.set(-0.18, 1.0, 0.518);
+  screenHolder.scale.setScalar(1.074);
+  tv.add(screenHolder);
   const screenGrp = new THREE.Group();
-  screenGrp.position.set(-0.2, 1.0, 0.518);
-  tv.add(screenGrp);
+  screenHolder.add(screenGrp);
   const screenMat = new THREE.MeshBasicMaterial({ color: 0xffffff });
   screenMat.color.setHex(0x0e2a1e);
   const scrGeo = roundedScreenGeo(1.35, 1.35, 0.15);   /* rounded screen corners, shared by the picture and the glass layers */
@@ -2029,6 +2065,8 @@ function makeDesk(el) {
     screenMat.map = tex;
     screenMat.color.setHex(0xffffff);
     screenMat.needsUpdate = true;
+    const bt = tex.clone(); bt.needsUpdate = true; bt.anisotropy = 4;   /* the same picture on top of the board */
+    boardTop.map = bt; boardTop.color.setHex(0xe0e0e0); boardTop.needsUpdate = true;
   }, undefined, () => {});
   const vig = (() => {
     const c = document.createElement('canvas'); c.width = c.height = 128;
@@ -2041,7 +2079,7 @@ function makeDesk(el) {
   const vigM = noHit(new THREE.Mesh(scrGeo, new THREE.MeshBasicMaterial({ map: vig, transparent: true, depthWrite: false })));
   vigM.position.z = 0.002;
   screenGrp.add(vigM);
-  hitBox(2.4, 1.9, 1.1, 0, 1.0, 0, 'tv', tv);
+  hitBox(2.2, 1.95, 1.1, 0, 1.0, 0, 'tv', tv);
 
   /* ---------- CRT glass on top of Jesse and the picture: scanlines, a flickering glow, a slow rolling bar ---------- */
   const mkTex = (w, h, draw) => { const c = document.createElement('canvas'); c.width = w; c.height = h; draw(c.getContext('2d'), w, h); return new THREE.CanvasTexture(c); };
@@ -2355,15 +2393,16 @@ function makeDesk(el) {
     if (it) saveLore(it, fp);
   });
   const tvLight = new THREE.PointLight(0xa8d4ff, 0.55, 7);   /* faint blue spill onto the desk and the crew */
-  tvLight.position.set(-0.18, 2.2, 0.35);
+  tvLight.position.set(-0.2, 2.6, -0.2);
   stage.add(tvLight);
 
-  /* ---------- little radio, left of the TV: click for the song, drag the knob for volume ---------- */
+  /* ---------- little radio, on the table next to the board: click for the song, drag the knob for volume ---------- */
   const radio = new THREE.Group();
-  radio.position.set(2.55, 0, 1.15);
+  radio.position.set(1.8, VT, 0.9);   /* partly on top of the record */
   radio.rotation.y = -0.25;
   radio.scale.setScalar(1.25);
   stage.add(radio);
+  blob(2.1, 1.1, 1.8, 0.95, 0.7).position.y = VT + 0.004;
   const cream = std(0xb09a72, 0.55), brown = std(0x5a3a26, 0.75), chrome = std(0xa8adb3, 0.3, 0.6);
   const rBody = new THREE.Mesh(roundedSlab(1.3, 0.78, 0.5, 0.12, 0.05), cream);
   rBody.position.y = 0.45; radio.add(rBody);
@@ -2392,6 +2431,28 @@ function makeDesk(el) {
   const ant = new THREE.Mesh(new THREE.CylinderGeometry(0.012, 0.012, 0.8, 8), chrome); ant.position.set(0.64, 1.24, -0.1); ant.rotation.z = -0.35; radio.add(ant);
   hitBox(1.4, 0.95, 0.65, 0, 0.47, 0, 'radio', radio);
   hitBox(0.5, 0.5, 0.3, 0.3, 0.32, 0.3, 'knob', radio);
+
+  /* ---------- cream vinyl record lying on the table, poking out from under the board. Hover: it slides out a little. Click: it wiggles, then the streaming sheet opens. ---------- */
+  const VR = 1.45, VX = BX + 1.1, VZ = TZ + 0.1;
+  const vinylTex = mkTex(256, 256, (g, w, h) => {
+    g.fillStyle = '#e6d6a6'; g.fillRect(0, 0, w, h);
+    g.strokeStyle = 'rgba(90,60,30,0.10)'; g.lineWidth = 1;
+    for (let r = 50; r < 126; r += 3) { g.beginPath(); g.arc(128, 128, r, 0, Math.PI * 2); g.stroke(); }
+    g.fillStyle = '#c8442a'; g.beginPath(); g.arc(128, 128, 44, 0, Math.PI * 2); g.fill();
+    g.fillStyle = '#f6ecd0'; g.font = 'bold 11px sans-serif'; g.textAlign = 'center';
+    g.fillText('FEARJOY', 128, 112); g.fillText('THE GAME', 128, 156);
+    g.fillStyle = '#2a1a14'; g.beginPath(); g.arc(128, 128, 5, 0, Math.PI * 2); g.fill();
+  });
+  const vinylG = new THREE.Group();
+  vinylG.position.set(VX, VT / 2 + 0.002, VZ);
+  stage.add(vinylG);
+  const vCap = new THREE.MeshStandardMaterial({ map: vinylTex, color: 0xc4c4c4, roughness: 0.35, metalness: 0.1 });   /* the grey tint keeps the cream from washing out to white under the lights */
+  vinylG.add(new THREE.Mesh(new THREE.CylinderGeometry(VR, VR, VT, 72), [std(0xb8a878, 0.5), vCap, vCap]));
+  hitBox(VR * 2, VT * 2, VR * 2, 0, 0, 0, 'vinyl', vinylG);
+  let vSlide = 0;
+  const streamDlg = document.getElementById('streamDlg');
+  streamDlg.addEventListener('click', e => { if (e.target === streamDlg) streamDlg.close(); });
+  document.getElementById('streamOk').addEventListener('click', () => streamDlg.close());
   let hoverGroup = null, glowItems = null, knobDrag = null, knobMoved = 0, ledOn = false, lastDie = 0, lastCoin = '', coinLand = 0, dieLand = 0;
   const setKnob = vol => { knob.rotation.z = 2.35 - vol * 4.7; };   /* quiet = turned left, loud = turned right */
   setKnob(Sound.getVolume());
@@ -2419,20 +2480,20 @@ function makeDesk(el) {
   ['jesse', 'marco', 'grant'].forEach((id, i) => {
     const idx = Math.max(0, PEOPLE.findIndex(x => x.id === id));
     const h = headFor(idx, marble().clone());   /* its own material copy, so only the hovered bust glows */
-    h.scale.setScalar(0.95);
-    h.position.set(-3.0 + i * 0.95, 0, 1.45 + (i === 1 ? 0.1 : 0));
-    stage.add(h);
+    h.scale.setScalar(0.7);
+    h.position.set((i - 1) * 0.78, 0, -0.7 + (i === 1 ? 0.1 : 0));
+    deck.add(h);
     crew.push(h);
-    blob(1.2, 0.95, h.position.x, h.position.z, 0.8);
-    hitBox(1.0, 1.5, 0.9, h.position.x, 0.75, h.position.z, 'bust').userData.bust = h;   /* click target sits on the stage, because the bust group is cleared when the real STL loads */
+    blob(0.96, 0.76, h.position.x, h.position.z, 0.8, deck);
+    hitBox(0.8, 1.15, 0.72, h.position.x, 0.57, h.position.z, 'bust', deck).userData.bust = h;   /* click target sits on the stage, because the bust group is cleared when the real STL loads */
   });
 
   /* ---------- coin: lies flat on the desk, real 50/50 ---------- */
   const COIN_ROT_TOP = Math.PI / 2, COIN_ROT_BOT = Math.PI / 2;   /* keeps the text upright on both faces: JOY is turned the other way so it reads upright while the coin spins on its edge and after a sideways flip */
   const COIN_SCALE = 1.9, COIN_H = 0.03 * COIN_SCALE, COIN_R = 0.3 * COIN_SCALE;
   const coinRoot = new THREE.Group();
-  coinRoot.position.set(1.1, COIN_H, 1.6);
-  stage.add(coinRoot);
+  coinRoot.position.set(0.72, COIN_H, 0.72);
+  deck.add(coinRoot);
   const rollG = new THREE.Group();   /* the sideways flip: turns the coin over around the front-to-back axis, so it flips left over right every time */
   coinRoot.add(rollG);
   const spinG = new THREE.Group();   /* spins the coin on its edge until it is flipped */
@@ -2445,7 +2506,7 @@ function makeDesk(el) {
   coin.material[2].map.center.set(0.5, 0.5); coin.material[2].map.rotation = COIN_ROT_BOT;
   flipper.add(coin);
   hitBox(1.2, 1.2, 1.2, 0, 0, 0, 'coin', coinRoot);   /* tall enough for the coin standing on its edge */
-  const coinShadow = blob(1.5, 1.5, 1.1, 1.6, 0.6);
+  const coinShadow = blob(1.5, 1.5, 0.72, 0.72, 0.6, deck);
   let flip = null, idle = true;   /* idle = the coin stands on its edge and spins slowly until you click it */
   flipper.rotation.x = Math.PI / 2;
   coinRoot.position.y = COIN_R + 0.012;
@@ -2466,15 +2527,15 @@ function makeDesk(el) {
   /* ---------- die: one dichroic glass die with gold pips, resting on the desk ---------- */
   const DIE_SCALE = 1.4, DIE_H = 0.23 * DIE_SCALE;
   const dieRoot = new THREE.Group();
-  dieRoot.position.set(-0.1, DIE_H, 1.7);
-  stage.add(dieRoot);
+  dieRoot.position.set(-0.6, DIE_H, 0.75);
+  deck.add(dieRoot);
   const yawG = new THREE.Group();
   dieRoot.add(yawG);
   const die = makeClearDie('red', 1);   /* opaque red, white pips */
   die.scale.setScalar(DIE_SCALE);
   yawG.add(die);
   hitBox(0.8, 0.8, 0.8, 0, 0, 0, 'die', dieRoot);
-  const dieShadow = blob(0.9, 0.9, -0.1, 1.7, 0.8);
+  const dieShadow = blob(0.9, 0.9, -0.6, 0.75, 0.8, deck);
   const FACE_UP = { 1: [0, 0, 0], 6: [Math.PI, 0, 0], 3: [0, 0, Math.PI / 2], 4: [0, 0, -Math.PI / 2], 2: [-Math.PI / 2, 0, 0], 5: [Math.PI / 2, 0, 0] };
   const dieBaseY = DIE_H;
   let roll = null;
@@ -2503,8 +2564,8 @@ function makeDesk(el) {
     ndc.set(((e.clientX - r.left) / r.width) * 2 - 1, -((e.clientY - r.top) / r.height) * 2 + 1);
     ray.setFromCamera(ndc, v.camera);
     const h = ray.intersectObjects(hits, false)[0];
-    pickObj = h ? h.object : null;
-    return h ? h.object.userData.tag : null;
+    pickObj = h && h.object.userData.tag !== 'block' ? h.object : null;   /* the table and board hide whatever is behind them */
+    return pickObj ? pickObj.userData.tag : null;
   }
   el.addEventListener('pointerdown', e => {
     knobMoved = 0;
@@ -2524,7 +2585,7 @@ function makeDesk(el) {
     if (loreAt(e)) { el.style.cursor = 'var(--hand)'; hoverGroup = null; return; }   /* a lore picture is on the TV: click it to save it */
     const tag = pick(e);
     el.style.cursor = tag && !(menuOn && tag === 'tv') ? 'var(--hand)' : 'default';
-    hoverGroup = tag === 'tvknob' ? pickObj.userData.knob : tag === 'tv' ? (menuOn ? null : tv) : tag === 'bust' ? pickObj.userData.bust : tag === 'coin' ? coinRoot : tag === 'die' ? dieRoot : tag === 'radio' ? radio : tag === 'knob' ? knob : null;
+    hoverGroup = tag === 'tvknob' ? pickObj.userData.knob : tag === 'tv' ? (menuOn ? null : tv) : tag === 'bust' ? pickObj.userData.bust : tag === 'coin' ? coinRoot : tag === 'die' ? dieRoot : tag === 'vinyl' ? vinylG : tag === 'radio' ? radio : tag === 'knob' ? knob : null;
   });
   const endKnob = () => { knobDrag = null; };
   el.addEventListener('pointerup', endKnob);
@@ -2540,6 +2601,11 @@ function makeDesk(el) {
     else if (tag === 'bust') {
       pickObj.userData.bust.userData.spin = performance.now();
       Sound.slide();
+    }
+    else if (tag === 'vinyl') {
+      vinylG.userData.wig = performance.now();
+      Sound.slide();
+      setTimeout(() => { if (!streamDlg.open) { try { streamDlg.showModal(); } catch (x) { streamDlg.setAttribute('open', ''); } } }, REDUCE ? 0 : 650);
     }
     else if (tag === 'radio') { if (Sound.toggleRadio()) toast('Now playing: The Endless Jam (unreleased)'); }
     else if (tag === 'knob') {   /* a plain tap on the knob steps the volume; dragging turns it */
@@ -2561,6 +2627,16 @@ function makeDesk(el) {
   v.onFrame = function (t) {
     const now = performance.now();
     place(t);
+    if (!REDUCE && v.base) {   /* tiny parallax: the camera drifts as the page scrolls, so the table and the TV behind it slide a little against each other */
+      const r = el.getBoundingClientRect(), sp = Math.max(-1, Math.min(1, (r.top + r.height / 2 - innerHeight / 2) / innerHeight));
+      v.camera.position.set(v.base.x + sp * 0.5, v.base.y + sp * 0.7, v.base.z);
+      v.camera.lookAt(LOOK);
+    }
+    vSlide += ((hoverGroup === vinylG ? 1 : 0) - vSlide) * 0.14;   /* hover: slides out toward you; click: a quick wiggle */
+    const wk = vinylG.userData.wig ? Math.min(1, (now - vinylG.userData.wig) / 650) : 1, wg = REDUCE ? 0 : Math.sin(wk * Math.PI * 7) * (1 - wk);
+    vinylG.position.set(VX + wg * 0.07, vinylG.position.y, VZ + vSlide * 0.2);
+    vinylG.rotation.y = wg * 0.1;
+    if (wk >= 1) vinylG.userData.wig = 0;
     /* TV glass flicker (a brief dip every so often) and the blue spill light */
     const fl = REDUCE ? 1 : 0.9 + 0.06 * Math.sin(t / 83) + 0.04 * Math.sin(t / 37 + 1.3) - (Math.sin(t / 2300) > 0.985 ? 0.3 : 0);
     glowM.material.opacity = 0.8 * fl;
@@ -2568,7 +2644,7 @@ function makeDesk(el) {
     barTex.offset.y = REDUCE ? 0 : -((t / 7000) % 1);
     tvLight.intensity = 0.55 * fl;
     /* hover glow: whatever is under the pointer warms up slightly (the radio knob too, while it is turned) */
-    if (!glowItems) glowItems = [tv, radio, knob, coinRoot, dieRoot].concat(crew, tvKnobs).map(g => ({ g, k: 0, s: g === knob || tvKnobs.indexOf(g) >= 0 ? 1.2 : 1 }));
+    if (!glowItems) glowItems = [tv, radio, knob, coinRoot, dieRoot, vinylG].concat(crew, tvKnobs).map(g => ({ g, k: 0, s: g === knob || tvKnobs.indexOf(g) >= 0 ? 1.2 : 1 }));
     const hg = knobDrag ? knob : hoverGroup;
     glowItems.forEach(it => {
       const tgt = it.g === hg ? 1 : 0;
