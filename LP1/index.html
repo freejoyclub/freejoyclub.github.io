@@ -312,7 +312,7 @@ max-width: 88vw;
 
 /* ============ Desk scene (3D) ============ */
 .desk-scene { width: 100%; max-width: 900px; margin: 0 auto; }
-.viewer.desk-viewer { aspect-ratio: 16 / 10; background: none; cursor: default; }
+.viewer.desk-viewer { aspect-ratio: 4 / 3; background: none; cursor: default; }
 .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 
 /* Print-your-own STL button, under the single piece display */
@@ -322,22 +322,6 @@ max-width: 88vw;
 
 /* Symbols the heading font does not have: plain outlined sans-serif */
 .sym { font-family: Arial, Helvetica, sans-serif; font-weight: 700; -webkit-text-fill-color: transparent; -webkit-text-stroke: 0.05em currentColor; }
-
-/* ============ Promo banner ============ */
-.promo {
-display: flex;
-flex-wrap: wrap;
-gap: 12px 18px;
-align-items: center;
-justify-content: center;
-padding: 14px 20px;
-margin: 0 auto 26px;
-max-width: 640px;
-font-family: 'KCPelletierLight', 'Courier New', monospace;
-font-size: 1.1rem;
-}
-.promo.applied { box-shadow: 0 0 22px rgba(160,255,190,0.45); }
-.promo small { opacity: 0.8; display: block; font-size: 0.85rem; }
 
 /* ============ Product grid + cards (reusable) ============ */
 .grid {
@@ -519,9 +503,11 @@ text-transform: uppercase;
 opacity: 0.7;
 margin: 6px 0 8px;
 }
-.cr { display: grid; grid-template-columns: minmax(8em, 40%) 1fr; gap: 4px 14px; font-family: 'KCPelletierLight', 'Courier New', monospace; font-size: 1rem; margin: 0 0 14px; }
-.cr dt { opacity: 0.7; }
-.cr dd { margin: 0; }
+.cr { display: block; line-height: 1.5; font-family: 'KCPelletierLight', 'Courier New', monospace; font-size: 1rem; margin: 0 0 14px; }
+.cr dt { display: inline; opacity: 0.7; }
+.cr dt::after { content: ': '; }
+.cr dd { display: inline; margin: 0; }
+.cr dd::after { content: '\A'; white-space: pre; }
 .lyrics .sect { font-family: 'KCPelletierTyped', 'Courier New', monospace; font-size: 0.95rem; letter-spacing: 2px; text-transform: uppercase; opacity: 0.75; display: inline-block; margin-top: 0.7em; }
 .lyrics .sect:first-child { margin-top: 0; }
 .lyrics { white-space: pre-wrap; font-family: 'KCPelletierLight', 'Courier New', monospace; font-size: 1.05rem; line-height: 1.6; margin: 0 0 20px; }
@@ -602,18 +588,13 @@ body, h1, .floating-text, .btn, .floating-logo, .section h2, .product.deluxe { a
 <h2>Game Pieces</h2>
 <p class="sub">Handmade pieces: by the band, of the band.<br>3D-scanned and printed by Jesse. Marble texture.</p>
 
-<div class="promo glass" id="promoBox">
-<div id="promoText">Vinyl owners get 20% off game pieces</div>
-<button class="btn small" id="promoBtn" type="button">Use code VINYL20</button>
-</div>
-
 <div class="grid" id="productGrid"></div>
 </section>
 
 <!-- ============ PLAY ONLINE (3D desk) ============ -->
 <section class="section" id="play">
 <h2>Play Online</h2>
-<p class="sub">The Game - on the Go</p>
+<p class="sub">The Game on the Go (free)</p>
 <div class="desk-scene">
 <div class="viewer desk-viewer" data-viewer="desk"></div>
 <a class="sr-only" href="/game">Play the game online</a>
@@ -629,6 +610,7 @@ body, h1, .floating-text, .btn, .floating-logo, .section h2, .product.deluxe { a
 <p>Mastered by Justin Perkins at Mystery Room Mastering.</p>
 <p>Album photography by Pearl Nemecek.</p>
 <p>Game design, web design and hand-drawn board art by Grant Clementi, with additional drawings by Ruby Clementi, Marco Jaimez and Shelby Jaimez.</p>
+<p>Special thanks to our families, friends, supporters, listeners, teachers, creator, and each other (in no particular order).</p>
 </div>
 </section>
 
@@ -662,8 +644,6 @@ body, h1, .floating-text, .btn, .floating-logo, .section h2, .product.deluxe { a
 <label>Your name<input id="oName" type="text" autocomplete="name"></label>
 <label>Email or Instagram<input id="oContact" type="text" autocomplete="email"></label>
 <label>Ship to (or we'll ask)<textarea id="oShip" autocomplete="street-address"></textarea></label>
-<label>Promo code<input id="oPromo" type="text" autocapitalize="characters" autocomplete="off"></label>
-<div id="promoMsg" class="note"></div>
 <div class="totals" id="sheetTotals"></div>
 <a class="btn" id="sendEmail" href="#">1. Email the order</a>
 <button class="btn" id="copyDM" type="button">Or copy it for a DM</button>
@@ -698,7 +678,6 @@ const CONFIG = {
   venmo: 'grantclementi',          // Venmo handle, no @. Empty = we send a Venmo request after the order email.
   instagramDM: 'https://ig.me/m/fearjoymusic',
   spotify: '',                     // album link once it is live. Empty = "soon" buttons.
-  promo: { code: 'VINYL20', pct: 20 },
   useRealStl: true,                // busts load from each person's "stl" path below. false = placeholder shapes only
   preferLite: true,                // try Jesse_Bust_lite.stl etc. first (about 1 MB each), then fall back to the full files
   stlFolders: ['./', '/LP1/', '/images/'],  // where to look for the STL files, in order. './' = the same folder as this page
@@ -767,11 +746,11 @@ const TRACKS = [
   T("Dmitri", [["Written by", "Grant Clementi"], ["Produced by", "Grant Clementi and Jesse Carl"], ["Vocals by", "Grant Clementi and Marco Jaimez"], ["Keyboards, Guitars, Percussion, FX by", "Grant Clementi"], ["Guitars by", "Garrett Waite"], ["Bass by", "Matthew Sherman"], ["Drums by", "Jesse Carl"], ["Mixed by", "Fearjoy"], ["Mastered by", "Justin Perkins at Mystery Room Mastering"], ["Special thanks", "Michael Darden, Khalil, and my friend Dmitri"]], "[Verse 1]\nI remember but I haven’t seen his face in years\nThrough the door he ran up to greet me\nIn a second he took away my doubt and fear\nHe said hey my name’s Dmitri\nI can’t talk to my friends but\nI can talk to my God about it\nAs soon as it happened\nMy brain went and forgot about it\n\n[Pre-Chorus]\nHow long had I been waitin’\nFor some inspiration?\n\n[Chorus 1]\nOh let me tell you ‘bout the way he taught me\nAll that he could teach me\nYou won’t learn half as much in years of school\nAs one day with Dmitri\nOne day with Dmitri\nOne day with Dmitri\n\n[Bridge 1]\n(He said)\nI only got 5 minutes to show you the ropes\nOver there’s where your brain makes your dreams and hopes\nYour life is meaningful but somehow still it’s only a joke\nWe’ll meet again if you transcend or if you choke\n\n[Bridge 2]\nHe’s livin’ in my head\nAnd when I’m almost dead\nHe’ll come beside my bed\nAnd show me what to do\nIn every flower bed\nAnd when your blood runs red\nHe’s livin’ in my head\nAnd livin’ in yours too\n\n[Chorus 2]\nOh let me tell you ‘bout the way\nHe taught me all that he could teach me\nI’m so indebted to my friend\nThe one\nThe only Dmitri\nYeah, yeah\nThe only Dmitri\nThe only Dmitri\n\n[Outro]\nI can’t talk to my friends\nI can talk to my God about it\nAs soon as it happened\nMy brain went and forgot"),
   T("It Happens", [["Grant Clementi", "vocals, lyrics, keys"], ["Jesse Carl", "drums, production"], ["Carolyn Clementi", "vocals"], ["Tim Wolf", "guitar, harmonies"], ["Matthew Sherman", "bass"], ["Garrett Waite", "guitar"]], "How did I get here\nWhere am I going\nTrying to stay clear\nOut in the open\nI try and I try and I try\nBut nothing changes\nThe moment I finally stop\nTryna rearrange it\n\nIt happens\nSuddenly, instantly\nIt happens\nFinally, now I see\n\nTime ceases to exist\nEvery time we feel like this\nDon't let it slip away\nRealize it's going to anyway\nThat's ok, It'll happen once again\nWhen you're not trying to make it happen\nThat's ok, It'll happen once again\nWhen you're not trying to make it happen\n\nTime is the only truth\nWatch it slip away\nWhen you quit seeking\nForever in a day\n\nIt happens\nSuddenly, instantly\nIt happens\nFinally, now I see\nIt happens\nSuddenly, instantly\nIt happens\nFinally, now I see"),
   T("Nightdrive", [["Marco Jaimez", "lyrics, vocals"], ["Grant Clementi", "lyrics, vocals, keys, production"], ["Jesse Carl", "drums, bass, production, percussion"], ["Tim Wolf", "guitars"]], "[Verse 1]\nYou took the backroads when you had to go\nBut somehow I knew you never would return\nYou're in the rearview but I'll turn around\nI see that silver lining and now there is no hiding\n\n[Prechorus 1]\nAll this moonlight\nMakes the room bright\nAll the faces\nFading out of focus\n\n[Chorus]\nWhen all your stars are falling\nWhen all the light has turned to black\nBending and breaking from the weight of it all\nWhen the day is gone\nAnd you’re moving on\nI’ll be the light to find you\nI’d drive all night to get you back\n\n[Verse 2]\nDarkness calling\nEngine stalling\nCan I cut through the fog without you by my side?\nFalling short of what you wanted to be\nBut I can finally see the signs\nThat the road ahead will find me\n\n[Prechorus 2]\nI gave you the moon but you needed the sun\nI gave you the room when you wanted to run\nRemembered your face even when it was\nFading out of focus\nAll this moonlight\nMakes the room bright\nAll the faces\nFading out of focus\n\n[Chorus]\nWhen all your stars are falling\nWhen all the light has turned to black\nBending and breaking from the weight of it all\nWhen the day is gone\nAnd you’re moving on\nI’ll be the light to find you\nI’d drive all night to get you back"),
-  T("Ghost 2", [], "Your ghost is in my room\nI hear your voice inside the telephone\nIf I can’t be with you\nI will wander my whole life alone\nA spectre in the gloom\nYou crawl out of my mind and up the wall\nIf you can’t be my all\nThen I will settle being miserable\nAgain and again and again and again and again\nEvery time you fly away\nThere was more that I could say\nBut I'm paralyzed and words don't reach my lips\n\nEvery time the lights go down\nSuddenly I hear a sound\nIt's you, it’s you, it’s you\n\nI wonder where you are\nI hear your voice inside when I'm alone\nSo I look down at the telephone\nBut I know what I'm not gonna see\n\nYour pictures line these walls\nBut this vacant house is not a home\nAnd I wish that I was not alone\nBut you never seem to visit when it's coldest\nAnd I need you here the most\n\nEvery time you fly away\nThere was more that I could say\nBut I'm paralyzed and words don't reach my lips\nEvery time the lights go down\nSuddenly I hear a sound\nAnd the memories replay\nWith you, with you, with you\nAnd the memories replay\nWith you, with you, with you\nAnd the memories replay"),
+  T("Ghost 2", [["Marco Jaimez", "lyrics, vocals"], ["Grant Clementi", "lyrics, vocals, synths, percussion"], ["Jesse Carl", "drums, production"], ["Matt Sherman", "bass"], ["Garrett Waite", "acoustic guitar, electric guitar"], ["Shawn Bost", "additional keys"], ["Ruby Clementi", "\"hello?\""]], "Your ghost is in my room\nI hear your voice inside the telephone\nIf I can’t be with you\nI will wander my whole life alone\nA spectre in the gloom\nYou crawl out of my mind and up the wall\nIf you can’t be my all\nThen I will settle being miserable\nAgain and again and again and again and again\nEvery time you fly away\nThere was more that I could say\nBut I'm paralyzed and words don't reach my lips\n\nEvery time the lights go down\nSuddenly I hear a sound\nIt's you, it’s you, it’s you\n\nI wonder where you are\nI hear your voice inside when I'm alone\nSo I look down at the telephone\nBut I know what I'm not gonna see\n\nYour pictures line these walls\nBut this vacant house is not a home\nAnd I wish that I was not alone\nBut you never seem to visit when it's coldest\nAnd I need you here the most\n\nEvery time you fly away\nThere was more that I could say\nBut I'm paralyzed and words don't reach my lips\nEvery time the lights go down\nSuddenly I hear a sound\nAnd the memories replay\nWith you, with you, with you\nAnd the memories replay\nWith you, with you, with you\nAnd the memories replay"),
   T("Maya", [["Grant Clementi", "vocals, lyrics, instruments, production"], ["Marco Jaimez", "vocals, lyrics"], ["Evan Lane", "viola"], ["Jesse Carl", "production"], ["Carolyn Clementi", "background vocals"]], "[Verse]\nI know I\nGotta wake up from this illusion\nShow me why\nI've been lost in confusion\n\nShe got the key, She wrote the code\nShe knows the way, She got the soul\nShe got the key, She wrote the code\nThe first in line, The last to know\n\nLet go of\nEverything I've been choosing\nBut I love it\nSo I stay\nLost inside this illusion\n\n[Chorus]\nWe only get so many days\nHelp me find a way\nShow me what lies beyond the gray\nHelp me find a way\nI feel it! You feel it too!\nNo running from the truth\nAccepting what we are\n\n[Bridge]\nThese plans I create fall right through my hands\nDon't want to lay but can hardly stand\nFrom this illusion I turned and ran away\n\n[CHORUS]\n\n[Outro]\nMaya, Maya, you've been asleep\nSecret's out now, nothing to keep\nFlying higher, diving so deep\nI desire more than I need\nGot to wake up, I've been asleep\nSeeds I sow now, one day I'll reap\nMaya, Maya, you've been asleep\nMy mind's made up, got to wake up"),
   T("Tellus", [], ""),
   T("Void", [], "What if I never come down, I just stay up here?\nWould I even make it back if we disappeared?\nWould it be alright if I came back in a year?\nI can't get by\nI can't get by\n\nWhat if I stayed up here and I never came down?\nHead above the stratosphere but feet on the ground\nWould it be alright down there if I'm not around?\nI can’t get by\nI can’t get by on my own\n\nOn my own\nOn my own\n\nI can’t get by\nI can’t get by on my own"),
-  T("The Endless Smile", [["Grant Clementi", "lyrics, vocals, instruments, production"], ["Ruby Clementi", "lyrics, vocals"], ["Our Friends", "laughter"]], "The endless smile\nIn the ground\nWhy not start\nStart right now\n\nTime to start\nPracticing your smile\nCuz it's all\nAll you'll leave behind\n\nFlesh and bone\nOnce the former's gone\nAll that's left\nThe smile that you put on\n\nEach time\nWe see the light\nWhen we smile\nWith the endless smile\n\nThe endless smile\nIn the ground\nWhy not start\nStart right now\n\nDon't you wait\nWait until you drop\nOnce you start\nYou can't make it stop\n\nEach time\nWe see the light\nWhen we smile\nWith the endless smile\nTeeth wide\nWe feel so bright\nWhen we smile\nWith the endless smile\n\nThe endless smile\nIn the ground\nWhy not start\nStart right now"),
+  T("The Endless Smile", [["Grant Clementi", "lyrics, vocals, instruments, production"], ["Ruby Clementi", "lyrics, vocals"], ["Isaac Clementi", "piano"], ["Our Friends", "laughter"]], "The endless smile\nIn the ground\nWhy not start\nStart right now\n\nTime to start\nPracticing your smile\nCuz it's all\nAll you'll leave behind\n\nFlesh and bone\nOnce the former's gone\nAll that's left\nThe smile that you put on\n\nEach time\nWe see the light\nWhen we smile\nWith the endless smile\n\nThe endless smile\nIn the ground\nWhy not start\nStart right now\n\nDon't you wait\nWait until you drop\nOnce you start\nYou can't make it stop\n\nEach time\nWe see the light\nWhen we smile\nWith the endless smile\nTeeth wide\nWe feel so bright\nWhen we smile\nWith the endless smile\n\nThe endless smile\nIn the ground\nWhy not start\nStart right now"),
   T("Swimmin", [], "Why can't you just enjoy the moment?\nYou keep on asking yourself\nYou like to push pull and hold it\nLike it was somebody else\n\nYou take this bliss and postpone it\nThere's always something to do\nJust tune yourself in and own it\nIt's up to no one but you\n\nWhat you gotta do?\nWhat you gotta say?\nWho you gotta talk to?\nWhat you gotta find?\nWho you gotta pay?\nWhat ya holding on to?\n(X2)\n\nWhy don't you swim\nOut of your mind\nThe top of your spine\nIs where you live\nBut not tonight\nTonight we're goin’ swimmin’\nTonight we're goin’ swimmin’\n\nYou try to smooth out the thought ripples in your mind\nWith a flat iron\nCome on, don't you know it's futile?\nAnd catapult your mind every night\nSomewhere you were only ever meant to\nTravel to a few times\nGo with the rhythm of the tide\nLet it pull you to the side\nTake a ride on your new mind\n(You'll be fine)\n\nWhat you gotta do?\nWhat you gotta say?\nWho you gotta talk to?\nWhat you gotta find?\nWho you gotta pay?\nWhat ya holding on to?\n(X2)\n\nBefore you swim\nOut of your mind\nThe top of your spine\nIs where you live\nBut not tonight\nTonight we're goin’ swimmin’\nTonight we're goin’ swimmin’\nTonight we're goin’ swimmin’")
 ];
 /* ===================================================================== */
@@ -815,8 +794,6 @@ function toast(msg) {
 /* ---------- State ---------- */
 const S = {};
 PRODUCTS.forEach(p => { S[p.id] = { die: 'red', qty: 1, view: 'jesse', pick: new Set() }; });
-let promoCode = '';
-const promoOn = () => promoCode.trim().toUpperCase() === CONFIG.promo.code;
 const getP = id => PRODUCTS.find(p => p.id === id);
 
 /* ---------- Streaming buttons ---------- */
@@ -1115,14 +1092,15 @@ function coinFace(text, base, ink, useMarble) {
   g.fillText(text, 128, 132);
   return new THREE.CanvasTexture(c);
 }
-function makeCoin(bronze) {
+function makeCoin(bronze, tone) {
   const geo = new THREE.CylinderGeometry(0.3, 0.3, 0.06, 48);
   let mats;
   if (bronze) {
-    const base = '#c98b4a', ink = '#5a3512';
-    const props = { metalness: 0.55, roughness: 0.38 };
+    tone = tone || {};
+    const base = tone.base || '#c98b4a', ink = tone.ink || '#5a3512';
+    const props = { metalness: tone.metalness == null ? 0.55 : tone.metalness, roughness: tone.roughness == null ? 0.38 : tone.roughness };
     mats = [
-      new THREE.MeshStandardMaterial({ color: 0xc98b4a, ...props }),
+      new THREE.MeshStandardMaterial({ color: tone.color || 0xc98b4a, ...props }),
       new THREE.MeshStandardMaterial({ map: coinFace('FEAR', base, ink, false), ...props }),
       new THREE.MeshStandardMaterial({ map: coinFace('JOY', base, ink, false), ...props })
     ];
@@ -1191,11 +1169,12 @@ function buildScene(v, p) {
       v.die = die;
       recolorDie(die, st.die);
     }
-    die.position.set(-0.32, 0.24, 0.12);
+    die.position.set(-0.42, 0.24, 0.12);
     die.rotation.y = 0.5;
     v.stage.add(die);
     const coin = makeCoin(painted);
-    coin.position.set(0.36, 0.04, 0.12);
+    coin.scale.setScalar(1.5);
+    coin.position.set(0.5, 0.045, 0.14);
     coin.rotation.z = 0.04;
     v.stage.add(coin);
   }
@@ -1236,10 +1215,10 @@ function makeDesk(el) {
     v.camera.aspect = w / h;
     v.camera.updateProjectionMatrix();
     const t = Math.tan(THREE.MathUtils.degToRad(15));
-    const d = Math.max(3.7 / (t * v.camera.aspect), 2.3 / t);
+    const d = Math.max(4.6 / (t * v.camera.aspect), 3.7 / t);
     const el_ = THREE.MathUtils.degToRad(26);
-    v.camera.position.set(0, 1.05 + d * Math.sin(el_), d * Math.cos(el_));
-    v.camera.lookAt(0, 1.05, 0);
+    v.camera.position.set(0, 2.3 + d * Math.sin(el_), d * Math.cos(el_));
+    v.camera.lookAt(0, 2.3, 0);
   };
 
   /* ---------- small helpers ---------- */
@@ -1263,7 +1242,15 @@ function makeDesk(el) {
     const m = noHit(new THREE.Mesh(new THREE.PlaneGeometry(w, d), new THREE.MeshBasicMaterial({ map: blobTex, transparent: true, opacity: op == null ? 1 : op, depthWrite: false })));
     m.rotation.x = -Math.PI / 2;
     m.position.set(x, 0.004, z);
+    m.userData.op = op == null ? 1 : op;
     stage.add(m);
+    return m;
+  }
+  /* shadow shrinks and fades a little as the object goes up (h = height above the desk) */
+  function shade(m, h) {
+    const k = 1 / (1 + 0.5 * h);
+    m.scale.set(k, k, 1);
+    m.material.opacity = m.userData.op * (0.4 + 0.6 * k);
   }
   /* invisible click target, so we never raycast the 90k-triangle busts */
   const hitMat = new THREE.MeshBasicMaterial({ visible: false });
@@ -1293,15 +1280,16 @@ function makeDesk(el) {
     return new THREE.CanvasTexture(c);
   })();
   const woodSide = std(0x5e3d25, 0.8);
-  const slab = new THREE.Mesh(new THREE.BoxGeometry(6.6, 0.26, 3.2),
+  const slab = new THREE.Mesh(new THREE.BoxGeometry(7.8, 0.26, 4.6),
     [woodSide, woodSide, new THREE.MeshStandardMaterial({ map: wood, roughness: 0.75 }), woodSide, woodSide, woodSide]);
   slab.position.y = -0.13;
   stage.add(slab);
-  [[-3.0, -1.3], [3.0, -1.3], [-3.0, 1.3], [3.0, 1.3]].forEach(p => box(0.24, 1.3, 0.24, woodSide, p[0], -0.91, p[1]));
+  [[-3.5, -2.0], [3.5, -2.0], [-3.5, 2.0], [3.5, 2.0]].forEach(p => box(0.24, 1.3, 0.24, woodSide, p[0], -0.91, p[1]));
 
   /* ---------- tube TV (gray) ---------- */
   const tv = new THREE.Group();
-  tv.position.set(0.55, 0, -0.55);
+  tv.position.set(0.7, 0, -1.25);
+  tv.scale.set(2.2, 2.2, 1.3);   /* big TV, but no deeper than before (z scale stays small) */
   stage.add(tv);
   const grayBody = std(0x9a9ea3, 0.55), grayDark = std(0x5d6165, 0.6), grayBezel = std(0x34373a, 0.5);
   box(2.3, 1.7, 0.95, grayBody, 0, 1.0, 0, tv);
@@ -1315,12 +1303,12 @@ function makeDesk(el) {
   antBase.position.set(0.1, 1.85, -0.1);
   tv.add(antBase);
   [-0.55, 0.5].forEach(a => {
-    const rod = new THREE.Mesh(new THREE.CylinderGeometry(0.018, 0.018, 1.1, 8), std(0x2a2c2e, 0.4, 0.5));
+    const rod = new THREE.Mesh(new THREE.CylinderGeometry(0.018, 0.018, 0.6, 8), std(0x2a2c2e, 0.4, 0.5));
     rod.rotation.z = a;
-    rod.position.set(0.1 - Math.sin(a) * 0.55, 1.88 + Math.cos(a) * 0.55, -0.1);
+    rod.position.set(0.1 - Math.sin(a) * 0.3, 1.88 + Math.cos(a) * 0.3, -0.1);
     tv.add(rod);
     const tip = new THREE.Mesh(new THREE.SphereGeometry(0.04, 10, 8), std(0x2a2c2e, 0.4, 0.5));
-    tip.position.set(0.1 - Math.sin(a) * 1.1, 1.88 + Math.cos(a) * 1.1, -0.1);
+    tip.position.set(0.1 - Math.sin(a) * 0.6, 1.88 + Math.cos(a) * 0.6, -0.1);
     tv.add(tip);
   });
   /* speaker panel + knobs */
@@ -1350,7 +1338,7 @@ function makeDesk(el) {
   screenMat.color.setHex(0x0e2a1e);
   const screen = new THREE.Mesh(new THREE.PlaneGeometry(1.35, 1.35), screenMat);
   screenGrp.add(screen);
-  new THREE.TextureLoader().load('/images/31_WEB_GAME.png', tex => {
+  new THREE.TextureLoader().load('/images/34_Board_temp.png', tex => {
     const img = tex.image, a = img && img.width && img.height ? img.width / img.height : 1;
     if (a > 1) { tex.repeat.x = 1 / a; tex.offset.x = (1 - 1 / a) / 2; }
     else if (a < 1) { tex.repeat.y = a; tex.offset.y = (1 - a) / 2; }
@@ -1392,28 +1380,29 @@ function makeDesk(el) {
   ['jesse', 'marco', 'grant'].forEach((id, i) => {
     const idx = Math.max(0, PEOPLE.findIndex(x => x.id === id));
     const h = headFor(idx, marble());
-    h.scale.setScalar(0.78);
-    h.position.set(-2.45 + i * 0.75, 0, 0.6 + (i === 1 ? 0.08 : 0));
+    h.scale.setScalar(0.95);
+    h.position.set(-2.6 + i * 0.95, 0, 1.0 + (i === 1 ? 0.1 : 0));
     stage.add(h);
     crew.push(h);
-    blob(1.0, 0.8, h.position.x, h.position.z, 0.8);
+    blob(1.2, 0.95, h.position.x, h.position.z, 0.8);
+    hitBox(1.0, 1.5, 0.9, h.position.x, 0.75, h.position.z, 'bust').userData.bust = h;   /* click target sits on the stage, because the bust group is cleared when the real STL loads */
   });
 
   /* ---------- coin: lies flat on the desk, real 50/50 ---------- */
   const COIN_ROT_TOP = Math.PI / 2, COIN_ROT_BOT = -Math.PI / 2;   /* keeps the text upright on both faces */
   const COIN_SCALE = 1.9, COIN_H = 0.03 * COIN_SCALE, COIN_R = 0.3 * COIN_SCALE;
   const coinRoot = new THREE.Group();
-  coinRoot.position.set(2.3, COIN_H, 0.6);
+  coinRoot.position.set(2.9, COIN_H, 1.5);
   stage.add(coinRoot);
   const flipper = new THREE.Group();
   coinRoot.add(flipper);
-  const coin = makeCoin(false);
+  const coin = makeCoin(true, { base: '#e0b878', ink: '#6b4420', color: 0xe0b878, metalness: 0.25, roughness: 0.5 });   /* light bronze */
   coin.scale.setScalar(COIN_SCALE);
   coin.material[1].map.center.set(0.5, 0.5); coin.material[1].map.rotation = COIN_ROT_TOP;
   coin.material[2].map.center.set(0.5, 0.5); coin.material[2].map.rotation = COIN_ROT_BOT;
   flipper.add(coin);
   hitBox(1.3, 0.3, 1.3, 0, 0, 0, 'coin', coinRoot);
-  blob(1.5, 1.5, 2.3, 0.6, 0.6);
+  const coinShadow = blob(1.5, 1.5, 2.9, 1.5, 0.6);
   let half = 0, flip = null;                    /* half = number of half turns so far (even = FEAR up) */
   function doFlip() {
     if (flip) return;
@@ -1427,15 +1416,15 @@ function makeDesk(el) {
   /* ---------- die: one dichroic glass die with gold pips, resting on the desk ---------- */
   const DIE_SCALE = 1.4, DIE_H = 0.23 * DIE_SCALE;
   const dieRoot = new THREE.Group();
-  dieRoot.position.set(1.3, DIE_H, 1.0);
+  dieRoot.position.set(1.7, DIE_H, 1.65);
   stage.add(dieRoot);
   const yawG = new THREE.Group();
   dieRoot.add(yawG);
-  const die = makeDichroicDie();
+  const die = makeClearDie('red', 1);   /* opaque red, white pips */
   die.scale.setScalar(DIE_SCALE);
   yawG.add(die);
   hitBox(0.8, 0.8, 0.8, 0, 0, 0, 'die', dieRoot);
-  blob(0.9, 0.9, 1.3, 1.0, 0.8);
+  const dieShadow = blob(0.9, 0.9, 1.7, 1.65, 0.8);
   const FACE_UP = { 1: [0, 0, 0], 6: [Math.PI, 0, 0], 3: [0, 0, Math.PI / 2], 4: [0, 0, -Math.PI / 2], 2: [-Math.PI / 2, 0, 0], 5: [Math.PI / 2, 0, 0] };
   const dieBaseY = DIE_H;
   let roll = null;
@@ -1453,11 +1442,13 @@ function makeDesk(el) {
 
   /* ---------- clicking ---------- */
   const ray = new THREE.Raycaster(), ndc = new THREE.Vector2();
+  let pickObj = null;
   function pick(e) {
     const r = el.getBoundingClientRect();
     ndc.set(((e.clientX - r.left) / r.width) * 2 - 1, -((e.clientY - r.top) / r.height) * 2 + 1);
     ray.setFromCamera(ndc, v.camera);
     const h = ray.intersectObjects(hits, false)[0];
+    pickObj = h ? h.object : null;
     return h ? h.object.userData.tag : null;
   }
   el.addEventListener('pointermove', e => { el.style.cursor = pick(e) ? 'pointer' : 'default'; });
@@ -1465,6 +1456,7 @@ function makeDesk(el) {
     const tag = pick(e);
     if (tag === 'coin') doFlip();
     else if (tag === 'die') doRoll();
+    else if (tag === 'bust') pickObj.userData.bust.userData.spin = performance.now();
     else if (tag === 'tv' && !v.tvT && !v.navigated) v.tvT = performance.now();
   });
   window.addEventListener('pageshow', () => {
@@ -1478,13 +1470,21 @@ function makeDesk(el) {
   v.onFrame = function (t) {
     const now = performance.now();
     place(t);
-    die.userData.tint((t / 7000 + die.rotation.x * 0.07 + yawG.rotation.y * 0.05) % 1);   /* dichroic color shift */
-    if (!REDUCE) crew.forEach((h, i) => { h.rotation.y = Math.sin(t / 1400 + i * 1.7) * 0.16 + (i - 1) * -0.14; });
+    crew.forEach((h, i) => {
+      let r = REDUCE ? 0 : Math.sin(t / 1400 + i * 1.7) * 0.16 + (i - 1) * -0.14;
+      if (h.userData.spin) {
+        const k = Math.min(1, (now - h.userData.spin) / (REDUCE ? 1 : 900));
+        r += Math.PI * 2 * ease(k);
+        if (k >= 1) h.userData.spin = 0;
+      }
+      h.rotation.y = r;
+    });
     if (flip) {
       const k = Math.min(1, (now - flip.t0) / flip.dur);
       flipper.rotation.x = flip.a0 + (flip.a1 - flip.a0) * ease(k);
       coinRoot.position.y = COIN_H + Math.abs(Math.sin(flipper.rotation.x)) * COIN_R + Math.sin(Math.PI * k) * (REDUCE ? 0 : 1.1);   /* lift so the spinning edge never dips into the desk */
-      if (k >= 1) { flipper.rotation.x = flip.a1; coinRoot.position.y = COIN_H; toast(flip.result); flip = null; }
+      shade(coinShadow, coinRoot.position.y - COIN_H);
+      if (k >= 1) { flipper.rotation.x = flip.a1; coinRoot.position.y = COIN_H; shade(coinShadow, 0); toast(flip.result); flip = null; }
     }
     if (roll) {
       const k = Math.min(1, (now - roll.t0) / roll.dur);
@@ -1495,9 +1495,11 @@ function makeDesk(el) {
         roll.e0[2] + (roll.e1[2] - roll.e0[2]) * e);
       yawG.rotation.y = roll.y0 + (roll.y1 - roll.y0) * e;
       dieRoot.position.y = dieBaseY + (REDUCE ? 0 : Math.sin(Math.PI * k) * 0.9 + 0.22 * Math.min(1, Math.sin(Math.PI * k) * 6));
+      shade(dieShadow, dieRoot.position.y - dieBaseY);
       if (k >= 1) {
         die.rotation.set(roll.tgt[0], roll.tgt[1], roll.tgt[2]);
         dieRoot.position.y = dieBaseY;
+        shade(dieShadow, 0);
         toast('Rolled ' + roll.n);
         roll = null;
       }
@@ -1714,7 +1716,7 @@ if (HAVE_GL) {
 }
 
 /* =====================================================================
-   PRICES, OPTIONS, PROMO
+   PRICES, OPTIONS
    ===================================================================== */
 function qtyOf(p) {
   const st = S[p.id];
@@ -1725,15 +1727,13 @@ function qtyOf(p) {
 function calc(p) {
   const qty = qtyOf(p);
   const sub = Math.round(p.price * 100) * qty;
-  const disc = (promoOn() && p.type !== 'deluxe') ? Math.round(sub * CONFIG.promo.pct / 100) : 0;
-  return { qty, sub: sub / 100, disc: disc / 100, total: (sub - disc) / 100 };
+  return { qty, sub: sub / 100, total: sub / 100 };
 }
 
 function refreshCards() {
   PRODUCTS.forEach(p => {
     const price = $(`[data-price="${p.id}"]`);
-    const on = promoOn() && p.type !== 'deluxe';
-    price.innerHTML = on ? `<s>${symHTML(money(p.price))}</s>${symHTML(money(p.price * (1 - CONFIG.promo.pct / 100)))}` : symHTML(money(p.price));
+    price.innerHTML = symHTML(money(p.price));
   });
   /* Print-your-own button follows the piece being previewed */
   PRODUCTS.filter(p => p.diy).forEach(p => {
@@ -1763,13 +1763,6 @@ function refreshCards() {
     const [pid, who] = b.dataset.pickchip.split(':');
     b.classList.toggle('sel', S[pid].pick.has(who));
   });
-  const box = $('#promoBox');
-  box.classList.toggle('applied', promoOn());
-  $('#promoText').innerHTML = promoOn()
-    ? `${CONFIG.promo.code} applied: ${CONFIG.promo.pct}% off game pieces`
-    : `Vinyl owners get ${CONFIG.promo.pct}% off game pieces`;
-  $('#promoBtn').textContent = promoOn() ? 'Applied ✓' : `Use code ${CONFIG.promo.code}`;
-  $('#oPromo').value !== promoCode && ($('#oPromo').value = promoCode);
   if (cur) updateSheet();
 }
 
@@ -1785,12 +1778,6 @@ function setView(pid, who) {
   if (v) buildScene(v, getP(pid));
   refreshCards();
 }
-
-$('#promoBtn').addEventListener('click', () => {
-  promoCode = CONFIG.promo.code;
-  refreshCards();
-  toast(`${CONFIG.promo.code} applied`);
-});
 
 /* =====================================================================
    ORDER SHEET
@@ -1818,7 +1805,6 @@ function orderText(p) {
   if (p.type === 'kit') lines.push(`Die color: ${(DIE_COLORS.find(x => x.id === st.die) || {}).name}`, `Kits: ${c.qty}`);
   if (p.type === 'single') lines.push(`Pieces: ${PEOPLE.filter(pp => st.pick.has(pp.id)).map(pp => pp.name).join(', ') || '(none picked yet)'}`);
   if (p.type !== 'deluxe') {
-    if (c.disc > 0) lines.push(`Promo ${CONFIG.promo.code}: -${money(c.disc)}`);
     lines.push(`Total: ${money(c.total)} plus shipping`);
   } else lines.push(`Price: ${money(p.price)}`);
   lines.push('', `Name: ${$('#oName').value}`, `Contact: ${$('#oContact').value}`, `Ship to: ${$('#oShip').value}`);
@@ -1836,19 +1822,9 @@ function updateSheet() {
     rows = `<div class="row tot"><span>Price</span><span>${symHTML(money(p.price))}</span></div>`;
   } else {
     rows = `<div class="row"><span>${c.qty} x ${money(p.price)}</span><span>${money(c.sub)}</span></div>`;
-    if (c.disc > 0) rows += `<div class="row ok"><span>${CONFIG.promo.code}</span><span>-${money(c.disc)}</span></div>`;
     rows += `<div class="row tot"><span>Total</span><span>${symHTML(money(c.total))}</span></div>`;
   }
   $('#sheetTotals').innerHTML = rows;
-
-  const pm = $('#promoMsg');
-  if (p.type === 'deluxe') { pm.textContent = ''; $('#oPromo').parentElement.style.display = 'none'; }
-  else {
-    $('#oPromo').parentElement.style.display = '';
-    if (!promoCode.trim()) pm.textContent = '';
-    else if (promoOn()) { pm.textContent = `${CONFIG.promo.pct}% off applied`; pm.className = 'note ok'; }
-    else { pm.textContent = 'Code not recognized'; pm.className = 'note'; }
-  }
 
   const subject = encodeURIComponent(p.type === 'deluxe' ? 'LP1 inquiry: Angel Investor Edition' : `LP1 order: ${p.name}`);
   const body = encodeURIComponent(orderText(p));
@@ -1879,7 +1855,6 @@ function openSheet(pid) {
   if (cur.type === 'single' && st.pick.size === 0) st.pick.add(st.view);
   $('#sheetTitle').innerHTML = symHTML(cur.type === 'deluxe' ? 'Angel Investor inquiry' : `Order: ${cur.name}`);
   $('#sheetOptions').innerHTML = sheetOptionsHTML(cur);
-  $('#oPromo').value = promoCode;
   refreshCards();
   if (dlg.showModal) dlg.showModal(); else dlg.setAttribute('open', '');
 }
@@ -1889,7 +1864,6 @@ $('#sheetClose').addEventListener('click', closeSheet);
 dlg.addEventListener('click', e => { if (e.target === dlg) closeSheet(); });
 dlg.addEventListener('close', () => { cur = null; });
 ['#oName', '#oContact', '#oShip'].forEach(s => $(s).addEventListener('input', () => cur && updateSheet()));
-$('#oPromo').addEventListener('input', e => { promoCode = e.target.value; refreshCards(); });
 
 $('#copyDM').addEventListener('click', async () => {
   const text = orderText(cur);
