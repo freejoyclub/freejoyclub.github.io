@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- LP1 (v18) -->
+<!-- LP1 (v19) -->
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
@@ -121,22 +121,21 @@ text-transform: uppercase;
 
 /* Title: FEARJOY [die] THE GAME on one line, stacked on narrow screens */
 h1.title { margin-bottom: 0.25em; display: flex; flex-wrap: nowrap; align-items: center; justify-content: center; gap: 0 0.14em; font-size: min(5.2rem, 5.6vw); line-height: 1.1; }
-h1.title .title-die { display: block; flex: none; width: 1.3em; height: 1.3em; margin: -0.12em 0; cursor: var(--hand); -webkit-tap-highlight-color: transparent; }
-h1.title .title-die:empty { display: none; }
+h1.title .title-die { display: block; flex: none; width: 1.1em; height: 1.1em; margin: -0.08em 0; cursor: var(--hand); -webkit-tap-highlight-color: transparent; }
+.title-die.nogl { display: none !important; }
 h1.title .title-die canvas { display: block; width: 100%; height: 100%; }
 @media (max-width: 760px) {
 h1.title { flex-direction: column; font-size: 3.4rem; gap: 0; }
-h1.title .title-die { width: 1.7em; height: 1.7em; margin: -0.2em 0; }
+h1.title .title-die { width: 1.4em; height: 1.4em; margin: -0.14em 0; }
 }
 
 /* Credits & Lyrics heading: same idea as the main title (die in the middle, stacked on narrow screens), die a little smaller */
 .section h2.title { display: flex; flex-wrap: nowrap; align-items: center; justify-content: center; gap: 0 0.14em; line-height: 1.1; }
-.section h2.title .title-die { display: block; flex: none; width: 1.05em; height: 1.05em; margin: -0.1em 0; cursor: var(--hand); }
-.section h2.title .title-die:empty { display: none; }
+.section h2.title .title-die { display: block; flex: none; width: 0.9em; height: 0.9em; margin: -0.08em 0; cursor: var(--hand); }
 .section h2.title .title-die canvas { display: block; width: 100%; height: 100%; }
 @media (max-width: 760px) {
 .section h2.title { flex-direction: column; gap: 0; }
-.section h2.title .title-die { width: 1.4em; height: 1.4em; margin: -0.15em 0; }
+.section h2.title .title-die { width: 1.2em; height: 1.2em; margin: -0.12em 0; }
 }
 
 .floating-text {
@@ -552,10 +551,27 @@ box-sizing: border-box;
 
 /* kit cards: the die and the coin float in the front corners of the same 3D space (no boxes), so the hint moves to the top */
 .viewer.has-trays .hint { top: 8px; bottom: auto; left: 0; right: 0; text-align: center; }
-/* single piece card: a shorter preview with less empty room around it */
-.product.single .viewer { aspect-ratio: 3 / 2; }
-/* single piece card is a drop-down: the preview only shows once a name is picked (tap the picked name again to close it) */
-.product.single.collapsed .viewer { display: none; }
+/* v19: accordion cards (A-la-carte and Print your own). Closed by default; the arrow opens and closes them. The preview tray only shows once a name is picked. */
+.product.acc { align-self: start; }
+.product.acc .viewer { aspect-ratio: 3 / 2; }
+.product.acc .acc-body { display: flex; flex-direction: column; gap: 14px; }
+.product.acc:not(.open) .acc-body { display: none; }
+.product.acc:not(.has-pick) .viewer { display: none; }
+.acc-top { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.acc-arrow, .acc-chev { display: inline-flex; align-items: center; justify-content: center; flex: none; }
+.acc-arrow { width: 40px; height: 40px; padding: 0; border-radius: 50%; border: 1px solid rgba(255,255,255,0.4); background: rgba(255,255,255,0.1); color: #fff; cursor: var(--hand); }
+.acc-arrow:hover { background: rgba(255,255,255,0.2); }
+.acc-arrow::before, .acc-chev::before { content: ""; width: 9px; height: 9px; border-right: 3px solid currentColor; border-bottom: 3px solid currentColor; transform: translateY(-3px) rotate(45deg); transition: transform 0.25s; }
+.acc-arrow[aria-expanded="true"]::before, .acc-head[aria-expanded="true"] .acc-chev::before { transform: translateY(3px) rotate(-135deg); }
+.btn.acc-head { width: 100%; justify-content: space-between; gap: 12px; animation: none; padding: 14px 22px; }
+.diy-list { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; }
+.diy-list .note { font-family: 'KCPelletierLight', 'Courier New', monospace; font-size: 0.9rem; opacity: 0.8; margin: 0; }
+.btn.diy-btn[aria-disabled="true"] { opacity: 0.55; }
+.pnote { font-family: 'KCPelletierLight', 'Courier New', monospace; font-size: 0.95rem; margin-left: 6px; opacity: 0.85; }
+.sheet .pq { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 8px; font-size: 1rem; }
+.sheet .pq .stepper { font-size: 1.1rem; gap: 10px; }
+.sheet .pq .stepper button { width: 32px; height: 32px; font-size: 1.1rem; }
+.sheet .shipnote { font-size: 0.8rem; opacity: 0.75; margin: 6px 0 0; line-height: 1.4; }
 
 /* single piece card: the piece picker sits on top */
 .top-opts { display: flex; flex-direction: column; gap: 8px; padding: 0 6px; }
@@ -580,6 +596,7 @@ box-shadow: 0 -6px 24px rgba(0,0,0,0.55), inset 0 1px 0 rgba(255,255,255,0.2);
 .rack::before { left: 10px; }
 .rack::after { right: 10px; transform: rotate(35deg); }   /* turned a bit, like a real screw */
 .rack-nav, .rack-ctl { display: flex; align-items: center; gap: 8px; }
+.rack-nav .rk-bg-nav { display: none; }
 .rack-ctl { margin-left: auto; }
 /* chunky 3D rounded buttons. Pressed in and lit in their own color when clicked or switched on. */
 .rk {
@@ -636,6 +653,8 @@ body { padding-bottom: 64px; }
 .rack-nav { position: absolute; left: 0; bottom: calc(100% + 16px); flex-direction: column; align-items: stretch; gap: 8px; padding: 10px; border-radius: 14px; background: linear-gradient(#2c2c31, #151517); border: 1px solid #4a4a50; box-shadow: 0 8px 22px rgba(0,0,0,0.6); opacity: 0; transform: translateY(14px); pointer-events: none; visibility: hidden; transition: opacity 0.18s, transform 0.18s, visibility 0s 0.18s; }
 .rack.open .rack-nav { opacity: 1; transform: none; pointer-events: auto; visibility: visible; transition: opacity 0.18s, transform 0.18s; }
 .rack-nav .rk { font-size: 0.8rem; letter-spacing: 1px; padding: 9px 18px 9px 12px; justify-content: flex-start; min-width: 150px; }
+.rack-nav .rk-bg-nav { display: inline-flex; }
+.rack-ctl .c-bg { display: none; }
 .rack-ctl { gap: 6px; }
 .rk { font-size: 0.6rem; letter-spacing: 0.6px; padding: 6px 8px 6px 7px; gap: 5px; }
 .rk-vol-label, .rk .more { display: none; }
@@ -648,7 +667,6 @@ body { padding-bottom: 64px; }
 }
 @media (min-width: 861px) and (max-width: 1000px) { .rk-vol-label { display: none; } }
 @media (max-width: 380px) { .rack-in, .rack-ctl { gap: 4px; } .rk { padding: 6px 6px 6px 5px; } .c-mute { min-width: 58px; } .rack-lcd { min-width: 34px; flex-basis: 34px; } }
-@media (max-width: 340px) { .c-bg { display: none; } }
 @media (prefers-reduced-motion: reduce) { .lcd-track { animation: none; } .lcd-track span + span { display: none; } }
 
 /* how-to-play popup and its click-to-zoom picture */
@@ -776,8 +794,8 @@ try { if (location.hash) history.replaceState(null, '', location.pathname + loca
 
 <dialog id="streamDlg">
 <div class="sheet">
-<h3>Streaming</h3>
-<p>Streaming links coming soon.</p>
+<h3 id="streamTitle">Streaming</h3>
+<p id="streamMsg">Streaming links coming soon.</p>
 <div class="lore-actions">
 <button class="btn" id="streamOk" type="button">Close</button>
 </div>
@@ -805,6 +823,7 @@ try { if (location.hash) history.replaceState(null, '', location.pathname + loca
 <a class="rk c-breathe" href="/breathe" data-go="Go to a page full of free, easy breathing exercises to feel your best?">Breathe</a>
 <a class="rk c-move" href="/move" data-go="Go to a page full of free, easy movement exercises to feel your best?">Move</a>
 <a class="rk c-store" href="/store" data-go="Go to the full Fearjoy store?">Store</a>
+<button type="button" class="rk c-bg rk-bg-nav" id="rackBg2" aria-pressed="false" aria-label="Keep the music playing in the background">BG play</button>
 </nav>
 <div class="rack-lcd on still" id="rackLcd"><div class="lcd-track"><span>WELCOME</span><span aria-hidden="true">WELCOME</span><span aria-hidden="true">WELCOME</span></div></div>
 <div class="rack-ctl">
@@ -819,7 +838,7 @@ try { if (location.hash) history.replaceState(null, '', location.pathname + loca
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/STLLoader.js"></script>
 <script>
-// LP1 (v18)
+// LP1 (v19)
 const toTop = () => { try { window.scrollTo({ top: 0, left: 0, behavior: 'instant' }); } catch (e) { window.scrollTo(0, 0); } };
 toTop();
 window.addEventListener('load', toTop);
@@ -845,7 +864,13 @@ const CONFIG = {
   loreVideos: ['game sfx story.mp4', 'j-drum-tracking.mp4', 'js-mistake.mp4', 'sploinky-garret.mp4', 'story harmony hunting tunnel.mp4', 'story mu nightdrive 3.mp4'],                  // lore videos (.mp4) in the same folder. Add file names here. They download quietly in the background after the page loads (thin bar along the bottom of the TV) and join the channel changes once ready
   loreVideoMax: 25,                // a lore video stops after this many seconds even if it is longer
   lorePics: ['1st band promo.png', 'CP-30.jpg', 'Chilis.jpg', 'IMG_20200116_191840_549.jpg', 'creepin.JPG', 'fine-china.jpg', 'fj stone.png', 'foot only.jpg', 'forbidden-stache.jpg', 'g j wed.jpeg', 'g sticker.png', 'g-wedding.jpg', 'game v1.png', 'j dusty 1.jpg', 'j-g-18.jpg', 'marco lay.jpg', 'milwaukeedee grant.jpg', 'miramar wheel bunz ariel.jpg', 'morganshootsthings Grant & jesse 2.jpg', 'morganshootsthings Grant & jesse.jpg', 'morganshootsthings Grant ok.jpg', 'the 3 straights.jpg', 'walkin.JPG', 'yung-jesse.jpg'],   // pictures (no .heic). Add new file names here.
-  shipUS: 7,                       // continental US shipping, in dollars (added to the Venmo amount)
+  shipKit: 7,                      // continental US shipping PER 3-piece or full band kit, in dollars (added to the Venmo amount)
+  shipSingle: 5,                   // continental US shipping for single pieces, up to 6 pieces
+  shipSingleMore: 3,               // plus this much for every additional 6 single pieces
+  streamLinks: { spotify: '', apple: '', youtube: '', more: '' },   // links for the four big buttons on the TV. Empty = a "coming soon" popup.
+  streamLogos: { spotify: '/images/logo-spotify.png', apple: '/images/logo-apple-music.png', youtube: '/images/logo-youtube.png' },   // logo pictures for the TV buttons (any shape, transparent background is best). Missing = the name is written instead.
+  howImage: '/images/rulebook.png',   // the how-to sheet lying under the table (tap it for the How to Play pictures)
+  vinylUrl: '',                    // where the record on the table sends you to buy it. Empty = a "coming soon" popup.
   shippingNote: 'Shipping is confirmed by reply before you pay.'
 };
 
@@ -874,11 +899,11 @@ const DIE_COLORS = [
 /* Products. This array is the reusable storefront piece: later it can move to a JSON file. */
 const PRODUCTS = [
   {
-    id: 'core-trio', type: 'kit', name: 'Core Trio Kit', price: 14, cta: 'Order',
+    id: 'core-trio', type: 'kit', name: 'Trio Kit', price: 14, cta: 'Order',
     pieces: ['jesse', 'marco', 'grant'],
     colors: ['red', 'ltyellow', 'green', 'dkblue', 'orange'],
     blurb: 'Jesse, Marco and Grant, plus colored dice and the Fearjoy coin.',
-    includes: ['3 player pieces (3D printed)', 'Die in red, yellow, green, blue or orange', 'Fearjoy coin']
+    includes: ['Jesse, Marco and Grant', 'Dice x1', 'Fearjoy Coin x1']
   },
   {
     id: 'full-band', type: 'kit', name: 'Full Band Kit', price: 18, cta: 'Order',
@@ -886,14 +911,19 @@ const PRODUCTS = [
     colors: ['black', 'dkblue', 'ltblue', 'purple', 'red', 'rose', 'lime', 'green', 'ltyellow', 'orange'],
     defaultDie: 'orange',
     blurb: 'The whole band. Garrett, Matt and Isaac join the trio.',
-    includes: ['6 player pieces (3D printed)', 'Die in any of 10 colors', 'Fearjoy coin']
+    includes: ['Jesse, Marco, Grant, Garrett, Matt and Isaac', 'Dice x1 (any color)', 'Fearjoy Coin x1']
   },
   {
-    id: 'single', type: 'single', name: 'Single Piece', price: 6, cta: 'Pick pieces',
+    id: 'single', type: 'single', name: 'A-la-carte', price: 6, priceNote: 'each', cta: 'Pick pieces',
     pieces: ['jesse'],
     blurb: 'Just want one head? Grab as many as you like. No die or coin.',
-    includes: ['One 3D printed player piece each'],
-    diy: true
+    includes: ['One 3D printed player piece each']
+  },
+  {
+    id: 'diy', type: 'diy', name: 'Print your own', price: 0, cta: '',
+    pieces: ['jesse'],
+    blurb: 'Free STL files so you can print your own player pieces. Pick a name to preview it, then download.',
+    includes: []
   },
   {
     id: 'deluxe', type: 'deluxe', name: 'Angel Investor Edition', price: 444, cta: 'Inquire', badge: 'One of one',
@@ -1036,6 +1066,7 @@ const Sound = (() => {
   }
   const api = {
     unlock,
+    whenLoaded: () => Promise.all(SFX.map(n => raw[n])),
     ready: () => !!ctx && ctx.state === 'running',
     coin: () => play('coinflip.wav', VOL.coin),
     dice: () => play(DICE_SFX[diceN++ % DICE_SFX.length], VOL.dice),
@@ -1136,7 +1167,7 @@ const Sound = (() => {
 
 /* ---------- State ---------- */
 const S = {};
-PRODUCTS.forEach(p => { S[p.id] = { die: p.defaultDie || 'red', qty: 1, view: 'jesse', pick: new Set() }; });
+PRODUCTS.forEach(p => { S[p.id] = { die: p.defaultDie || 'red', qty: 1, view: 'jesse', pick: new Map(), open: false }; });   /* pick: piece id -> how many (A-la-carte) */
 const getP = id => PRODUCTS.find(p => p.id === id);
 
 /* ---------- Streaming buttons ---------- */
@@ -1161,8 +1192,8 @@ function swatchesHTML(pid) {
   ).join('') + '</div>';
 }
 function chipsHTML(pid) {
-  return '<div class="chips" role="group" aria-label="Preview a piece">' + PEOPLE.map(pp =>
-    `<button type="button" class="chip" data-view="${pid}:${pp.id}">${pp.name}</button>`
+  return '<div class="chips" role="group" aria-label="Pick pieces">' + PEOPLE.map(pp =>
+    `<button type="button" class="chip" data-pickchip="${pid}:${pp.id}">${pp.name}</button>`
   ).join('') + '</div>';
 }
 
@@ -1170,21 +1201,26 @@ function productCard(p) {
   const el = document.createElement('article');
   el.className = 'product ' + p.type;
   el.id = 'p-' + p.id;
-  let opts = '', topOpts = '';
-  if (p.type === 'kit') opts = '<div class="optlabel">Die color</div>' + swatchesHTML(p.id);
-  if (p.type === 'single') topOpts = '<div class="top-opts"><div class="optlabel">Tap a name to preview</div>' + chipsHTML(p.id) + '</div>';
-  const diyBtn = p.diy ? '<div class="diy-row"><a class="btn small diy-btn" data-diy="' + p.id + '"></a></div>' : '';
-  if (p.type === 'single') {   /* a drop-down: the title, description and price always show, and the 3D preview opens when you tap a name */
-    el.classList.add('collapsed');
+  if (p.type === 'single' || p.type === 'diy') {   /* accordion cards: closed until the arrow is tapped (or a name is picked) */
+    el.classList.add('acc');
+    const pickArea = `<div class="top-opts"><div class="optlabel">build your band:</div>${chipsHTML(p.id)}</div><div class="viewer" data-viewer="${p.id}"></div>`;
+    if (p.type === 'diy') {
+      el.innerHTML = `
+        <button type="button" class="btn acc-head" data-acc="${p.id}" aria-expanded="false"><span>${esc(p.name)}</span><span class="acc-chev" aria-hidden="true"></span></button>
+        <div class="acc-body">
+          <p class="blurb">${esc(p.blurb)}</p>
+          ${pickArea}
+          <div class="diy-list" data-diylist="${p.id}"></div>
+        </div>`;
+      return el;
+    }
     el.innerHTML = `
       <div class="info">
-        <h3>${symHTML(p.name)}</h3>
+        <div class="acc-top"><h3>${symHTML(p.name)}</h3><button type="button" class="acc-arrow" data-acc="${p.id}" aria-expanded="false" aria-label="Open or close ${esc(p.name)}"></button></div>
         <p class="blurb">${esc(p.blurb)}</p>
         <ul class="inc">${p.includes.map(i => `<li>${esc(i)}</li>`).join('')}</ul>
       </div>
-      ${topOpts}
-      <div class="viewer" data-viewer="${p.id}"></div>
-      ${diyBtn}
+      <div class="acc-body">${pickArea}</div>
       <div class="info">
         <div class="buyrow">
           <div class="price" data-price="${p.id}"></div>
@@ -1194,16 +1230,14 @@ function productCard(p) {
     return el;
   }
   el.innerHTML = `
-    ${topOpts}
     <div class="viewer" data-viewer="${p.id}">${p.id === PRODUCTS[0].id ? '<span class="hint">drag or tap to spin</span>' : ''}</div>
-    ${diyBtn}
     <div class="info">
       ${p.badge ? `<span class="badge">${esc(p.badge)}</span>` : ''}
       <h3>${symHTML(p.name)}</h3>
       <p class="blurb">${esc(p.blurb)}</p>
       <ul class="inc">${p.includes.map(i => `<li>${esc(i)}</li>`).join('')}</ul>
       ${p.more ? `<details class="more"><summary>More benefits</summary><ul class="inc">${p.more.map(i => `<li>${esc(i)}</li>`).join('')}</ul></details>` : ''}
-      ${opts}
+      ${p.type === 'kit' ? '<div class="optlabel">Die color</div>' + swatchesHTML(p.id) : ''}
       <div class="buyrow">
         <div class="price" data-price="${p.id}"></div>
         <button type="button" class="btn small" data-order="${p.id}">${esc(p.cta)}</button>
@@ -1269,6 +1303,13 @@ function marble() {
     marbleMat = new THREE.MeshStandardMaterial({ map: tex, roughness: 0.92, metalness: 0 });
   }
   return marbleMat;
+}
+
+/* "Print your own" preview: a flat-shaded, slicer-like blue-white material, so it reads as the printable file */
+let digitalMatCache;
+function digitalMat() {
+  if (!digitalMatCache) digitalMatCache = new THREE.MeshStandardMaterial({ color: 0xa9c8ff, emissive: 0x12305c, emissiveIntensity: 0.5, roughness: 0.55, metalness: 0.1, flatShading: true });
+  return digitalMatCache;
 }
 
 /* Placeholder head: base, neck, head, nose, plus a different hat per person */
@@ -1366,9 +1407,11 @@ function headFor(idx, mat) {
   return g;
 }
 function kickLoads(v) {
+  const ps = [];
   v.stage.traverse(o => {
-    if (o.userData && o.userData.load) { const f = o.userData.load; o.userData.load = null; f(); }
+    if (o.userData && o.userData.load) { const f = o.userData.load; o.userData.load = null; ps.push(f()); }
   });
+  return Promise.all(ps);
 }
 
 /* Die with pips baked into the face textures */
@@ -1620,13 +1663,14 @@ function buildExtras(v, painted, st) {
   if (v.subs) return;
   v.mainRect = TRAYS.main;
   v.el.classList.add('has-trays');
-  const mkSub = rect => {
-    const sub = { rect, scene: new THREE.Scene(), camera: new THREE.PerspectiveCamera(30, 1, 0.1, 50), stage: new THREE.Group() };
+  const mkSub = (rect, ext) => {   /* ext: extra picture area added above the tray (a fraction of its height), so a tall coin never clips. The coin keeps its size and place. */
+    const k = ext || 0;
+    const sub = { base: rect, ext: k, rect: k ? { x: rect.x, y: rect.y - k * rect.h, w: rect.w, h: rect.h * (1 + k) } : rect, scene: new THREE.Scene(), camera: new THREE.PerspectiveCamera(30, 1, 0.1, 50), stage: new THREE.Group() };
     addSoftLights(sub.scene);
     sub.scene.add(sub.stage);
     return sub;
   };
-  const dieS = mkSub(TRAYS.die), coinS = mkSub(TRAYS.coin);
+  const dieS = mkSub(TRAYS.die), coinS = mkSub(TRAYS.coin, 0.55);
   v.subs = [dieS, coinS];
 
   const ease = k => 1 - Math.pow(1 - k, 3), TAU = Math.PI * 2;
@@ -1824,9 +1868,10 @@ function buildScene(v, p) {
   v.die = null;
   v.onFrame = null;
   let ids, withExtras = false, painted = false;
-  if (p.type === 'single') ids = [st.view];
+  if (p.type === 'single' || p.type === 'diy') ids = Array.from(st.pick.keys());   /* the tray shows the picked pieces, in the order they were picked */
   else { ids = p.pieces; withExtras = true; }
   if (p.type === 'deluxe') painted = true;
+  if (!ids.length) { v.tray = null; v.fit(); return; }
 
   const n = ids.length;
   const R = n === 1 ? 0 : (n <= 3 ? (painted ? 1.0 : 1.2) : 1.6);   /* Angel edition: the painted pieces sit a little closer together */
@@ -1834,7 +1879,7 @@ function buildScene(v, p) {
   v.glowMain = [];
   ids.forEach((id, i) => {
     const idx = PEOPLE.findIndex(x => x.id === id);
-    const mat = painted ? new THREE.MeshStandardMaterial({ color: PAINT[idx % PAINT.length], roughness: 0.42 }) : marble();
+    const mat = painted ? new THREE.MeshStandardMaterial({ color: PAINT[idx % PAINT.length], roughness: 0.42 }) : p.type === 'diy' ? digitalMat() : marble();
     const head = headFor(idx, mat);
     if (painted) head.scale.multiplyScalar(1.06);   /* Angel edition pieces are a little bigger */
     const a = (i / n) * Math.PI * 2;
@@ -2014,7 +2059,7 @@ function makeDesk(el) {
   board.rotation.y = BROT;
   board.userData.tag = 'block';
   stage.add(board); hits.push(board);
-  blob(BS + 0.8, BS + 0.8, BX, TZ, 0.6);
+  const boardBlob = blob(BS + 0.8, BS + 0.8, BX, TZ, 0.6);
   const deck = new THREE.Group();
   deck.position.set(BX, BT + VT, TZ);
   deck.rotation.y = BROT;
@@ -2025,49 +2070,106 @@ function makeDesk(el) {
   tv.position.set(0, -0.8, -2.15);   /* behind the table; its base is hidden by the table */
   tv.scale.set(3, 3, 1.6);   /* big TV: the screen takes up most of the front */
   stage.add(tv);
-  const grayBody = std(0x9a9ea3, 0.55), grayDark = std(0x5d6165, 0.6), grayBezel = std(0x34373a, 0.5);
-  const slabAt = (w, h, d, r, b, mat, x, y, z) => { const m = new THREE.Mesh(roundedSlab(w, h, d, r, b), mat); m.position.set(x, y, z); tv.add(m); return m; };
-  slabAt(2.1, 1.8, 0.95, 0.22, 0.08, grayBody, 0, 1.0, 0);
-  slabAt(1.6, 1.35, 0.5, 0.2, 0.07, grayDark, 0, 1.0, -0.72);
-  /* antenna */
-  const antBase = new THREE.Mesh(new THREE.SphereGeometry(0.13, 20, 10, 0, Math.PI * 2, 0, Math.PI / 2), grayBezel);
+  /* dark walnut cabinet: a painted grain texture on a boxier body (smaller corners than before) */
+  const tvWoodTex = (() => {
+    const c = document.createElement('canvas'); c.width = 512; c.height = 512;
+    const g = c.getContext('2d');
+    g.fillStyle = '#4a2c19'; g.fillRect(0, 0, 512, 512);
+    for (let i = 0; i < 170; i++) {
+      const y = Math.random() * 512;
+      g.strokeStyle = Math.random() < 0.6 ? 'rgba(22,10,4,' + (0.18 + Math.random() * 0.25) + ')' : 'rgba(150,100,60,' + (0.06 + Math.random() * 0.1) + ')';
+      g.lineWidth = 0.5 + Math.random() * 2.4;
+      g.beginPath(); g.moveTo(0, y);
+      for (let x = 0; x <= 512; x += 32) g.lineTo(x, y + Math.sin(x * 0.015 + i * 1.3) * 4 + (Math.random() - 0.5) * 1.5);
+      g.stroke();
+    }
+    const t = new THREE.CanvasTexture(c);
+    t.wrapS = t.wrapT = THREE.RepeatWrapping;
+    return t;
+  })();
+  const tvWood = new THREE.MeshStandardMaterial({ map: tvWoodTex, roughness: 0.62 }), tvWoodDark = new THREE.MeshStandardMaterial({ map: tvWoodTex, color: 0x9a8a80, roughness: 0.7 });
+  const grayBezel = std(0x34373a, 0.5);
+  const woodUV = geo => {   /* one grain direction on every face (along the width), so the rounded corners show no seams */
+    const P = geo.attributes.position, uv = new Float32Array(P.count * 2);
+    for (let i = 0; i < P.count; i++) { uv[i * 2] = P.getX(i) * 0.5; uv[i * 2 + 1] = (P.getY(i) + P.getZ(i)) * 0.5; }
+    geo.setAttribute('uv', new THREE.BufferAttribute(uv, 2));
+    return geo;
+  };
+  const slabAt = (w, h, d, r, b, mat, x, y, z) => { const m = new THREE.Mesh(woodUV(roundedSlab(w, h, d, r, b)), mat); m.position.set(x, y, z); tv.add(m); return m; };
+  slabAt(2.1, 1.8, 0.95, 0.07, 0.04, tvWood, 0, 1.0, 0);
+  slabAt(1.6, 1.35, 0.5, 0.07, 0.04, tvWoodDark, 0, 1.0, -0.72);
+  /* antenna: a small base and two short ears (one straight, one zig-zag), kept low so nothing gets cut off at the top of the picture */
+  const antBase = new THREE.Mesh(new THREE.SphereGeometry(0.09, 20, 10, 0, Math.PI * 2, 0, Math.PI / 2), grayBezel);
   antBase.position.set(0.1, 1.9, -0.1);
   tv.add(antBase);
   const antMat = std(0x2a2c2e, 0.4, 0.5);
-  [-1, 1].forEach(sd => {   /* two short zig-zag ears: straight pieces that kink back and forth while rising outward */
-    const pts = [[0, 0], [0.1, 0.1], [0.06, 0.2], [0.18, 0.3]].map(q => new THREE.Vector3(0.1 + sd * q[0], 1.95 + q[1], -0.1));
+  [[[0, 0], [-0.1, 0.15]], [[0, 0], [0.07, 0.05], [0.03, 0.1], [0.11, 0.16]]].forEach(ear => {
+    const pts = ear.map(q => new THREE.Vector3(0.1 + q[0], 1.94 + q[1], -0.1));
     for (let i = 1; i < pts.length; i++) {
       const d = pts[i].clone().sub(pts[i - 1]), len = d.length();
-      const piece = new THREE.Mesh(new THREE.CylinderGeometry(0.02, 0.02, len, 6), antMat);
+      const piece = new THREE.Mesh(new THREE.CylinderGeometry(0.014, 0.014, len, 6), antMat);
       piece.position.copy(pts[i - 1]).add(pts[i]).multiplyScalar(0.5);
       piece.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), d.normalize());
       tv.add(piece);
-      const knee = new THREE.Mesh(new THREE.SphereGeometry(i === pts.length - 1 ? 0.036 : 0.022, 10, 8), antMat);
+      const knee = new THREE.Mesh(new THREE.SphereGeometry(i === pts.length - 1 ? 0.026 : 0.017, 10, 8), antMat);
       knee.position.copy(pts[i]);
       tv.add(knee);
     }
   });
-  /* speaker panel + knobs */
-  const spk = (() => {
-    const c = document.createElement('canvas'); c.width = c.height = 256;
-    const g = c.getContext('2d');
-    g.fillStyle = '#4a4d51'; g.fillRect(0, 0, 256, 256);
-    g.fillStyle = '#25272a';
-    for (let y = 24; y < 240; y += 22) g.fillRect(22, y, 212, 9);
-    return new THREE.CanvasTexture(c);
-  })();
-  const spkM = new THREE.Mesh(roundedScreenGeo(0.26, 0.46, 0.07), new THREE.MeshStandardMaterial({ map: spk, roughness: 0.7 }));   /* small rounded speaker panel */
-  spkM.position.set(0.85, 1.42, 0.476);
-  tv.add(spkM);
-  const tvKnobs = [];   /* the two TV knobs are buttons: click one to change the channel */
-  [0.8, 0.6].forEach(y => {
-    const k = new THREE.Mesh(new THREE.CylinderGeometry(0.06, 0.06, 0.07, 24), std(0x2a2c2e, 0.4, 0.3));
-    k.rotation.x = Math.PI / 2;
-    k.position.set(0.85, y, 0.51);
-    tv.add(k);
-    tvKnobs.push(k);
-    hitBox(0.22, 0.22, 0.2, 0.85, y, 0.52, 'tvknob', tv).userData.knob = k;
+  /* four big 3D streaming buttons down the right side of the TV (they replace the two little black knobs). Logo pictures come from CONFIG.streamLogos; until a picture loads the name is written instead. */
+  const panelBack = new THREE.Mesh(roundedScreenGeo(0.36, 1.4, 0.05), std(0x20140c, 0.8));
+  panelBack.position.set(0.85, 1.15, 0.478);
+  tv.add(panelBack);
+  const STREAMS = [
+    { id: 'spotify', name: 'Spotify', lines: ['Spotify'], color: '#1DB954' },
+    { id: 'apple', name: 'Apple Music', lines: ['Apple', 'Music'], color: '#FA243C' },
+    { id: 'youtube', name: 'YouTube', lines: ['YouTube'], color: '#E60000' },
+    { id: 'more', name: 'More', lines: [], color: '#8f98a8' }
+  ];
+  const STREAM_FONT = "'KCStrikerSans', 'Arial Black', sans-serif";
+  const strBtns = [];
+  STREAMS.forEach((s, i) => {
+    const cv = document.createElement('canvas'); cv.width = cv.height = 192;
+    const tex = new THREE.CanvasTexture(cv);
+    tex.anisotropy = 4;
+    const logoUrl = (CONFIG.streamLogos || {})[s.id];
+    if (logoUrl) { s.img = new Image(); s.img.onload = () => s.draw(); s.img.src = logoUrl; }
+    s.draw = () => {
+      const g = cv.getContext('2d'), W = 192;
+      g.clearRect(0, 0, W, W);
+      const rg = g.createRadialGradient(W * 0.4, W * 0.35, 8, W / 2, W / 2, W * 0.62);
+      rg.addColorStop(0, '#ffffff'); rg.addColorStop(1, '#d9d4c8');
+      g.fillStyle = rg; g.beginPath(); g.arc(W / 2, W / 2, W / 2, 0, Math.PI * 2); g.fill();
+      if (s.id === 'more') {   /* the "(...)" more button: three dots, drawn here */
+        g.fillStyle = '#2a2e38';
+        [W * 0.27, W * 0.5, W * 0.73].forEach(x => { g.beginPath(); g.arc(x, W / 2, 15, 0, Math.PI * 2); g.fill(); });
+      } else if (s.img && s.img.complete && s.img.naturalWidth) {
+        const k = Math.min(W * 0.7 / s.img.naturalWidth, W * 0.7 / s.img.naturalHeight), iw = s.img.naturalWidth * k, ih = s.img.naturalHeight * k;
+        g.drawImage(s.img, (W - iw) / 2, (W - ih) / 2, iw, ih);
+      } else {   /* no logo picture yet: write the name */
+        g.fillStyle = s.color; g.textAlign = 'center'; g.textBaseline = 'middle';
+        let px = 44;
+        g.font = px + 'px ' + STREAM_FONT;
+        while (px > 18 && s.lines.some(t => g.measureText(t).width > 140)) { px -= 2; g.font = px + 'px ' + STREAM_FONT; }
+        s.lines.forEach((t, j) => g.fillText(t, W / 2, W / 2 + (j - (s.lines.length - 1) / 2) * (px + 4)));
+      }
+      tex.needsUpdate = true;
+    };
+    s.draw();
+    const grp = new THREE.Group();
+    grp.position.set(0.85, 1.65 - i * 0.33, 0.48);
+    tv.add(grp);
+    const base = new THREE.Mesh(new THREE.CylinderGeometry(0.13, 0.145, 0.07, 36), std(new THREE.Color(s.color).getHex(), 0.35, 0.25));
+    base.rotation.x = Math.PI / 2; base.position.z = 0.035;
+    grp.add(base);
+    const face = new THREE.Mesh(new THREE.CircleGeometry(0.108, 36), new THREE.MeshStandardMaterial({ map: tex, roughness: 0.4 }));
+    face.position.z = 0.0712;
+    grp.add(face);
+    grp.userData.press = 0;
+    strBtns.push(grp);
+    hitBox(0.34, 0.34, 0.25, 0.85, 1.65 - i * 0.33, 0.55, 'stream', tv).userData = { tag: 'stream', btn: grp, idx: i };
   });
+  if (document.fonts && document.fonts.load) document.fonts.load("44px 'KCStrikerSans'").then(() => STREAMS.forEach(s => s.draw && s.draw())).catch(() => {});
   /* square screen */
   slabAt(1.66, 1.66, 0.08, 0.2, 0.025, grayBezel, -0.18, 1.0, 0.475);   /* rounded screen bezel */
   const screenHolder = new THREE.Group();   /* sets the screen size (a little bigger than 1.35); screenGrp inside is what the click animation squashes */
@@ -2081,7 +2183,7 @@ function makeDesk(el) {
   const scrGeo = roundedScreenGeo(1.35, 1.35, 0.15);   /* rounded screen corners, shared by the picture and the glass layers */
   const screen = new THREE.Mesh(scrGeo, screenMat);
   screenGrp.add(screen);
-  new THREE.TextureLoader().load(CONFIG.tvImage, tex => {
+  const tvImgP = new Promise(res => new THREE.TextureLoader().load(CONFIG.tvImage, tex => {
     const img = tex.image, a = img && img.width && img.height ? img.width / img.height : 1;
     if (a > 1) { tex.repeat.x = 1 / a; tex.offset.x = (1 - 1 / a) / 2; }
     else if (a < 1) { tex.repeat.y = a; tex.offset.y = (1 - a) / 2; }
@@ -2090,7 +2192,8 @@ function makeDesk(el) {
     screenMat.needsUpdate = true;
     const bt = tex.clone(); bt.needsUpdate = true; bt.anisotropy = 4;   /* the same picture on top of the board */
     boardTop.map = bt; boardTop.color.setHex(0xe0e0e0); boardTop.needsUpdate = true;
-  }, undefined, () => {});
+    res();
+  }, undefined, () => res()));
   const vig = (() => {
     const c = document.createElement('canvas'); c.width = c.height = 128;
     const g = c.getContext('2d');
@@ -2197,7 +2300,7 @@ function makeDesk(el) {
   });
 
   /* ---------- channel change: static, then a random lore drop (a picture for about 3 seconds, a video until it ends), then back to the game screen.
-     Triggered by the die landing or a click on a TV knob. Click the lore to be asked if you want to save it.
+     Triggered by the die landing. Click the lore to be asked if you want to save it.
      Every drop shows once before any repeats. Videos download quietly in the background after the page loads (thin bar along the bottom of the screen). ---------- */
   const staticCanvas = document.createElement('canvas');
   staticCanvas.width = staticCanvas.height = 96;
@@ -2269,11 +2372,11 @@ function makeDesk(el) {
   }
   if (document.fonts && document.fonts.load) Promise.all([document.fonts.load("36px 'KCStrikerSans'"), document.fonts.load("96px 'KCOraleSans'"), document.fonts.load("20px 'KCPelletierTyped'")]).then(() => { if (secret) drawSecret(); }).catch(() => {});
   function showSecretTV() {
-    endLore(); drawSecret();
+    hideInfoTV(); endLore(); drawSecret();
     secM.visible = true; jesse.visible = false; secret = performance.now();
     Sound.oneUp();
   }
-  function hideSecretTV() { if (!secret) return; secret = 0; secM.visible = false; jesse.visible = !menuOn; }
+  function hideSecretTV() { if (!secret) return; secret = 0; secM.visible = false; jesse.visible = !menuOn && !info; }
   function secretAt(e) {   /* '' (not on it), 'dl' (the download button) or 'panel' (anywhere else on the secret screen) */
     if (!secret) return '';
     const r = el.getBoundingClientRect();
@@ -2380,11 +2483,11 @@ function makeDesk(el) {
     else if (lore.tex) lore.tex.dispose();
     loreMat.map = null; loreMat.needsUpdate = true;
     loreM.visible = false; loreBg.visible = false; staticM.visible = false; titleM.visible = false;
-    jesse.visible = !menuOn && !secret;
+    jesse.visible = !menuOn && !secret && !info;
     lore = null;
   }
   function startLore() {
-    if (menuOn || v.tvT || v.navigated || secret) return;
+    if (menuOn || v.tvT || v.navigated || secret || info) return;
     const item = pickLore();
     if (!item) return;
     endLore();
@@ -2416,6 +2519,7 @@ function makeDesk(el) {
   }
   function loreTick(now) {   /* called every frame */
     if (secret && now - secret > 6000) hideSecretTV();
+    if (info) { if (now - info > 6000) hideInfoTV(); else if (now - infoBlinkT > 380) { infoBlinkT = now; infoBlink = !infoBlink; drawInfo(); } }
     const bar = vidLoading && !menuOn;
     loadM.visible = bar;
     if (bar) loadM.scale.x = Math.max(0.01, (vidDone + vidFrac) / vidNames.length);
@@ -2478,11 +2582,11 @@ function makeDesk(el) {
 
   /* ---------- little radio, on the table next to the board: click for the song, drag the knob for volume ---------- */
   const radio = new THREE.Group();
-  radio.position.set(2.2, VT, 0.9);   /* beside the record, not on it */
-  radio.rotation.y = -0.25;
-  radio.scale.setScalar(1.1);
+  radio.position.set(2.25, VT, -0.5);   /* back right corner, behind the record */
+  radio.rotation.y = -0.15;
+  radio.scale.setScalar(1.0);
   stage.add(radio);
-  blob(1.9, 1.0, 2.2, 0.95, 0.7).position.y = VT + 0.004;
+  const radioBlob = blob(1.8, 0.9, 2.25, -0.5, 0.7); radioBlob.position.y = VT + 0.004;
   const cream = std(0xb09a72, 0.55), brown = std(0x5a3a26, 0.75), chrome = std(0xa8adb3, 0.3, 0.6);
   const rBody = new THREE.Mesh(roundedSlab(1.3, 0.78, 0.5, 0.12, 0.05), cream);
   rBody.position.y = 0.45; radio.add(rBody);
@@ -2512,12 +2616,12 @@ function makeDesk(el) {
   hitBox(1.4, 0.95, 0.65, 0, 0.47, 0, 'radio', radio);
   hitBox(0.5, 0.5, 0.3, 0.3, 0.32, 0.3, 'knob', radio);
 
-  /* ---------- little joystick on the table in front of the radio, wired to the TV: tap it to open the game start screen (tapping the TV still works too) ---------- */
+  /* ---------- little joystick on the table at the front right, wired to the TV: tap it to open the game start screen (tapping the TV still works too) ---------- */
   const joyG = new THREE.Group();
-  joyG.position.set(2.15, 0, 1.95);
+  joyG.position.set(2.35, 0, 2.05);
   joyG.rotation.y = -0.35;
   stage.add(joyG);
-  blob(1.0, 0.8, 2.15, 1.98, 0.7);
+  const joyBlob = blob(1.0, 0.8, 2.35, 2.08, 0.7);
   const joyBase = new THREE.Mesh(new THREE.BoxGeometry(0.72, 0.12, 0.5), std(0x2f3136, 0.55, 0.2)); joyBase.position.y = 0.06; joyG.add(joyBase);
   const joyBtn = new THREE.Mesh(new THREE.CylinderGeometry(0.07, 0.08, 0.05, 20), std(0xe8c13a, 0.4)); joyBtn.position.set(0.24, 0.145, 0.08); joyG.add(joyBtn);
   const joyStick = new THREE.Group(); joyStick.position.set(-0.12, 0.12, 0); joyG.add(joyStick);
@@ -2525,12 +2629,62 @@ function makeDesk(el) {
   const joyShaft = new THREE.Mesh(new THREE.CylinderGeometry(0.03, 0.03, 0.3, 10), chrome); joyShaft.position.y = 0.15; joyStick.add(joyShaft);
   const joyBall = new THREE.Mesh(new THREE.SphereGeometry(0.115, 20, 14), std(0xd8302a, 0.35)); joyBall.position.y = 0.34; joyStick.add(joyBall);
   hitBox(0.9, 0.7, 0.7, 0, 0.3, 0, 'joystick', joyG);
-  const joyCable = noHit(new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3([[2.45, 0.05, 1.9], [2.8, 0.03, 1.7], [2.95, 0.03, 1.2], [2.95, 0.03, 0], [2.9, 0.03, -0.95], [2.9, -0.3, -1.2]].map(q => new THREE.Vector3(q[0], q[1], q[2]))), 40, 0.028, 6, false), std(0x151517, 0.6)));   /* the wire runs along the right edge of the table and over the back toward the TV */
+  const joyCable = noHit(new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3([[2.65, 0.05, 2.0], [2.95, 0.03, 1.75], [2.97, 0.03, 1.2], [2.97, 0.03, 0], [2.93, 0.03, -0.95], [2.9, -0.3, -1.2]].map(q => new THREE.Vector3(q[0], q[1], q[2]))), 40, 0.028, 6, false), std(0x151517, 0.6)));   /* the wire runs along the right edge of the table and over the back toward the TV */
   stage.add(joyCable);
   let joyT = 0;
 
-  /* ---------- cream vinyl record lying on the table, poking out from under the board. Hover: it slides out a little. Click: it wiggles, then the streaming sheet opens. ---------- */
-  const VR = 1.45, VX = BX + 1.0, VZ = TZ + 0.1;
+  /* ---------- under the table: the how-to sheet (tap it for the How to Play pictures) and a notebook with a pen (tap it to jump down to the lyrics) ---------- */
+  const howG = new THREE.Group();
+  howG.rotation.order = 'YXZ';
+  howG.rotation.set(0.07, 0.24, 0.03);
+  howG.position.set(-1.5, FLOOR + 0.12, 2.15);
+  stage.add(howG);
+  const howEdge = std(0xe9e1cc, 0.8), howTop = new THREE.MeshStandardMaterial({ color: 0xe6e6e6, roughness: 0.75 });
+  const howMesh = new THREE.Mesh(new THREE.BoxGeometry(1.7, 0.03, 1.7), [howEdge, howEdge, howTop, howEdge, howEdge, howEdge]);   /* cardstock thick */
+  howG.add(howMesh);
+  const howTexP = new Promise(res => new THREE.TextureLoader().load(CONFIG.howImage, tex => {
+    howTop.map = tex; howTop.needsUpdate = true;
+    const a = tex.image && tex.image.width && tex.image.height ? tex.image.width / tex.image.height : 1;
+    howMesh.scale.set(a < 1 ? a : 1, 1, a > 1 ? 1 / a : 1);   /* the sheet takes the picture's real shape */
+    res();
+  }, undefined, () => res()));
+  const howBlob = blob(2.1, 2.1, -1.5, 2.15, 0.55); howBlob.position.y = FLOOR + 0.004;
+  hitBox(1.7, 0.3, 1.7, 0, 0.05, 0, 'howto', howG);
+
+  const noteG = new THREE.Group();
+  noteG.rotation.y = -0.32;
+  noteG.position.set(1.3, FLOOR, 2.2);
+  stage.add(noteG);
+  const noteCv = document.createElement('canvas'); noteCv.width = 256; noteCv.height = 336;
+  const noteTex = new THREE.CanvasTexture(noteCv);
+  const drawNote = () => {
+    const g = noteCv.getContext('2d'), w = 256, h = 336;
+    g.fillStyle = '#5a1f2a'; g.fillRect(0, 0, w, h);
+    g.strokeStyle = 'rgba(255,255,255,0.07)'; g.lineWidth = 2;
+    for (let y = 8; y < h; y += 9) { g.beginPath(); g.moveTo(0, y); g.lineTo(w, y + (y % 3)); g.stroke(); }
+    g.fillStyle = '#efe4c6'; g.fillRect(48, 64, 168, 84);
+    g.strokeStyle = '#3a2a1c'; g.lineWidth = 3; g.strokeRect(54, 70, 156, 72);
+    g.fillStyle = '#3a2a1c'; g.textAlign = 'center'; g.textBaseline = 'middle';
+    g.font = "bold 34px 'KCPelletierTyped', 'Courier New', monospace"; g.fillText('LYRICS', 132, 108);
+    noteTex.needsUpdate = true;
+  };
+  drawNote();
+  if (document.fonts && document.fonts.load) document.fonts.load("34px 'KCPelletierTyped'").then(drawNote).catch(() => {});
+  const noteSide = std(0x4a1822, 0.8), notePaper = std(0xf0e8d0, 0.9);
+  const noteBox = new THREE.Mesh(new THREE.BoxGeometry(1.0, 0.11, 1.3), [noteSide, noteSide, new THREE.MeshStandardMaterial({ map: noteTex, roughness: 0.7 }), noteSide, noteSide, noteSide]);
+  noteBox.position.y = 0.055; noteG.add(noteBox);
+  const pages = new THREE.Mesh(new THREE.BoxGeometry(0.96, 0.07, 1.26), notePaper); pages.position.set(0.05, 0.055, 0); noteG.add(pages);
+  const spine = new THREE.Mesh(new THREE.BoxGeometry(0.07, 0.115, 1.3), std(0x2e0f15, 0.7)); spine.position.set(-0.465, 0.057, 0); noteG.add(spine);
+  const band = new THREE.Mesh(new THREE.BoxGeometry(0.035, 0.12, 1.32), std(0x151517, 0.6)); band.position.set(0.3, 0.057, 0); noteG.add(band);
+  const pen = new THREE.Group(); pen.position.set(-0.02, 0.15, 0.12); pen.rotation.y = 0.6; noteG.add(pen);
+  const penBody = new THREE.Mesh(new THREE.CylinderGeometry(0.036, 0.036, 0.9, 14), std(0x1f3f9e, 0.35, 0.2)); penBody.rotation.z = Math.PI / 2; pen.add(penBody);
+  const penTip = new THREE.Mesh(new THREE.ConeGeometry(0.036, 0.12, 14), std(0xc9ced4, 0.3, 0.7)); penTip.rotation.z = Math.PI / 2; penTip.position.x = 0.5; pen.add(penTip);
+  const penClip = new THREE.Mesh(new THREE.BoxGeometry(0.28, 0.012, 0.025), std(0xd8b04a, 0.3, 0.7)); penClip.position.set(-0.28, 0.04, 0); pen.add(penClip);
+  const noteBlob = blob(1.5, 1.8, 1.3, 2.2, 0.55); noteBlob.position.y = FLOOR + 0.004;
+  hitBox(1.1, 0.4, 1.4, 0, 0.12, 0, 'notebook', noteG);
+
+  /* ---------- cream vinyl record lying on the table, poking out from under the board (its red center label shows a little). Hover: it slides out a little. Click: it wiggles, then the buy popup opens. ---------- */
+  const VR = 1.45, VX = BX + 1.45, VZ = TZ + 0.1;
   const vinylTex = mkTex(256, 256, (g, w, h) => {
     g.fillStyle = '#e6d6a6'; g.fillRect(0, 0, w, h);
     g.strokeStyle = 'rgba(90,60,30,0.10)'; g.lineWidth = 1;
@@ -2550,6 +2704,17 @@ function makeDesk(el) {
   const streamDlg = document.getElementById('streamDlg');
   streamDlg.addEventListener('click', e => { if (e.target === streamDlg) streamDlg.close(); });
   document.getElementById('streamOk').addEventListener('click', () => streamDlg.close());
+  function showSoon(title, msg) {   /* the shared "coming soon" popup */
+    document.getElementById('streamTitle').textContent = title;
+    document.getElementById('streamMsg').textContent = msg;
+    if (!streamDlg.open) { try { streamDlg.showModal(); } catch (x) { streamDlg.setAttribute('open', ''); } }
+  }
+  function openStream(i) {   /* a streaming button: opens its link, or a placeholder until the link is live */
+    const s = STREAMS[i], url = (CONFIG.streamLinks || {})[s.id];
+    if (url) window.open(url, '_blank', 'noopener');
+    else if (s.id === 'more') showSoon('More ways to listen', 'More links coming soon.');
+    else showSoon(s.name, 'The ' + s.name + ' link is coming soon.');
+  }
   let hoverGroup = null, glowItems = null, knobDrag = null, knobMoved = 0, ledOn = false, lastDie = 0, lastCoin = '', coinLand = 0, dieLand = 0;
   const setKnob = vol => { knob.rotation.z = 2.35 - vol * 4.7; };   /* quiet = turned left, loud = turned right */
   setKnob(Sound.getVolume());
@@ -2573,7 +2738,7 @@ function makeDesk(el) {
   place(0);
 
   /* ---------- the crew ---------- */
-  const crew = [];
+  const crew = [], crewBlobs = [];
   ['jesse', 'marco', 'grant'].forEach((id, i) => {
     const idx = Math.max(0, PEOPLE.findIndex(x => x.id === id));
     const h = headFor(idx, marble().clone());   /* its own material copy, so only the hovered bust glows */
@@ -2581,7 +2746,7 @@ function makeDesk(el) {
     h.position.set((i - 1) * 0.78, 0, -0.7 + (i === 1 ? 0.1 : 0));
     deck.add(h);
     crew.push(h);
-    blob(0.96, 0.76, h.position.x, h.position.z, 0.8, deck);
+    crewBlobs.push(blob(0.96, 0.76, h.position.x, h.position.z, 0.8, deck));
     hitBox(0.8, 1.15, 0.72, h.position.x, 0.57, h.position.z, 'bust', deck).userData.bust = h;   /* click target sits on the stage, because the bust group is cleared when the real STL loads */
   });
 
@@ -2651,6 +2816,173 @@ function makeDesk(el) {
     Sound.dice();
   }
 
+  const goTo = id => { const t = document.getElementById(id); if (t) t.scrollIntoView({ behavior: REDUCE ? 'auto' : 'smooth', block: 'start' }); };
+
+  /* ---------- the limited-edition "infomercial": tapping a crew member spins them and shows an order ad on the TV for 6 seconds. Tap the ad to jump to the player pieces. ---------- */
+  const INFO_PX = 512;
+  const infoCv = document.createElement('canvas'); infoCv.width = infoCv.height = INFO_PX;
+  const infoTex = new THREE.CanvasTexture(infoCv);
+  const infoM = new THREE.Mesh(scrGeo, new THREE.MeshBasicMaterial({ map: infoTex }));
+  infoM.position.z = 0.1305; infoM.renderOrder = 9; infoM.visible = false;
+  screenGrp.add(infoM);
+  let info = 0, infoBlink = true, infoBlinkT = 0;
+  const INFO_FONT = "'KCStrikerSans', 'Arial Black', sans-serif", INFO_HEAD = "'KCOraleSans', 'Arial Black', sans-serif";
+  function drawInfo() {
+    const g = infoCv.getContext('2d'), W = INFO_PX;
+    const outlined = (txt, x, y, fill) => { g.lineWidth = 8; g.lineJoin = 'round'; g.strokeStyle = '#1a0a05'; g.strokeText(txt, x, y); g.fillStyle = fill; g.fillText(txt, x, y); };
+    g.fillStyle = '#ffd23a'; g.fillRect(0, 0, W, W);
+    g.save(); g.translate(W / 2, W / 2 + 10);   /* sunburst */
+    for (let i = 0; i < 24; i++) { g.rotate(Math.PI * 2 / 24); g.fillStyle = i % 2 ? '#ff4d2e' : '#ffb21a'; g.beginPath(); g.moveTo(0, 0); g.lineTo(520, -62); g.lineTo(520, 62); g.closePath(); g.fill(); }
+    g.restore();
+    g.strokeStyle = '#1a0a05'; g.lineWidth = 10; g.strokeRect(5, 5, W - 10, W - 10);
+    g.textAlign = 'center'; g.textBaseline = 'middle';
+    g.save(); g.translate(W / 2, 82); g.rotate(-0.05);   /* banner */
+    g.fillStyle = '#d4181f'; g.fillRect(-232, -44, 464, 88); g.strokeStyle = '#1a0a05'; g.lineWidth = 5; g.strokeRect(-232, -44, 464, 88);
+    fitText(g, 'LIMITED EDITION', 420, 60, INFO_HEAD); g.fillStyle = '#fff'; g.fillText('LIMITED EDITION', 0, 4);
+    g.restore();
+    fitText(g, 'COLLECT THE BAND', 440, 62, INFO_FONT); outlined('COLLECT THE BAND', W / 2, 188, '#ffffff');
+    g.font = "30px " + INFO_FONT; outlined('3D PRINTED PLAYER PIECES', W / 2, 242, '#fff3b0');
+    g.save(); g.translate(140, 336); g.rotate(-0.12); g.font = "44px " + INFO_FONT; outlined('BUT WAIT!', 0, 0, '#ffffff'); g.restore();
+    g.save(); g.translate(384, 336); g.rotate(0.14);   /* price burst */
+    g.fillStyle = '#fff'; g.strokeStyle = '#d4181f'; g.lineWidth = 6; g.beginPath();
+    for (let i = 0; i < 24; i++) { const a = i / 24 * Math.PI * 2, r = i % 2 ? 62 : 80; g.lineTo(Math.cos(a) * r, Math.sin(a) * r); }
+    g.closePath(); g.fill(); g.stroke();
+    g.fillStyle = '#d4181f'; g.font = "20px " + INFO_FONT; g.fillText('FROM', 0, -34); g.font = "52px " + INFO_FONT; g.fillText('$6', 0, 2); g.font = "20px " + INFO_FONT; g.fillText('EACH', 0, 38);
+    g.restore();
+    const bx = 76, by = 394, bw = 360, bh = 66;   /* blinking order button */
+    g.fillStyle = infoBlink ? '#2bd45c' : '#ffe14a'; g.strokeStyle = '#1a0a05'; g.lineWidth = 5;
+    g.beginPath(); g.moveTo(bx + 34, by); g.lineTo(bx + bw - 34, by); g.arc(bx + bw - 34, by + 34, 34, -Math.PI / 2, Math.PI / 2); g.lineTo(bx + 34, by + bh); g.arc(bx + 34, by + 34, 34, Math.PI / 2, Math.PI * 1.5); g.closePath(); g.fill(); g.stroke();
+    fitText(g, 'ORDER NOW!', 300, 46, INFO_FONT); g.fillStyle = '#1a0a05'; g.fillText('ORDER NOW!', W / 2, by + bh / 2 + 3);
+    g.fillStyle = '#1a0a05'; g.font = "18px 'KCPelletierTyped', 'Courier New', monospace"; g.fillText('while supplies last - tap to shop', W / 2, 474);
+    infoTex.needsUpdate = true;
+  }
+  if (document.fonts && document.fonts.load) Promise.all([document.fonts.load("46px 'KCStrikerSans'"), document.fonts.load("60px 'KCOraleSans'"), document.fonts.load("18px 'KCPelletierTyped'")]).then(() => { if (info) drawInfo(); }).catch(() => {});
+  function showInfoTV() {
+    if (menuOn || v.tvT || v.navigated || intro.busy) return;
+    hideSecretTV(); endLore();
+    infoBlink = true; infoBlinkT = performance.now(); drawInfo();
+    infoM.visible = true; jesse.visible = false; info = performance.now();
+    Sound.oneUp();
+  }
+  function hideInfoTV() { if (!info) return; info = 0; infoM.visible = false; jesse.visible = !menuOn && !secret && !lore; }
+  function infoAt(e) {   /* is the pointer on the ad? */
+    if (!info) return false;
+    const r = el.getBoundingClientRect();
+    ndc.set(((e.clientX - r.left) / r.width) * 2 - 1, -((e.clientY - r.top) / r.height) * 2 + 1);
+    ray.setFromCamera(ndc, v.camera);
+    return ray.intersectObject(infoM, false).length > 0;
+  }
+
+  /* ---------- page-load intro: the TV shows a LOADING screen with a Fearjoy coin spinning on its edge while the busts, the picture, the sounds and the how-to pictures download.
+     When everything is ready the TV changes channel to the game screen and everything on the table drops into place. ---------- */
+  const intro = { phase: 'done', busy: false, t0: 0, t1: 0, shown: 0 };
+  const drops = [];
+  const LD_PX = 512, LD_STRIKER = "'KCStrikerSans', 'Arial Black', sans-serif";
+  const ldCv = document.createElement('canvas'); ldCv.width = ldCv.height = LD_PX;
+  const ldTex = new THREE.CanvasTexture(ldCv);
+  const ldM = new THREE.Mesh(scrGeo, new THREE.MeshBasicMaterial({ map: ldTex }));
+  ldM.position.z = 0.1255; ldM.renderOrder = 5; ldM.visible = false;
+  screenGrp.add(ldM);
+  const ldCoinG = new THREE.Group();   /* flattened front to back, so the coin reads as a picture on the screen glass (scanlines and glow go over it) */
+  ldCoinG.position.set(0, 0.03, 0.128); ldCoinG.scale.set(1, 1, 0.04); ldCoinG.visible = false;
+  screenGrp.add(ldCoinG);
+  const ldSpin = new THREE.Group(); ldCoinG.add(ldSpin);
+  const ldFlip = new THREE.Group(); ldFlip.rotation.x = Math.PI / 2; ldSpin.add(ldFlip);
+  const ldCoin = makeCoin(true, { base: '#e0b878', ink: '#6b4420', color: 0xe0b878, metalness: 0.25, roughness: 0.5 });
+  ldCoin.scale.setScalar(0.95);
+  ldCoin.material[1].map.center.set(0.5, 0.5); ldCoin.material[1].map.rotation = COIN_ROT_TOP;
+  ldCoin.material[2].map.center.set(0.5, 0.5); ldCoin.material[2].map.rotation = COIN_ROT_BOT;
+  ldCoin.material.forEach(m => { m.depthTest = false; });
+  ldCoin.renderOrder = 6;
+  ldFlip.add(ldCoin);
+  function drawLoading(frac, now) {
+    const g = ldCv.getContext('2d'), W = LD_PX;
+    g.fillStyle = '#070b1c'; g.fillRect(0, 0, W, W);
+    g.strokeStyle = 'rgba(90,140,255,0.14)'; g.lineWidth = 1;
+    for (let i = 0; i <= W; i += 32) { g.beginPath(); g.moveTo(i, 0); g.lineTo(i, W); g.stroke(); g.beginPath(); g.moveTo(0, i); g.lineTo(W, i); g.stroke(); }
+    g.strokeStyle = '#ffd36b'; g.lineWidth = 6; g.strokeRect(24, 24, W - 48, W - 48);
+    g.strokeStyle = '#ff7a59'; g.lineWidth = 2; g.strokeRect(38, 38, W - 76, W - 76);
+    g.textAlign = 'center'; g.textBaseline = 'middle';
+    fitText(g, 'FEARJOY', 380, 64, "'KCOraleSans', 'Arial Black', sans-serif");
+    g.fillStyle = '#ff7a59'; g.fillText('FEARJOY', W / 2 + 3, 94); g.fillStyle = '#ffffff'; g.fillText('FEARJOY', W / 2, 91);
+    g.font = '40px ' + LD_STRIKER; g.fillStyle = '#ffd36b'; g.textAlign = 'left';
+    const w3 = g.measureText('LOADING...').width;
+    g.fillText('LOADING' + '.'.repeat(1 + Math.floor(now / 350) % 3), (W - w3) / 2, 372);
+    g.strokeStyle = '#ffd36b'; g.lineWidth = 3; g.strokeRect(96, 400, 320, 26);
+    g.fillStyle = '#64ff8f'; g.fillRect(100, 404, Math.max(2, 312 * frac), 18);
+    g.textAlign = 'center';
+    if (Math.floor(now / 500) % 2 === 0) { g.fillStyle = '#7fb0ff'; g.font = "20px 'KCPelletierTyped', 'Courier New', monospace"; g.fillText('INSERT COIN', W / 2, 462); }
+    ldTex.needsUpdate = true;
+  }
+  function wrapDrop(objs, delay, H, shadows, amp) {   /* each thing sits in its own group, which is what falls (so nothing else about it has to change) */
+    const par = objs[0].parent, g = new THREE.Group();
+    par.add(g);
+    objs.forEach(o => g.add(o));
+    const d = { g, delay, H, sh: shadows || [], amp: amp == null ? 0.1 : amp, landed: false };
+    drops.push(d);
+    return d;
+  }
+  let staticOn = false, introTasks = [], ldDraw = 0;
+  if (!REDUCE) {
+    intro.phase = 'load'; intro.busy = true;
+    wrapDrop([vinylG], 0.05, 6, [], 0.05);
+    wrapDrop([board, deck], 0.2, 7, [boardBlob], 0.12);
+    wrapDrop([radio], 0.45, 6, [radioBlob], 0.1);
+    wrapDrop([joyG], 0.55, 6, [joyBlob, joyCable], 0.1);
+    crew.forEach((h, i) => wrapDrop([h], 0.9 + i * 0.1, 5, [crewBlobs[i]], 0.12));
+    wrapDrop([dieRoot], 1.2, 5, [dieShadow], 0.14);
+    wrapDrop([coinRoot], 1.3, 4, [coinShadow], 0.12);
+    wrapDrop([howG], 0.85, 0.7, [howBlob], 0.04);
+    wrapDrop([noteG], 0.95, 0.7, [noteBlob], 0.04);
+    drops.forEach(d => { d.g.visible = false; d.sh.forEach(s => { s.visible = false; }); });
+    jesse.visible = false; ldM.visible = true; ldCoinG.visible = true;
+    drawLoading(0, 0);
+    const track = (p, ms) => {   /* every download counts, but none can hold the intro for more than 8 seconds */
+      const t = { done: false };
+      introTasks.push(t);
+      Promise.race([Promise.resolve(p), new Promise(r => setTimeout(r, ms || 8000))]).catch(() => {}).then(() => { t.done = true; });
+    };
+    track(tvImgP); track(howTexP); track(kickLoads(v)); track(Sound.whenLoaded());
+    track(document.fonts && document.fonts.load ? Promise.all([document.fonts.load("64px 'KCOraleSans'"), document.fonts.load("40px 'KCStrikerSans'"), document.fonts.load("20px 'KCPelletierTyped'")]) : null);
+    track(new Promise(res => { const im = new Image(); im.onload = im.onerror = () => res(); im.src = '/images/how-to-credits.png'; }));
+  }
+  function startDrop(now) {   /* channel change to the game screen + everything drops */
+    intro.phase = 'drop'; intro.t1 = now;
+    ldM.visible = false; ldCoinG.visible = false;
+    staticM.visible = true; staticOn = true;
+  }
+  function introTick(now) {
+    if (!intro.t0) intro.t0 = now;
+    if (intro.phase === 'load') {
+      const done = introTasks.filter(x => x.done).length, frac = done / introTasks.length;
+      intro.shown += (frac - intro.shown) * 0.1;
+      ldSpin.rotation.y = now * 0.0018;   /* a little faster than the coin on the table */
+      if (now - ldDraw > 110) { ldDraw = now; drawLoading(intro.shown, now); }
+      if ((done === introTasks.length && now - intro.t0 > 1700) || now - intro.t0 > 9500) startDrop(now);
+      return;
+    }
+    const sec = (now - intro.t1) / 1000;
+    if (staticOn) {
+      if (sec > 0.46) { staticOn = false; staticM.visible = false; jesse.visible = !menuOn && !secret && !info && !lore; }
+      else drawStatic();
+    }
+    drops.forEach(d => {
+      const e = sec - d.delay;
+      if (e < 0) return;
+      d.g.visible = true;
+      const T = 0.34 + d.H * 0.045;
+      if (e < T) d.g.position.y = d.H * (1 - (e / T) * (e / T));   /* falls, speeding up */
+      else {
+        d.g.position.y = bounceAt((e - T) * 1000, d.amp);
+        if (!d.landed) { d.landed = true; d.sh.forEach(s => { s.visible = true; }); }
+      }
+    });
+    if (sec > 2.3) {
+      drops.forEach(d => { d.g.visible = true; d.g.position.y = 0; d.sh.forEach(s => { s.visible = true; }); });
+      intro.phase = 'done'; intro.busy = false;
+    }
+  }
+
   /* a 3 on the die and JOY on the coin (both from real rolls and flips) unlock the secret download: THREEJOY, shown on the TV screen */
   function checkSecret() { if (lastDie === 3 && lastCoin === 'JOY' && !menuOn && !v.tvT) { lastDie = 0; lastCoin = ''; showSecretTV(); } }
 
@@ -2673,9 +3005,11 @@ function makeDesk(el) {
   }
   el.addEventListener('pointerdown', e => {
     knobMoved = 0;
+    if (intro.busy) return;
     if (pick(e) === 'knob') { knobDrag = { x0: e.clientX, y0: e.clientY, v0: Sound.getVolume() }; try { el.setPointerCapture(e.pointerId); } catch (x) {} }
   });
   el.addEventListener('pointermove', e => {
+    if (intro.busy) { el.style.cursor = 'default'; hoverGroup = null; return; }
     if (knobDrag) {   /* turning the volume knob: right or up = louder, left or down = quieter (diagonal counts too) */
       const d = (e.clientX - knobDrag.x0) - (e.clientY - knobDrag.y0);
       knobMoved = Math.max(knobMoved, Math.abs(d));
@@ -2683,6 +3017,7 @@ function makeDesk(el) {
       return;
     }
     if (secret && secretAt(e)) { el.style.cursor = 'var(--hand)'; hoverGroup = null; return; }
+    if (info && infoAt(e)) { el.style.cursor = 'var(--hand)'; hoverGroup = null; return; }
     if (menuOn && !v.tvT) {   /* retro menu: hover picks a choice and the cursor turns into the pixel arrow */
       const o = menuAt(e);
       if (o) { if (o !== menuSel) { menuSel = o; menuBlink = true; menuBlinkT = performance.now(); drawMenu(); Sound.slide(); } el.style.cursor = MENU_CURSOR; hoverGroup = null; return; }
@@ -2690,15 +3025,17 @@ function makeDesk(el) {
     if (loreAt(e)) { el.style.cursor = 'var(--hand)'; hoverGroup = null; return; }   /* a lore picture is on the TV: click it to save it */
     const tag = pick(e);
     el.style.cursor = tag && !(menuOn && tag === 'tv') ? 'var(--hand)' : 'default';
-    hoverGroup = tag === 'tvknob' ? pickObj.userData.knob : tag === 'tv' ? (menuOn ? null : tv) : tag === 'bust' ? pickObj.userData.bust : tag === 'coin' ? coinRoot : tag === 'die' ? dieRoot : tag === 'vinyl' ? vinylG : tag === 'joystick' ? joyG : tag === 'radio' ? radio : tag === 'knob' ? knob : null;
+    hoverGroup = tag === 'stream' ? pickObj.userData.btn : tag === 'howto' ? howG : tag === 'notebook' ? noteG : tag === 'tv' ? (menuOn ? null : tv) : tag === 'bust' ? pickObj.userData.bust : tag === 'coin' ? coinRoot : tag === 'die' ? dieRoot : tag === 'vinyl' ? vinylG : tag === 'joystick' ? joyG : tag === 'radio' ? radio : tag === 'knob' ? knob : null;
   });
   const endKnob = () => { knobDrag = null; };
   el.addEventListener('pointerup', endKnob);
   el.addEventListener('pointercancel', endKnob);
   el.addEventListener('lostpointercapture', endKnob);
   el.addEventListener('pointerleave', () => { hoverGroup = null; });
-  function openTvMenu() { if (menuOn || v.tvT || v.navigated) return; hideSecretTV(); endLore(); Sound.oneUp(); v.tvMode = 'open'; v.tvSwapped = false; v.tvT = performance.now(); }
+  function openTvMenu() { if (menuOn || v.tvT || v.navigated || intro.busy) return; hideSecretTV(); hideInfoTV(); endLore(); Sound.oneUp(); v.tvMode = 'open'; v.tvSwapped = false; v.tvT = performance.now(); }
   el.addEventListener('click', e => {
+    if (intro.busy) return;
+    if (info && infoAt(e)) { hideInfoTV(); goTo('kits'); return; }
     if (secret) { const o = secretAt(e); if (o) { if (o === 'dl') downloadSong(); hideSecretTV(); return; } }
     if (menuOn && !v.tvT) { const o = menuAt(e); if (o) { if (o === 'start') startGame(); else closeMenu(); return; } }
     if (loreAt(e)) { openLoreDlg(); return; }
@@ -2708,17 +3045,20 @@ function makeDesk(el) {
     else if (tag === 'bust') {
       pickObj.userData.bust.userData.spin = performance.now();
       Sound.slide();
+      showInfoTV();
     }
     else if (tag === 'vinyl') {
       vinylG.userData.wig = performance.now();
       Sound.slide();
-      setTimeout(() => { if (!streamDlg.open) { try { streamDlg.showModal(); } catch (x) { streamDlg.setAttribute('open', ''); } } }, REDUCE ? 0 : 650);
+      setTimeout(() => { if (CONFIG.vinylUrl) window.open(CONFIG.vinylUrl, '_blank', 'noopener'); else showSoon('The vinyl', 'The record is coming soon. The buy link will be right here.'); }, REDUCE ? 0 : 650);
     }
     else if (tag === 'radio') Sound.toggleRadio();
     else if (tag === 'knob') {   /* a plain tap on the knob steps the volume; dragging turns it */
       if (knobMoved < 5) { const cur = Sound.getVolume(); setKnob(Sound.setVolume(cur >= 0.99 ? 0 : Math.min(1, Math.round(cur * 4) / 4 + 0.25))); }
     }
-    else if (tag === 'tvknob') { pickObj.userData.knob.userData.press = performance.now(); startLore(); }
+    else if (tag === 'stream') { pickObj.userData.btn.userData.press = performance.now(); Sound.slide(); openStream(pickObj.userData.idx); }
+    else if (tag === 'howto') { Sound.slide(); document.getElementById('howBtn').click(); }
+    else if (tag === 'notebook') { Sound.slide(); goTo('credits'); }
     else if (tag === 'tv') openTvMenu();
     else if (tag === 'joystick') { joyT = performance.now(); openTvMenu(); }
   });
@@ -2735,6 +3075,7 @@ function makeDesk(el) {
   v.onFrame = function (t) {
     const now = performance.now();
     place(t);
+    if (intro.phase !== 'done') introTick(now);
     if (!REDUCE && v.base) {   /* tiny parallax: the camera drifts as the page scrolls, so the table and the TV behind it slide a little against each other */
       const r = el.getBoundingClientRect(), sp = Math.max(-1, Math.min(1, (r.top + r.height / 2 - innerHeight / 2) / innerHeight));
       v.camera.position.set(v.base.x + sp * 0.5, v.base.y + sp * 0.7, v.base.z);
@@ -2756,7 +3097,7 @@ function makeDesk(el) {
     barTex.offset.y = REDUCE ? 0 : -((t / 7000) % 1);
     tvLight.intensity = 0.55 * fl;
     /* hover glow: whatever is under the pointer warms up slightly (the radio knob too, while it is turned) */
-    if (!glowItems) glowItems = [tv, radio, knob, coinRoot, dieRoot, vinylG, joyG].concat(crew, tvKnobs).map(g => ({ g, k: 0, s: g === knob || tvKnobs.indexOf(g) >= 0 ? 1.2 : 1 }));
+    if (!glowItems) glowItems = [tv, radio, knob, coinRoot, dieRoot, vinylG, joyG, howG, noteG].concat(crew, strBtns).map(g => ({ g, k: 0, s: g === knob || strBtns.indexOf(g) >= 0 ? 1.2 : 1 }));
     const hg = knobDrag ? knob : hoverGroup;
     glowItems.forEach(it => {
       const tgt = it.g === hg ? 1 : 0;
@@ -2766,7 +3107,7 @@ function makeDesk(el) {
       applyGlow(it.g, it.k, it.s);
     });
     if (menuOn && now - menuBlinkT > 500) { menuBlinkT = now; menuBlink = !menuBlink; drawMenu(); }   /* selector arrow blinks */
-    tvKnobs.forEach(k => { const pt = k.userData.press ? Math.max(0, 1 - (now - k.userData.press) / 160) : 0; k.position.z = 0.51 - 0.03 * pt; });   /* TV buttons press in */
+    strBtns.forEach(b => { const pt = b.userData.press ? Math.max(0, 1 - (now - b.userData.press) / 160) : 0; b.position.z = 0.48 - 0.035 * pt; });   /* TV buttons press in */
     loreTick(now);   /* channel change: static, lore, static, back to the game screen */
     /* radio light pulses while the song plays */
     ledHalo.material.opacity = ledOn ? 0.7 + (REDUCE ? 0 : 0.2 * Math.sin(t / 220)) : 0;
@@ -2977,14 +3318,15 @@ function makeViewer(el, p) {
     v.camera.aspect = (w * mr.w) / (h * mr.h);
     v.camera.updateProjectionMatrix();
     const t = Math.tan(THREE.MathUtils.degToRad(17.5));
-    const d0 = Math.max((v.radius + 0.5) / (t * v.camera.aspect), (v.p && v.p.type === 'single' ? 1.12 : 1.25) / t);
+    const d0 = Math.max((v.radius + 0.5) / (t * v.camera.aspect), (v.p && (v.p.type === 'single' || v.p.type === 'diy') ? 1.12 : 1.25) / t);
     const d = (v.subs ? d0 * 1.22 : d0) * (v.zoom || 1);   /* kit cards: pieces tray a little smaller, sitting back and up so the die and coin can float in front. v.zoom < 1 moves the camera closer (Angel edition) */
     v.camera.position.set(0, 0.7 + d * 0.3, d * 0.95);
     v.camera.lookAt(0, v.subs ? -0.15 : 0.65, 0);
     (v.subs || []).concat(v.backSubs || []).forEach(sc => {   /* the small die and coin trays (and the Angel ticket and shirt trays) */
-      const a = (w * sc.rect.w) / (h * sc.rect.h), tt = Math.tan(THREE.MathUtils.degToRad(15));
+      const bs = sc.base || sc.rect, W0 = w * bs.w, H0 = h * bs.h, a = W0 / H0, tt = Math.tan(THREE.MathUtils.degToRad(15));
       sc.camera.aspect = a;
       sc.camera.updateProjectionMatrix();
+      if (sc.ext) sc.camera.setViewOffset(W0, H0, 0, -sc.ext * H0, W0, H0 * (1 + sc.ext));   /* wider picture area upward only */
       const dd = Math.max(1.0 / (tt * a), 1.5 / tt);
       sc.camera.position.set(0, 0.6 + dd * 0.3, dd * 0.95);
       sc.camera.lookAt(0, 0.6, 0);
@@ -3092,10 +3434,11 @@ if (HAVE_GL) {
     whenNear(el, () => { viewers[p.id] = makeViewer(el, p); });
   });
   viewers['desk'] = makeDesk($('[data-viewer="desk"]'));
-  $$('[data-title-die]').forEach((tel, i) => whenNear(tel, () => { viewers['title' + i] = makeTitleDie(tel); }));
+  $$('[data-title-die]').forEach((tel, i) => whenNear(tel, () => { const tv2 = makeTitleDie(tel); if (tv2) viewers['title' + i] = tv2; else tel.classList.add('nogl'); }));
   requestAnimationFrame(frame);
 } else {
   $$('.viewer').forEach(el => el.classList.add('nogl'));
+  $$('[data-title-die]').forEach(el => el.classList.add('nogl'));
 }
 
 /* =====================================================================
@@ -3104,7 +3447,7 @@ if (HAVE_GL) {
 function qtyOf(p) {
   const st = S[p.id];
   if (p.type === 'kit') return st.qty;
-  if (p.type === 'single') return st.pick.size;
+  if (p.type === 'single') { let n = 0; st.pick.forEach(q => { n += q; }); return n; }
   return 1;
 }
 function calc(p) {
@@ -3116,31 +3459,22 @@ function calc(p) {
 function refreshCards() {
   PRODUCTS.forEach(p => {
     const price = $(`[data-price="${p.id}"]`);
-    price.innerHTML = symHTML(money(p.price));
+    if (price) price.innerHTML = symHTML(money(p.price)) + (p.priceNote ? `<span class="pnote">${esc(p.priceNote)}</span>` : '');
   });
-  /* Print-your-own button follows the piece being previewed */
-  PRODUCTS.filter(p => p.diy).forEach(p => {
-    const a = $(`[data-diy="${p.id}"]`);
-    const who = PEOPLE.find(x => x.id === S[p.id].view);
-    if (who.stl) {
-      a.href = encodeURI((who.stlFolder || './') + (who.stlBase || who.stl));
-      a.setAttribute('download', (who.stlBase || who.stl).split('/').pop());
-      a.removeAttribute('aria-disabled');
-      a.textContent = `Print your own: free ${who.name} STL`;
-    } else {
-      a.removeAttribute('href');
-      a.removeAttribute('download');
-      a.setAttribute('aria-disabled', 'true');
-      a.textContent = `${who.name} STL coming soon`;
-    }
+  /* Print-your-own: a free STL download for each picked piece */
+  PRODUCTS.filter(p => p.type === 'diy').forEach(p => {
+    const box = $(`[data-diylist="${p.id}"]`);
+    if (!box) return;
+    const html = S[p.id].pick.size ? Array.from(S[p.id].pick.keys()).map(id => {
+      const who = PEOPLE.find(x => x.id === id);
+      if (who.stl && who.stlBase) return `<a class="btn small diy-btn" href="${encodeURI((who.stlFolder || './') + who.stlBase)}" download="${esc(who.stlBase.split('/').pop())}">${esc(who.name)} STL (free)</a>`;
+      return `<span class="btn small diy-btn" aria-disabled="true">${esc(who.name)} STL ${who.stl ? 'loading' : 'coming soon'}</span>`;
+    }).join('') : '<p class="note">Pick a name above to see its free STL.</p>';
+    if (box.dataset.sig !== html) { box.dataset.sig = html; box.innerHTML = html; }
   });
   $$('[data-die]').forEach(b => {
     const [pid, c] = b.dataset.die.split(':');
     b.classList.toggle('sel', S[pid].die === c);
-  });
-  $$('[data-view]').forEach(b => {
-    const [pid, who] = b.dataset.view.split(':');
-    b.classList.toggle('sel', S[pid].view === who && !$('#p-' + pid).classList.contains('collapsed'));
   });
   $$('[data-pickchip]').forEach(b => {
     const [pid, who] = b.dataset.pickchip.split(':');
@@ -3149,18 +3483,37 @@ function refreshCards() {
   if (cur) updateSheet();
 }
 
+/* accordion cards open and close; picking pieces (A-la-carte, Print your own) opens the card and updates its tray */
+function setAcc(pid, on) {
+  S[pid].open = on;
+  const card = $('#p-' + pid);
+  if (!card) return;
+  card.classList.toggle('open', on);
+  $$('[data-acc]', card).forEach(b => b.setAttribute('aria-expanded', String(on)));
+}
+function piecesChanged(pid) {
+  const p = getP(pid), card = $('#p-' + pid);
+  if (card && (p.type === 'single' || p.type === 'diy')) {
+    card.classList.toggle('has-pick', S[pid].pick.size > 0);
+    const v = viewers[pid];
+    if (v) buildScene(v, p);
+  }
+  refreshCards();
+}
+function togglePick(pid, who) {
+  const m = S[pid].pick;
+  if (m.has(who)) m.delete(who); else m.set(who, 1);
+  if (!cur && !S[pid].open) setAcc(pid, true);
+  piecesChanged(pid);
+}
+
 function setDie(pid, colorId) {
   S[pid].die = colorId;
   const v = viewers[pid];
   if (v && v.die) recolorDie(v.die, colorId);
   refreshCards();
 }
-function setView(pid, who) {
-  S[pid].view = who;
-  const v = viewers[pid];
-  if (v) buildScene(v, getP(pid));
-  refreshCards();
-}
+
 
 /* =====================================================================
    ORDER SHEET
@@ -3177,40 +3530,45 @@ function sheetOptionsHTML(p) {
   }
   if (p.type === 'single') {
     return '<div class="optlabel">Pick your pieces</div><div class="chips">' + PEOPLE.map(pp =>
-      `<button type="button" class="chip" data-pickchip="${p.id}:${pp.id}">${pp.name}</button>`).join('') + '</div>';
+      `<button type="button" class="chip" data-pickchip="${p.id}:${pp.id}">${pp.name}</button>`).join('') + '</div><div id="pieceQty"></div>';
   }
   return '<p class="note">One of one. We confirm it is still available before any payment.</p>';
 }
 
 /* shipping choices on the order sheet: one is always picked, and it is added to the Venmo amount */
+const shipUS = p => {
+  if (p.type === 'kit') return CONFIG.shipKit * qtyOf(p);   /* per 3-piece or full band kit */
+  return CONFIG.shipSingle + CONFIG.shipSingleMore * Math.ceil(Math.max(0, qtyOf(p) - 6) / 6);   /* singles: up to 6 pieces, then more for every extra 6 */
+};
 const SHIP = [
-  { id: 'us', label: 'Continental US shipping (' + money(CONFIG.shipUS) + ')', short: 'Continental US', cost: CONFIG.shipUS },
-  { id: 'pickup', label: 'Local Milwaukee pickup ($0)', short: 'Milwaukee pickup', cost: 0 },
-  { id: 'other', label: 'Other (please inquire)', short: 'Other', cost: null }
+  { id: 'us', label: p => 'Continental US shipping (' + money(shipUS(p)) + ')', short: 'Continental US', cost: p => shipUS(p) },
+  { id: 'pickup', label: () => 'Local Milwaukee pickup ($0)', short: 'Milwaukee pickup', cost: () => 0 },
+  { id: 'other', label: () => 'Other (please inquire)', short: 'Other', cost: () => null }
 ];
 let shipId = 'us';
 const shipPick = () => SHIP.find(x => x.id === shipId) || SHIP[0];
 function renderShip() {
   const box = $('#shipOpts');
   box.innerHTML = cur && cur.type !== 'deluxe'
-    ? '<div class="optlabel">Shipping</div><div class="shipopts">' + SHIP.map(x => `<label><input type="checkbox" data-ship="${x.id}"${x.id === shipId ? ' checked' : ''}>${x.label}</label>`).join('') + '</div>'
+    ? '<div class="optlabel">Shipping</div><div class="shipopts">' + SHIP.map(x => `<label><input type="checkbox" data-ship="${x.id}"${x.id === shipId ? ' checked' : ''}>${x.label(cur)}</label>`).join('') + '</div>'
+      + `<p class="shipnote">${cur.type === 'kit' ? esc(money(CONFIG.shipKit) + ' shipping per kit.') : esc(money(CONFIG.shipSingle) + ' shipping for up to 6 pieces, then ' + money(CONFIG.shipSingleMore) + ' more for every additional 6.')}</p>`
     : '';
 }
 $('#shipOpts').addEventListener('click', e => {
   const b = e.target.closest('input[data-ship]');
   if (!b) return;
   shipId = b.dataset.ship;
-  $$('#shipOpts input').forEach(i => { i.checked = i.dataset.ship === shipId; });   /* works like a checkbox, but one is always on */
-  if (cur) updateSheet();
+  if (cur) updateSheet();   /* works like a checkbox, but one is always on */
 });
 
 function orderText(p) {
   const st = S[p.id], c = calc(p), sh = shipPick();
   const lines = [`LP1 ORDER: ${p.name}`];
   if (p.type === 'kit') lines.push(`Die color: ${(DIE_COLORS.find(x => x.id === st.die) || {}).name}`, `Kits: ${c.qty}`);
-  if (p.type === 'single') lines.push(`Pieces: ${PEOPLE.filter(pp => st.pick.has(pp.id)).map(pp => pp.name).join(', ') || '(none picked yet)'}`);
+  if (p.type === 'single') lines.push(`Pieces: ${PEOPLE.filter(pp => st.pick.has(pp.id)).map(pp => pp.name + ' x' + st.pick.get(pp.id)).join(', ') || '(none picked yet)'}`);
   if (p.type !== 'deluxe') {
-    lines.push(`Shipping: ${sh.label}`, sh.cost == null ? `Total: ${money(c.total)} plus shipping (to be quoted)` : `Total: ${money(c.total + sh.cost)}${sh.cost ? ' (includes shipping)' : ''}`);
+    const sc = sh.cost(p);
+    lines.push(`Shipping: ${sh.label(p)}`, sc == null ? `Total: ${money(c.total)} plus shipping (to be quoted)` : `Total: ${money(c.total + sc)}${sc ? ' (includes shipping)' : ''}`);
   } else lines.push(`Price: ${money(p.price)}`);
   lines.push('', `Name: ${$('#oName').value}`, `Contact: ${$('#oContact').value}`, `Ship to: ${$('#oShip').value}`);
   return lines.join('\n');
@@ -3221,15 +3579,21 @@ function updateSheet() {
   const c = calc(p);
   const st = S[p.id];
   const qn = $('#qtyNum'); if (qn) qn.textContent = st.qty;
+  renderShip();
+  const pq = $('#pieceQty');
+  if (pq) pq.innerHTML = Array.from(st.pick.entries()).map(([id, n]) => {
+    const who = PEOPLE.find(x => x.id === id);
+    return `<div class="pq"><span>${esc(who.name)}</span><div class="stepper"><button type="button" data-pqty="${p.id}:${id}:-1" aria-label="Fewer ${esc(who.name)}">-</button><span>${n}</span><button type="button" data-pqty="${p.id}:${id}:1" aria-label="More ${esc(who.name)}">+</button></div></div>`;
+  }).join('');
 
   let rows = '';
   if (p.type === 'deluxe') {
     rows = `<div class="row tot"><span>Price</span><span>${symHTML(money(p.price))}</span></div>`;
   } else {
-    const sh = shipPick();
+    const sh = shipPick(), sc = sh.cost(p);
     rows = `<div class="row"><span>${c.qty} x ${money(p.price)}</span><span>${money(c.sub)}</span></div>`;
-    rows += `<div class="row"><span>Shipping: ${sh.short}</span><span>${sh.cost == null ? 'to be quoted' : money(sh.cost)}</span></div>`;
-    rows += `<div class="row tot"><span>${sh.cost == null ? 'Total so far' : 'Total'}</span><span>${symHTML(money(c.total + (sh.cost || 0)))}</span></div>`;
+    rows += `<div class="row"><span>Shipping: ${sh.short}</span><span>${sc == null ? 'to be quoted' : money(sc)}</span></div>`;
+    rows += `<div class="row tot"><span>${sc == null ? 'Total so far' : 'Total'}</span><span>${symHTML(money(c.total + (sc || 0)))}</span></div>`;
   }
   $('#sheetTotals').innerHTML = rows;
 
@@ -3244,13 +3608,13 @@ function updateSheet() {
   if (p.type === 'deluxe') {
     venmo.style.display = 'none';
     note.textContent = 'We will reply to confirm it is available, then send payment details.';
-  } else if (shipPick().cost == null) {
+  } else if (shipPick().cost(p) == null) {
     venmo.style.display = 'none';
     note.textContent = 'We will reply with the shipping price and a Venmo request.';
   } else if (CONFIG.venmo) {
     venmo.style.display = '';
     const vn = encodeURIComponent(`LP1 ${p.name} ${$('#oName').value}`.trim());
-    venmo.href = `https://venmo.com/${encodeURIComponent(CONFIG.venmo)}?txn=pay&amount=${(c.total + shipPick().cost).toFixed(2)}&note=${vn}`;
+    venmo.href = `https://venmo.com/${encodeURIComponent(CONFIG.venmo)}?txn=pay&amount=${(c.total + shipPick().cost(p)).toFixed(2)}&note=${vn}`;
     note.textContent = CONFIG.shippingNote + ' Send the order first, then pay once we reply.';
   } else {
     venmo.style.display = 'none';
@@ -3262,7 +3626,7 @@ function updateSheet() {
 function openSheet(pid) {
   cur = getP(pid);
   const st = S[pid];
-  if (cur.type === 'single' && st.pick.size === 0) st.pick.add(st.view);
+  if (cur.type === 'single' && st.pick.size === 0) { st.pick.set(st.view, 1); piecesChanged(pid); }   /* an empty order starts with one piece */
   $('#sheetTitle').innerHTML = symHTML(cur.type === 'deluxe' ? 'Angel Investor inquiry' : `Order: ${cur.name}`);
   $('#sheetOptions').innerHTML = sheetOptionsHTML(cur);
   renderShip();
@@ -3294,16 +3658,14 @@ document.addEventListener('click', e => {
   const b = e.target.closest('button');
   if (!b) return;
   if (b.dataset.die) { const [pid, c] = b.dataset.die.split(':'); setDie(pid, c); }
-  else if (b.dataset.view) {
-    const [pid, who] = b.dataset.view.split(':'), card = $('#p-' + pid);
-    if (card.classList.contains('collapsed')) { card.classList.remove('collapsed'); setView(pid, who); }   /* picking a name opens the preview */
-    else if (S[pid].view === who) { card.classList.add('collapsed'); refreshCards(); }   /* the picked name again closes it */
-    else setView(pid, who);
-  }
+  else if (b.dataset.acc) { setAcc(b.dataset.acc, !S[b.dataset.acc].open); }
   else if (b.dataset.pickchip) {
     const [pid, who] = b.dataset.pickchip.split(':');
-    const set = S[pid].pick;
-    set.has(who) ? set.delete(who) : set.add(who);
+    togglePick(pid, who);
+  }
+  else if (b.dataset.pqty) {
+    const [pid, who, d] = b.dataset.pqty.split(':'), m = S[pid].pick;
+    if (m.has(who)) m.set(who, Math.max(1, Math.min(9, m.get(who) + Number(d))));
     refreshCards();
   }
   else if (b.dataset.qty) {
@@ -3407,11 +3769,14 @@ rackKnob.addEventListener('keydown', e => {
   if (e.key === 'ArrowUp' || e.key === 'ArrowRight') { e.preventDefault(); Sound.setVolume(Sound.getVolume() + 0.05); }
   else if (e.key === 'ArrowDown' || e.key === 'ArrowLeft') { e.preventDefault(); Sound.setVolume(Sound.getVolume() - 0.05); }
 });
-rackBg.addEventListener('click', () => {
+const rackBg2 = $('#rackBg2');   /* the same switch lives in the slide-out menu on narrow screens */
+const toggleBg = () => {
   const on = Sound.setBackground(!Sound.isBackground());
-  rackBg.setAttribute('aria-pressed', String(on));
+  [rackBg, rackBg2].forEach(b => b.setAttribute('aria-pressed', String(on)));
   toast(on ? 'Background play on: the jam keeps going in the background.' : 'Background play off.');
-});
+};
+rackBg.addEventListener('click', toggleBg);
+rackBg2.addEventListener('click', toggleBg);
 
 /* ---------- How to Play popup: two pictures side by side (stacked on tall screens), tap one to zoom ---------- */
 const howDlg = $('#howDlg'), zoomEl = $('#zoom'), zoomImg = zoomEl.querySelector('img');
