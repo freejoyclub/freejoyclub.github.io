@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- LP1 (v24) -->
+<!-- LP1 (v25) -->
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
@@ -788,7 +788,7 @@ try { if (location.hash) history.replaceState(null, '', location.pathname + loca
 <div class="dlg-in">
 <section class="section" id="kits">
 <h2>Game Pieces</h2>
-<p class="sub">Handmade by Jesse:<br>Mini sculptures of the band (~2")<br><span class="sub-small">Collectible limited-edition companion to The Game</span></p>
+<p class="sub">Made by Jesse:<br>Mini sculptures of the band (~2")<br><span class="sub-small">Collectible limited-edition companion to The Game</span></p>
 <div class="grid" id="productGrid"></div>
 </section>
 <button type="button" class="btn small dlg-back" data-close>Back to the desk</button>
@@ -921,7 +921,7 @@ try { if (location.hash) history.replaceState(null, '', location.pathname + loca
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/STLLoader.js"></script>
 <script>
-// LP1 (v24)
+// LP1 (v25)
 const toTop = () => { try { window.scrollTo({ top: 0, left: 0, behavior: 'instant' }); } catch (e) { window.scrollTo(0, 0); } };
 toTop();
 window.addEventListener('load', toTop);
@@ -3232,7 +3232,7 @@ function makeDesk(el) {
   v.onFrame = function (t) {
     const now = performance.now();
     place(t);
-    if (wigList) wigList.forEach(w => { if (w.off) { w.g.rotation.y -= w.off; w.off = 0; } });   /* undo last frame's wiggle before anything else moves the item */
+    if (wigList) wigList.forEach(w => { if (w.off && !w.crew) { w.g.rotation.y -= w.off; } w.off = 0; });   /* undo last frame's wiggle before anything else moves the item */
     if (intro.phase !== 'done') introTick(now);
     vSlide += ((hoverGroup === vinylG ? 1 : 0) - vSlide) * 0.14;   /* hover: slides out toward you; click: a quick wiggle */
     const wk = vinylG.userData.wig ? Math.min(1, (now - vinylG.userData.wig) / 650) : 1, wg = REDUCE ? 0 : Math.sin(wk * Math.PI * 7) * (1 - wk);
@@ -3262,9 +3262,9 @@ function makeDesk(el) {
       if (Math.abs(tgt - it.k) < 0.01) it.k = tgt;
       applyGlow(it.g, it.k, it.s);
     });
-    if (!wigList) wigList = glowItems.map(it => it.g).filter(g => g !== tv && g !== knob && g !== vinylG && strBtns.indexOf(g) < 0).map(g => ({ g, off: 0, t0: 0 }));
+    if (!wigList) wigList = glowItems.map(it => it.g).filter(g => g !== tv && g !== knob && g !== vinylG && strBtns.indexOf(g) < 0).map(g => ({ g, off: 0, t0: 0, crew: crew.indexOf(g) >= 0 }));
     if (hg !== wigLast) { wigLast = hg; const w = wigList.find(x => x.g === hg); if (w && !REDUCE) w.t0 = now; }
-    wigList.forEach(w => { if (!w.t0) return; const k = Math.min(1, (now - w.t0) / 520); w.off = Math.sin(k * Math.PI * 5) * (1 - k) * 0.1; w.g.rotation.y += w.off; if (k >= 1) w.t0 = 0; });
+    wigList.forEach(w => { if (!w.t0) return; const k = Math.min(1, (now - w.t0) / (w.crew ? 700 : 520)); w.off = Math.sin(k * Math.PI * (w.crew ? 6 : 5)) * (1 - k) * (w.crew ? 0.34 : 0.1); if (!w.crew) w.g.rotation.y += w.off; if (k >= 1) w.t0 = 0; });   /* the player pieces shake about 3x harder than the rest */
     if (menuOn && now - menuBlinkT > 500) { menuBlinkT = now; menuBlink = !menuBlink; drawMenu(); }   /* selector arrow blinks */
     strBtns.forEach(b => { const pt = b.userData.press ? Math.max(0, 1 - (now - b.userData.press) / 160) : 0; b.position.z = 0.48 - 0.035 * pt; });   /* TV buttons press in */
     loreTick(now);   /* channel change: static, lore, static, back to the game screen */
@@ -3277,6 +3277,7 @@ function makeDesk(el) {
         r += Math.PI * 2 * ease(k);
         if (k >= 1) h.userData.spin = 0;
       }
+      const wp = wigList && wigList.find(x => x.g === h); if (wp) r += wp.off;   /* hover wiggle */
       h.rotation.y = r;
     });
     if (idle) {   /* standing on its edge, slowly spinning */
