@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- LP1 v16 -->
+<!-- LP1 (v17) -->
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
@@ -48,6 +48,7 @@ min-height: 100vh;
 color: #fff;
 text-align: center;
 overflow-x: hidden;
+overflow-x: clip;   /* v17: "clip" does not turn the page into its own scroller, so the fixed rack bar stays put on phones */
 position: relative;
 }
 
@@ -55,8 +56,9 @@ position: relative;
 body {
 background: linear-gradient(45deg, #884a40, #64332b, #794c36, #4b2323);
 background-size: 400% 400%;
-animation: sweep 20s ease infinite;
 }
+/* v17: the sweeping background repaints the whole page every frame, so it only runs on computers (phones keep it still, which is much lighter) */
+@media (hover: hover) and (pointer: fine) { body { animation: sweep 20s ease infinite; } }
 
 /* Vignette overlay (same as home) */
 body::before {
@@ -86,9 +88,9 @@ z-index: 1;
 }
 
 @keyframes shineLoop {
-0% { left: -150%; }
-30% { left: 150%; }
-100% { left: 150%; }
+0% { transform: translateX(0) skewX(-20deg); }
+30% { transform: translateX(300%) skewX(-20deg); }
+100% { transform: translateX(300%) skewX(-20deg); }
 }
 
 @keyframes flicker {
@@ -245,13 +247,13 @@ animation: flicker 5s infinite;
 
 .section .sub {
 font-family: 'KCPelletierLight', 'Courier New', monospace;
-font-size: 1.2rem;
+font-size: 1.1rem;
 line-height: 1.5;
 margin: 0 0 26px;
 text-shadow: 0 0 10px var(--glow-color);
 }
 
-.section .sub .sub-small { font-size: 1rem; font-weight: 300; opacity: 0.82; }
+.section .sub .sub-small { font-size: 0.92rem; font-weight: 300; opacity: 0.82; }
 
 .glass {
 background: rgba(0, 0, 0, 0.28);
@@ -563,7 +565,7 @@ button:disabled { cursor: default; }
 /* ============ v12: rack bar along the very bottom (replaces the floating nav pill). v13: content is centered with a max width, and on narrow screens it shrinks to one thin row with a slide-out menu ============ */
 body { padding-bottom: 96px; }
 .rack {
-position: fixed; left: 0; right: 0; bottom: 0; z-index: 100;
+position: fixed; left: 0; right: 0; bottom: 0; z-index: 100; transform: translateZ(0);
 padding: 7px 34px calc(7px + env(safe-area-inset-bottom));
 background: linear-gradient(#3b3b40, #202023 16%, #151517 84%, #0a0a0b);
 border-top: 2px solid #5a5a60;
@@ -612,6 +614,9 @@ box-shadow: 0 0 0 #131315, inset 0 3px 8px rgba(0,0,0,0.8), 0 0 12px var(--c);
 .lcd-track { position: absolute; left: 0; top: 0; display: flex; white-space: nowrap; opacity: 0.5; animation: lcdScroll 11s linear infinite; will-change: transform; }
 .lcd-track span { flex: none; padding-right: 3.5em; line-height: 30px; font-family: 'Courier New', Courier, monospace; font-weight: 700; font-size: 0.85rem; letter-spacing: 2px; color: #64ff8f; text-shadow: 0 0 6px rgba(100,255,143,0.8); }
 .rack-lcd.on .lcd-track { opacity: 1; }
+.rack-lcd.still .lcd-track { width: 100%; justify-content: center; animation: none; transform: none; }   /* WELCOME and PAUSED sit still in the middle; the song title scrolls */
+.rack-lcd.still .lcd-track span { padding-right: 0; }
+.rack-lcd.still .lcd-track span + span { display: none; }
 @keyframes lcdScroll { to { transform: translateX(-33.3333%); } }
 /* volume knob */
 .rk-vol { display: inline-flex; align-items: center; gap: 6px; font-family: 'KCStrikerSans', sans-serif; font-size: 0.6rem; letter-spacing: 1.2px; text-transform: uppercase; color: #b8b8c0; }
@@ -684,7 +689,7 @@ try { if (location.hash) history.replaceState(null, '', location.pathname + loca
 <!-- ============ KITS (mini storefront) ============ -->
 <section class="section" id="kits">
 <h2>Game Pieces</h2>
-<p class="sub">Handmade by Jesse:<br>Mini sculptures of the band (~2").<br><span class="sub-small">Collectible limited-edition companion to The Game.</span></p>
+<p class="sub">Handmade by Jesse:<br>Mini sculptures of the band (~2")<br><span class="sub-small">Collectible limited-edition companion to The Game</span></p>
 
 <div class="grid" id="productGrid"></div>
 </section>
@@ -798,7 +803,7 @@ try { if (location.hash) history.replaceState(null, '', location.pathname + loca
 <a class="rk c-move" href="/move" data-go="Go to a page full of free, easy movement exercises to feel your best?">Move</a>
 <a class="rk c-store" href="/store" data-go="Go to the full Fearjoy store?">Store</a>
 </nav>
-<div class="rack-lcd" id="rackLcd"><div class="lcd-track"><span>&#9654; THE ENDLESS JAM (UNRELEASED) - FEARJOY</span><span aria-hidden="true">&#9654; THE ENDLESS JAM (UNRELEASED) - FEARJOY</span><span aria-hidden="true">&#9654; THE ENDLESS JAM (UNRELEASED) - FEARJOY</span></div></div>
+<div class="rack-lcd on still" id="rackLcd"><div class="lcd-track"><span>WELCOME</span><span aria-hidden="true">WELCOME</span><span aria-hidden="true">WELCOME</span></div></div>
 <div class="rack-ctl">
 <button type="button" class="rk c-play" id="rackPlay" aria-pressed="false" aria-label="Play or pause The Endless Jam">&#9654;</button>
 <span class="rk-vol"><span class="rk-vol-label">Vol</span><span class="rk-knob" id="rackKnob" role="slider" tabindex="0" aria-label="Music volume" aria-valuemin="0" aria-valuemax="100" aria-valuenow="50"></span></span>
@@ -811,7 +816,7 @@ try { if (location.hash) history.replaceState(null, '', location.pathname + loca
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/STLLoader.js"></script>
 <script>
-// LP1 v16
+// LP1 (v17)
 const toTop = () => { try { window.scrollTo({ top: 0, left: 0, behavior: 'instant' }); } catch (e) { window.scrollTo(0, 0); } };
 toTop();
 window.addEventListener('load', toTop);
@@ -1065,6 +1070,7 @@ const Sound = (() => {
     onRadio(fn) { radioCbs.push(fn); },
     onVolume(fn) { volCbs.push(fn); },
     isPlaying: () => playing,
+    busy: () => !!(el && playing && el.readyState < 4),   /* the song is playing but still loading */
     /* lore videos: duck(true) fades the song out and pauses it while the video's own audio plays, duck(false) brings it back quickly */
     duck(on) {
       if (on) {
@@ -1167,7 +1173,7 @@ function productCard(p) {
   const diyBtn = p.diy ? '<div class="diy-row"><a class="btn small diy-btn" data-diy="' + p.id + '"></a></div>' : '';
   el.innerHTML = `
     ${topOpts}
-    <div class="viewer" data-viewer="${p.id}"><span class="hint">drag or tap to spin</span></div>
+    <div class="viewer" data-viewer="${p.id}">${p.id === PRODUCTS[0].id ? '<span class="hint">drag or tap to spin</span>' : ''}</div>
     ${diyBtn}
     <div class="info">
       ${p.badge ? `<span class="badge">${esc(p.badge)}</span>` : ''}
@@ -1639,13 +1645,16 @@ function buildExtras(v, painted, st) {
   coin.material[2].map.center.set(0.5, 0.5); coin.material[2].map.rotation = -Math.PI / 2;
   cFlip.add(coin);
   const cp = pedestal(0.75, painted); coinS.stage.add(cp); if (painted) v.glowSub.push(cp);
-  let half = 1, flip = null;
+  let half = 1, flip = null, edgeIdle = true, yawBase = 0;   /* edgeIdle: the coin stands on its edge and spins slowly (like the desk coin) until the first flip, then it lies back on the pedestal */
+  const EDGE_Y = COIN_R + 0.02;
   cFlip.rotation.x = Math.PI;   /* JOY faces you first */
   v.flipCoin = () => {
     if (flip) return;
     const want = Math.random() < 0.5 ? 0 : 1;
     const k = 6 + ((((want - half) % 2) + 2) % 2);
-    flip = { t0: performance.now(), dur: REDUCE ? 250 : 1320, a0: half * Math.PI, a1: (half + k) * Math.PI };
+    const fe = edgeIdle, y0 = cYaw.rotation.y;
+    flip = { t0: performance.now(), dur: REDUCE ? 250 : 1320, a0: fe ? Math.PI / 2 : half * Math.PI, a1: (half + k) * Math.PI, fe, y0, y1: Math.round(y0 / TAU) * TAU };
+    edgeIdle = false;
     coinLand = 0;
     half += k;
     Sound.coin();
@@ -1727,13 +1736,25 @@ function buildExtras(v, painted, st) {
       dieLift.position.y += REDUCE ? 0 : bounceAt(ms, 0.12);
       if (ms >= BOUNCE_MS) dieLand = 0;
     }
-    cYaw.rotation.y = REDUCE ? 0 : Math.sin(t / 1600) * 0.4;
-    cLift.position.y = baseY + (REDUCE ? 0 : Math.sin(t / 900) * 0.03);
+    if (edgeIdle) {   /* standing on its edge, slowly spinning */
+      cTilt.rotation.x = 0; cFlip.rotation.x = Math.PI / 2;
+      cYaw.rotation.y = REDUCE ? 0.5 : t * 0.0011;
+      cLift.position.y = EDGE_Y;
+    } else {
+      cTilt.rotation.x = TILT;
+      cYaw.rotation.y = yawBase + (REDUCE ? 0 : Math.sin(t / 1600) * 0.4);
+      cLift.position.y = baseY + (REDUCE ? 0 : Math.sin(t / 900) * 0.03);
+    }
     if (flip) {
-      const k = Math.min(1, (now - flip.t0) / flip.dur);
+      const k = Math.min(1, (now - flip.t0) / flip.dur), hop = Math.sin(Math.PI * k) * (REDUCE ? 0 : 0.9);
       cFlip.rotation.x = flip.a0 + (flip.a1 - flip.a0) * ease(k);
-      cLift.position.y = baseY + Math.sin(Math.PI * k) * (REDUCE ? 0 : 0.9);
-      if (k >= 1) { cFlip.rotation.x = flip.a1; flip = null; coinLand = now; }
+      if (flip.fe) {   /* first flip: straighten out the edge spin and lie back onto the pedestal while it turns over */
+        const q = ease(Math.min(1, k * 1.6));
+        cTilt.rotation.x = TILT * q;
+        cYaw.rotation.y = flip.y0 + (flip.y1 - flip.y0) * ease(k);
+        cLift.position.y = EDGE_Y + (baseY - EDGE_Y) * q + hop;
+      } else cLift.position.y = baseY + hop;
+      if (k >= 1) { cFlip.rotation.x = flip.a1; if (flip.fe) yawBase = flip.y1; flip = null; coinLand = now; }
     } else if (coinLand) {
       const ms = now - coinLand;
       cLift.position.y += REDUCE ? 0 : bounceAt(ms, 0.1);
@@ -1805,6 +1826,7 @@ function buildScene(v, p) {
   if (withExtras) buildExtras(v, painted, st);   /* die + coin now live on their own trays */
 
   const pr = (n === 1 ? 1.1 : R + 0.85);
+  v.tray = { pr, pts: ids.map((id, i) => { const a = (i / n) * Math.PI * 2; return [Math.sin(a) * R, Math.cos(a) * R]; }) };   /* where the tray and the pieces are, for the tap test */
   const mainPed = pedestal(pr, painted);
   v.stage.add(mainPed);
   if (painted) v.glowMain.push(mainPed);
@@ -1862,14 +1884,14 @@ function makeDesk(el) {
     const canvas = document.createElement('canvas');
     el.insertBefore(canvas, el.firstChild);
     v.renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
-    v.renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+    v.renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.75));
     canvas.addEventListener('webglcontextlost', ev => ev.preventDefault(), false);   /* lets the browser restore the 3D view if a phone drops it */
   } catch (err) {
     el.classList.add('nogl');
     return null;
   }
   v.scene = new THREE.Scene();
-  v.camera = new THREE.PerspectiveCamera(30, 16 / 10, 0.1, 100);
+  v.camera = new THREE.PerspectiveCamera(30, 16 / 10, 1, 60);   /* a tighter depth range keeps the flat shadows from flickering */
   v.scene.add(new THREE.HemisphereLight(0xffffff, 0x6b4a42, 0.78));
   const key = new THREE.DirectionalLight(0xffffff, 0.58); key.position.set(3, 6, 5); v.scene.add(key);
   const rim = new THREE.DirectionalLight(0xffd9b0, 0.34); rim.position.set(-4, 3, -3); v.scene.add(rim);
@@ -1879,7 +1901,7 @@ function makeDesk(el) {
 
   /* camera: fixed, looking down at the table. The distance is worked out from a few key points so the TV fills the width on any screen shape. */
   const EL = THREE.MathUtils.degToRad(36), LOOK = new THREE.Vector3(0, 1.85, 0);
-  const FIT_PTS = [[3.15, 4.0, -1.5], [1.05, 5.75, -2.1], [2.75, 0, 2.6], [2.65, -1.0, 2.5], [-2.65, -1.0, 2.5]];
+  const FIT_PTS = [[3.15, 4.0, -1.5], [1.05, 5.75, -2.1], [2.95, 0, 2.6], [2.9, -1.0, 2.5], [-2.9, -1.0, 2.5]];
   v.fit = function () {
     const w = el.clientWidth || 640, h = el.clientHeight || 400;
     v.renderer.setSize(w, h, false);
@@ -1914,7 +1936,7 @@ function makeDesk(el) {
     return new THREE.CanvasTexture(c);
   })();
   function blob(w, d, x, z, op, par) {
-    const m = noHit(new THREE.Mesh(new THREE.PlaneGeometry(w, d), new THREE.MeshBasicMaterial({ map: blobTex, transparent: true, opacity: op == null ? 1 : op, depthWrite: false })));
+    const m = noHit(new THREE.Mesh(new THREE.PlaneGeometry(w, d), new THREE.MeshBasicMaterial({ map: blobTex, transparent: true, opacity: op == null ? 1 : op, depthWrite: false, polygonOffset: true, polygonOffsetFactor: -2, polygonOffsetUnits: -2 })));
     m.rotation.x = -Math.PI / 2;
     m.position.set(x, 0.004, z);
     m.userData.op = op == null ? 1 : op;
@@ -1955,14 +1977,14 @@ function makeDesk(el) {
     return new THREE.CanvasTexture(c);
   })();
   const woodSide = std(0x5e3d25, 0.8), legWood = std(0x7a5233, 0.75);
-  const TW = 5.4, TD = 3.6, TZ = 0.8, FLOOR = -1.0;   /* table top is at y = 0 */
+  const TW = 6.0, TD = 3.6, TZ = 0.8, FLOOR = -1.0;   /* table top is at y = 0 */
   const tableTop = new THREE.Mesh(new THREE.BoxGeometry(TW, 0.16, TD),
     [woodSide, woodSide, new THREE.MeshStandardMaterial({ map: wood, roughness: 0.75 }), woodSide, woodSide, woodSide]);
   tableTop.position.set(0, -0.08, TZ);
   tableTop.userData.tag = 'block';   /* blocks clicks to the TV behind it */
   stage.add(tableTop); hits.push(tableTop);
-  [[-2.5, TZ - 1.5], [2.5, TZ - 1.5], [-2.5, TZ + 1.5], [2.5, TZ + 1.5]].forEach(p => box(0.22, -0.16 - FLOOR, 0.22, legWood, p[0], (FLOOR - 0.16) / 2, p[1]));
-  blob(6.6, 4.6, 0, TZ, 0.55).position.y = FLOOR + 0.004;   /* shadow on the floor under the table */
+  [[-2.8, TZ - 1.5], [2.8, TZ - 1.5], [-2.8, TZ + 1.5], [2.8, TZ + 1.5]].forEach(p => box(0.22, -0.16 - FLOOR, 0.22, legWood, p[0], (FLOOR - 0.16) / 2, p[1]));
+  blob(7.2, 4.6, 0, TZ, 0.55).position.y = FLOOR + 0.004;   /* shadow on the floor under the table */
 
   /* the board game: a white square, half an inch thick, with the TV picture on top. Everything else sits on `deck`, the board's top surface. */
   const BS = 3.1, BT = 0.13, BX = -0.9, VT = 0.04, BROT = 0.09;   /* VT = thickness of the record under the board; BROT = board is a little askew */
@@ -1992,14 +2014,18 @@ function makeDesk(el) {
   antBase.position.set(0.1, 1.9, -0.1);
   tv.add(antBase);
   const antMat = std(0x2a2c2e, 0.4, 0.5);
-  [-1, 1].forEach(sd => {   /* two short bendy ears: each rises, then curls outward */
-    const pts = [[0, 0], [0.04, 0.12], [0.13, 0.2], [0.25, 0.22], [0.33, 0.17]].map(q => new THREE.Vector3(sd * q[0], q[1], 0));
-    const ear = new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts), 18, 0.02, 6, false), antMat);
-    ear.position.set(0.1, 1.95, -0.1);
-    tv.add(ear);
-    const tip = new THREE.Mesh(new THREE.SphereGeometry(0.036, 10, 8), antMat);
-    tip.position.set(0.1 + pts[4].x, 1.95 + pts[4].y, -0.1);
-    tv.add(tip);
+  [-1, 1].forEach(sd => {   /* two short zig-zag ears: straight pieces that kink back and forth while rising outward */
+    const pts = [[0, 0], [0.1, 0.1], [0.06, 0.2], [0.18, 0.3]].map(q => new THREE.Vector3(0.1 + sd * q[0], 1.95 + q[1], -0.1));
+    for (let i = 1; i < pts.length; i++) {
+      const d = pts[i].clone().sub(pts[i - 1]), len = d.length();
+      const piece = new THREE.Mesh(new THREE.CylinderGeometry(0.02, 0.02, len, 6), antMat);
+      piece.position.copy(pts[i - 1]).add(pts[i]).multiplyScalar(0.5);
+      piece.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), d.normalize());
+      tv.add(piece);
+      const knee = new THREE.Mesh(new THREE.SphereGeometry(i === pts.length - 1 ? 0.036 : 0.022, 10, 8), antMat);
+      knee.position.copy(pts[i]);
+      tv.add(knee);
+    }
   });
   /* speaker panel + knobs */
   const spk = (() => {
@@ -2261,15 +2287,17 @@ function makeDesk(el) {
     const net = navigator.connection || {};
     if (net.saveData || /(^|-)2g$/.test(net.effectiveType || '')) return;   /* data saver or a very slow connection: skip the videos */
     vidLoading = true;
+    const calm = async () => { while (Sound.busy()) await new Promise(r => setTimeout(r, 2000)); };   /* the song gets the connection first */
     for (let i = 0; i < vidNames.length; i++) {
       try {
+        await calm();
         const res = await fetch(loreUrl(vidNames[i]));
         if (!res.ok) throw new Error('missing');
         const total = +res.headers.get('Content-Length') || 0;
         let blob;
         if (res.body && res.body.getReader) {
           const rd = res.body.getReader(), chunks = []; let got = 0;
-          for (;;) { const r = await rd.read(); if (r.done) break; chunks.push(r.value); got += r.value.length; vidFrac = total ? Math.min(1, got / total) : 0.5; }
+          for (;;) { await calm(); const r = await rd.read(); if (r.done) break; chunks.push(r.value); got += r.value.length; vidFrac = total ? Math.min(1, got / total) : 0.5; }
           blob = new Blob(chunks, { type: res.headers.get('Content-Type') || 'video/mp4' });
         } else blob = await res.blob();
         vids[vidNames[i]] = URL.createObjectURL(blob);
@@ -2278,7 +2306,7 @@ function makeDesk(el) {
     }
     vidLoading = false;
   }
-  const kickVids = () => setTimeout(preloadVideos, 1500);
+  const kickVids = () => setTimeout(preloadVideos, 6000);
   if (document.readyState === 'complete') kickVids(); else window.addEventListener('load', kickVids);
 
   const loreItems = () => (CONFIG.lorePics || []).map(n => ({ name: n, video: false })).concat(Object.keys(vids).map(n => ({ name: n, video: true })));
@@ -2392,12 +2420,14 @@ function makeDesk(el) {
     ray.setFromCamera(ndc, v.camera);
     return ray.intersectObject(loreBg, false).length > 0;   /* the whole screen counts, bars included */
   }
+  const IS_IOS = /iP(hone|ad|od)/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+  const mimeOf = (n, vid) => vid ? 'video/mp4' : /\.png$/i.test(n) ? 'image/png' : /\.webp$/i.test(n) ? 'image/webp' : /\.gif$/i.test(n) ? 'image/gif' : 'image/jpeg';   /* the file's real type, so the iPhone share sheet offers Save Image / Save Video */
   function openLoreDlg() {
     lore.paused = true;
     if (lore.video) { try { vidEl.pause(); } catch (e) {} }
-    if (window.matchMedia && matchMedia('(pointer: coarse)').matches && navigator.canShare) {   /* phones: get the file ready now so Save can open the share sheet (Save Image / Save Video goes to the camera roll) */
+    if (IS_IOS && navigator.canShare) {   /* iPhone and iPad: get the file ready now so Save can open the share sheet (Save Image / Save Video goes to the camera roll). Android's share sheet has no save-to-gallery, so there (and on computers) Save downloads the file instead. */
       const it = lore.item, url = it.video ? vids[it.name] : loreUrl(it.name);
-      lore.file = fetch(url).then(r => r.blob()).then(b => new File([b], it.name, { type: b.type || (it.video ? 'video/mp4' : 'image/jpeg') })).catch(() => null);
+      lore.file = fetch(url).then(r => r.blob()).then(b => new File([b], it.name, { type: mimeOf(it.name, it.video) })).catch(() => null);
     }
     try { loreDlg.showModal(); } catch (x) { loreDlg.setAttribute('open', ''); }
   }
@@ -2428,11 +2458,11 @@ function makeDesk(el) {
 
   /* ---------- little radio, on the table next to the board: click for the song, drag the knob for volume ---------- */
   const radio = new THREE.Group();
-  radio.position.set(1.8, VT, 0.9);   /* partly on top of the record */
+  radio.position.set(2.2, VT, 0.9);   /* beside the record, not on it */
   radio.rotation.y = -0.25;
-  radio.scale.setScalar(1.25);
+  radio.scale.setScalar(1.1);
   stage.add(radio);
-  blob(2.1, 1.1, 1.8, 0.95, 0.7).position.y = VT + 0.004;
+  blob(1.9, 1.0, 2.2, 0.95, 0.7).position.y = VT + 0.004;
   const cream = std(0xb09a72, 0.55), brown = std(0x5a3a26, 0.75), chrome = std(0xa8adb3, 0.3, 0.6);
   const rBody = new THREE.Mesh(roundedSlab(1.3, 0.78, 0.5, 0.12, 0.05), cream);
   rBody.position.y = 0.45; radio.add(rBody);
@@ -2462,8 +2492,25 @@ function makeDesk(el) {
   hitBox(1.4, 0.95, 0.65, 0, 0.47, 0, 'radio', radio);
   hitBox(0.5, 0.5, 0.3, 0.3, 0.32, 0.3, 'knob', radio);
 
+  /* ---------- little joystick on the table in front of the radio, wired to the TV: tap it to open the game start screen (tapping the TV still works too) ---------- */
+  const joyG = new THREE.Group();
+  joyG.position.set(2.15, 0, 1.95);
+  joyG.rotation.y = -0.35;
+  stage.add(joyG);
+  blob(1.0, 0.8, 2.15, 1.98, 0.7);
+  const joyBase = new THREE.Mesh(new THREE.BoxGeometry(0.72, 0.12, 0.5), std(0x2f3136, 0.55, 0.2)); joyBase.position.y = 0.06; joyG.add(joyBase);
+  const joyBtn = new THREE.Mesh(new THREE.CylinderGeometry(0.07, 0.08, 0.05, 20), std(0xe8c13a, 0.4)); joyBtn.position.set(0.24, 0.145, 0.08); joyG.add(joyBtn);
+  const joyStick = new THREE.Group(); joyStick.position.set(-0.12, 0.12, 0); joyG.add(joyStick);
+  const joyBoot = new THREE.Mesh(new THREE.SphereGeometry(0.1, 16, 8, 0, Math.PI * 2, 0, Math.PI / 2), std(0x151517, 0.7)); joyStick.add(joyBoot);
+  const joyShaft = new THREE.Mesh(new THREE.CylinderGeometry(0.03, 0.03, 0.3, 10), chrome); joyShaft.position.y = 0.15; joyStick.add(joyShaft);
+  const joyBall = new THREE.Mesh(new THREE.SphereGeometry(0.115, 20, 14), std(0xd8302a, 0.35)); joyBall.position.y = 0.34; joyStick.add(joyBall);
+  hitBox(0.9, 0.7, 0.7, 0, 0.3, 0, 'joystick', joyG);
+  const joyCable = noHit(new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3([[2.45, 0.05, 1.9], [2.8, 0.03, 1.7], [2.95, 0.03, 1.2], [2.95, 0.03, 0], [2.9, 0.03, -0.95], [2.9, -0.3, -1.2]].map(q => new THREE.Vector3(q[0], q[1], q[2]))), 40, 0.028, 6, false), std(0x151517, 0.6)));   /* the wire runs along the right edge of the table and over the back toward the TV */
+  stage.add(joyCable);
+  let joyT = 0;
+
   /* ---------- cream vinyl record lying on the table, poking out from under the board. Hover: it slides out a little. Click: it wiggles, then the streaming sheet opens. ---------- */
-  const VR = 1.45, VX = BX + 1.1, VZ = TZ + 0.1;
+  const VR = 1.45, VX = BX + 1.0, VZ = TZ + 0.1;
   const vinylTex = mkTex(256, 256, (g, w, h) => {
     g.fillStyle = '#e6d6a6'; g.fillRect(0, 0, w, h);
     g.strokeStyle = 'rgba(90,60,30,0.10)'; g.lineWidth = 1;
@@ -2568,11 +2615,12 @@ function makeDesk(el) {
   const dieShadow = blob(0.9, 0.9, -0.6, 0.75, 0.8, deck);
   const FACE_UP = { 1: [0, 0, 0], 6: [Math.PI, 0, 0], 3: [0, 0, Math.PI / 2], 4: [0, 0, -Math.PI / 2], 2: [-Math.PI / 2, 0, 0], 5: [Math.PI / 2, 0, 0] };
   const dieBaseY = DIE_H;
-  let roll = null;
+  let roll = null, sinceThree = 0;
   function doRoll() {
     if (roll) return;
     dieLand = 0;
-    const n = 1 + Math.floor(Math.random() * 6);
+    const n = sinceThree >= 2 ? 3 : 1 + Math.floor(Math.random() * 6);   /* a 3 always shows up within every 3 rolls */
+    sinceThree = n === 3 ? 0 : sinceThree + 1;
     const tgt = FACE_UP[n], TAU = Math.PI * 2;
     roll = {
       t0: performance.now(), dur: REDUCE ? 250 : 1000, n, tgt,
@@ -2593,7 +2641,13 @@ function makeDesk(el) {
     const r = el.getBoundingClientRect();
     ndc.set(((e.clientX - r.left) / r.width) * 2 - 1, -((e.clientY - r.top) / r.height) * 2 + 1);
     ray.setFromCamera(ndc, v.camera);
-    const h = ray.intersectObjects(hits, false)[0];
+    let h = null;   /* nearest thing under the finger, but the big flat vinyl only counts when nothing else (like the radio) is there too */
+    for (const x of ray.intersectObjects(hits, false)) {
+      const tg = x.object.userData.tag;
+      if (tg === 'block') break;
+      if (tg !== 'vinyl') { h = x; break; }
+      if (!h) h = x;
+    }
     pickObj = h && h.object.userData.tag !== 'block' ? h.object : null;   /* the table and board hide whatever is behind them */
     return pickObj ? pickObj.userData.tag : null;
   }
@@ -2616,13 +2670,14 @@ function makeDesk(el) {
     if (loreAt(e)) { el.style.cursor = 'var(--hand)'; hoverGroup = null; return; }   /* a lore picture is on the TV: click it to save it */
     const tag = pick(e);
     el.style.cursor = tag && !(menuOn && tag === 'tv') ? 'var(--hand)' : 'default';
-    hoverGroup = tag === 'tvknob' ? pickObj.userData.knob : tag === 'tv' ? (menuOn ? null : tv) : tag === 'bust' ? pickObj.userData.bust : tag === 'coin' ? coinRoot : tag === 'die' ? dieRoot : tag === 'vinyl' ? vinylG : tag === 'radio' ? radio : tag === 'knob' ? knob : null;
+    hoverGroup = tag === 'tvknob' ? pickObj.userData.knob : tag === 'tv' ? (menuOn ? null : tv) : tag === 'bust' ? pickObj.userData.bust : tag === 'coin' ? coinRoot : tag === 'die' ? dieRoot : tag === 'vinyl' ? vinylG : tag === 'joystick' ? joyG : tag === 'radio' ? radio : tag === 'knob' ? knob : null;
   });
   const endKnob = () => { knobDrag = null; };
   el.addEventListener('pointerup', endKnob);
   el.addEventListener('pointercancel', endKnob);
   el.addEventListener('lostpointercapture', endKnob);
   el.addEventListener('pointerleave', () => { hoverGroup = null; });
+  function openTvMenu() { if (menuOn || v.tvT || v.navigated) return; hideSecretTV(); endLore(); Sound.oneUp(); v.tvMode = 'open'; v.tvSwapped = false; v.tvT = performance.now(); }
   el.addEventListener('click', e => {
     if (secret) { const o = secretAt(e); if (o) { if (o === 'dl') downloadSong(); hideSecretTV(); return; } }
     if (menuOn && !v.tvT) { const o = menuAt(e); if (o) { if (o === 'start') startGame(); else closeMenu(); return; } }
@@ -2639,12 +2694,13 @@ function makeDesk(el) {
       Sound.slide();
       setTimeout(() => { if (!streamDlg.open) { try { streamDlg.showModal(); } catch (x) { streamDlg.setAttribute('open', ''); } } }, REDUCE ? 0 : 650);
     }
-    else if (tag === 'radio') { if (Sound.toggleRadio()) toast('Now playing: The Endless Jam (unreleased)'); }
+    else if (tag === 'radio') Sound.toggleRadio();
     else if (tag === 'knob') {   /* a plain tap on the knob steps the volume; dragging turns it */
       if (knobMoved < 5) { const cur = Sound.getVolume(); setKnob(Sound.setVolume(cur >= 0.99 ? 0 : Math.min(1, Math.round(cur * 4) / 4 + 0.25))); }
     }
     else if (tag === 'tvknob') { pickObj.userData.knob.userData.press = performance.now(); startLore(); }
-    else if (tag === 'tv' && !menuOn && !v.tvT && !v.navigated) { hideSecretTV(); endLore(); Sound.oneUp(); v.tvMode = 'open'; v.tvSwapped = false; v.tvT = performance.now(); }
+    else if (tag === 'tv') openTvMenu();
+    else if (tag === 'joystick') { joyT = performance.now(); openTvMenu(); }
   });
   window.addEventListener('pageshow', () => {
     v.tvT = 0; v.navigated = false;
@@ -2669,6 +2725,10 @@ function makeDesk(el) {
     vinylG.position.set(VX + wg * 0.07, vinylG.position.y, VZ + vSlide * 0.2);
     vinylG.rotation.y = wg * 0.1;
     if (wk >= 1) vinylG.userData.wig = 0;
+    const jk = joyT ? Math.min(1, (now - joyT) / 480) : 1;   /* joystick: a quick wiggle and the button presses in */
+    joyStick.rotation.z = REDUCE ? 0 : Math.sin(jk * Math.PI * 3) * (1 - jk) * 0.55;
+    joyBtn.position.y = jk < 0.25 ? 0.12 : 0.145;
+    if (jk >= 1) joyT = 0;
     /* TV glass flicker (a brief dip every so often) and the blue spill light */
     const fl = REDUCE ? 1 : 0.9 + 0.06 * Math.sin(t / 83) + 0.04 * Math.sin(t / 37 + 1.3) - (Math.sin(t / 2300) > 0.985 ? 0.3 : 0);
     glowM.material.opacity = 0.8 * fl;
@@ -2676,7 +2736,7 @@ function makeDesk(el) {
     barTex.offset.y = REDUCE ? 0 : -((t / 7000) % 1);
     tvLight.intensity = 0.55 * fl;
     /* hover glow: whatever is under the pointer warms up slightly (the radio knob too, while it is turned) */
-    if (!glowItems) glowItems = [tv, radio, knob, coinRoot, dieRoot, vinylG].concat(crew, tvKnobs).map(g => ({ g, k: 0, s: g === knob || tvKnobs.indexOf(g) >= 0 ? 1.2 : 1 }));
+    if (!glowItems) glowItems = [tv, radio, knob, coinRoot, dieRoot, vinylG, joyG].concat(crew, tvKnobs).map(g => ({ g, k: 0, s: g === knob || tvKnobs.indexOf(g) >= 0 ? 1.2 : 1 }));
     const hg = knobDrag ? knob : hoverGroup;
     glowItems.forEach(it => {
       const tgt = it.g === hg ? 1 : 0;
@@ -2816,7 +2876,7 @@ function makeTitleDie(el) {
     const canvas = document.createElement('canvas');
     el.appendChild(canvas);
     v.renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
-    v.renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+    v.renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.5));
     canvas.addEventListener('webglcontextlost', ev => ev.preventDefault(), false);   /* lets the browser restore the 3D view if a phone drops it */
   } catch (err) { return null; }
   v.scene = new THREE.Scene();
@@ -2878,7 +2938,7 @@ function makeViewer(el, p) {
     const canvas = document.createElement('canvas');
     el.insertBefore(canvas, el.firstChild);
     v.renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
-    v.renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+    v.renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.5));
     canvas.addEventListener('webglcontextlost', ev => ev.preventDefault(), false);   /* lets the browser restore the 3D view if a phone drops it */
   } catch (err) {
     el.classList.add('nogl');
@@ -2912,11 +2972,27 @@ function makeViewer(el, p) {
   };
   if (window.ResizeObserver) new ResizeObserver(() => v.fit()).observe(el);
 
+  /* is the pointer on the pieces tray or the pieces themselves? (anywhere else the touch is left alone, so the page scrolls and nothing spins) */
+  const trayRay = new THREE.Raycaster(), trayNdc = new THREE.Vector2(), trayPlane = new THREE.Plane(new THREE.Vector3(0, 1, 0), 0), trayHit = new THREE.Vector3(), traySph = new THREE.Sphere();
+  v.onTray = e => {
+    const ti = v.tray;
+    if (!ti) return true;
+    const r = el.getBoundingClientRect(), mr = v.mainRect || { x: 0, y: 0, w: 1, h: 1 };
+    const fx = ((e.clientX - r.left) / r.width - mr.x) / mr.w, fy = ((e.clientY - r.top) / r.height - mr.y) / mr.h;
+    if (fx < 0 || fx > 1 || fy < 0 || fy > 1) return false;
+    trayNdc.set(fx * 2 - 1, -(fy * 2 - 1));
+    v.camera.updateMatrixWorld();
+    trayRay.setFromCamera(trayNdc, v.camera);
+    if (trayRay.ray.intersectPlane(trayPlane, trayHit) && Math.hypot(trayHit.x, trayHit.z) <= ti.pr) return true;   /* the round tray */
+    const c = Math.cos(v.stage.rotation.y), sn = Math.sin(v.stage.rotation.y);
+    return ti.pts.some(q => { traySph.set(trayHit.set(q[0] * c + q[1] * sn, 0.6, -q[0] * sn + q[1] * c), 0.7); return trayRay.ray.intersectsSphere(traySph); });   /* a piece standing on it */
+  };
   el.addEventListener('pointerdown', e => {
     v.tap = null;
     const rg = v.regionAt ? v.regionAt(e) : 'main';
     if (rg !== 'main') { v.tap = { rg, x: e.clientX, y: e.clientY }; return; }   /* on the die or coin itself: wait and see if it is a tap or the start of a drag */
-    v.dragging = true; v.lastX = e.clientX; v.moved = 0; v.vel = 0; v.lastMoveT = performance.now();
+    if (!v.onTray(e)) return;
+    v.dragging = true; v.lastX = e.clientX; v.moved = 0; v.vel = 0; v.lastMoveT = v.downT = performance.now();
     el.classList.add('grabbing');
     try { el.setPointerCapture(e.pointerId); } catch (x) {}
   });
@@ -2928,7 +3004,7 @@ function makeViewer(el, p) {
       el.classList.add('grabbing');
       try { el.setPointerCapture(e.pointerId); } catch (x) {}
     }
-    if (!v.dragging) { if (v.regionAt) el.style.cursor = v.regionAt(e) === 'main' ? '' : 'var(--hand)'; return; }
+    if (!v.dragging) { const rg = v.regionAt ? v.regionAt(e) : 'main'; el.style.cursor = rg !== 'main' ? 'var(--hand)' : v.onTray(e) ? '' : 'default'; return; }
     v.lastMoveT = performance.now();
     const dx = e.clientX - v.lastX;
     v.lastX = e.clientX;
@@ -2940,12 +3016,13 @@ function makeViewer(el, p) {
     if (!v.dragging) return;
     v.dragging = false;
     el.classList.remove('grabbing');
-    if (v.moved < 6) { v.vel = 0.22; Sound.slide(); }   /* tap = spin kick */
+    if (v.moved < 6 && performance.now() - v.downT < 450) { v.vel = 0.22; Sound.slide(); }   /* a quick tap = spin kick */
     else if (Math.abs(v.vel) > 0.04) Sound.slide();   /* a flick of the pieces */
   };
+  const cancelDrag = () => { if (!v.dragging) return; v.dragging = false; v.vel = 0; el.classList.remove('grabbing'); };   /* the browser took the touch (a scroll): no spin, no sound */
   el.addEventListener('pointerup', end);
-  el.addEventListener('pointercancel', end);
-  el.addEventListener('lostpointercapture', end);   /* iPhone can drop the pointer mid-drag, which used to leave the auto spin stuck off */
+  el.addEventListener('pointercancel', cancelDrag);
+  el.addEventListener('lostpointercapture', cancelDrag);   /* iPhone can drop the pointer mid-drag, which used to leave the auto spin stuck off */
   el.addEventListener('pointercancel', () => { v.tap = null; });
   el.addEventListener('click', () => {   /* only a real tap that started on the die or coin itself rolls or flips it */
     const tp = v.tap; v.tap = null;
@@ -2985,12 +3062,17 @@ function frame(t) {
 }
 
 if (HAVE_GL) {
+  const whenNear = (el, make) => {   /* each 3D view is only created when its card is about to scroll in, so the page starts with one 3D view instead of many */
+    if (!('IntersectionObserver' in window)) { make(); return; }
+    const io = new IntersectionObserver(es => { if (es.some(x => x.isIntersecting)) { io.disconnect(); make(); } }, { rootMargin: '500px 0px' });
+    io.observe(el);
+  };
   PRODUCTS.forEach(p => {
     const el = $(`[data-viewer="${p.id}"]`);
-    viewers[p.id] = makeViewer(el, p);
+    whenNear(el, () => { viewers[p.id] = makeViewer(el, p); });
   });
   viewers['desk'] = makeDesk($('[data-viewer="desk"]'));
-  $$('[data-title-die]').forEach((tel, i) => { viewers['title' + i] = makeTitleDie(tel); });
+  $$('[data-title-die]').forEach((tel, i) => whenNear(tel, () => { viewers['title' + i] = makeTitleDie(tel); }));
   requestAnimationFrame(frame);
 } else {
   $$('.viewer').forEach(el => el.classList.add('nogl'));
@@ -3283,8 +3365,10 @@ $('#goNo').addEventListener('click', () => goDlg.close());
 goDlg.addEventListener('click', e => { if (e.target === goDlg) goDlg.close(); });
 goDlg.addEventListener('close', () => { if (goBtn && !goGoing) goBtn.classList.remove('lit'); });
 const rackPlay = $('#rackPlay'), rackLcd = $('#rackLcd'), rackBg = $('#rackBg'), rackKnob = $('#rackKnob');
-Sound.onRadio(on => { rackPlay.setAttribute('aria-pressed', String(on)); rackPlay.innerHTML = on ? '&#10074;&#10074;' : '&#9654;'; rackLcd.classList.toggle('on', on); });
-rackPlay.addEventListener('click', () => { if (Sound.toggleRadio()) toast('Now playing: The Endless Jam (unreleased)'); });
+const lcdSay = (txt, still) => { rackLcd.querySelectorAll('.lcd-track span').forEach(sp => { sp.textContent = txt; }); rackLcd.classList.toggle('still', !!still); };   /* WELCOME until the song has been played, then the title while it plays and PAUSED when it is paused */
+let lcdPlayed = false;
+Sound.onRadio(on => { rackPlay.setAttribute('aria-pressed', String(on)); rackPlay.innerHTML = on ? '&#10074;&#10074;' : '&#9654;'; if (on) { lcdPlayed = true; lcdSay('\u25B6 THE ENDLESS JAM (UNRELEASED) - FEARJOY', false); } else if (lcdPlayed) lcdSay('PAUSED', true); });
+rackPlay.addEventListener('click', () => Sound.toggleRadio());
 const showRackKnob = v => { rackKnob.style.setProperty('--a', (-135 + v * 270) + 'deg'); rackKnob.setAttribute('aria-valuenow', String(Math.round(v * 100))); };
 showRackKnob(Sound.getVolume());
 Sound.onVolume(showRackKnob);
