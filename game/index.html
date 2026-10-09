@@ -1,7 +1,7 @@
 <!DOCTYPE html><html lang="en"><head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Fearjoy - Game (v100.32)</title>
+    <title>Fearjoy - Game (v100.33)</title>
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
@@ -916,11 +916,7 @@
         }
         .color-swatch:hover { transform:scale(1.15); }
         .color-swatch.swatch-selected { border-color:white; transform:scale(1.2); box-shadow:0 0 10px currentColor; }
-        .color-glow { width:clamp(32px,7vw,46px); height:clamp(32px,7vw,46px); border:2px solid rgba(255,255,255,0.7); padding:0; transition:background-color 0.9s ease,box-shadow 0.9s ease,transform 0.2s ease,border-color 0.2s ease; }
-        .color-glow.swatch-selected { border-color:#fff; transform:scale(1.08); }
-        #color-glow-pop { display:none; flex-basis:100%; justify-content:center; gap:12px; margin-top:10px; }
-        #color-glow-label { flex-basis:100%; text-align:center; margin-top:8px; font-family:'Courier New',monospace; font-size:0.6rem; letter-spacing:2px; color:#999; text-transform:uppercase; }
-        @media (prefers-reduced-motion: reduce) { .color-glow, .bg-picker-btn { transition:none !important; } }
+        @media (prefers-reduced-motion: reduce) { .bg-picker-btn { transition:none !important; } }
         .color-swatch.swatch-taken { opacity:0.2; cursor:not-allowed; pointer-events:none; }
         #preload-bar-wrap { width:min(240px,70%); margin:14px auto 0; text-align:center; opacity:0; transition:opacity 0.5s; }
         #preload-bar-wrap.visible { opacity:1; }
@@ -2643,63 +2639,14 @@
     // ══════════════════════════════════════════════
     // SETUP
     // ══════════════════════════════════════════════
-    /* PLAYER COLOR: one glowing button that fades through the colors nobody has taken yet.
-       Tap / click / Space / Enter locks the color it is showing; tap again to unlock and change. */
-    let _glowLocked=false,_glowShown=null,_glowTimer=null,_glowI=0;
-    function _glowFree(){
-        const taken=players.map(p=>p.avatar.color);
-        return AVAILABLE_COLORS.filter(c=>!taken.includes(c.hex));
-    }
-    function _glowPaint(hex){
-        const b=document.getElementById('color-glow-btn');if(!b||!hex)return;
-        _glowShown=hex;
-        b.style.backgroundColor=hex;b.style.boxShadow=`0 0 14px 4px ${hex}`;
-    }
-    function _glowTick(){
-        if(_glowLocked||document.hidden)return;
-        const b=document.getElementById('color-glow-btn');
-        if(!b||b.offsetParent===null)return;
-        const _gp=document.getElementById('color-glow-pop');if(_gp&&_gp.style.display==='flex')return; /* pause while the selector is open */
-        const free=_glowFree();if(!free.length)return;
-        _glowI=(_glowI+1)%free.length;
-        _glowPaint(free[_glowI].hex);
-    }
-    function glowPick(){
-        const pop=document.getElementById('color-glow-pop');if(!pop)return;
-        if(pop.style.display==='flex'){pop.style.display='none';return;}
-        pop.innerHTML='';
-        _glowFree().forEach(c=>{
-            const sw=document.createElement('div');
-            sw.className='color-swatch'+(_glowLocked&&selectedColor===c.hex?' swatch-selected':'');
-            sw.style.background=c.hex;sw.title=c.name;sw.tabIndex=0;
-            sw.onclick=()=>{_glowLocked=true;pop.style.display='none';pickColor(c.hex);const gb=document.getElementById('color-glow-btn');if(gb)gb.focus();};
-            pop.appendChild(sw);
-        });
-        pop.style.display='flex';
-        const first=pop.querySelector('.color-swatch');if(first)first.focus();
-    }
     function renderSwatches(){
-        const row=document.getElementById('swatch-row');
-        let b=document.getElementById('color-glow-btn');
-        if(!b){
-            row.innerHTML='';
-            b=document.createElement('button');b.id='color-glow-btn';b.type='button';b.className='color-swatch color-glow';
-            b.title='Tap to choose a color';b.setAttribute('aria-label','Pick color');b.onclick=glowPick;
-            row.appendChild(b);
-            const pop=document.createElement('div');pop.id='color-glow-pop';row.appendChild(pop);
-            const lab=document.createElement('div');lab.id='color-glow-label';row.appendChild(lab);
-        }
-        const lab=document.getElementById('color-glow-label');
-        b.classList.toggle('swatch-selected',_glowLocked);
-        if(_glowLocked){
-            _glowPaint(selectedColor||_glowShown);
-            lab.textContent='✓ COLOR PICKED - TAP TO CHANGE';
-        } else {
-            const free=_glowFree();
-            if(!_glowShown||(free.length&&!free.some(c=>c.hex===_glowShown))){_glowI=0;_glowPaint(free.length?free[0].hex:selectedColor);}
-            lab.textContent='TAP TO CHOOSE A COLOR';
-        }
-        if(!_glowTimer)_glowTimer=setInterval(_glowTick,1000);
+        const taken=players.map(p=>p.avatar.color);
+        const row=document.getElementById('swatch-row');row.innerHTML='';
+        AVAILABLE_COLORS.forEach(c=>{
+            const sw=document.createElement('div');
+            sw.className='color-swatch'+(taken.includes(c.hex)?' swatch-taken':'')+(selectedColor===c.hex?' swatch-selected':'');
+            sw.style.background=c.hex;sw.title=c.name;sw.tabIndex=0;sw.onclick=()=>pickColor(c.hex);row.appendChild(sw);
+        });
     }
     function pickColor(hex){
         selectedColor=hex;renderSwatches();
@@ -2709,7 +2656,7 @@
     }
     let _lastPlayerCount=0;
     function setPlayerCount(num){
-        totalP=num;_lastPlayerCount=num;_glowLocked=false;
+        totalP=num;_lastPlayerCount=num;
         document.getElementById('setup-step-1').style.display='none';
         document.getElementById('setup-step-2').style.display='block';
         const backBtn=document.getElementById('setup-back-btn');if(backBtn)backBtn.style.display='inline-flex';
@@ -2884,14 +2831,14 @@
         document.querySelectorAll('.setup-avatar').forEach(img=>img.classList.remove('selected'));
     }
     function updateSetupPrompt(){
-        document.getElementById('setup-prompt').innerText=`ARTIST ${currentSetupP+1}`;_glowLocked=false;
+        document.getElementById('setup-prompt').innerText=`ARTIST ${currentSetupP+1}`;
         selectedColor=DEFAULT_COLORS[currentSetupP]||AVAILABLE_COLORS[currentSetupP%AVAILABLE_COLORS.length].hex;
         {const _tk=players.map(p=>p.avatar.color);if(_tk.includes(selectedColor)){const _fc=AVAILABLE_COLORS.find(c=>!_tk.includes(c.hex));if(_fc)selectedColor=_fc.hex;}} /* never start on a color another player already has */
         renderSwatches();
         const ni=document.getElementById('name-input');ni.style.borderColor=selectedColor;ni.style.boxShadow=`0 0 15px ${selectedColor}`;
     }
     function pickAvatar(id){
-        selectedAvatar={id,img:id+'.png'};_glowLocked=false;
+        selectedAvatar={id,img:id+'.png'};
         /* Jesse has a fixed signature color; others get a random bright swatch color
            (avoiding colors already taken by other players in the roster) */
         if(AVATAR_DEFAULT_COLORS[id]){
@@ -3602,7 +3549,7 @@
         const slot=document.getElementById('dice-slot-right');if(!slot)return;
         const r=slot.getBoundingClientRect();
         const two=quickGameActive;
-        const e=Math.max(18,Math.min(r.width,r.height)*(two?0.56:0.82));
+        const e=Math.max(18,Math.min(r.width,r.height)*(two?0.3:0.42));
         const cx=r.left+r.width/2,cy=r.top+r.height/2;
         _d3.barE=e;
         if(two){
