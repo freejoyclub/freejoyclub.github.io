@@ -1,11 +1,142 @@
 <!DOCTYPE html><html lang="en"><head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Fearjoy - Game (v100.24)</title>
+    <title>Fearjoy - Game (v100.31)</title>
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
     <link rel="icon" type="image/png" href="favicon.png">
+    <!-- 3D libraries (dice + busts). If any fail to load, the game falls back to the old numeral dice and PNG pieces. -->
+    <script defer src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/STLLoader.js"></script>
+    <script>
+/* fearjoy-dice.js
+   The real 3D die from the Fearjoy LP1 page (freejoy.club/LP1), pulled out so /game can use it.
+   Needs three.js r128 loaded first (the same copy LP1 uses): window.THREE.
+
+   Use:
+     const die = FearjoyDice.create({ color: 'red', size: 1 });   // size 1 = about 0.46 three.js units
+     scene.add(die.object);                                        // a THREE.Group, put it where the dice should land
+     // when the player rolls (n is optional: pass the number the game already decided, or leave it out for a random 1-6):
+     const result = die.roll(n, finalValue => { ...show the move... });
+     // every frame (pass requestAnimationFrame's timestamp or performance.now()):
+     die.update(performance.now());
+     // player color changes:
+     die.setColor('purple');
+   Colors: black, dkblue, ltblue, purple, red, rose, lime, green, ltyellow, orange (FearjoyDice.COLORS has hex values).
+   The roll: about 1 second, tumbles 1-2 full turns on every axis ending exactly on the chosen face, hops up and settles with a small bounce.
+   Pass { reduceMotion: true } to roll() options for a quick 250 ms version. */
+(function (root) {
+  'use strict';
+  const COLORS = [
+    { id: 'black', name: 'Black', hex: '#1c1c1c' },
+    { id: 'dkblue', name: 'Dark blue', hex: '#1f3f9e' },
+    { id: 'ltblue', name: 'Light blue', hex: '#6bb8f0' },
+    { id: 'purple', name: 'Purple', hex: '#7a3fc4' },
+    { id: 'red', name: 'Red', hex: '#d8342c' },
+    { id: 'rose', name: 'Rose red', hex: '#e0426f' },
+    { id: 'lime', name: 'Yellow-green', hex: '#a8d62f' },
+    { id: 'green', name: 'Green', hex: '#2f9e44' },
+    { id: 'ltyellow', name: 'Light yellow', hex: '#f7ea7a' },
+    { id: 'orange', name: 'Orange', hex: '#f08a1c' }
+  ];
+  /* which number is on each face of the box, in three.js material order (+x, -x, +y, -y, +z, -z) */
+  const FACES = [3, 4, 1, 6, 2, 5];
+  const PIPS = {
+    1: [[0.5, 0.5]],
+    2: [[0.25, 0.25], [0.75, 0.75]],
+    3: [[0.25, 0.25], [0.5, 0.5], [0.75, 0.75]],
+    4: [[0.25, 0.25], [0.75, 0.25], [0.25, 0.75], [0.75, 0.75]],
+    5: [[0.25, 0.25], [0.75, 0.25], [0.5, 0.5], [0.25, 0.75], [0.75, 0.75]],
+    6: [[0.25, 0.22], [0.75, 0.22], [0.25, 0.5], [0.75, 0.5], [0.25, 0.78], [0.75, 0.78]]
+  };
+  /* rotation (x, y, z) that puts each number on top */
+  const FACE_UP = { 1: [0, 0, 0], 6: [Math.PI, 0, 0], 3: [0, 0, Math.PI / 2], 4: [0, 0, -Math.PI / 2], 2: [-Math.PI / 2, 0, 0], 5: [Math.PI / 2, 0, 0] };
+  const ALPHA = 0.8;   /* mostly see-through, but solid enough to tell which way it turns (use 1 for a solid die, as on the LP1 desk) */
+  const TAU = Math.PI * 2;
+  const pipCache = {};
+  const hexA = (hex, a) => { const n = parseInt(hex.slice(1), 16); return 'rgba(' + ((n >> 16) & 255) + ',' + ((n >> 8) & 255) + ',' + (n & 255) + ',' + a + ')'; };
+  const lum = hex => { const n = parseInt(hex.slice(1), 16); return ((n >> 16) & 255) * 0.299 + ((n >> 8) & 255) * 0.587 + (n & 255) * 0.114; };
+  function pipTexture(n, bg, pip, alpha) {
+    const key = n + '|' + bg + '|' + pip + '|' + alpha;
+    if (pipCache[key]) return pipCache[key];
+    const c = document.createElement('canvas'); c.width = c.height = 128;
+    const g = c.getContext('2d');
+    g.fillStyle = hexA(bg, alpha); g.fillRect(0, 0, 128, 128);
+    g.fillStyle = pip;
+    PIPS[n].forEach(p => { g.beginPath(); g.arc(p[0] * 128, p[1] * 128, 11, 0, TAU); g.fill(); });
+    return (pipCache[key] = new THREE.CanvasTexture(c));
+  }
+  /* cube with rounded corners: push every vertex of a subdivided box out from an inner box */
+  function roundedBox(size, radius, seg) {
+    const geo = new THREE.BoxGeometry(size, size, size, seg, seg, seg);
+    const pos = geo.attributes.position, nor = geo.attributes.normal;
+    const h = size / 2 - radius;
+    const p = new THREE.Vector3(), q = new THREE.Vector3(), n = new THREE.Vector3();
+    for (let i = 0; i < pos.count; i++) {
+      p.fromBufferAttribute(pos, i);
+      q.set(Math.max(-h, Math.min(h, p.x)), Math.max(-h, Math.min(h, p.y)), Math.max(-h, Math.min(h, p.z)));
+      n.copy(p).sub(q);
+      if (n.lengthSq() > 1e-9) { n.normalize(); p.copy(q).addScaledVector(n, radius); nor.setXYZ(i, n.x, n.y, n.z); }
+      pos.setXYZ(i, p.x, p.y, p.z);
+    }
+    return geo;
+  }
+  const ease = k => 1 - Math.pow(1 - k, 3);
+
+  function create(opts) {
+    opts = opts || {};
+    const size = opts.size || 1, alpha = opts.alpha == null ? ALPHA : opts.alpha;
+    let colorId = opts.color || 'red';
+    const mats = FACES.map(() => new THREE.MeshStandardMaterial({ transparent: true, roughness: 0.18, metalness: 0.05 }));
+    const mesh = new THREE.Mesh(roundedBox(0.46, 0.07, 12), mats);
+    mesh.scale.setScalar(size);
+    const yaw = new THREE.Group(), lift = new THREE.Group(), object = new THREE.Group();
+    yaw.add(mesh); lift.add(yaw); object.add(lift);
+    const restY = 0.23 * size;   /* a resting die sits half its height above the surface: put object.position.y = 0 on the board and the die sits on it */
+    lift.position.y = restY;
+    function setColor(id) {
+      /* also accepts any '#rrggbb' string (the game passes the player's own color) */
+      const c = COLORS.find(x => x.id === id) || (typeof id === 'string' && /^#[0-9a-f]{6}$/i.test(id) ? { id: id.toLowerCase(), hex: id } : COLORS[0]);
+      colorId = c.id;
+      const pip = lum(c.hex) < 140 ? '#ffffff' : '#111111';
+      mats.forEach((m, i) => { m.map = pipTexture(FACES[i], c.hex, pip, alpha); m.needsUpdate = true; });
+    }
+    setColor(colorId);
+    mesh.rotation.set(FACE_UP[1][0], FACE_UP[1][1], FACE_UP[1][2]);
+    let roll = null, onLand = null;
+    function rollTo(n, cb, o) {
+      if (roll) return roll.n;
+      n = n >= 1 && n <= 6 ? Math.round(n) : 1 + Math.floor(Math.random() * 6);
+      const tgt = FACE_UP[n];
+      roll = {
+        t0: performance.now(), dur: o && o.reduceMotion ? 250 : 1000, n, tgt,
+        e0: [mesh.rotation.x, mesh.rotation.y, mesh.rotation.z],
+        e1: tgt.map(a => a + TAU * (1 + Math.floor(Math.random() * 2))),
+        y0: yaw.rotation.y, y1: yaw.rotation.y + (Math.random() - 0.5) * 3,
+        hop: o && o.reduceMotion ? 0 : 0.9 * size
+      };
+      onLand = cb || null;
+      return n;
+    }
+    function update(now) {
+      if (!roll) return;
+      const k = Math.min(1, (now - roll.t0) / roll.dur), e = ease(k);
+      mesh.rotation.set(roll.e0[0] + (roll.e1[0] - roll.e0[0]) * e, roll.e0[1] + (roll.e1[1] - roll.e0[1]) * e, roll.e0[2] + (roll.e1[2] - roll.e0[2]) * e);
+      yaw.rotation.y = roll.y0 + (roll.y1 - roll.y0) * e;
+      lift.position.y = restY + Math.sin(Math.PI * k) * roll.hop + 0.22 * size * Math.min(1, Math.sin(Math.PI * k) * 6) * (roll.hop ? 1 : 0);
+      if (k >= 1) {
+        mesh.rotation.set(roll.tgt[0], roll.tgt[1], roll.tgt[2]);
+        lift.position.y = restY;
+        const n = roll.n, cb = onLand; roll = null; onLand = null;
+        if (cb) cb(n);
+      }
+    }
+    return { object, mesh, setColor, getColor: () => colorId, roll: rollTo, update, isRolling: () => !!roll };
+  }
+  root.FearjoyDice = { create, COLORS, roundedBox, pipTexture };
+})(window);
+    </script>
     <style>
         * { -webkit-tap-highlight-color:transparent; -webkit-touch-callout:none; outline:none; }
         @font-face { font-family:'KCStrikerSans'; src:url('KCStrikerSans.otf') format('opentype'); font-weight:normal; font-style:normal; }
@@ -428,6 +559,10 @@
             z-index:5000; opacity:0.90; box-shadow:0 0 50px rgba(255,255,255,0.4);
             transition:none !important; cursor:default !important;
         }
+        #dice3d { position:fixed; left:50%; top:50%; width:min(62vmin,340px); height:min(62vmin,340px); transform:translate(-50%,-50%); z-index:5001; pointer-events:none; display:none; opacity:0; transition:opacity 0.3s ease; }
+        #dice3d.show { opacity:1; }
+        #dice-box.dice-hidden3d { opacity:0 !important; animation:none !important; pointer-events:none; }
+        #dice-box.dice-readout { transform:translate3d(-50%,-50%,0) scale(2.4) !important; top:calc(50% + min(31vmin,170px) + 34px) !important; z-index:5002; opacity:0.95; }
         .dice-red      { animation:redSparkle    0.5s infinite alternate !important; }
         .dice-teal     { animation:tealSparkle   0.5s infinite alternate !important; }
         .dice-contract { animation:contractFlash 0.6s infinite alternate !important; }
@@ -610,6 +745,8 @@
         .floating-emoji-slow { position:absolute; font-size:7.2rem; animation:floatUpSlow 2.2s cubic-bezier(0.2,0.8,0.2,1) forwards; pointer-events:none; z-index:6000; }
 
         /* ── POPUPS & OVERLAYS ── */
+        html:not(.embed) .embed-only { display:none !important; }
+        html.embed #fullscreen-standalone-btn, html.embed .btn-fullscreen, html.embed .setup-mini-btn[title="Fullscreen"] { display:none !important; }
         .overlay { position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:2000; display:none; align-items:flex-start; justify-content:center; padding:clamp(8px,2vw,20px); box-sizing:border-box; overflow-y:auto; overflow-x:hidden; }
         .popup {
             background:linear-gradient(160deg,rgba(8,8,8,0.60) 0%,rgba(45,45,45,0.60) 100%);
@@ -749,10 +886,9 @@
             width:clamp(23px,3vw,30px); height:clamp(23px,3vw,30px);
             border-radius:50%; cursor:pointer; padding:0;
             border:2px solid rgba(255,255,255,0.35);
-            /* Always shows all 8 palette colors as a wheel — a clear "open the
-               picker" affordance rather than reflecting just the current pick */
-            background:conic-gradient(#ffffff 0deg 45deg,#000000 45deg 90deg,#2b2620 90deg 135deg,#7a2e28 135deg 180deg,#2f6b73 180deg 225deg,#c98a1f 225deg 270deg,#4c9c4c 270deg 315deg,#c9a876 315deg 360deg);
-            box-shadow:0 2px 5px rgba(0,0,0,0.45); transition:all 0.15s ease;
+            /* A soft light that fades through the vinyl colors (set by paintBgLights); tap it to use the color it shows */
+            background-color:#6d1a2b;
+            box-shadow:0 0 12px 3px #6d1a2b; transition:background-color 1s ease,box-shadow 1s ease,transform 0.15s ease,border-color 0.15s ease;
         }
         .bg-picker-btn:hover { transform:scale(1.1); border-color:rgba(255,255,255,0.6); }
         #bg-picker-popover {
@@ -777,6 +913,11 @@
         }
         .color-swatch:hover { transform:scale(1.15); }
         .color-swatch.swatch-selected { border-color:white; transform:scale(1.2); box-shadow:0 0 10px currentColor; }
+        .color-glow { width:clamp(32px,7vw,46px); height:clamp(32px,7vw,46px); border:2px solid rgba(255,255,255,0.7); padding:0; transition:background-color 0.9s ease,box-shadow 0.9s ease,transform 0.2s ease,border-color 0.2s ease; }
+        .color-glow.swatch-selected { border-color:#fff; transform:scale(1.08); }
+        #color-glow-pop { display:none; flex-basis:100%; justify-content:center; gap:12px; margin-top:10px; }
+        #color-glow-label { flex-basis:100%; text-align:center; margin-top:8px; font-family:'Courier New',monospace; font-size:0.6rem; letter-spacing:2px; color:#999; text-transform:uppercase; }
+        @media (prefers-reduced-motion: reduce) { .color-glow, .bg-picker-btn { transition:none !important; } }
         .color-swatch.swatch-taken { opacity:0.2; cursor:not-allowed; pointer-events:none; }
         #preload-bar-wrap { width:min(240px,70%); margin:14px auto 0; text-align:center; opacity:0; transition:opacity 0.5s; }
         #preload-bar-wrap.visible { opacity:1; }
@@ -897,8 +1038,9 @@
                 <button class="nav-menu-btn btn-restart" onclick="confirmSoftRestart();closeNavMenu()"><span class="nav-icon">🔄</span> Restart Tour</button>
                 <button class="nav-menu-btn btn-newband" onclick="confirmHardReset();closeNavMenu()"><span class="nav-icon">💀</span> New Band</button>
                 <button class="nav-menu-btn btn-home" onclick="confirmGoHome()"><span class="nav-icon">🏠</span> Fearjoy - Home</button>
-                <button class="nav-menu-btn btn-store" onclick="window.open('https://freejoy.club','_blank')"><span class="nav-icon">👕</span> Store</button>
-                <button class="nav-menu-btn btn-album" onclick="window.open('https://freejoy.club','_blank')"><span class="nav-icon">▶️</span> Play the Album</button>
+                <button class="nav-menu-btn embed-only" onclick="backToDesk()"><span class="nav-icon">🖥️</span> Back to the Desk</button>
+                <button class="nav-menu-btn btn-store" onclick="goOut('https://freejoy.club')"><span class="nav-icon">👕</span> Store</button>
+                <button class="nav-menu-btn btn-album" onclick="goOut('https://freejoy.club')"><span class="nav-icon">▶️</span> Play the Album</button>
                 <div class="nav-menu-btn" style="border-color:rgba(255,255,255,0.12);color:rgba(255,255,255,0.55);cursor:default;overflow:hidden;position:relative;display:flex;align-items:center;gap:6px;padding-left:8px;padding-right:0;"><button id="bgmusic-playpause" onclick="toggleBgMusic()" style="flex-shrink:0;background:transparent;border:1px solid rgba(255,255,255,0.25);color:rgba(255,255,255,0.7);border-radius:4px;width:24px;height:24px;cursor:pointer;font-size:0.6rem;padding:0;line-height:1;">⏸</button><div style="overflow:hidden;flex-grow:1;"><span style="display:inline-block;white-space:nowrap;animation:nowPlayingScroll 10s linear infinite;">🎶 Now Playing: Unreleased Fearjoy Jam&nbsp;&nbsp;•&nbsp;&nbsp;🎶 Now Playing: Unreleased Fearjoy Jam&nbsp;&nbsp;•&nbsp;&nbsp;</span></div></div>
                 <div style="font-family:'Courier New',monospace;font-size:0.5rem;letter-spacing:1px;color:rgba(255,255,255,0.25);text-align:center;padding:6px 4px 2px;text-transform:uppercase;white-space:normal;line-height:1.5;">© 2026. Music/Game/<br>Sound Design by Fearjoy</div>
             </div>
@@ -1027,6 +1169,7 @@
                         <button class="nav-menu-btn btn-tracks" onclick="toggleTracks()"><span class="nav-icon" id="setup-tracks-icon">🎵</span> TRACKS: <span id="setup-tracks-status">ON</span></button>
                         <button class="nav-menu-btn btn-sfx" onclick="toggleSfx()"><span class="nav-icon" id="setup-sfx-icon">🔔</span> SFX: <span id="setup-sfx-status">ON</span></button>
                         <button class="nav-menu-btn btn-home" onclick="confirmGoHome()"><span class="nav-icon">🏠</span> Fearjoy - Home</button>
+                <button class="nav-menu-btn embed-only" onclick="backToDesk()"><span class="nav-icon">🖥️</span> Back to the Desk</button>
                         <button class="nav-menu-btn" onclick="closeSetupMenu()" style="border-color:#555;color:rgba(255,255,255,0.5);">✕ Close <span class="kb-hint" style="position:static;display:inline;margin-left:4px;">[Esc]</span></button>
                     </div>
                 </div>
@@ -1039,6 +1182,7 @@
         <div class="bg-wheel" id="bg-wheel"></div>
         <div class="bg-picker-label">Background</div>
     </div>
+    <canvas id="dice3d"></canvas>
     <div id="page-glow"></div>
     <div id="screen-glow"></div>
 
@@ -1046,6 +1190,11 @@
     // ══════════════════════════════════════════════════════
     // BUCKET - add files here:
     // ══════════════════════════════════════════════════════
+    /* EMBED: true when the game runs inside the LP1 TV frame (?embed=1) or any iframe */
+    const IS_EMBED=(()=>{try{return new URLSearchParams(location.search).has('embed')||window.self!==window.top;}catch(e){return true;}})();
+    if(IS_EMBED)document.documentElement.classList.add('embed');
+    function goOut(url){if(IS_EMBED){try{window.open(url,'_top');}catch(e){location.href=url;}}else{window.open(url,'_blank');}}
+    function backToDesk(){try{if(IS_EMBED&&window.parent&&window.parent!==window)window.parent.postMessage({fearjoy:'close-game'},location.origin);}catch(e){}closeNavMenu();closeSetupMenu();}
     const BUCKET_BASE = [
         {type:'image',file:'bucket/CP-30.jpg'},
         {type:'image',file:'bucket/IMG_20200116_191840_549.jpg'},
@@ -1198,7 +1347,7 @@
     let isSwapping=false,isMayaPartner=false;
     let sidebarTimer=null,expandedPassIdx=null;
     let reminderTimer=null,reminderDismissTimer=null;
-    let globalTurnCount=0,isRestart=false;
+    let globalTurnCount=0,isRestart=false,_quickStarted=false;
     let lastBucketFile=null,activeLoreVid=null;
     let loreDoneResolver=null;
     let isInLoreDrop=false;
@@ -1483,12 +1632,30 @@
         applyBgColor(bgColor==='#000000'?null:'#000000');
     }
 
-    /* ── BG WHEEL POPOVER ── */
-    const BG_WHEEL_ITEMS=[
-        {hex:null,name:'White'},
-        {hex:'#000000',name:'Black'},
-        ...BG_COLORS
+    /* ── BG LIGHT ──
+       The BG button is a soft light that fades through the vinyl colors, one at a time.
+       Tapping it sets the page background to the color it is showing right now.
+       (The old wheel popover code below is left in place but is no longer opened.) */
+    const BG_VINYL=[
+        {hex:'#6d1a2b',name:'Burgundy'},{hex:'#1d3f8f',name:'Blue'},{hex:'#1f6f73',name:'Teal'},
+        {hex:'#1f4a2c',name:'Dark Green'},{hex:null,name:'White'},{hex:'#000000',name:'Black'}
     ];
+    let _bgLightI=0;
+    function paintBgLights(){
+        const it=BG_VINYL[_bgLightI];
+        const glow=it.hex===null?'#ffffff':(it.hex==='#000000'?'rgba(255,255,255,0.35)':it.hex);
+        document.querySelectorAll('.bg-picker-btn').forEach(b=>{
+            b.style.backgroundColor=it.hex||'#ffffff';
+            b.style.boxShadow=`0 0 12px 3px ${glow}`;
+            b.title='Background color - tap to choose';
+        });
+    }
+    function bgLightTick(){if(document.hidden)return;_bgLightI=(_bgLightI+1)%BG_VINYL.length;paintBgLights();}
+    function pickBgFromLight(){applyBgColor(BG_VINYL[_bgLightI].hex);}
+    paintBgLights();setInterval(bgLightTick,1500);
+
+    /* ── BG WHEEL POPOVER ── */
+    const BG_WHEEL_ITEMS=BG_VINYL; /* the selector offers the same vinyl colors the light fades through */
     function renderBgWheel(){
         const wheel=document.getElementById('bg-wheel');
         if(!wheel)return;
@@ -2038,10 +2205,12 @@
         );
     }
     function confirmGoHome(){
+        const _ov=document.getElementById('overlay-event');
         showStatusPopup("LEAVE THE GAME?","This will close the game and open Fearjoy's main site.",
-            "GO TO FREEJOY.CLUB",()=>{window.open('https://freejoy.club','_blank');closeNavMenu();closeSetupMenu();},
-            "CANCEL",()=>{}
+            "GO TO FREEJOY.CLUB",()=>{_ov.style.zIndex='';goOut('https://freejoy.club');closeNavMenu();closeSetupMenu();},
+            "CANCEL",()=>{_ov.style.zIndex='';}
         );
+        _ov.style.zIndex='1000000'; /* sit above the setup card, setup menu and in-game menu */
     }
     function confirmSoftRestart(){
         showStatusPopup("RESTART TOUR?","Resets scores but keeps your artists.",
@@ -2431,7 +2600,7 @@
         if(item.url){
             const storeBtn=document.createElement('a');
             storeBtn.href=(item.url||'https://freejoy.club/store').replace('freejoy.club','freejoy.club/store').replace('/store/store','/store');
-            storeBtn.target='_blank';
+            storeBtn.target=IS_EMBED?'_top':'_blank';
             storeBtn.className='bucket-btn';
             storeBtn.style.cssText='display:inline-block;margin:0 auto 14px;';
             storeBtn.innerText='STORE';
@@ -2469,14 +2638,63 @@
     // ══════════════════════════════════════════════
     // SETUP
     // ══════════════════════════════════════════════
-    function renderSwatches(){
+    /* PLAYER COLOR: one glowing button that fades through the colors nobody has taken yet.
+       Tap / click / Space / Enter locks the color it is showing; tap again to unlock and change. */
+    let _glowLocked=false,_glowShown=null,_glowTimer=null,_glowI=0;
+    function _glowFree(){
         const taken=players.map(p=>p.avatar.color);
-        const row=document.getElementById('swatch-row');row.innerHTML='';
-        AVAILABLE_COLORS.forEach(c=>{
+        return AVAILABLE_COLORS.filter(c=>!taken.includes(c.hex));
+    }
+    function _glowPaint(hex){
+        const b=document.getElementById('color-glow-btn');if(!b||!hex)return;
+        _glowShown=hex;
+        b.style.backgroundColor=hex;b.style.boxShadow=`0 0 14px 4px ${hex}`;
+    }
+    function _glowTick(){
+        if(_glowLocked||document.hidden)return;
+        const b=document.getElementById('color-glow-btn');
+        if(!b||b.offsetParent===null)return;
+        const _gp=document.getElementById('color-glow-pop');if(_gp&&_gp.style.display==='flex')return; /* pause while the selector is open */
+        const free=_glowFree();if(!free.length)return;
+        _glowI=(_glowI+1)%free.length;
+        _glowPaint(free[_glowI].hex);
+    }
+    function glowPick(){
+        const pop=document.getElementById('color-glow-pop');if(!pop)return;
+        if(pop.style.display==='flex'){pop.style.display='none';return;}
+        pop.innerHTML='';
+        _glowFree().forEach(c=>{
             const sw=document.createElement('div');
-            sw.className='color-swatch'+(taken.includes(c.hex)?' swatch-taken':'')+(selectedColor===c.hex?' swatch-selected':'');
-            sw.style.background=c.hex;sw.title=c.name;sw.tabIndex=0;sw.onclick=()=>pickColor(c.hex);row.appendChild(sw);
+            sw.className='color-swatch'+(_glowLocked&&selectedColor===c.hex?' swatch-selected':'');
+            sw.style.background=c.hex;sw.title=c.name;sw.tabIndex=0;
+            sw.onclick=()=>{_glowLocked=true;pop.style.display='none';pickColor(c.hex);const gb=document.getElementById('color-glow-btn');if(gb)gb.focus();};
+            pop.appendChild(sw);
         });
+        pop.style.display='flex';
+        const first=pop.querySelector('.color-swatch');if(first)first.focus();
+    }
+    function renderSwatches(){
+        const row=document.getElementById('swatch-row');
+        let b=document.getElementById('color-glow-btn');
+        if(!b){
+            row.innerHTML='';
+            b=document.createElement('button');b.id='color-glow-btn';b.type='button';b.className='color-swatch color-glow';
+            b.title='Tap to choose a color';b.setAttribute('aria-label','Pick color');b.onclick=glowPick;
+            row.appendChild(b);
+            const pop=document.createElement('div');pop.id='color-glow-pop';row.appendChild(pop);
+            const lab=document.createElement('div');lab.id='color-glow-label';row.appendChild(lab);
+        }
+        const lab=document.getElementById('color-glow-label');
+        b.classList.toggle('swatch-selected',_glowLocked);
+        if(_glowLocked){
+            _glowPaint(selectedColor||_glowShown);
+            lab.textContent='✓ COLOR PICKED - TAP TO CHANGE';
+        } else {
+            const free=_glowFree();
+            if(!_glowShown||(free.length&&!free.some(c=>c.hex===_glowShown))){_glowI=0;_glowPaint(free.length?free[0].hex:selectedColor);}
+            lab.textContent='TAP TO CHOOSE A COLOR';
+        }
+        if(!_glowTimer)_glowTimer=setInterval(_glowTick,1000);
     }
     function pickColor(hex){
         selectedColor=hex;renderSwatches();
@@ -2485,7 +2703,7 @@
     }
     let _lastPlayerCount=0;
     function setPlayerCount(num){
-        totalP=num;_lastPlayerCount=num;
+        totalP=num;_lastPlayerCount=num;_glowLocked=false;
         document.getElementById('setup-step-1').style.display='none';
         document.getElementById('setup-step-2').style.display='block';
         const backBtn=document.getElementById('setup-back-btn');if(backBtn)backBtn.style.display='inline-flex';
@@ -2629,6 +2847,7 @@
        after), their real names, signature colors. Reuses confirmArtist so player objects
        and game start stay identical to the manual path. */
     function quickStart(){
+        _quickStarted=true; /* Quick Start goes straight to the game: no intro / how-to popup */
         const pool=['jesse','marco','grant'].sort(()=>Math.random()-0.5);
         const ni=document.getElementById('name-input');
         const cap=s=>s.charAt(0).toUpperCase()+s.slice(1);
@@ -2659,13 +2878,14 @@
         document.querySelectorAll('.setup-avatar').forEach(img=>img.classList.remove('selected'));
     }
     function updateSetupPrompt(){
-        document.getElementById('setup-prompt').innerText=`ARTIST ${currentSetupP+1}`;
+        document.getElementById('setup-prompt').innerText=`ARTIST ${currentSetupP+1}`;_glowLocked=false;
         selectedColor=DEFAULT_COLORS[currentSetupP]||AVAILABLE_COLORS[currentSetupP%AVAILABLE_COLORS.length].hex;
+        {const _tk=players.map(p=>p.avatar.color);if(_tk.includes(selectedColor)){const _fc=AVAILABLE_COLORS.find(c=>!_tk.includes(c.hex));if(_fc)selectedColor=_fc.hex;}} /* never start on a color another player already has */
         renderSwatches();
         const ni=document.getElementById('name-input');ni.style.borderColor=selectedColor;ni.style.boxShadow=`0 0 15px ${selectedColor}`;
     }
     function pickAvatar(id){
-        selectedAvatar={id,img:id+'.png'};
+        selectedAvatar={id,img:id+'.png'};_glowLocked=false;
         /* Jesse has a fixed signature color; others get a random bright swatch color
            (avoiding colors already taken by other players in the roster) */
         if(AVATAR_DEFAULT_COLORS[id]){
@@ -2814,14 +3034,81 @@
             el.onclick=()=>handlePlayerClick(i);
             board.appendChild(el);
         });
+        applyBusts(); /* swap PNG pieces for 3D bust renders once the STLs load (PNG stays if anything fails) */
         updateUI();
         document.getElementById('roll-btn').disabled=false;
-        if(!isRestart)setTimeout(showInstructions,400);
+        if(!isRestart&&!_quickStarted)setTimeout(showInstructions,400);
     }
 
     // ══════════════════════════════════════════════
     // INSTRUCTIONS
     // ══════════════════════════════════════════════
+
+    /* ── 3D BUST PIECES ──
+       Each bust STL is loaded once (lite first, then full). One small offscreen three.js renderer
+       draws each player's bust in their color to an image, which becomes the piece's background-image.
+       The pieces keep every existing CSS move/hover/pulse animation and cost nothing per frame.
+       If anything fails (no three.js, STL missing) the piece just keeps its PNG. */
+    const _bust={geo:{},pending:{},renderer:null,scene:null,cam:null,mesh:null,mat:null};
+    function bustUrls(id){
+        const N=id.charAt(0).toUpperCase()+id.slice(1);
+        return[`/LP1/${N} Bust lite.stl`,`/LP1/${N}_Bust_lite.stl`,`/LP1/${N} Bust.stl`,`/LP1/${N}_Bust.stl`].map(encodeURI);
+    }
+    function loadBust(id){
+        if(_bust.geo[id])return Promise.resolve(_bust.geo[id]);
+        if(_bust.pending[id])return _bust.pending[id];
+        const urls=bustUrls(id);
+        const tryAt=i=>new Promise(res=>{
+            if(i>=urls.length)return res(null);
+            try{
+                new THREE.STLLoader().load(urls[i],g=>{
+                    const ok=g&&g.attributes&&g.attributes.position&&g.attributes.position.count>=3;
+                    res(ok?g:tryAt(i+1));
+                },undefined,()=>res(tryAt(i+1)));
+            }catch(e){res(tryAt(i+1));}
+        });
+        return _bust.pending[id]=tryAt(0).then(g=>{
+            if(!g)return null;
+            g.rotateX(-Math.PI/2);                       /* STL is Z-up and the bust faces -Y: now it faces the camera */
+            g.computeBoundingBox();
+            const k=2/((g.boundingBox.max.y-g.boundingBox.min.y)||1);
+            g.scale(k,k,k);                              /* fixed height of 2 units */
+            g.computeBoundingBox();
+            const b=g.boundingBox;
+            g.translate(-(b.min.x+b.max.x)/2,-b.min.y,-(b.min.z+b.max.z)/2); /* stand on y=0, centered on x/z */
+            return(_bust.geo[id]=g);
+        }).catch(()=>null);
+    }
+    function bustRender(geo,hex){
+        if(!_bust.renderer){
+            const r=new THREE.WebGLRenderer({alpha:true,antialias:true,preserveDrawingBuffer:true});
+            r.setPixelRatio(1);r.setSize(256,256);r.setClearColor(0x000000,0);
+            const sc=new THREE.Scene();
+            sc.add(new THREE.AmbientLight(0xffffff,0.5));
+            const key=new THREE.DirectionalLight(0xffffff,0.85);key.position.set(2,3,4);sc.add(key);
+            const rim=new THREE.DirectionalLight(0xffffff,0.35);rim.position.set(-3,1,-2);sc.add(rim);
+            const cam=new THREE.PerspectiveCamera(28,1,0.1,50);
+            cam.position.set(0,1.05,5.6);cam.lookAt(0,1.0,0);
+            _bust.mat=new THREE.MeshStandardMaterial({roughness:0.6,metalness:0});
+            _bust.mesh=new THREE.Mesh(geo,_bust.mat);sc.add(_bust.mesh);
+            _bust.renderer=r;_bust.scene=sc;_bust.cam=cam;
+        }
+        _bust.mesh.geometry=geo;
+        _bust.mat.color.set(hex);                        /* recolor, never rebuild */
+        _bust.renderer.render(_bust.scene,_bust.cam);
+        return _bust.renderer.domElement.toDataURL('image/png');
+    }
+    function applyBusts(){
+        if(!(window.THREE&&THREE.STLLoader))return;
+        players.forEach((p,i)=>{
+            loadBust(p.avatar.id).then(geo=>{
+                if(!geo)return;
+                const el=document.getElementById('p'+i);
+                if(!el||players[i]!==p)return;
+                try{el.style.backgroundImage=`url('${bustRender(geo,p.avatar.color)}')`;}catch(e){}
+            });
+        });
+    }
 
     function showInstructions(){
         showStatusPopup(
@@ -3238,6 +3525,85 @@
     // ══════════════════════════════════════════════
     // DICE TELEPORT
     // ══════════════════════════════════════════════
+    /* 3D DICE: fearjoy-dice.js + three.js. d3Init() returns false (and we use the old numeral dice) if either is missing or WebGL fails. */
+    const _d3={ready:false,failed:false,renderer:null,scene:null,cam:null,die:null,active:false,shown:false};
+    function d3Init(){
+        if(_d3.ready)return true;
+        if(_d3.failed)return false;
+        try{
+            if(!window.THREE||!window.FearjoyDice)throw new Error('3D libs missing');
+            const r=new THREE.WebGLRenderer({canvas:document.getElementById('dice3d'),alpha:true,antialias:true});
+            r.setPixelRatio(Math.min(window.devicePixelRatio||1,2));
+            r.setClearColor(0x000000,0);
+            const sc=new THREE.Scene();
+            sc.add(new THREE.AmbientLight(0xffffff,0.85));
+            const dl=new THREE.DirectionalLight(0xffffff,0.9);dl.position.set(3,6,4);sc.add(dl);
+            const cam=new THREE.PerspectiveCamera(40,1,0.1,50);
+            cam.position.set(0,3.9,4.6);cam.lookAt(0,0.9,0);
+            const die=FearjoyDice.create({color:'red',size:2.2});
+            sc.add(die.object);
+            _d3.renderer=r;_d3.scene=sc;_d3.cam=cam;_d3.die=die;_d3.ready=true;
+            return true;
+        }catch(e){_d3.failed=true;return false;}
+    }
+    function d3RM(){return !!(window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches);}
+    function d3Loop(){
+        if(!_d3.active)return;
+        _d3.die.update(performance.now());
+        _d3.renderer.render(_d3.scene,_d3.cam);
+        requestAnimationFrame(d3Loop);
+    }
+    async function d3Show(hex){
+        const cv=document.getElementById('dice3d');
+        _d3.die.setColor(hex);
+        cv.style.display='block';
+        const w=cv.clientWidth,h=cv.clientHeight;
+        _d3.renderer.setSize(w,h,false);
+        _d3.cam.aspect=w/h;_d3.cam.updateProjectionMatrix();
+        _d3.active=true;_d3.shown=true;
+        requestAnimationFrame(d3Loop);
+        void cv.offsetWidth;cv.classList.add('show');
+        await new Promise(r=>setTimeout(r,320));
+    }
+    function d3Throw(face){
+        return new Promise(res=>{
+            let done=false;const fin=()=>{if(!done){done=true;res();}};
+            _d3.die.roll(face,fin,{reduceMotion:d3RM()});
+            setTimeout(fin,2500); /* safety: never let a stalled animation freeze the turn */
+        });
+    }
+    async function d3Hide(){
+        const cv=document.getElementById('dice3d');
+        cv.classList.remove('show');
+        await new Promise(r=>setTimeout(r,320));
+        cv.style.display='none';_d3.active=false;_d3.shown=false;
+    }
+    /* bar numeral box leaves the bar, the 3D die takes the stage */
+    async function diceGoTo3d(hex){
+        const d=document.getElementById('dice-box');
+        d.classList.add('dice-rise-out');await new Promise(r=>setTimeout(r,350));
+        d.classList.remove('dice-rise-out');d.classList.add('dice-hidden3d');
+        await d3Show(hex);
+    }
+    /* shows a number under the die (only needed when the die can't show it: Quick Game 7-10, doubled/halved/cut rolls) */
+    function diceReadout(n){
+        const d=document.getElementById('dice-box');
+        d.innerText=n;
+        if(!_d3.shown)return;
+        d.classList.remove('dice-hidden3d');
+        d.classList.add('dice-cinematic','dice-readout');
+    }
+    async function diceReturnToBar3d(){
+        const d=document.getElementById('dice-box');
+        const hadReadout=d.classList.contains('dice-readout');
+        const hide=d3Hide();
+        if(hadReadout){d.classList.add('dice-return-out');await new Promise(r=>setTimeout(r,350));}
+        await hide;
+        d.classList.remove('dice-cinematic','dice-readout','dice-hidden3d','dice-return-out','dice-red','dice-teal','dice-contract');
+        d.classList.add('dice-reappear');await new Promise(r=>setTimeout(r,350));
+        d.classList.remove('dice-reappear');
+        d.style.animation='diceGlow 3s ease-in-out infinite';
+    }
     async function diceGoToCinematic(){
         const d=document.getElementById('dice-box');
         d.classList.add('dice-rise-out');await new Promise(r=>setTimeout(r,350));
@@ -3338,16 +3704,25 @@
         isRolling=true;isMoving=true;
         document.getElementById('roll-btn').disabled=true;
         const dice=document.getElementById('dice-box');dice.innerText="?";
-        await diceGoToCinematic();
+        const _use3d=d3Init();
+        if(_use3d)await diceGoTo3d(p.avatar.color);else await diceGoToCinematic();
         vuStartRoll();  /* needle resets to -45 and bounces */
         let roll;
         const _rollMax=quickGameActive?10:6;
-        for(let j=0;j<16;j++){
-            dice.innerText=Math.floor(Math.random()*_rollMax)+1;
-            if(j%4===0)playDiceRoll();
-            await new Promise(r=>setTimeout(r,50));
+        if(_use3d){
+            /* the game decides the roll; the 3D die only shows it (it has 6 faces, so Quick Game 7-10 lands on roll-6 and the number shows under it) */
+            roll=Math.floor(Math.random()*_rollMax)+1;
+            playDiceRoll();if(!d3RM())setTimeout(playDiceRoll,380);
+            await d3Throw(roll>6?roll-6:roll);
+            if(roll>6)diceReadout(roll);
+        } else {
+            for(let j=0;j<16;j++){
+                dice.innerText=Math.floor(Math.random()*_rollMax)+1;
+                if(j%4===0)playDiceRoll();
+                await new Promise(r=>setTimeout(r,50));
+            }
+            roll=Math.floor(Math.random()*_rollMax)+1;dice.innerText=roll;
         }
-        roll=Math.floor(Math.random()*_rollMax)+1;dice.innerText=roll;
         /* VU needle settles on roll value */
         vuRollAnimation(roll);
         playDiceDone();
@@ -3356,7 +3731,7 @@
         /* Investor — teal dice. Doubles any roll below 4 (was hardcoded to exactly
            1 or 2, which silently stopped firing once Quick Game widened the roll range) */
         if(p.isInvestor&&roll>0&&roll<4){
-            dice.classList.add('dice-teal');spawnEmoji('👕',true);
+            diceReadout(roll);dice.classList.add('dice-teal');spawnEmoji('👕',true);
             showSidebar("INVESTMENT PAYOFF","Merch is moving! Roll doubled.","#ffffff");
             playCoinSfx();
             await new Promise(r=>setTimeout(r,800));
@@ -3367,7 +3742,7 @@
            "6 becomes -2", which almost never fired once Quick Game widened the roll range) */
         if(p.isSellout&&roll>5){
             const halved=Math.floor(roll/2);
-            dice.classList.add('dice-red');spawnEmoji('💊',true);
+            diceReadout(roll);dice.classList.add('dice-red');spawnEmoji('💊',true);
             showSidebar("CONTRACT DEBT",`Label takes a cut! ${roll} becomes ${halved}. Should've stayed indie...`,"var(--fear-glow)");
             playRemedyPunishment();
             await new Promise(r=>setTimeout(r,800));
@@ -3383,7 +3758,7 @@
                 if(checkPlotArmor(capturedTurnIdx,true)){
                     /* blocked — no cut */
                 } else {
-                    dice.classList.add('dice-contract');spawnEmoji('📝',true);
+                    diceReadout(roll);dice.classList.add('dice-contract');spawnEmoji('📝',true);
                     showSidebar("CONTRACT CUT","Label takes their cut this roll. -1 total.","var(--pitch-orange)");
                     await new Promise(r=>setTimeout(r,700));
                     roll=Math.max(0,roll-1);dice.innerText=roll;
@@ -3392,7 +3767,7 @@
             }
         }
         p.totalRollValue+=Math.abs(roll);
-        await diceReturnToBar();
+        if(_use3d)await diceReturnToBar3d();else await diceReturnToBar();
         if(roll===0){
             /* Label cut the whole roll — going nowhere this turn */
             showSidebar("📝 CUT TO ZERO","The label took your only space. Ouch.","var(--pitch-orange)");
@@ -4230,9 +4605,9 @@ function showStatusPopup(t,d,b1,c1,b2,c2,playerNameHtml=''){
         const linkStack=`
             <div style="display:flex;flex-direction:column;gap:10px;align-items:center;margin-top:20px;">
                 <a href="https://freejoy.club/game/swimmin.mp3" download="swimmin.mp3" class="win-link-btn win-cta" style="--btn-color:var(--blue-glow);background:var(--blue-glow);color:black;font-size:1.1rem;padding:14px 28px;border-color:var(--blue-glow);animation:rollPulse 2s ease-in-out infinite;">🌊 Download: Swimmin' — Secret Track</a>
-                <a href="https://freejoy.club" target="_blank" class="win-link-btn win-cta" style="--btn-color:var(--joy-glow);color:var(--joy-glow);font-size:1.1rem;padding:14px 28px;">▶ PLAY THE ALBUM</a>
-                <a href="https://freejoy.club/store" target="_blank" class="win-link-btn" style="--btn-color:#ff00ff;color:#ff00ff;">${storeLbl}</a>
-                <a href="https://freejoy.club" target="_blank" class="win-link-btn" style="--btn-color:#ffffff;color:#ffffff;">Fearjoy - Home</a>
+                <a href="https://freejoy.club" target="${IS_EMBED?'_top':'_blank'}" class="win-link-btn win-cta" style="--btn-color:var(--joy-glow);color:var(--joy-glow);font-size:1.1rem;padding:14px 28px;">▶ PLAY THE ALBUM</a>
+                <a href="https://freejoy.club/store" target="${IS_EMBED?'_top':'_blank'}" class="win-link-btn" style="--btn-color:#ff00ff;color:#ff00ff;">${storeLbl}</a>
+                <a href="https://freejoy.club" target="${IS_EMBED?'_top':'_blank'}" class="win-link-btn" style="--btn-color:#ffffff;color:#ffffff;">Fearjoy - Home</a>
         <div style="display:flex;gap:10px;width:min(400px,90%);margin-top:5px;">
                     <button id="hard-reset-win" class="win-link-btn" style="--btn-color:var(--fear-glow);color:var(--fear-glow);flex:1;cursor:pointer;">NEW BAND</button>
                     <button id="soft-reset-win" class="win-link-btn" style="--btn-color:#ffa500;color:#ffa500;flex:1;cursor:pointer;">ANOTHER TOUR</button>
