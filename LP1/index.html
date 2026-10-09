@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- LP1 (v21) -->
+<!-- LP1 (v24) -->
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
@@ -689,11 +689,11 @@ dialog.wide { width: min(96vw, 1100px); }
 @media (max-width: 860px) { :root { --rackh: 46px; } }
 html, body { height: 100%; overflow: hidden; }
 body { padding-bottom: 0; }
-.content { height: 100vh; height: calc(100dvh - var(--rackh)); min-height: 0; padding: 4px 0 0; margin: 0; justify-content: flex-start; align-items: stretch; box-sizing: border-box; }
-h1.title { flex: none; align-self: center; position: relative; z-index: 3; pointer-events: none; font-size: min(3rem, 4.4vw, 6.6vh); line-height: 1; margin: 0 0 -0.45em; letter-spacing: 3px; }
+.content { height: 100vh; height: calc(100dvh - var(--rackh)); min-height: 0; padding: max(14px, calc(env(safe-area-inset-top) + 8px)) 0 0; margin: 0; justify-content: flex-start; align-items: stretch; box-sizing: border-box; }
+h1.title { flex: none; align-self: center; position: relative; z-index: 3; pointer-events: none; font-size: min(3rem, 4.4vw, 6.6vh); line-height: 1.15; margin: 0 0 -0.6em; letter-spacing: 3px; }
 h1.title .title-die { pointer-events: auto; width: 0.95em; height: 0.95em; margin: 0; }
 @media (max-width: 760px) {
-h1.title { flex-direction: column; font-size: 2.3rem; gap: 0; margin: 0 0 -1.1rem; letter-spacing: 2px; }
+h1.title { flex-direction: column; font-size: 2.3rem; gap: 0; line-height: 1.12; margin: 0 0 -1.4rem; letter-spacing: 2px; }
 h1.title .title-die { width: 1em; height: 1em; margin: -0.12em 0; }
 }
 @media (max-width: 760px) and (max-height: 520px) { h1.title { flex-direction: row; font-size: 1.3rem; margin-bottom: -0.3rem; } h1.title .title-die { margin: 0; } }
@@ -921,7 +921,7 @@ try { if (location.hash) history.replaceState(null, '', location.pathname + loca
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/STLLoader.js"></script>
 <script>
-// LP1 (v21)
+// LP1 (v24)
 const toTop = () => { try { window.scrollTo({ top: 0, left: 0, behavior: 'instant' }); } catch (e) { window.scrollTo(0, 0); } };
 toTop();
 window.addEventListener('load', toTop);
@@ -2065,9 +2065,9 @@ function makeDesk(el) {
   }
   v.scene = new THREE.Scene();
   v.camera = new THREE.PerspectiveCamera(30, 16 / 10, 1, 60);   /* a tighter depth range keeps the flat shadows from flickering */
-  v.scene.add(new THREE.HemisphereLight(0xffffff, 0x6b4a42, 0.78));
-  const key = new THREE.DirectionalLight(0xffffff, 0.58); key.position.set(3, 6, 5); v.scene.add(key);
-  const rim = new THREE.DirectionalLight(0xffd9b0, 0.34); rim.position.set(-4, 3, -3); v.scene.add(rim);
+  v.scene.add(new THREE.HemisphereLight(0xffffff, 0x6b4a42, 0.66));
+  const key = new THREE.DirectionalLight(0xffffff, 0.46); key.position.set(3, 6, 5); v.scene.add(key);
+  const rim = new THREE.DirectionalLight(0xffd9b0, 0.26); rim.position.set(-4, 3, -3); v.scene.add(rim);
   v.stage = new THREE.Group();
   v.scene.add(v.stage);
   const stage = v.stage;
@@ -2162,7 +2162,7 @@ function makeDesk(el) {
   tableTop.userData.tag = 'block';   /* blocks clicks to the TV behind it */
   stage.add(tableTop); hits.push(tableTop);
   [[-2.8, TZ - 1.5], [2.8, TZ - 1.5], [-2.8, TZ + 1.5], [2.8, TZ + 1.5]].forEach(p => box(0.22, -0.16 - FLOOR, 0.22, legWood, p[0], (FLOOR - 0.16) / 2, p[1]));
-  blob(7.2, 4.6, 0, TZ, 0.55).position.y = FLOOR + 0.004;   /* shadow on the floor under the table */
+  blob(7.6, 4.9, 0, TZ, 0.75).position.y = FLOOR + 0.004;   /* shadow on the floor under the table */
 
   /* the board game: a white square, half an inch thick, with the TV picture on top. Everything else sits on `deck`, the board's top surface. */
   const BS = 3.1, BT = 0.09, BX = -0.9, VT = 0.04, BROT = 0.09;   /* VT = thickness of the record under the board; BROT = board is a little askew */
@@ -2238,18 +2238,19 @@ function makeDesk(el) {
     s.draw = () => {
       const g = cv.getContext('2d'), W = 192;
       g.clearRect(0, 0, W, W);
+      g.fillStyle = s.color; g.beginPath(); g.arc(W / 2, W / 2, W / 2, 0, Math.PI * 2); g.fill();   /* the service color fills the circle behind the logo */
       const rg = g.createRadialGradient(W * 0.4, W * 0.35, 8, W / 2, W / 2, W * 0.62);
-      rg.addColorStop(0, '#ffffff'); rg.addColorStop(1, '#d9d4c8');
+      rg.addColorStop(0, 'rgba(255,255,255,0.3)'); rg.addColorStop(1, 'rgba(255,255,255,0)');
       g.fillStyle = rg; g.beginPath(); g.arc(W / 2, W / 2, W / 2, 0, Math.PI * 2); g.fill();
       if (s.id === 'more') {   /* the "(...)" more button: three dots, drawn here */
-        g.fillStyle = '#2a2e38';
+        g.fillStyle = '#ffffff';
         [W * 0.27, W * 0.5, W * 0.73].forEach(x => { g.beginPath(); g.arc(x, W / 2, 15, 0, Math.PI * 2); g.fill(); });
       } else if (s.img) {
         const nw = s.img.naturalWidth || 200, nh = s.img.naturalHeight || 200;   /* an .svg with no set size reports 0 in some browsers */
         const k = Math.min(W * 0.7 / nw, W * 0.7 / nh), iw = nw * k, ih = nh * k;
         g.drawImage(s.img, (W - iw) / 2, (W - ih) / 2, iw, ih);
       } else {   /* no logo picture yet: write the name */
-        g.fillStyle = s.color; g.textAlign = 'center'; g.textBaseline = 'middle';
+        g.fillStyle = '#ffffff'; g.textAlign = 'center'; g.textBaseline = 'middle';
         let px = 44;
         g.font = px + 'px ' + STREAM_FONT;
         while (px > 18 && s.lines.some(t => g.measureText(t).width > 140)) { px -= 2; g.font = px + 'px ' + STREAM_FONT; }
@@ -2261,7 +2262,7 @@ function makeDesk(el) {
     const grp = new THREE.Group();
     grp.position.set(0.85, 1.6 - i * 0.3, 0.48);
     tv.add(grp);
-    const base = new THREE.Mesh(new THREE.CylinderGeometry(0.117, 0.131, 0.063, 36), std(new THREE.Color(s.color).getHex(), 0.35, 0.25));
+    const base = new THREE.Mesh(new THREE.CylinderGeometry(0.117, 0.131, 0.063, 36), std(0x34373a, 0.45, 0.3));
     base.rotation.x = Math.PI / 2; base.position.z = 0.0315;
     grp.add(base);
     const face = new THREE.Mesh(new THREE.CircleGeometry(0.097, 36), new THREE.MeshStandardMaterial({ map: tex, roughness: 0.4 }));
@@ -2622,7 +2623,7 @@ function makeDesk(el) {
   }
   function loreTick(now) {   /* called every frame */
     if (secret && now - secret > 6000) hideSecretTV();
-    if (info) { if (now - info > 6000) hideInfoTV(); else if (now - infoBlinkT > 380) { infoBlinkT = now; infoBlink = !infoBlink; drawInfo(); } }
+    if (info) { if (now - info > 3000) { hideInfoTV(); goTo('kits'); } else if (now - infoBlinkT > 380) { infoBlinkT = now; infoBlink = !infoBlink; drawInfo(); } }
     const bar = vidLoading && !menuOn;
     loadM.visible = bar;
     if (bar) loadM.scale.x = Math.max(0.01, (vidDone + vidFrac) / vidNames.length);
@@ -2723,8 +2724,9 @@ function makeDesk(el) {
   const joyG = new THREE.Group();
   joyG.position.set(2.35, 0, 2.05);
   joyG.rotation.y = -0.35;
+  joyG.scale.setScalar(1.3);
   stage.add(joyG);
-  const joyBlob = blob(1.0, 0.8, 2.35, 2.08, 0.7);
+  const joyBlob = blob(1.3, 1.04, 2.35, 2.08, 0.7);
   const joyBase = new THREE.Mesh(new THREE.BoxGeometry(0.72, 0.12, 0.5), std(0x2f3136, 0.55, 0.2)); joyBase.position.y = 0.06; joyG.add(joyBase);
   const joyBtn = new THREE.Mesh(new THREE.CylinderGeometry(0.07, 0.08, 0.05, 20), std(0xe8c13a, 0.4)); joyBtn.position.set(0.24, 0.145, 0.08); joyG.add(joyBtn);
   const joyStick = new THREE.Group(); joyStick.position.set(-0.12, 0.12, 0); joyG.add(joyStick);
@@ -2742,7 +2744,7 @@ function makeDesk(el) {
   howG.rotation.set(0.07, 0.24, 0.03);
   howG.position.set(-1.5, FLOOR + 0.12, 2.15);
   stage.add(howG);
-  const howEdge = std(0xe9e1cc, 0.8), howTop = new THREE.MeshStandardMaterial({ color: 0xe6e6e6, roughness: 0.75 });
+  const howEdge = std(0xa9a392, 0.8), howTop = new THREE.MeshStandardMaterial({ color: 0xa8a8a8, roughness: 0.85 });   /* dimmer: it sits in the shade under the desk */
   const howMesh = new THREE.Mesh(new THREE.BoxGeometry(1.7, 0.03, 1.7), [howEdge, howEdge, howTop, howEdge, howEdge, howEdge]);   /* cardstock thick */
   howG.add(howMesh);
   const howTexP = new Promise(res => new THREE.TextureLoader().load(CONFIG.howImage, tex => {
@@ -2773,7 +2775,7 @@ function makeDesk(el) {
   };
   drawNote();
   if (document.fonts && document.fonts.load) document.fonts.load("34px 'KCPelletierTyped'").then(drawNote).catch(() => {});
-  const noteSide = std(0x4a1822, 0.8), notePaper = std(0xf0e8d0, 0.9);
+  const noteSide = std(0x3c141b, 0.85), notePaper = std(0xb0a994, 0.95);
   const noteBox = new THREE.Mesh(new THREE.BoxGeometry(1.0, 0.11, 1.3), [noteSide, noteSide, new THREE.MeshStandardMaterial({ map: noteTex, roughness: 0.7 }), noteSide, noteSide, noteSide]);
   noteBox.position.y = 0.055; noteG.add(noteBox);
   const pages = new THREE.Mesh(new THREE.BoxGeometry(0.96, 0.07, 1.26), notePaper); pages.position.set(0.05, 0.055, 0); noteG.add(pages);
@@ -2801,15 +2803,18 @@ function makeDesk(el) {
   const micBall = new THREE.Mesh(new THREE.SphereGeometry(0.13, 20, 14), new THREE.MeshStandardMaterial({ map: micGrilleTex, roughness: 0.45, metalness: 0.5 }));
   micBall.position.set(0.5, 0.13, 0); micG.add(micBall);
   const micBodyG = new THREE.Group(); micBodyG.position.set(0.5, 0.13, 0); micBodyG.rotation.z = 0.075; micG.add(micBodyG);   /* tilted a little so the ball and the handle both rest on the floor */
-  const micBody = new THREE.Mesh(new THREE.CylinderGeometry(0.075, 0.045, 0.6, 14), std(0x2b2e33, 0.4, 0.5));
+  const micBody = new THREE.Mesh(new THREE.CylinderGeometry(0.045, 0.075, 0.6, 14), std(0x2b2e33, 0.4, 0.5));
   micBody.rotation.z = Math.PI / 2; micBody.position.x = -0.42; micBodyG.add(micBody);
   const micNeck = new THREE.Mesh(new THREE.CylinderGeometry(0.1, 0.085, 0.06, 16), std(0x9aa0a8, 0.3, 0.7));
   micNeck.rotation.z = Math.PI / 2; micNeck.position.x = -0.1; micBodyG.add(micNeck);
-  const micBand = new THREE.Mesh(new THREE.CylinderGeometry(0.0765, 0.0765, 0.05, 14), std(0x3a6fc4, 0.4, 0.2));
+  const micBand = new THREE.Mesh(new THREE.CylinderGeometry(0.056, 0.056, 0.05, 14), std(0x3a6fc4, 0.4, 0.2));
   micBand.rotation.z = Math.PI / 2; micBand.position.x = -0.62; micBodyG.add(micBand);
-  const micPlug = new THREE.Mesh(new THREE.CylinderGeometry(0.05, 0.05, 0.1, 12), std(0x9aa0a8, 0.3, 0.7));   /* the XLR plug on the handle end */
+  const micPlug = new THREE.Mesh(new THREE.CylinderGeometry(0.04, 0.04, 0.1, 12), std(0x9aa0a8, 0.3, 0.7));   /* the XLR plug on the handle end */
   micPlug.rotation.z = Math.PI / 2; micPlug.position.x = -0.77; micBodyG.add(micPlug);
-  const micCable = new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3([[-0.3, 0.07, 0], [-0.45, 0.03, 0.04], [-0.58, 0.025, 0.22], [-0.45, 0.025, 0.46], [-0.15, 0.025, 0.58], [0.15, 0.025, 0.55]].map(q => new THREE.Vector3(q[0], q[1], q[2]))), 36, 0.014, 6, false), std(0x151517, 0.6));
+  micG.updateMatrix();
+  const micInv = micG.matrix.clone().invert();   /* the cable is laid out on the floor (x, height, z), then turned into the mic's own space */
+  const micCablePts = [new THREE.Vector3(-0.3, 0.07, 0)].concat([[-0.32, 0.03, 2.3], [-0.22, 0.025, 2.05], [0.0, 0.025, 1.75], [0.14, 0.025, 1.35], [0.16, 0.025, 0.7], [0.16, 0.025, -0.1]].map(q => new THREE.Vector3(q[0], FLOOR + q[1], q[2]).applyMatrix4(micInv)));
+  const micCable = new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(micCablePts), 80, 0.014, 6, false), std(0x151517, 0.6));
   noHit(micCable); micG.add(micCable);   /* a short black cable that curls on the floor */
   const micBlob = blob(1.5, 0.6, 0.1, 2.3, 0.5); micBlob.position.y = FLOOR + 0.004; micBlob.rotation.z = -0.5;
   hitBox(1.75, 0.32, 0.9, -0.15, 0.14, 0.25, 'mic', micG);
@@ -2821,6 +2826,8 @@ function makeDesk(el) {
     g.fillStyle = '#e6d6a6'; g.fillRect(0, 0, w, h);
     g.strokeStyle = 'rgba(90,60,30,0.10)'; g.lineWidth = 1;
     for (let r = 50; r < 126; r += 3) { g.beginPath(); g.arc(128, 128, r, 0, Math.PI * 2); g.stroke(); }
+    g.strokeStyle = 'rgba(82,42,20,0.17)'; g.lineWidth = 1.8;   /* the gaps between songs: subtle rings */
+    [[57, 1.6], [72, 2.2], [81, 1.5], [99, 2.0], [113, 1.7]].forEach(q => { g.lineWidth = q[1]; g.beginPath(); g.arc(128, 128, q[0], 0, Math.PI * 2); g.stroke(); });   /* a few uneven gaps, like real songs */
     g.fillStyle = '#c8442a'; g.beginPath(); g.arc(128, 128, 44, 0, Math.PI * 2); g.fill();
     g.fillStyle = '#f6ecd0'; g.font = 'bold 11px sans-serif'; g.textAlign = 'center';
     g.fillText('FEARJOY', 128, 112); g.fillText('THE GAME', 128, 156);
@@ -2847,6 +2854,7 @@ function makeDesk(el) {
     else if (s.id === 'more') showSoon('More ways to listen', 'More links coming soon.');
     else showSoon(s.name, 'The ' + s.name + ' link is coming soon.');
   }
+  let wigList = null, wigLast = null;   /* hover wiggle: a quick damped yaw shake when the pointer lands on an item */
   let hoverGroup = null, glowItems = null, knobDrag = null, knobMoved = 0, ledOn = false, lastDie = 0, lastCoin = '', coinLand = 0, dieLand = 0;
   const setKnob = vol => { knob.rotation.z = 2.35 - vol * 4.7; };   /* quiet = turned left, loud = turned right */
   setKnob(Sound.getVolume());
@@ -2874,17 +2882,17 @@ function makeDesk(el) {
   ['jesse', 'marco', 'grant'].forEach((id, i) => {
     const idx = Math.max(0, PEOPLE.findIndex(x => x.id === id));
     const h = headFor(idx, marble().clone());   /* its own material copy, so only the hovered bust glows */
-    h.scale.setScalar(0.7);
-    h.position.set((i - 1) * 0.78, 0, -0.7 + (i === 1 ? 0.1 : 0));
+    h.scale.setScalar(0.82);
+    h.position.set((i - 1) * 0.86, 0, -0.7 + (i === 1 ? 0.1 : 0));
     deck.add(h);
     crew.push(h);
-    crewBlobs.push(blob(0.96, 0.76, h.position.x, h.position.z, 0.8, deck));
-    hitBox(0.8, 1.15, 0.72, h.position.x, 0.57, h.position.z, 'bust', deck).userData.bust = h;   /* click target sits on the stage, because the bust group is cleared when the real STL loads */
+    crewBlobs.push(blob(1.12, 0.9, h.position.x, h.position.z, 0.8, deck));
+    hitBox(0.94, 1.35, 0.84, h.position.x, 0.67, h.position.z, 'bust', deck).userData.bust = h;   /* click target sits on the stage, because the bust group is cleared when the real STL loads */
   });
 
   /* ---------- coin: lies flat on the desk, real 50/50 ---------- */
   const COIN_ROT_TOP = Math.PI / 2, COIN_ROT_BOT = Math.PI / 2;   /* keeps the text upright on both faces: JOY is turned the other way so it reads upright while the coin spins on its edge and after a sideways flip */
-  const COIN_SCALE = 1.9, COIN_H = 0.03 * COIN_SCALE, COIN_R = 0.3 * COIN_SCALE;
+  const COIN_SCALE = 1.65, COIN_H = 0.03 * COIN_SCALE, COIN_R = 0.3 * COIN_SCALE;
   const coinRoot = new THREE.Group();
   coinRoot.position.set(0.72, COIN_H, 0.72);
   deck.add(coinRoot);
@@ -2919,7 +2927,7 @@ function makeDesk(el) {
   }
 
   /* ---------- die: one dichroic glass die with gold pips, resting on the desk ---------- */
-  const DIE_SCALE = 1.4, DIE_H = 0.23 * DIE_SCALE;
+  const DIE_SCALE = 1.2, DIE_H = 0.23 * DIE_SCALE;
   const dieRoot = new THREE.Group();
   dieRoot.position.set(-0.6, DIE_H, 0.75);
   deck.add(dieRoot);
@@ -2974,8 +2982,7 @@ function makeDesk(el) {
     g.restore();
     fitText(g, 'COLLECT THE BAND', 440, 62, INFO_FONT); outlined('COLLECT THE BAND', W / 2, 188, '#ffffff');
     g.font = "30px " + INFO_FONT; outlined('3D PRINTED PLAYER PIECES', W / 2, 242, '#fff3b0');
-    g.save(); g.translate(140, 336); g.rotate(-0.12); g.font = "44px " + INFO_FONT; outlined('BUT WAIT!', 0, 0, '#ffffff'); g.restore();
-    g.save(); g.translate(384, 336); g.rotate(0.14);   /* price burst */
+    g.save(); g.translate(W / 2, 334); g.rotate(0.14);   /* price burst */
     g.fillStyle = '#fff'; g.strokeStyle = '#d4181f'; g.lineWidth = 6; g.beginPath();
     for (let i = 0; i < 24; i++) { const a = i / 24 * Math.PI * 2, r = i % 2 ? 62 : 80; g.lineTo(Math.cos(a) * r, Math.sin(a) * r); }
     g.closePath(); g.fill(); g.stroke();
@@ -3018,6 +3025,9 @@ function makeDesk(el) {
   const ldCoinG = new THREE.Group();   /* flattened front to back, so the coin reads as a picture on the screen glass (scanlines and glow go over it) */
   ldCoinG.position.set(0, 0.03, 0.128); ldCoinG.scale.set(1, 1, 0.04); ldCoinG.visible = false;
   screenGrp.add(ldCoinG);
+  /* the layers in front of the picture (scan lines, glow, menu, static, ads...) sit a little in front of it, and the camera looks down, so they used to look lower than the picture and the gray border. Lift each one by the exact amount that cancels that, so everything lines up from the camera angle. */
+  const LAYER_LIFT = 1.6 * Math.tan(EL) / 3;   /* the TV is scaled 3 tall and 1.6 deep */
+  screenGrp.children.forEach(c => { if (c !== jesse && c.position.z > 0.05) c.position.y += c.position.z * LAYER_LIFT; });
   const ldSpin = new THREE.Group(); ldCoinG.add(ldSpin);
   const ldFlip = new THREE.Group(); ldFlip.rotation.x = Math.PI / 2; ldSpin.add(ldFlip);
   const ldCoin = makeCoin(true, { base: '#e0b878', ink: '#6b4420', color: 0xe0b878, metalness: 0.25, roughness: 0.5 });
@@ -3184,12 +3194,14 @@ function makeDesk(el) {
     if (menuOn && !v.tvT) { const o = menuAt(e); if (o) { if (o === 'start') startGame(); else closeMenu(); return; } }
     if (loreAt(e)) { openLoreDlg(); return; }
     const tag = pick(e);
+    let menuClosing = false;
+    if (menuOn && !v.tvT && tag) { closeMenu(); menuClosing = true; if (tag === 'joystick' || tag === 'tv') return; }   /* the menu does not take over: tapping the joystick again, the TV, or anything else puts it away */
     if (tag === 'coin') doFlip();
     else if (tag === 'die') doRoll();
     else if (tag === 'bust') {
       pickObj.userData.bust.userData.spin = performance.now();
       Sound.slide();
-      showInfoTV();
+      if (menuClosing) setTimeout(showInfoTV, 800); else showInfoTV();   /* wait for the menu to finish closing */
     }
     else if (tag === 'vinyl') {
       vinylG.userData.wig = performance.now();
@@ -3203,7 +3215,7 @@ function makeDesk(el) {
     else if (tag === 'stream') { pickObj.userData.btn.userData.press = performance.now(); Sound.slide(); openStream(pickObj.userData.idx); }
     else if (tag === 'howto') { Sound.slide(); document.getElementById('howBtn').click(); }
     else if (tag === 'notebook') { Sound.slide(); goTo('credits'); }
-    else if (tag === 'mic') { micT = performance.now(); Sound.slide(); startLore('video'); }
+    else if (tag === 'mic') { micT = performance.now(); Sound.slide(); if (menuClosing) setTimeout(() => startLore('video'), 800); else startLore('video'); }
     else if (tag === 'tv') openTvMenu();
     else if (tag === 'joystick') { joyT = performance.now(); openTvMenu(); }
   });
@@ -3220,6 +3232,7 @@ function makeDesk(el) {
   v.onFrame = function (t) {
     const now = performance.now();
     place(t);
+    if (wigList) wigList.forEach(w => { if (w.off) { w.g.rotation.y -= w.off; w.off = 0; } });   /* undo last frame's wiggle before anything else moves the item */
     if (intro.phase !== 'done') introTick(now);
     vSlide += ((hoverGroup === vinylG ? 1 : 0) - vSlide) * 0.14;   /* hover: slides out toward you; click: a quick wiggle */
     const wk = vinylG.userData.wig ? Math.min(1, (now - vinylG.userData.wig) / 650) : 1, wg = REDUCE ? 0 : Math.sin(wk * Math.PI * 7) * (1 - wk);
@@ -3249,6 +3262,9 @@ function makeDesk(el) {
       if (Math.abs(tgt - it.k) < 0.01) it.k = tgt;
       applyGlow(it.g, it.k, it.s);
     });
+    if (!wigList) wigList = glowItems.map(it => it.g).filter(g => g !== tv && g !== knob && g !== vinylG && strBtns.indexOf(g) < 0).map(g => ({ g, off: 0, t0: 0 }));
+    if (hg !== wigLast) { wigLast = hg; const w = wigList.find(x => x.g === hg); if (w && !REDUCE) w.t0 = now; }
+    wigList.forEach(w => { if (!w.t0) return; const k = Math.min(1, (now - w.t0) / 520); w.off = Math.sin(k * Math.PI * 5) * (1 - k) * 0.1; w.g.rotation.y += w.off; if (k >= 1) w.t0 = 0; });
     if (menuOn && now - menuBlinkT > 500) { menuBlinkT = now; menuBlink = !menuBlink; drawMenu(); }   /* selector arrow blinks */
     strBtns.forEach(b => { const pt = b.userData.press ? Math.max(0, 1 - (now - b.userData.press) / 160) : 0; b.position.z = 0.48 - 0.035 * pt; });   /* TV buttons press in */
     loreTick(now);   /* channel change: static, lore, static, back to the game screen */
