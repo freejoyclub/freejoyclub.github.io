@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- LP1 (v20) -->
+<!-- LP1 (v21) -->
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
@@ -684,6 +684,74 @@ dialog.wide { width: min(96vw, 1100px); }
 .zoom img { max-width: 96vw; max-height: 94vh; object-fit: contain; }
 .lore-actions { display: flex; gap: 10px; flex-wrap: wrap; }
 
+/* ============ v21: the page is just the desk and the bottom bar. Shop and credits are popups; every old bottom button lives in the menu. ============ */
+:root { --rackh: 58px; }
+@media (max-width: 860px) { :root { --rackh: 46px; } }
+html, body { height: 100%; overflow: hidden; }
+body { padding-bottom: 0; }
+.content { height: 100vh; height: calc(100dvh - var(--rackh)); min-height: 0; padding: 4px 0 0; margin: 0; justify-content: flex-start; align-items: stretch; box-sizing: border-box; }
+h1.title { flex: none; align-self: center; position: relative; z-index: 3; pointer-events: none; font-size: min(3rem, 4.4vw, 6.6vh); line-height: 1; margin: 0 0 -0.45em; letter-spacing: 3px; }
+h1.title .title-die { pointer-events: auto; width: 0.95em; height: 0.95em; margin: 0; }
+@media (max-width: 760px) {
+h1.title { flex-direction: column; font-size: 2.3rem; gap: 0; margin: 0 0 -1.1rem; letter-spacing: 2px; }
+h1.title .title-die { width: 1em; height: 1em; margin: -0.12em 0; }
+}
+@media (max-width: 760px) and (max-height: 520px) { h1.title { flex-direction: row; font-size: 1.3rem; margin-bottom: -0.3rem; } h1.title .title-die { margin: 0; } }
+#play { flex: 1; min-height: 0; max-width: none; margin: 0; padding: 0; display: flex; scroll-margin-top: 0; }
+.desk-scene { flex: 1; min-width: 0; width: 100%; max-width: none !important; margin: 0 !important; position: relative; }
+.viewer.desk-viewer { position: absolute; inset: 0; width: 100%; height: 100%; aspect-ratio: auto; touch-action: none; }
+
+/* popups (shop, credits) */
+dialog.big { width: min(96vw, 1040px); max-width: none; max-height: 92vh; max-height: 92dvh; background: linear-gradient(160deg, #5a2c24, #2a1411); overflow-y: auto; overscroll-behavior: contain; }
+dialog.big::backdrop { background: rgba(0,0,0,0.5); backdrop-filter: none; }
+.dlg-in { padding: 22px 18px 24px; text-align: center; }
+.dlg-in .section { margin: 0 auto; max-width: none; }
+.dlg-in .section h2 { font-size: 2.4rem; }
+.dlg-in .section .sub { margin-bottom: 18px; }
+.dlg-x { position: sticky; top: 0; z-index: 6; display: block; margin: 8px 8px -46px auto; width: 38px; height: 38px; padding: 0; border-radius: 50%; border: 1px solid rgba(255,255,255,0.45); background: rgba(0,0,0,0.5); color: #fff; font-size: 1.5rem; line-height: 1; cursor: var(--hand); }
+.dlg-back { margin: 26px auto 0; display: flex; justify-content: center; }
+@media (max-width: 700px) {
+.dlg-in .section h2.title { flex-direction: row; font-size: 1.7rem; }
+.dlg-in .section h2.title .title-die { width: 1em; height: 1em; margin: 0; }
+dialog.big { width: 100vw; max-height: 86vh; max-height: 86dvh; margin: auto 0 0; border-radius: 26px 26px 0 0; }
+.dlg-in { padding: 18px 10px 20px; }
+.dlg-in .section h2 { font-size: 1.9rem; padding: 0 34px; }
+}
+
+/* bottom bar: one centered group on wide screens; the menu button opens a panel with everything */
+.rack-in { max-width: 980px; justify-content: center; }
+.rack-ctl { margin-left: 0; }
+.rack-lcd { flex: 1 1 200px; max-width: 360px; }
+@media (max-width: 860px) { .rack-lcd { max-width: none; } .rk-menu-txt { display: none; } }
+.c-menu { display: inline-flex; }
+.rack-nav { position: absolute; left: 0; bottom: calc(100% + 16px); display: grid; grid-template-columns: 1fr 1fr; gap: 8px; padding: 10px; border-radius: 14px; background: linear-gradient(#2c2c31, #151517); border: 1px solid #4a4a50; box-shadow: 0 8px 22px rgba(0,0,0,0.6); opacity: 0; transform: translateY(14px); pointer-events: none; visibility: hidden; transition: opacity 0.18s, transform 0.18s, visibility 0s 0.18s; max-height: calc(100dvh - var(--rackh) - 40px); overflow-y: auto; }
+.rack.open .rack-nav { opacity: 1; transform: none; pointer-events: auto; visibility: visible; transition: opacity 0.18s, transform 0.18s; }
+.rack-nav .rk { font-size: 0.8rem; letter-spacing: 1px; padding: 9px 16px 9px 12px; justify-content: flex-start; min-width: 150px; }
+.rack-nav .rk-bg-nav { display: none; }
+@media (max-width: 860px) { .rack-nav .rk-bg-nav { display: inline-flex; } }
+@media (max-width: 520px) { .rack-nav { grid-template-columns: 1fr; } .rack-nav .rk { min-width: 190px; } }
+.c-pieces { --c: #ffd36b; } .c-credits { --c: #ff9ec7; } .c-how { --c: #8fd0ff; } .c-stream { --c: #6dff9a; } .c-ig { --c: #ff7ac6; } .c-tw { --c: #b58bff; }
+.rk[aria-disabled="true"] { opacity: 0.7; }
+.rk-menu-txt { margin-left: 2px; }
+
+/* the game on the TV: a plain screen (thin bezel, faint scan lines and glow) that uses all the room it can */
+#gameOverlay { position: fixed; inset: 0; z-index: 400; background: #040404; display: flex; box-sizing: border-box; padding: max(4px, env(safe-area-inset-top)) max(4px, env(safe-area-inset-right)) max(4px, env(safe-area-inset-bottom)) max(4px, env(safe-area-inset-left)); }
+#gameOverlay[hidden] { display: none; }
+.go-screen { position: relative; flex: 1; min-width: 0; border-radius: 16px; overflow: hidden; background: #000; box-shadow: 0 0 0 3px #34373a, 0 0 26px rgba(110,190,150,0.22); }
+.go-screen iframe { width: 100%; height: 100%; border: 0; display: block; background: #000; }
+.go-crt { position: absolute; inset: 0; pointer-events: none; border-radius: inherit; background: repeating-linear-gradient(0deg, rgba(0,0,0,0.075) 0 1px, transparent 1px 3px), radial-gradient(ellipse at center, transparent 66%, rgba(0,0,0,0.25) 100%); box-shadow: inset 0 0 20px rgba(130,210,170,0.12); }
+#gameOverlay.on .go-screen { animation: crtOn 0.55s ease-out; }
+@keyframes crtOn { 0% { transform: scaleY(0.02); filter: brightness(3); } 55% { transform: scaleY(1.02); filter: brightness(1.8); } 100% { transform: none; filter: none; } }
+.go-x { position: absolute; top: 12px; right: 12px; z-index: 5; width: 34px; height: 34px; padding: 0; border-radius: 50%; border: 1px solid rgba(255,255,255,0.4); background: rgba(0,0,0,0.55); color: #fff; font-size: 0.95rem; opacity: 0.7; cursor: var(--hand); }
+.go-x:hover { opacity: 1; }
+.go-ask { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); z-index: 6; width: min(86vw, 340px); padding: 18px; border-radius: 22px; background: linear-gradient(160deg, #6a3328, #3a1a16); border: 1px solid rgba(255,255,255,0.25); box-shadow: 0 16px 50px rgba(0,0,0,0.8); font-family: 'KCPelletierLight', 'Courier New', monospace; }
+.go-ask[hidden] { display: none; }
+.go-ask p { margin: 0 0 14px; font-size: 1.05rem; line-height: 1.4; }
+.go-ask-btns { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+/* while the game runs, nothing else animates */
+html.game-open body { animation: none; }
+html.game-open .lcd-track { animation-play-state: paused; }
+
 /* ============ Reduced motion ============ */
 @media (prefers-reduced-motion: reduce) {
 html { scroll-behavior: auto; }
@@ -700,10 +768,10 @@ try { if (location.hash) history.replaceState(null, '', location.pathname + loca
 
 <div class="content">
 
-<!-- ============ HERO ============ -->
+<!-- ============ HERO (small; it may overlap the top of the TV a little) ============ -->
 <h1 class="title"><span>Fearjoy</span><span class="title-die" data-title-die role="button" tabindex="0" aria-label="Roll the die"></span><span>The Game</span></h1>
 
-<!-- ============ DESK (3D scene, now at the top; click the things on it) ============ -->
+<!-- ============ DESK (3D scene: the whole page. Click the things on it) ============ -->
 <section class="section" id="play">
 <div class="desk-scene">
 <div class="viewer desk-viewer" data-viewer="desk"></div>
@@ -711,15 +779,26 @@ try { if (location.hash) history.replaceState(null, '', location.pathname + loca
 </div>
 </section>
 
-<!-- ============ KITS (mini storefront) ============ -->
+<noscript><p class="floating-text" style="font-size:1.1rem">This page needs JavaScript for the table. The game is at <a href="/game">/game</a>.</p></noscript>
+</div>
+
+<!-- ============ POPUP: GAME PIECES (opens from the crew, the TV ad or the menu). Tap outside, the X, the button or Esc to get back to the desk. ============ -->
+<dialog id="kitsDlg" class="big" aria-label="Game pieces">
+<button class="dlg-x" type="button" data-close aria-label="Close">&times;</button>
+<div class="dlg-in">
 <section class="section" id="kits">
 <h2>Game Pieces</h2>
 <p class="sub">Handmade by Jesse:<br>Mini sculptures of the band (~2")<br><span class="sub-small">Collectible limited-edition companion to The Game</span></p>
-
 <div class="grid" id="productGrid"></div>
 </section>
+<button type="button" class="btn small dlg-back" data-close>Back to the desk</button>
+</div>
+</dialog>
 
-<!-- ============ CREDITS + LYRICS ============ -->
+<!-- ============ POPUP: CREDITS + LYRICS (opens from the notebook or the menu) ============ -->
+<dialog id="creditsDlg" class="big" aria-label="Credits and lyrics">
+<button class="dlg-x" type="button" data-close aria-label="Close">&times;</button>
+<div class="dlg-in">
 <section class="section" id="credits">
 <h2 class="title"><span>Credits</span><span class="title-die" data-title-die role="button" tabindex="0" aria-label="Roll the die"></span><span>Lyrics</span></h2>
 <div class="scrollbox glass" id="trackList"></div>
@@ -731,28 +810,9 @@ try { if (location.hash) history.replaceState(null, '', location.pathname + loca
 <p>Special thanks to our families, friends, supporters, listeners, teachers, creator, and each other (in no particular order).</p>
 </div>
 </section>
-
-<!-- ============ LINK BUTTONS (moved down from the top; replaces "Everywhere Else") ============ -->
-<section class="section" id="links">
-<div class="button-stack">
-<a href="#" class="btn" data-stream data-soon="Stream the Album (soon)" data-live="Stream the Album">Stream the Album (soon)</a>
-<a href="#kits" class="btn">Game Piece Kits</a>
-<a href="#play" class="btn">🎲 Play Online 🏆</a>
-<button type="button" class="btn" id="howBtn">How to Play</button>
-<a href="#credits" class="btn">Credits &amp; Lyrics</a>
+<button type="button" class="btn small dlg-back" data-close>Back to the desk</button>
 </div>
-<div class="logo-group">
-<a href="https://www.instagram.com/fearjoymusic" target="_blank" rel="noopener">
-<img src="/images/instagram-logo.png" alt="Instagram" class="floating-logo">
-</a>
-<a href="https://www.twitch.tv/fearjoymusic" target="_blank" rel="noopener">
-<img src="/images/twitch-logo2.png" alt="Twitch" class="floating-logo">
-</a>
-</div>
-</section>
-
-<noscript><p class="floating-text" style="font-size:1.1rem">This page needs JavaScript for the storefront and credits. The game is at <a href="/game">/game</a>.</p></noscript>
-</div>
+</dialog>
 
 <!-- ============ ORDER SHEET ============ -->
 <dialog id="orderDlg">
@@ -820,13 +880,19 @@ try { if (location.hash) history.replaceState(null, '', location.pathname + loca
 <div class="toast" id="toast" role="status"></div>
 <div class="rack" role="toolbar" aria-label="Site menu and music">
 <div class="rack-in">
-<button type="button" class="rk c-menu" id="rackMenu" aria-label="Open the menu" aria-expanded="false" aria-controls="rackNav"><span class="burger"></span></button>
+<button type="button" class="rk c-menu" id="rackMenu" aria-label="Open the menu" aria-expanded="false" aria-controls="rackNav"><span class="burger"></span><span class="rk-menu-txt">Menu</span></button>
 <a class="rk c-home" href="https://freejoy.club" data-go="Go to Fearjoy's home page?">Home</a>
-<nav class="rack-nav" id="rackNav">
-<a class="rk c-game" href="/game" data-go="Go play the game online?">Game</a>
+<nav class="rack-nav" id="rackNav" aria-label="Menu">
+<button type="button" class="rk c-pieces" data-open="kits">Game Pieces</button>
+<button type="button" class="rk c-credits" data-open="credits">Credits &amp; Lyrics</button>
+<button type="button" class="rk c-how" id="howBtn">How to Play</button>
+<button type="button" class="rk c-game" data-open="game">Play Online</button>
+<a href="#" class="rk c-stream" data-stream data-soon="Stream the Album (soon)" data-live="Stream the Album">Stream the Album (soon)</a>
 <a class="rk c-breathe" href="/breathe" data-go="Go to a page full of free, easy breathing exercises to feel your best?">Breathe</a>
 <a class="rk c-move" href="/move" data-go="Go to a page full of free, easy movement exercises to feel your best?">Move</a>
 <a class="rk c-store" href="/store" data-go="Go to the full Fearjoy store?">Store</a>
+<a class="rk c-ig" href="https://www.instagram.com/fearjoymusic" target="_blank" rel="noopener">Instagram</a>
+<a class="rk c-tw" href="https://www.twitch.tv/fearjoymusic" target="_blank" rel="noopener">Twitch</a>
 <button type="button" class="rk c-bg rk-bg-nav" id="rackBg2" aria-pressed="false" aria-label="Keep the music playing in the background">BG play</button>
 </nav>
 <div class="rack-lcd on still" id="rackLcd"><div class="lcd-track"><span>WELCOME</span><span aria-hidden="true">WELCOME</span><span aria-hidden="true">WELCOME</span></div></div>
@@ -839,16 +905,30 @@ try { if (location.hash) history.replaceState(null, '', location.pathname + loca
 </div>
 </div>
 
+<!-- ============ THE GAME ON THE TV: /game in a frame that fills the screen (everything else is paused while it is open) ============ -->
+<div id="gameOverlay" hidden>
+<div class="go-screen">
+<iframe id="gameFrame" title="Fearjoy: The Game" allow="autoplay; fullscreen; clipboard-write"></iframe>
+<div class="go-crt" aria-hidden="true"></div>
+</div>
+<button type="button" class="go-x" id="gameX" aria-label="Back to the desk">&#10005;</button>
+<div class="go-ask" id="gameAsk" hidden>
+<p>Back to the desk? The game in progress will end.</p>
+<div class="go-ask-btns"><button type="button" class="btn small" id="gameStay">Keep playing</button><button type="button" class="btn small" id="gameLeave">Back to the desk</button></div>
+</div>
+</div>
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/STLLoader.js"></script>
 <script>
-// LP1 (v20)
+// LP1 (v21)
 const toTop = () => { try { window.scrollTo({ top: 0, left: 0, behavior: 'instant' }); } catch (e) { window.scrollTo(0, 0); } };
 toTop();
 window.addEventListener('load', toTop);
 window.addEventListener('pageshow', e => { if (e.persisted) toTop(); });
 (function () {
 'use strict';
+let FJ_PAUSED = false;   /* true while the game is open on the TV: all the 3D views stop drawing so the game stays smooth */
 
 /* =====================================================================
    EASY EDIT AREA
@@ -872,7 +952,7 @@ const CONFIG = {
   shipSingle: 5,                   // continental US shipping for single pieces, up to 6 pieces
   shipSingleMore: 3,               // plus this much for every additional 6 single pieces
   streamLinks: { spotify: '', apple: '', youtube: '', more: '' },   // links for the four big buttons on the TV. Empty = a "coming soon" popup.
-  streamLogos: { spotify: '/images/logo-spotify.png', apple: '/images/logo-apple-music.png', youtube: '/images/logo-youtube.png' },   // logo pictures for the TV buttons (any shape, transparent background is best). Missing = the name is written instead.
+  streamLogos: { spotify: ['/images/logo-spotify.svg', '/images/spotify.svg', '/images/logo-spotify.png'], apple: ['/images/logo-apple-music.svg', '/images/apple-music.svg', '/images/apple.svg', '/images/logo-apple-music.png'], youtube: ['/images/logo-youtube.svg', '/images/youtube.svg', '/images/logo-youtube.png'] },   // logo pictures for the TV buttons (any shape, transparent background is best). Missing = the name is written instead.
   howImage: '/images/rulebook.png',   // the how-to sheet lying under the table (tap it for the How to Play pictures)
   vinylUrl: '',                    // where the record on the table sends you to buy it. Empty = a "coming soon" popup.
   shippingNote: 'Shipping is confirmed by reply before you pay.'
@@ -934,7 +1014,7 @@ const PRODUCTS = [
     pieces: ['jesse', 'marco', 'grant'],
     blurb: 'The only one ever made. This hand-finished edition is the best way to support our fully-independent art.',
     includes: ['Custom-painted player pieces: Jesse, Marco and Grant', 'Dichroic glass die (color-shifting, iridescent)', 'Handmade custom real-bronze Fear/Joy coin', 'Free entry to any future show'],
-    more: ['Heads are resin printed, not plastic', 'Signed record', 'Fully unique, collectible, handmade', 'Any piece of clothing from the full store', 'Handwritten lyric sheet', 'Added to the album credits']
+    more: ['Heads are resin printed, not plastic', 'Signed record', 'Fully unique, collectible, handmade', 'Any piece of clothing from the full store', 'Handwritten lyric sheet', "You'll be added to the album credits"]
   }
 ];
 
@@ -1246,8 +1326,9 @@ function productCard(p) {
     el.innerHTML = `
       <div class="info">
         <div class="acc-top"><h3>${symHTML(p.name)}</h3><button type="button" class="acc-arrow" data-acc="${p.id}" aria-expanded="false" aria-label="Open or close ${esc(p.name)}"></button></div>
+        <div class="top-opts"><div class="optlabel">build your band:</div>${chipsHTML(p.id)}</div>
       </div>
-      <div class="acc-body">${pickArea}</div>
+      <div class="acc-body"><div class="viewer" data-viewer="${p.id}"></div></div>
       <div class="info">
         <div class="buyrow">
           <div class="price" data-price="${p.id}"></div>
@@ -1774,7 +1855,7 @@ function buildExtras(v, painted, st) {
       g.strokeStyle = '#8a5a08'; g.lineWidth = 4; g.setLineDash([10, 7]); g.strokeRect(16, 16, W - 32, H - 32); g.setLineDash([]);
       g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillStyle = '#5a3604';
       g.font = "62px " + FONT_S; g.fillText('ADMIT ONE', W / 2, H * 0.4);
-      g.font = "40px 'KCPelletierTyped', 'Courier New', monospace"; g.fillText('any fearjoy show', W / 2, H * 0.72);
+      g.font = "58px 'KCPelletierTyped', 'Courier New', monospace"; g.fillText('any show', W / 2, H * 0.72);
       tkTex.needsUpdate = true;
     };
     drawTicket();
@@ -1993,9 +2074,10 @@ function makeDesk(el) {
 
   /* camera: fixed, looking down at the table. The distance is worked out from a few key points so the TV fills the width on any screen shape. */
   const EL = THREE.MathUtils.degToRad(36), LOOK = new THREE.Vector3(0, 1.85, 0);
-  const FIT_PTS = [[3.15, 4.0, -1.5], [1.05, 5.1, -2.1], [2.95, 0, 2.6], [2.9, -1.0, 2.5], [-2.9, -1.0, 2.5]];
+  const FIT_PTS = [[3.15, 4.0, -1.5], [1.05, 5.1, -2.1], [2.95, 0, 2.6], [2.9, -1.0, 3.05], [-2.9, -1.0, 3.05]];
   v.fit = function () {
     const w = el.clientWidth || 640, h = el.clientHeight || 400;
+    v.renderer.setPixelRatio(Math.max(0.75, Math.min(window.devicePixelRatio || 1, 1.75, Math.sqrt(2600000 / (w * h)))));   /* the desk fills the screen now, so cap the total pixels on very big windows */
     v.renderer.setSize(w, h, false);
     v.camera.aspect = w / h;
     v.camera.updateProjectionMatrix();
@@ -2070,8 +2152,12 @@ function makeDesk(el) {
   })();
   const woodSide = std(0x47291a, 0.8), legWood = std(0x573822, 0.75);
   const TW = 6.0, TD = 3.6, TZ = 0.8, FLOOR = -1.0;   /* table top is at y = 0 */
-  const tableTop = new THREE.Mesh(new THREE.BoxGeometry(TW, 0.16, TD),
-    [woodSide, woodSide, new THREE.MeshStandardMaterial({ map: wood, roughness: 0.75 }), woodSide, woodSide, woodSide]);
+  const tableGeo = roundedSlab(TW, TD, 0.16, 0.22, 0.035);   /* rounded corners and softly rounded edges */
+  { const P = tableGeo.attributes.position, uv = new Float32Array(P.count * 2);
+    for (let i = 0; i < P.count; i++) { uv[i * 2] = P.getX(i) / TW + 0.5; uv[i * 2 + 1] = P.getY(i) / TD + 0.5; }
+    tableGeo.setAttribute('uv', new THREE.BufferAttribute(uv, 2));
+    tableGeo.rotateX(-Math.PI / 2); }   /* the slab is built standing up, so lay it flat: its front/back faces become the top and bottom */
+  const tableTop = new THREE.Mesh(tableGeo, [new THREE.MeshStandardMaterial({ map: wood, roughness: 0.75 }), woodSide]);
   tableTop.position.set(0, -0.08, TZ);
   tableTop.userData.tag = 'block';   /* blocks clicks to the TV behind it */
   stage.add(tableTop); hits.push(tableTop);
@@ -2146,8 +2232,9 @@ function makeDesk(el) {
     const cv = document.createElement('canvas'); cv.width = cv.height = 192;
     const tex = new THREE.CanvasTexture(cv);
     tex.anisotropy = 4;
-    const logoUrl = (CONFIG.streamLogos || {})[s.id];
-    if (logoUrl) { s.img = new Image(); s.img.onload = () => s.draw(); s.img.src = logoUrl; }
+    const logoNames = [].concat((CONFIG.streamLogos || {})[s.id] || []);   /* each file name is tried in turn until one loads */
+    const tryLogo = k => { if (k >= logoNames.length) return; const im = new Image(); im.onload = () => { s.img = im; s.draw(); }; im.onerror = () => tryLogo(k + 1); im.src = logoNames[k]; };
+    tryLogo(0);
     s.draw = () => {
       const g = cv.getContext('2d'), W = 192;
       g.clearRect(0, 0, W, W);
@@ -2157,8 +2244,9 @@ function makeDesk(el) {
       if (s.id === 'more') {   /* the "(...)" more button: three dots, drawn here */
         g.fillStyle = '#2a2e38';
         [W * 0.27, W * 0.5, W * 0.73].forEach(x => { g.beginPath(); g.arc(x, W / 2, 15, 0, Math.PI * 2); g.fill(); });
-      } else if (s.img && s.img.complete && s.img.naturalWidth) {
-        const k = Math.min(W * 0.7 / s.img.naturalWidth, W * 0.7 / s.img.naturalHeight), iw = s.img.naturalWidth * k, ih = s.img.naturalHeight * k;
+      } else if (s.img) {
+        const nw = s.img.naturalWidth || 200, nh = s.img.naturalHeight || 200;   /* an .svg with no set size reports 0 in some browsers */
+        const k = Math.min(W * 0.7 / nw, W * 0.7 / nh), iw = nw * k, ih = nh * k;
         g.drawImage(s.img, (W - iw) / 2, (W - ih) / 2, iw, ih);
       } else {   /* no logo picture yet: write the name */
         g.fillStyle = s.color; g.textAlign = 'center'; g.textBaseline = 'middle';
@@ -2719,8 +2807,12 @@ function makeDesk(el) {
   micNeck.rotation.z = Math.PI / 2; micNeck.position.x = -0.1; micBodyG.add(micNeck);
   const micBand = new THREE.Mesh(new THREE.CylinderGeometry(0.0765, 0.0765, 0.05, 14), std(0x3a6fc4, 0.4, 0.2));
   micBand.rotation.z = Math.PI / 2; micBand.position.x = -0.62; micBodyG.add(micBand);
+  const micPlug = new THREE.Mesh(new THREE.CylinderGeometry(0.05, 0.05, 0.1, 12), std(0x9aa0a8, 0.3, 0.7));   /* the XLR plug on the handle end */
+  micPlug.rotation.z = Math.PI / 2; micPlug.position.x = -0.77; micBodyG.add(micPlug);
+  const micCable = new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3([[-0.3, 0.07, 0], [-0.45, 0.03, 0.04], [-0.58, 0.025, 0.22], [-0.45, 0.025, 0.46], [-0.15, 0.025, 0.58], [0.15, 0.025, 0.55]].map(q => new THREE.Vector3(q[0], q[1], q[2]))), 36, 0.014, 6, false), std(0x151517, 0.6));
+  noHit(micCable); micG.add(micCable);   /* a short black cable that curls on the floor */
   const micBlob = blob(1.5, 0.6, 0.1, 2.3, 0.5); micBlob.position.y = FLOOR + 0.004; micBlob.rotation.z = -0.5;
-  hitBox(1.35, 0.32, 0.4, 0.03, 0.14, 0, 'mic', micG);
+  hitBox(1.75, 0.32, 0.9, -0.15, 0.14, 0.25, 'mic', micG);
   let micT = 0;
 
   /* ---------- cream vinyl record lying on the table, poking out from under the board (its red center label shows a little). Hover: it slides out a little. Click: it wiggles, then the buy popup opens. ---------- */
@@ -2856,7 +2948,7 @@ function makeDesk(el) {
     Sound.dice();
   }
 
-  const goTo = id => { const t = document.getElementById(id); if (t) t.scrollIntoView({ behavior: REDUCE ? 'auto' : 'smooth', block: 'start' }); };
+  const goTo = id => { if (id === 'kits') openKits(); else if (id === 'credits') openCredits(); };   /* the shop and the credits are popups now */
 
   /* ---------- the limited-edition "infomercial": tapping a crew member spins them and shows an order ad on the TV for 6 seconds. Tap the ad to jump to the player pieces. ---------- */
   const INFO_PX = 512;
@@ -2992,14 +3084,25 @@ function makeDesk(el) {
     ldM.visible = false; ldCoinG.visible = false;
     staticM.visible = true; staticOn = true;
   }
+  function warmUp() {   /* draw every falling thing once, unseen (it is hidden again before the screen updates), so shaders and textures are ready before they drop */
+    drops.forEach(d => { d.g.visible = true; d.sh.forEach(s => { s.visible = true; }); });
+    try { v.renderer.render(v.scene, v.camera); } catch (x) {}
+    drops.forEach(d => { d.g.visible = false; d.sh.forEach(s => { s.visible = false; }); });
+  }
   function introTick(now) {
     if (!intro.t0) intro.t0 = now;
-    if (intro.phase === 'load') {
-      const done = introTasks.filter(x => x.done).length, frac = done / introTasks.length;
+    if (intro.phase === 'load' || intro.phase === 'warm') {
+      const done = introTasks.filter(x => x.done).length, frac = intro.phase === 'warm' ? 1 : done / introTasks.length;
       intro.shown += (frac - intro.shown) * 0.1;
       ldSpin.rotation.y = now * 0.0018;   /* a little faster than the coin on the table */
       if (now - ldDraw > 110) { ldDraw = now; drawLoading(intro.shown, now); }
-      if ((done === introTasks.length && now - intro.t0 > 1700) || now - intro.t0 > 9500) startDrop(now);
+      if (intro.phase === 'load') {
+        if ((done === introTasks.length && now - intro.t0 > 2400) || now - intro.t0 > 10500) { warmUp(); intro.phase = 'warm'; intro.tw = now; intro.calm = 0; intro.prev = now; }
+      } else {   /* the loading screen stays up until the page has been drawing steadily for a moment (and never more than 2 seconds extra) */
+        const dtf = now - intro.prev; intro.prev = now;
+        intro.calm = dtf < 26 ? intro.calm + 1 : 0;
+        if ((now - intro.tw > 600 && intro.calm >= 10) || now - intro.tw > 2200) startDrop(now);
+      }
       return;
     }
     const sec = (now - intro.t1) / 1000;
@@ -3118,11 +3221,6 @@ function makeDesk(el) {
     const now = performance.now();
     place(t);
     if (intro.phase !== 'done') introTick(now);
-    if (!REDUCE && v.base) {   /* tiny parallax: the camera drifts as the page scrolls, so the table and the TV behind it slide a little against each other */
-      const r = el.getBoundingClientRect(), sp = Math.max(-1, Math.min(1, (r.top + r.height / 2 - innerHeight / 2) / innerHeight));
-      v.camera.position.set(v.base.x + sp * 0.5, v.base.y + sp * 0.7, v.base.z);
-      v.camera.lookAt(LOOK);
-    }
     vSlide += ((hoverGroup === vinylG ? 1 : 0) - vSlide) * 0.14;   /* hover: slides out toward you; click: a quick wiggle */
     const wk = vinylG.userData.wig ? Math.min(1, (now - vinylG.userData.wig) / 650) : 1, wg = REDUCE ? 0 : Math.sin(wk * Math.PI * 7) * (1 - wk);
     vinylG.position.set(VX + wg * 0.07, vinylG.position.y, VZ + vSlide * 0.2);
@@ -3214,7 +3312,7 @@ function makeDesk(el) {
       if (mode === 'start') {   /* NEW GAME: the picture collapses to a bright line, then the game page opens */
         if (REDUCE) screenGrp.scale.set(1, 1, 1);
         else { screenGrp.scale.set(1 + p * 0.04, Math.max(0.02, 1 - p * 0.98), 1); setBright(1 + p); }
-        if (p >= 1) { v.navigated = true; location.href = '/game'; }
+        if (p >= 1) { v.tvT = 0; screenGrp.scale.set(1, 1, 1); setBright(1); showMenu(false); openGame(); }
       } else {   /* TV click (open) or CANCEL (close): flatten and pop back, swapping the menu in or out at the flat moment */
         if (REDUCE) screenGrp.scale.set(1, 1, 1);
         else if (p < 0.4) { const q = p / 0.4; screenGrp.scale.set(1 + q * 0.04, Math.max(0.02, 1 - q * 0.98), 1); setBright(1 + q); }
@@ -3449,11 +3547,14 @@ function makeViewer(el, p) {
 let lastT = 0;
 function frame(t) {
   requestAnimationFrame(frame);
+  if (FJ_PAUSED) { lastT = t; return; }
   const dt = Math.min((t - lastT) / 16.67, 3) || 1;
   lastT = t;
+  const popupOpen = !!document.querySelector('dialog.big[open]');   /* the desk holds still behind a popup, so the 3D views inside it run smoothly */
   for (const id in viewers) {
     const v = viewers[id];
     if (!v || !v.visible) continue;
+    if (popupOpen && id === 'desk') continue;
     if (!v.fixed) {
       if (v.dragging && t - v.lastMoveT > 1500) { v.dragging = false; v.el.classList.remove('grabbing'); }   /* safety: never stay stuck in "dragging" */
       if (!v.dragging) {
@@ -3777,16 +3878,58 @@ muteBtn.addEventListener('click', () => {
   muteBtn.textContent = m ? 'Muted' : 'Mute';
 });
 
+
+/* ---------- popups: shop and credits. Soft to leave: tap outside, the X, the button at the bottom, or Esc ---------- */
+const kitsDlg = $('#kitsDlg'), creditsDlg = $('#creditsDlg');
+function openPopup(d) { if (!d.open) { try { d.showModal(); } catch (x) { d.setAttribute('open', ''); } } d.scrollTop = 0; }
+function openKits() { openPopup(kitsDlg); }
+function openCredits() { openPopup(creditsDlg); }
+[kitsDlg, creditsDlg].forEach(d => {
+  d.addEventListener('click', e => { if (e.target === d || e.target.closest('[data-close]')) d.close(); });   /* the backdrop is the dialog itself */
+});
+
+/* ---------- the game on the TV ---------- */
+const gameOv = $('#gameOverlay'), gameFrame = $('#gameFrame'), gameAsk = $('#gameAsk');
+const GAME_URL = '/game/?embed=1';   /* ?embed=1 lets the game know it is inside the TV */
+function openGame() {
+  if (!gameOv.hidden) return;
+  Sound.hide(true);
+  FJ_PAUSED = true;
+  document.documentElement.classList.add('game-open');
+  gameFrame.src = GAME_URL;
+  gameAsk.hidden = true;
+  gameOv.hidden = false;
+  gameOv.classList.remove('on'); void gameOv.offsetWidth; if (!REDUCE) gameOv.classList.add('on');
+}
+function closeGame() {
+  gameFrame.src = 'about:blank';   /* unload it, so nothing keeps running behind the desk */
+  gameAsk.hidden = true;
+  gameOv.hidden = true;
+  FJ_PAUSED = false;
+  document.documentElement.classList.remove('game-open');
+  Sound.show();
+}
+$('#gameX').addEventListener('click', () => { gameAsk.hidden = !gameAsk.hidden; });
+$('#gameStay').addEventListener('click', () => { gameAsk.hidden = true; });
+$('#gameLeave').addEventListener('click', closeGame);
+window.addEventListener('keydown', e => { if (e.key === 'Escape' && !gameOv.hidden) { e.preventDefault(); gameAsk.hidden = !gameAsk.hidden; } });
+window.addEventListener('message', e => { if (e.origin === location.origin && e.data && e.data.fearjoy === 'close-game') closeGame(); });   /* the game can ask to close itself */
+$$('[data-open]').forEach(b => b.addEventListener('click', () => {
+  const w = b.dataset.open;
+  if (w === 'kits') openKits(); else if (w === 'credits') openCredits(); else if (w === 'game') openGame();
+}));
+
 /* ---------- rack bar: lit buttons, play/pause, volume knob, background play ---------- */
 const rack = $('.rack'), rackMenu = $('#rackMenu');
 const setRackMenu = on => { rack.classList.toggle('open', on); rackMenu.classList.toggle('lit', on); rackMenu.setAttribute('aria-expanded', String(on)); };   /* the slide-out menu on narrow screens */
 rackMenu.addEventListener('click', e => { e.stopPropagation(); setRackMenu(!rack.classList.contains('open')); });
 document.addEventListener('click', e => { if (rack.classList.contains('open') && !e.target.closest('.rack-nav')) setRackMenu(false); });
 document.addEventListener('keydown', e => { if (e.key === 'Escape') setRackMenu(false); });
+$('#rackNav').addEventListener('click', e => { if (e.target.closest('.rk') && !e.target.closest('#rackBg2')) setRackMenu(false); });   /* picking something closes the panel */
 /* every rack link asks first ("Go to ...?") before leaving the page */
 const goDlg = $('#goDlg');
 let goHref = '', goBtn = null, goGoing = false;
-$$('.rack a.rk').forEach(a => a.addEventListener('click', e => {
+$$('.rack a.rk[data-go]').forEach(a => a.addEventListener('click', e => {
   e.preventDefault(); setRackMenu(false);
   goHref = a.href; goBtn = a; goGoing = false; a.classList.add('lit');
   $('#goMsg').textContent = a.dataset.go || 'Leave this page?';
@@ -3832,14 +3975,14 @@ howDlg.addEventListener('close', () => { zoomEl.hidden = true; });
 $$('#howDlg [data-zoom]').forEach(img => img.addEventListener('click', () => { zoomImg.src = img.src; zoomImg.alt = img.alt; zoomEl.hidden = false; }));
 zoomEl.addEventListener('click', e => { e.stopPropagation(); zoomEl.hidden = true; });
 
-/* ---------- credits box: at the very top or bottom, keep scrolling and the page moves instead of getting stuck ---------- */
+/* ---------- credits box: at the very top or bottom, keep scrolling and the popup moves instead of getting stuck ---------- */
 list.addEventListener('wheel', e => {
   if (list.scrollHeight <= list.clientHeight + 1) return;
   const atTop = list.scrollTop <= 0, atBottom = list.scrollTop + list.clientHeight >= list.scrollHeight - 1;
   if ((e.deltaY < 0 && atTop) || (e.deltaY > 0 && atBottom)) {
     e.preventDefault();
     const dy = e.deltaMode === 1 ? e.deltaY * 16 : e.deltaMode === 2 ? e.deltaY * window.innerHeight : e.deltaY;
-    try { window.scrollBy({ top: dy, behavior: 'instant' }); } catch (x) { window.scrollBy(0, dy); }
+    try { creditsDlg.scrollBy({ top: dy, behavior: 'instant' }); } catch (x) { creditsDlg.scrollTop += dy; }
   }
 }, { passive: false });
 
