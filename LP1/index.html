@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- LP1 (v26) -->
+<!-- LP1 (v27) -->
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
@@ -730,7 +730,7 @@ dialog.big { width: 100vw; max-height: 86vh; max-height: 86dvh; margin: auto 0 0
 .rack-nav .rk-bg-nav { display: none; }
 @media (max-width: 860px) { .rack-nav .rk-bg-nav { display: inline-flex; } }
 @media (max-width: 520px) { .rack-nav { grid-template-columns: 1fr; } .rack-nav .rk { min-width: 190px; } }
-.c-pieces { --c: #ffd36b; } .c-credits { --c: #ff9ec7; } .c-how { --c: #8fd0ff; } .c-stream { --c: #6dff9a; } .c-ig { --c: #ff7ac6; }
+.c-pieces { --c: #ffd36b; } .c-credits { --c: #ff9ec7; } .c-how { --c: #8fd0ff; } .c-stream { --c: #6dff9a; } .c-ig { --c: #ff7ac6; } .c-mail { --c: #6fb4ff; } .c-contact { --c: #ffecd2; }
 .rk[aria-disabled="true"] { opacity: 0.7; }
 .rk.rk-off { opacity: 0.4; filter: grayscale(1); pointer-events: none; cursor: default; }   /* the full store: grayed out until it opens */
 .rk-menu-txt { margin-left: 2px; }
@@ -752,6 +752,12 @@ dialog.big { width: 100vw; max-height: 86vh; max-height: 86dvh; margin: auto 0 0
 /* while the game runs, nothing else animates */
 html.game-open body { animation: none; }
 html.game-open .lcd-track { animation-play-state: paused; }
+
+/* ============ Email list and contact popups ============ */
+.sheet form { display: flex; flex-direction: column; gap: 12px; margin: 0; }
+.success-message { display: none; font-family: 'KCStrikerSans', sans-serif; color: #fff; margin: 0; text-shadow: 0 0 10px green; font-size: 1.2rem; text-align: center; }
+.contact-addr { text-align: center; font-size: 1.1rem; word-break: break-all; }
+.contact-addr a { color: #ffecd2; }
 
 /* ============ Reduced motion ============ */
 @media (prefers-reduced-motion: reduce) {
@@ -833,6 +839,33 @@ try { if (location.hash) history.replaceState(null, '', location.pathname + loca
 </div>
 </dialog>
 
+<!-- ============ POPUP: EMAIL LIST (the mailbox opens it) ============ -->
+<dialog id="mailDlg">
+<div class="sheet">
+<button class="x" type="button" id="mailClose" aria-label="Close">×</button>
+<h3>Email list</h3>
+<p class="note">Leave your email and we'll send you the album when it drops. You'll also get the occasional note when something new comes out.</p>
+<form id="emailForm">
+<label>Your email<input type="email" id="email" name="email" required autocomplete="email" placeholder="you@example.com"></label>
+<label>A quick note (optional)<textarea name="message" id="message" placeholder="Say hi..."></textarea></label>
+<button type="submit" class="btn">Send</button>
+</form>
+<p class="success-message" id="successMessage">Thanks! We'll send it over when it's done.</p>
+</div>
+</dialog>
+
+<!-- ============ POPUP: CONTACT US (the letter opens it) ============ -->
+<dialog id="contactDlg">
+<div class="sheet">
+<button class="x" type="button" id="contactClose" aria-label="Close">×</button>
+<h3>Contact us</h3>
+<p class="note">Questions, shows, orders, or just saying hi. We read everything.</p>
+<p class="contact-addr"><a id="contactLink" href="mailto:grant@freejoy.club">grant@freejoy.club</a></p>
+<a class="btn" id="contactMail" href="mailto:grant@freejoy.club">Write us an email</a>
+<button class="btn" id="contactCopy" type="button">Copy the address</button>
+</div>
+</dialog>
+
 <dialog id="loreDlg">
 <div class="sheet">
 <h3>Mystery lore</h3>
@@ -893,6 +926,8 @@ try { if (location.hash) history.replaceState(null, '', location.pathname + loca
 <a class="rk c-move" href="/move" data-go="Go to a page full of free, easy movement exercises to feel your best?">Move</a>
 <span class="rk c-store rk-off" aria-disabled="true" title="Coming soon">Full store</span>
 <a class="rk c-ig" href="https://www.instagram.com/fearjoymusic" target="_blank" rel="noopener">Instagram</a>
+<button type="button" class="rk c-mail" data-open="mail">Email List</button>
+<button type="button" class="rk c-contact" data-open="contact">Contact Us</button>
 <button type="button" class="rk c-bg rk-bg-nav" id="rackBg2" aria-pressed="false" aria-label="Keep the music playing in the background">Background play audio</button>
 </nav>
 <div class="rack-lcd on still" id="rackLcd"><div class="lcd-track"><span>WELCOME</span><span aria-hidden="true">WELCOME</span><span aria-hidden="true">WELCOME</span></div></div>
@@ -921,7 +956,7 @@ try { if (location.hash) history.replaceState(null, '', location.pathname + loca
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/STLLoader.js"></script>
 <script>
-// LP1 (v26)
+// LP1 (v27)
 const toTop = () => { try { window.scrollTo({ top: 0, left: 0, behavior: 'instant' }); } catch (e) { window.scrollTo(0, 0); } };
 toTop();
 window.addEventListener('load', toTop);
@@ -1013,8 +1048,8 @@ const PRODUCTS = [
     id: 'deluxe', type: 'deluxe', name: 'Angel Investor Edition', price: 444, cta: 'Inquire', badge: 'One of one',
     pieces: ['jesse', 'marco', 'grant'],
     blurb: 'The only one ever made. This hand-finished edition is the best way to support our fully-independent art.',
-    includes: ['Custom-painted player pieces: Jesse, Marco and Grant', 'Dichroic glass die (color-shifting, iridescent)', 'Handmade custom real-bronze Fear/Joy coin', 'Free entry to any future show'],
-    more: ['Heads are resin printed, not plastic', 'Signed record', 'Fully unique, collectible, handmade', 'Any piece of clothing from the full store', 'Handwritten lyric sheet', "You'll be added to the album credits"]
+    includes: ['Hand-painted resin pieces (Jesse, Marco, Grant)', 'Dichroic glass die (color-shifting, iridescent)', 'Brass Fearjoy coin (handmade)', 'Free entry to any future show'],
+    more: ['Fully unique, collectible, handmade', 'Any piece of clothing from the merch store', 'Handwritten lyric sheet', "You'll be added to the album credits", 'Heads are high-quality resin, not plastic']
   }
 ];
 
@@ -2770,7 +2805,8 @@ function makeDesk(el) {
     g.fillStyle = '#efe4c6'; g.fillRect(48, 64, 168, 84);
     g.strokeStyle = '#3a2a1c'; g.lineWidth = 3; g.strokeRect(54, 70, 156, 72);
     g.fillStyle = '#3a2a1c'; g.textAlign = 'center'; g.textBaseline = 'middle';
-    g.font = "bold 34px 'KCPelletierTyped', 'Courier New', monospace"; g.fillText('LYRICS', 132, 108);
+    g.font = "bold 30px 'KCPelletierTyped', 'Courier New', monospace"; g.fillText('LYRICS', 132, 95);
+    g.font = "bold 25px 'KCPelletierTyped', 'Courier New', monospace"; g.fillText('& CREDITS', 132, 126);
     noteTex.needsUpdate = true;
   };
   drawNote();
@@ -2783,7 +2819,7 @@ function makeDesk(el) {
   const band = new THREE.Mesh(new THREE.BoxGeometry(0.035, 0.12, 1.32), std(0x151517, 0.6)); band.position.set(0.3, 0.057, 0); noteG.add(band);
   const pen = new THREE.Group(); pen.position.set(-0.02, 0.15, 0.12); pen.rotation.y = 0.6; noteG.add(pen);
   const penBody = new THREE.Mesh(new THREE.CylinderGeometry(0.036, 0.036, 0.9, 14), std(0x1f3f9e, 0.35, 0.2)); penBody.rotation.z = Math.PI / 2; pen.add(penBody);
-  const penTip = new THREE.Mesh(new THREE.ConeGeometry(0.036, 0.12, 14), std(0xc9ced4, 0.3, 0.7)); penTip.rotation.z = Math.PI / 2; penTip.position.x = 0.5; pen.add(penTip);
+  const penTip = new THREE.Mesh(new THREE.ConeGeometry(0.036, 0.12, 14), std(0xc9ced4, 0.3, 0.7)); penTip.rotation.z = -Math.PI / 2; penTip.position.x = 0.5; pen.add(penTip);
   const penClip = new THREE.Mesh(new THREE.BoxGeometry(0.28, 0.012, 0.025), std(0xd8b04a, 0.3, 0.7)); penClip.position.set(-0.28, 0.04, 0); pen.add(penClip);
   const noteBlob = blob(1.5, 1.8, 1.3, 2.2, 0.55); noteBlob.position.y = FLOOR + 0.004;
   hitBox(1.1, 0.4, 1.4, 0, 0.12, 0, 'notebook', noteG);
@@ -2819,6 +2855,81 @@ function makeDesk(el) {
   const micBlob = blob(1.5, 0.6, 0.1, 2.3, 0.5); micBlob.position.y = FLOOR + 0.004; micBlob.rotation.z = -0.5;
   hitBox(1.75, 0.32, 0.9, -0.15, 0.14, 0.25, 'mic', micG);
   let micT = 0;
+
+  /* ---------- the mailbox pole: a wooden post on the floor just left of the table. The mailbox on top sits up over the desk a little. ---------- */
+  const PLX = -2.45, PLZ = 2.7, PLTOP = 0.72;   /* where the post stands, and the height of its top */
+  const poleG = new THREE.Group(); stage.add(poleG);
+  const poleBody = new THREE.Mesh(new THREE.BoxGeometry(0.13, PLTOP - FLOOR, 0.13), legWood);
+  poleBody.position.set(PLX, (PLTOP + FLOOR) / 2, PLZ); poleG.add(poleBody);
+  const poleBlob = blob(0.9, 0.9, PLX, PLZ, 0.6); poleBlob.position.y = FLOOR + 0.004;
+  /* a mailbox on a pole, standing on the floor beside the left end of the table and reaching up over the desk: a blue box with an arched top, a door that says EMAIL LIST, and a red flag on the side that pops up when you tap it */
+  const mailG = new THREE.Group();
+  mailG.position.set(PLX, PLTOP, PLZ);
+  mailG.rotation.y = 0.3;
+  stage.add(mailG);
+  const mailBlue = std(0x3d6db5, 0.45, 0.15), mailDark = std(0x2b5192, 0.5, 0.15), mailRed = std(0xc9382c, 0.45), mailMetal = std(0xb9bec6, 0.35, 0.6);
+  const MB_W = 0.62, MB_H = 0.26, MB_D = 0.78;   /* width, height of the square lower part, depth (front to back) */
+  const mbBase = new THREE.Mesh(new THREE.BoxGeometry(MB_W + 0.1, 0.04, MB_D + 0.1), std(0x5a4a3a, 0.8)); mbBase.position.y = 0.02; mailG.add(mbBase);
+  const mbLow = new THREE.Mesh(new THREE.BoxGeometry(MB_W, MB_H, MB_D), mailBlue); mbLow.position.y = 0.04 + MB_H / 2; mailG.add(mbLow);
+  const mbArch = new THREE.Mesh(new THREE.CylinderGeometry(MB_W / 2, MB_W / 2, MB_D, 28, 1, false, -Math.PI / 2, Math.PI), mailBlue);   /* half a cylinder lying along the box = the arched top */
+  mbArch.rotation.x = -Math.PI / 2; mbArch.position.y = 0.04 + MB_H; mailG.add(mbArch);
+  const drawDoor = (g, w, h) => {
+    g.fillStyle = '#2b5192'; g.fillRect(0, 0, w, h);
+    g.strokeStyle = 'rgba(255,255,255,0.35)'; g.lineWidth = 4; g.strokeRect(10, 10, w - 20, h - 20);
+    g.fillStyle = '#f4ecd4'; g.textAlign = 'center'; g.textBaseline = 'middle';
+    g.font = "bold 62px 'KCPelletierTyped', 'Courier New', monospace"; g.fillText('EMAIL', 128, 98);
+    g.fillText('LIST', 128, 164);
+  };
+  const mbDoorTex = mkTex(256, 256, drawDoor);
+  const dW = (MB_W - 0.06) / 2, dS = MB_H - 0.02;   /* the door: a square lower part with a round top, like the box */
+  const doorShape = new THREE.Shape(); doorShape.moveTo(-dW, 0); doorShape.lineTo(dW, 0); doorShape.lineTo(dW, dS); doorShape.absarc(0, dS, dW, 0, Math.PI, false); doorShape.lineTo(-dW, 0);
+  const doorGeo = new THREE.ShapeGeometry(doorShape, 24);
+  const dPos = doorGeo.attributes.position, dUv = doorGeo.attributes.uv;
+  for (let i = 0; i < dPos.count; i++) dUv.setXY(i, (dPos.getX(i) + dW) / (2 * dW), dPos.getY(i) / (dS + dW));   /* the picture is stretched over the door */
+  const mbDoor = new THREE.Mesh(doorGeo, new THREE.MeshStandardMaterial({ map: mbDoorTex, roughness: 0.55, metalness: 0.1 }));
+  mbDoor.position.set(0, 0.06, MB_D / 2 + 0.004); mailG.add(mbDoor);
+  const mbKnob = new THREE.Mesh(new THREE.SphereGeometry(0.035, 12, 10), mailMetal); mbKnob.position.set(0, 0.06 + 0.08, MB_D / 2 + 0.03); mailG.add(mbKnob);
+  const mailFlag = new THREE.Group(); mailFlag.position.set(-(MB_W / 2 + 0.02), 0.04 + MB_H * 0.8, -0.05); mailG.add(mailFlag);
+  const mfPole = new THREE.Mesh(new THREE.BoxGeometry(0.035, 0.3, 0.035), mailMetal); mfPole.position.y = 0.15; mailFlag.add(mfPole);
+  const mfPlate = new THREE.Mesh(new THREE.BoxGeometry(0.03, 0.13, 0.2), mailRed); mfPlate.position.set(0, 0.26, 0.1); mailFlag.add(mfPlate);
+    hitBox(0.9, 0.85, 1.0, 0, 0.4, 0, 'mailbox', mailG);
+  let mailT = 0;
+
+  /* the letter: a cream envelope with air-mail edges that says CONTACT US, leaning against the bottom of the pole */
+  const letterG = new THREE.Group();
+  const LS = 0.8, LEAN = 0.2;   /* size, and how far it leans back from straight up */
+  letterG.position.set(PLX + 0.1, FLOOR + 0.5 * 0.85 * LS * Math.cos(LEAN) + 0.03, PLZ + 0.06 + 0.5 * 0.85 * LS * Math.sin(LEAN) + 0.04);
+  letterG.rotation.y = -0.12;
+  stage.add(letterG);
+  const letterLean = new THREE.Group(); letterLean.rotation.x = Math.PI / 2 - LEAN; letterLean.scale.setScalar(LS); letterG.add(letterLean);   /* stood up on its long edge, leaning back */
+  const lcW = 520, lcH = 340;
+  const drawLetter = (g, w, h) => {
+    g.fillStyle = '#efe4c6'; g.fillRect(0, 0, w, h);
+    g.save(); g.beginPath(); g.rect(0, 0, w, h); g.rect(18, 18, w - 36, h - 36); g.clip('evenodd');   /* the air-mail stripes: only the border shows */
+    for (let x = -h; x < w + h; x += 44) {
+      g.fillStyle = ((x / 44) | 0) % 2 ? '#c9382c' : '#2f5aa8';
+      g.beginPath(); g.moveTo(x, 0); g.lineTo(x + 26, 0); g.lineTo(x + 26 - h, h); g.lineTo(x - h, h); g.fill();
+    }
+    g.restore();
+    g.strokeStyle = 'rgba(90,60,30,0.35)'; g.lineWidth = 2;   /* the flap */
+    g.beginPath(); g.moveTo(24, 24); g.lineTo(w / 2, h * 0.52); g.lineTo(w - 24, 24); g.stroke();
+    g.fillStyle = '#c9382c'; g.fillRect(w - 112, 34, 70, 82);   /* a stamp */
+    g.strokeStyle = '#efe4c6'; g.lineWidth = 3; g.setLineDash([5, 4]); g.strokeRect(w - 108, 38, 62, 74); g.setLineDash([]);
+    g.fillStyle = '#efe4c6'; g.font = "bold 30px 'KCStrikerSans', sans-serif"; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText('FJ', w - 77, 76);
+    g.fillStyle = '#3a2a1c';
+    g.font = "bold 58px 'KCPelletierTyped', 'Courier New', monospace"; g.fillText('CONTACT US', w / 2 - 12, h * 0.72);
+  };
+  const letterTex = mkTex(lcW, lcH, drawLetter);
+  const letterSide = std(0xcdbf9e, 0.85);
+  const letterBox = new THREE.Mesh(new THREE.BoxGeometry(1.3, 0.04, 0.85), [letterSide, letterSide, new THREE.MeshStandardMaterial({ map: letterTex, color: 0xd8d8d8, roughness: 0.8 }), letterSide, letterSide, letterSide]);
+  letterLean.add(letterBox);
+  if (document.fonts && document.fonts.load) Promise.all([document.fonts.load("58px 'KCPelletierTyped'"), document.fonts.load("30px 'KCStrikerSans'")]).then(() => {   /* redraw once the fonts are ready */
+    drawLetter(letterTex.image.getContext('2d'), lcW, lcH); letterTex.needsUpdate = true;
+    drawDoor(mbDoorTex.image.getContext('2d'), 256, 256); mbDoorTex.needsUpdate = true;
+  }).catch(() => {});
+  const letterBlob = blob(1.1, 0.7, PLX + 0.1, PLZ + 0.3, 0.45); letterBlob.position.y = FLOOR + 0.004;
+  hitBox(1.05, 0.75, 0.4, 0, 0.38, 0, 'letter', letterG);
+  let letterT = 0;
 
   /* ---------- cream vinyl record lying on the table, poking out from under the board (its red center label shows a little). Hover: it slides out a little. Click: it wiggles, then the buy popup opens. ---------- */
   const VR = 1.45, VX = BX + 1.45, VZ = TZ + 0.1;
@@ -3077,6 +3188,8 @@ function makeDesk(el) {
     wrapDrop([howG], 0.85, 0.7, [howBlob], 0.04);
     wrapDrop([noteG], 0.95, 0.7, [noteBlob], 0.04);
     wrapDrop([micG], 1.05, 0.7, [micBlob], 0.04);
+    wrapDrop([poleG, mailG], 1.4, 4, [poleBlob], 0.1);
+    wrapDrop([letterG], 1.5, 4, [letterBlob], 0.1);
     drops.forEach(d => { d.g.visible = false; d.sh.forEach(s => { s.visible = false; }); });
     jesse.visible = false; ldM.visible = true; ldCoinG.visible = true;
     drawLoading(0, 0);
@@ -3179,7 +3292,7 @@ function makeDesk(el) {
     if (loreAt(e)) { el.style.cursor = 'var(--hand)'; hoverGroup = null; return; }   /* a lore picture is on the TV: click it to save it */
     const tag = pick(e);
     el.style.cursor = tag && !(menuOn && tag === 'tv') ? 'var(--hand)' : 'default';
-    hoverGroup = tag === 'stream' ? pickObj.userData.btn : tag === 'howto' ? howG : tag === 'notebook' ? noteG : tag === 'mic' ? micG : tag === 'tv' ? (menuOn ? null : tv) : tag === 'bust' ? pickObj.userData.bust : tag === 'coin' ? coinRoot : tag === 'die' ? dieRoot : tag === 'vinyl' ? vinylG : tag === 'joystick' ? joyG : tag === 'radio' ? radio : tag === 'knob' ? knob : null;
+    hoverGroup = tag === 'stream' ? pickObj.userData.btn : tag === 'howto' ? howG : tag === 'notebook' ? noteG : tag === 'mic' ? micG : tag === 'mailbox' ? mailG : tag === 'letter' ? letterG : tag === 'tv' ? (menuOn ? null : tv) : tag === 'bust' ? pickObj.userData.bust : tag === 'coin' ? coinRoot : tag === 'die' ? dieRoot : tag === 'vinyl' ? vinylG : tag === 'joystick' ? joyG : tag === 'radio' ? radio : tag === 'knob' ? knob : null;
   });
   const endKnob = () => { knobDrag = null; };
   el.addEventListener('pointerup', endKnob);
@@ -3215,6 +3328,8 @@ function makeDesk(el) {
     else if (tag === 'stream') { pickObj.userData.btn.userData.press = performance.now(); Sound.slide(); openStream(pickObj.userData.idx); }
     else if (tag === 'howto') { Sound.slide(); document.getElementById('howBtn').click(); }
     else if (tag === 'notebook') { Sound.slide(); goTo('credits'); }
+    else if (tag === 'mailbox') { mailT = performance.now(); Sound.slide(); setTimeout(openMail, REDUCE ? 0 : 650); }
+    else if (tag === 'letter') { letterT = performance.now(); Sound.slide(); setTimeout(openContact, REDUCE ? 0 : 450); }
     else if (tag === 'mic') { micT = performance.now(); Sound.slide(); if (menuClosing) setTimeout(() => startLore('video'), 800); else startLore('video'); }
     else if (tag === 'tv') openTvMenu();
     else if (tag === 'joystick') { joyT = performance.now(); openTvMenu(); }
@@ -3246,6 +3361,12 @@ function makeDesk(el) {
     const mk = micT ? Math.min(1, (now - micT) / 520) : 1;   /* mic: a little roll back and forth when tapped */
     micG.rotation.y = 0.5 + (REDUCE ? 0 : Math.sin(mk * Math.PI * 4) * (1 - mk) * 0.18);
     if (mk >= 1) micT = 0;
+    const mlk = mailT ? Math.min(1, (now - mailT) / 1700) : 1;   /* mailbox: the red flag swings up when tapped, then back down */
+    mailFlag.rotation.z = REDUCE ? 1.9 : 1.9 - 1.9 * Math.min(1, Math.sin(Math.min(1, mlk * 1.15) * Math.PI) * 1.6);
+    if (mlk >= 1) mailT = 0;
+    const llk = letterT ? Math.min(1, (now - letterT) / 500) : 1;   /* letter: it rocks a little against the pole when tapped */
+    letterLean.rotation.x = Math.PI / 2 - LEAN + (REDUCE ? 0 : Math.sin(llk * Math.PI * 3) * (1 - llk) * 0.1);
+    if (llk >= 1) letterT = 0;
     /* TV glass flicker (a brief dip every so often) and the blue spill light */
     const fl = REDUCE ? 1 : 0.9 + 0.06 * Math.sin(t / 83) + 0.04 * Math.sin(t / 37 + 1.3) - (Math.sin(t / 2300) > 0.985 ? 0.3 : 0);
     glowM.material.opacity = 0.8 * fl;
@@ -3253,7 +3374,7 @@ function makeDesk(el) {
     barTex.offset.y = REDUCE ? 0 : -((t / 7000) % 1);
     tvLight.intensity = 0.55 * fl;
     /* hover glow: whatever is under the pointer warms up slightly (the radio knob too, while it is turned) */
-    if (!glowItems) glowItems = [tv, radio, knob, coinRoot, dieRoot, vinylG, joyG, howG, noteG, micG].concat(crew, strBtns).map(g => ({ g, k: 0, s: g === knob || strBtns.indexOf(g) >= 0 ? 1.2 : 1 }));
+    if (!glowItems) glowItems = [tv, radio, knob, coinRoot, dieRoot, vinylG, joyG, howG, noteG, micG, mailG, letterG].concat(crew, strBtns).map(g => ({ g, k: 0, s: g === knob || strBtns.indexOf(g) >= 0 ? 1.2 : 1 }));
     const hg = knobDrag ? knob : hoverGroup;
     glowItems.forEach(it => {
       const tgt = it.g === hg ? 1 : 0;
@@ -3897,10 +4018,16 @@ muteBtn.addEventListener('click', () => {
 
 
 /* ---------- popups: shop and credits. Soft to leave: tap outside, the X, the button at the bottom, or Esc ---------- */
-const kitsDlg = $('#kitsDlg'), creditsDlg = $('#creditsDlg');
+const kitsDlg = $('#kitsDlg'), creditsDlg = $('#creditsDlg'), mailDlg = $('#mailDlg'), contactDlg = $('#contactDlg');
 function openPopup(d) { if (!d.open) { try { d.showModal(); } catch (x) { d.setAttribute('open', ''); } } d.scrollTop = 0; }
 function openKits() { openPopup(kitsDlg); }
 function openCredits() { openPopup(creditsDlg); }
+function openMail() { $('#successMessage').style.display = 'none'; $('#emailForm').style.display = 'flex'; openPopup(mailDlg); }
+function openContact() { openPopup(contactDlg); }
+mailDlg.addEventListener('click', e => { if (e.target === mailDlg) mailDlg.close(); });
+$('#mailClose').addEventListener('click', () => mailDlg.close());
+contactDlg.addEventListener('click', e => { if (e.target === contactDlg) contactDlg.close(); });
+$('#contactClose').addEventListener('click', () => contactDlg.close());
 [kitsDlg, creditsDlg].forEach(d => {
   d.addEventListener('click', e => { if (e.target === d || e.target.closest('[data-close]')) d.close(); });   /* the backdrop is the dialog itself */
 });
@@ -3933,7 +4060,7 @@ window.addEventListener('keydown', e => { if (e.key === 'Escape' && !gameOv.hidd
 window.addEventListener('message', e => { if (e.origin === location.origin && e.data && e.data.fearjoy === 'close-game') closeGame(); });   /* the game can ask to close itself */
 $$('[data-open]').forEach(b => b.addEventListener('click', () => {
   const w = b.dataset.open;
-  if (w === 'kits') openKits(); else if (w === 'credits') openCredits(); else if (w === 'game') openGame();
+  if (w === 'kits') openKits(); else if (w === 'credits') openCredits(); else if (w === 'game') openGame(); else if (w === 'mail') openMail(); else if (w === 'contact') openContact();
 }));
 
 /* ---------- rack bar: lit buttons, play/pause, volume knob, background play ---------- */
@@ -3982,6 +4109,31 @@ const toggleBg = () => {
 };
 rackBg.addEventListener('click', toggleBg);
 rackBg2.addEventListener('click', toggleBg);
+
+/* ---------- email list form (the mailbox opens it) ---------- */
+const emailForm = $('#emailForm'), successMessage = $('#successMessage');
+emailForm.addEventListener('submit', async event => {
+  event.preventDefault();
+  const formData = new FormData(emailForm);
+  try {
+    const response = await fetch('https://formspree.io/f/mpwwljpd', { method: 'POST', headers: { Accept: 'application/json' }, body: formData });
+    if (response.ok) {
+      emailForm.reset();
+      emailForm.style.display = 'none';
+      successMessage.style.display = 'block';
+      setTimeout(() => { mailDlg.close(); }, 2600);
+    } else alert('Problem submitting. Try again?');
+  } catch (error) {
+    alert('Submission error. Try again?');
+  }
+});
+
+/* ---------- contact us: copy the address ---------- */
+$('#contactCopy').addEventListener('click', () => {
+  const addr = CONFIG.email, done = () => toast('Copied ' + addr);
+  if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(addr).then(done, () => toast(addr));
+  else toast(addr);
+});
 
 /* ---------- How to Play popup: two pictures side by side (stacked on tall screens), tap one to zoom ---------- */
 const howDlg = $('#howDlg'), zoomEl = $('#zoom'), zoomImg = zoomEl.querySelector('img');
