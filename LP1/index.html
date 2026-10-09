@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- LP1 (v25) -->
+<!-- LP1 (v26) -->
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
@@ -730,8 +730,9 @@ dialog.big { width: 100vw; max-height: 86vh; max-height: 86dvh; margin: auto 0 0
 .rack-nav .rk-bg-nav { display: none; }
 @media (max-width: 860px) { .rack-nav .rk-bg-nav { display: inline-flex; } }
 @media (max-width: 520px) { .rack-nav { grid-template-columns: 1fr; } .rack-nav .rk { min-width: 190px; } }
-.c-pieces { --c: #ffd36b; } .c-credits { --c: #ff9ec7; } .c-how { --c: #8fd0ff; } .c-stream { --c: #6dff9a; } .c-ig { --c: #ff7ac6; } .c-tw { --c: #b58bff; }
+.c-pieces { --c: #ffd36b; } .c-credits { --c: #ff9ec7; } .c-how { --c: #8fd0ff; } .c-stream { --c: #6dff9a; } .c-ig { --c: #ff7ac6; }
 .rk[aria-disabled="true"] { opacity: 0.7; }
+.rk.rk-off { opacity: 0.4; filter: grayscale(1); pointer-events: none; cursor: default; }   /* the full store: grayed out until it opens */
 .rk-menu-txt { margin-left: 2px; }
 
 /* the game on the TV: a plain screen (thin bezel, faint scan lines and glow) that uses all the room it can */
@@ -890,10 +891,9 @@ try { if (location.hash) history.replaceState(null, '', location.pathname + loca
 <a href="#" class="rk c-stream" data-stream data-soon="Stream the Album (soon)" data-live="Stream the Album">Stream the Album (soon)</a>
 <a class="rk c-breathe" href="/breathe" data-go="Go to a page full of free, easy breathing exercises to feel your best?">Breathe</a>
 <a class="rk c-move" href="/move" data-go="Go to a page full of free, easy movement exercises to feel your best?">Move</a>
-<a class="rk c-store" href="/store" data-go="Go to the full Fearjoy store?">Store</a>
+<span class="rk c-store rk-off" aria-disabled="true" title="Coming soon">Full store</span>
 <a class="rk c-ig" href="https://www.instagram.com/fearjoymusic" target="_blank" rel="noopener">Instagram</a>
-<a class="rk c-tw" href="https://www.twitch.tv/fearjoymusic" target="_blank" rel="noopener">Twitch</a>
-<button type="button" class="rk c-bg rk-bg-nav" id="rackBg2" aria-pressed="false" aria-label="Keep the music playing in the background">BG play</button>
+<button type="button" class="rk c-bg rk-bg-nav" id="rackBg2" aria-pressed="false" aria-label="Keep the music playing in the background">Background play audio</button>
 </nav>
 <div class="rack-lcd on still" id="rackLcd"><div class="lcd-track"><span>WELCOME</span><span aria-hidden="true">WELCOME</span><span aria-hidden="true">WELCOME</span></div></div>
 <div class="rack-ctl">
@@ -921,7 +921,7 @@ try { if (location.hash) history.replaceState(null, '', location.pathname + loca
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/STLLoader.js"></script>
 <script>
-// LP1 (v25)
+// LP1 (v26)
 const toTop = () => { try { window.scrollTo({ top: 0, left: 0, behavior: 'instant' }); } catch (e) { window.scrollTo(0, 0); } };
 toTop();
 window.addEventListener('load', toTop);
