@@ -1,7 +1,7 @@
 <!DOCTYPE html><html lang="en"><head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Fearjoy - Game (v100.31)</title>
+    <title>Fearjoy - Game (v100.32)</title>
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
@@ -559,10 +559,13 @@
             z-index:5000; opacity:0.90; box-shadow:0 0 50px rgba(255,255,255,0.4);
             transition:none !important; cursor:default !important;
         }
-        #dice3d { position:fixed; left:50%; top:50%; width:min(62vmin,340px); height:min(62vmin,340px); transform:translate(-50%,-50%); z-index:5001; pointer-events:none; display:none; opacity:0; transition:opacity 0.3s ease; }
-        #dice3d.show { opacity:1; }
-        #dice-box.dice-hidden3d { opacity:0 !important; animation:none !important; pointer-events:none; }
-        #dice-box.dice-readout { transform:translate3d(-50%,-50%,0) scale(2.4) !important; top:calc(50% + min(31vmin,170px) + 34px) !important; z-index:5002; opacity:0.95; }
+        #dice3d { position:fixed; inset:0; width:100%; height:100%; z-index:25; pointer-events:none; display:none; }
+        #dice3d.stage { z-index:5001; }
+        body.dice3d-on #dice3d { display:block; }
+        body.win-active #dice3d { display:none !important; }
+        /* with the 3D dice on, the old numeral box stays only as an invisible click target in the roll bar, and as a number readout under the dice when a roll gets doubled / halved / cut */
+        body.dice3d-on #dice-box { opacity:0 !important; animation:none !important; }
+        body.dice3d-on #dice-box.dice-readout { transform:translate3d(-50%,-50%,0) scale(2.4) !important; top:var(--d3-readout-top,70%) !important; z-index:5002; opacity:0.95 !important; }
         .dice-red      { animation:redSparkle    0.5s infinite alternate !important; }
         .dice-teal     { animation:tealSparkle   0.5s infinite alternate !important; }
         .dice-contract { animation:contractFlash 0.6s infinite alternate !important; }
@@ -987,7 +990,7 @@
     </div>
 
     <!-- ══ BOTTOM UI BAR ══ -->
-    <div id="quickgame-hint">QUICK GAME ON: MAX ROLL IS NOW 10; PIECES MOVE FASTER</div>
+    <div id="quickgame-hint">QUICK GAME ON: TWO DICE (MAX ROLL 12); PIECES MOVE FASTER</div>
     <div id="ui-layer">
         <div id="ui-layer-color-wash"></div>
         <!-- VU meter left -->
@@ -1601,6 +1604,7 @@
         if(setupBtn)setupBtn.classList.toggle('active',quickGameActive);
         const hint=document.getElementById('quickgame-hint');
         if(hint)hint.classList.toggle('visible',quickGameActive);
+        setTimeout(d3Refresh,40); /* bar shows 1 die normally, 2 in Quick Game */
     }
     /* Applies and persists a background color. hex=null resets to the CSS default (white).
        This is the single source of truth — used by the wheel picker, the quick
@@ -1979,7 +1983,8 @@
         const needle=document.getElementById('vu-needle');
         if(!needle)return;
         needle.classList.remove('rolling');
-        const deg=-45+((finalRoll-1)/5)*90;
+        const _vr=quickGameActive?1+(finalRoll-1)*5/11:finalRoll; /* Quick Game rolls go to 12 */
+        const deg=-45+((_vr-1)/5)*90;
         needle.style.transition='transform 0.22s cubic-bezier(0.15,3.5,0.3,1)';
         needle.style.transform=`rotate(${deg}deg)`;
     }
@@ -2699,6 +2704,7 @@
     function pickColor(hex){
         selectedColor=hex;renderSwatches();
         const ni=document.getElementById('name-input');ni.style.borderColor=hex;ni.style.boxShadow=`0 0 15px ${hex}`;
+        refreshSetupBusts();
         if(selectedAvatar){const img=document.getElementById('sel-'+selectedAvatar.id);if(img)img.style.border=`3px solid ${hex}`;}
     }
     let _lastPlayerCount=0;
@@ -2919,7 +2925,7 @@
             wasPassivelyMoved:false  /* set when moved on another player's turn — skips space rule once */
         });
         document.getElementById('tour-roster').style.display='block';
-        document.getElementById('roster-list').innerHTML+=`<div class="roster-item"><img src="${selectedAvatar.img}" class="roster-img" style="border:2px solid ${color}"><span>${name}</span></div>`;
+        document.getElementById('roster-list').innerHTML+=`<div class="roster-item"><img src="${bustSrc(selectedAvatar.id,color)||selectedAvatar.img}" class="roster-img" style="border:2px solid ${color}"><span>${name}</span></div>`;
         currentSetupP++;
         if(currentSetupP>=totalP){
             document.getElementById('overlay-setup').style.display='none';
@@ -3036,6 +3042,7 @@
         });
         applyBusts(); /* swap PNG pieces for 3D bust renders once the STLs load (PNG stays if anything fails) */
         updateUI();
+        d3Refresh(); /* put the 3D dice in the roll bar */
         document.getElementById('roll-btn').disabled=false;
         if(!isRestart&&!_quickStarted)setTimeout(showInstructions,400);
     }
@@ -3098,17 +3105,41 @@
         _bust.renderer.render(_bust.scene,_bust.cam);
         return _bust.renderer.domElement.toDataURL('image/png');
     }
+    /* image (data URL) of a bust in a color, or null if that bust isn't loaded yet / failed. Cached per bust+color. */
+    const _bustImgs={};
+    function bustSrc(id,hex){
+        const geo=_bust.geo[id];if(!geo||!hex)return null;
+        const k=id+'|'+hex;
+        if(_bustImgs[k])return _bustImgs[k];
+        try{return(_bustImgs[k]=bustRender(geo,hex));}catch(e){return null;}
+    }
+    /* player pieces, pass cards, roster and win screen all read p.avatar.img, so swapping it swaps the PNG everywhere */
     function applyBusts(){
         if(!(window.THREE&&THREE.STLLoader))return;
         players.forEach((p,i)=>{
-            loadBust(p.avatar.id).then(geo=>{
-                if(!geo)return;
+            loadBust(p.avatar.id).then(()=>{
+                const url=bustSrc(p.avatar.id,p.avatar.color);
+                if(!url||players[i]!==p)return;
+                p.avatar.img=url;
                 const el=document.getElementById('p'+i);
-                if(!el||players[i]!==p)return;
-                try{el.style.backgroundImage=`url('${bustRender(geo,p.avatar.color)}')`;}catch(e){}
+                if(el)el.style.backgroundImage=`url('${url}')`;
+                try{updateUI();}catch(e){}
             });
         });
     }
+    /* setup screen: the three picture choices show the busts, tinted with the color being picked */
+    function refreshSetupBusts(){
+        ['jesse','marco','grant'].forEach(id=>{
+            const img=document.getElementById('sel-'+id);
+            const url=bustSrc(id,selectedColor||'#d8d8d8');
+            if(img&&url)img.src=url;
+        });
+    }
+    document.addEventListener('DOMContentLoaded',()=>{try{d3Init();}catch(e){}}); /* 3D dice ready before the game starts, so the old numeral box never shows */
+    document.addEventListener('DOMContentLoaded',()=>{
+        if(!(window.THREE&&THREE.STLLoader))return;
+        ['jesse','marco','grant'].forEach(id=>loadBust(id).then(refreshSetupBusts));
+    });
 
     function showInstructions(){
         showStatusPopup(
@@ -3412,6 +3443,7 @@
 
     function updateUI(){
         const p=players[turnIdx];
+        d3SyncColor();
         document.getElementById('status-text').innerHTML=`<span style="color:${p.avatar.color}">${p.name}'S TURN</span>`;
         document.getElementById('ui-layer-color-wash').style.background=`linear-gradient(90deg,${p.avatar.color} 0%,transparent 35%)`;
         document.documentElement.style.setProperty('--roll-color',p.avatar.color);
@@ -3496,7 +3528,7 @@
             if(!pos||!el||!boardSize)return;
             const stack=stackMap[p.pos];const stackSize=stack.length;const myStackIdx=stack.indexOf(i);
             const isActive=(i===turnIdx);
-            const sizeScale=isActive?2.34:1.95;
+            const sizeScale=isActive?2.8:2.35; /* ~20% bigger so the busts read */
             const centerXpct=pos.x, centerYpct=pos.y; /* % of board */
             if(stackSize>1){
                 const scale=(stackSize>3?0.55:0.72)*sizeScale;const pieceW=spacePx*scale;const pieceH=spacePx*scale;
@@ -3525,84 +3557,184 @@
     // ══════════════════════════════════════════════
     // DICE TELEPORT
     // ══════════════════════════════════════════════
-    /* 3D DICE: fearjoy-dice.js + three.js. d3Init() returns false (and we use the old numeral dice) if either is missing or WebGL fails. */
-    const _d3={ready:false,failed:false,renderer:null,scene:null,cam:null,die:null,active:false,shown:false};
+    /* 3D DICE (fearjoy-dice.js + three.js r128).
+       One transparent full-screen canvas draws the dice, so they sit in the roll bar, fly to the middle of the screen,
+       tumble there, and fly back to the bar with no clipping. Normal game = 1 die. Quick Game = 2 dice (sum, up to 12).
+       If WebGL or the libraries fail, d3Init() returns false and the old numeral box is used as an emergency fallback. */
+    const _d3={ready:false,failed:false,renderer:null,scene:null,cam:null,dice:[],cur:[],tw:[],active:false,raf:0,w:0,h:0,bar:[{x:0,y:0},{x:0,y:0}],barE:30,n:1,hex:null,readTop:0,v:null,g1:{x:0,z:0},g2:{x:0,z:0}};
+    function d3RM(){return !!(window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches);}
     function d3Init(){
         if(_d3.ready)return true;
         if(_d3.failed)return false;
         try{
             if(!window.THREE||!window.FearjoyDice)throw new Error('3D libs missing');
             const r=new THREE.WebGLRenderer({canvas:document.getElementById('dice3d'),alpha:true,antialias:true});
-            r.setPixelRatio(Math.min(window.devicePixelRatio||1,2));
             r.setClearColor(0x000000,0);
             const sc=new THREE.Scene();
             sc.add(new THREE.AmbientLight(0xffffff,0.85));
-            const dl=new THREE.DirectionalLight(0xffffff,0.9);dl.position.set(3,6,4);sc.add(dl);
-            const cam=new THREE.PerspectiveCamera(40,1,0.1,50);
-            cam.position.set(0,3.9,4.6);cam.lookAt(0,0.9,0);
-            const die=FearjoyDice.create({color:'red',size:2.2});
-            sc.add(die.object);
-            _d3.renderer=r;_d3.scene=sc;_d3.cam=cam;_d3.die=die;_d3.ready=true;
+            const dl=new THREE.DirectionalLight(0xffffff,0.9);dl.position.set(3,8,5);sc.add(dl);
+            const cam=new THREE.PerspectiveCamera(35,1,0.1,200);
+            cam.position.set(0,12,12);cam.lookAt(0,0,0);
+            for(let i=0;i<2;i++){
+                const d=FearjoyDice.create({color:'red',size:1});
+                sc.add(d.object);_d3.dice.push(d);_d3.cur.push({x:0,y:0,e:30});
+            }
+            _d3.renderer=r;_d3.scene=sc;_d3.cam=cam;_d3.v=new THREE.Vector3();_d3.ready=true;
+            document.body.classList.add('dice3d-on');
+            if(window.ResizeObserver){try{new ResizeObserver(()=>{if(!_d3.active)d3Resize();}).observe(document.getElementById('dice-slot-right'));}catch(e){}}
+            d3Resize();
             return true;
-        }catch(e){_d3.failed=true;return false;}
+        }catch(e){_d3.failed=true;document.body.classList.remove('dice3d-on');return false;}
     }
-    function d3RM(){return !!(window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches);}
-    function d3Loop(){
-        if(!_d3.active)return;
-        _d3.die.update(performance.now());
-        _d3.renderer.render(_d3.scene,_d3.cam);
-        requestAnimationFrame(d3Loop);
-    }
-    async function d3Show(hex){
-        const cv=document.getElementById('dice3d');
-        _d3.die.setColor(hex);
-        cv.style.display='block';
-        const w=cv.clientWidth,h=cv.clientHeight;
+    window.addEventListener('resize',()=>{if(_d3.ready&&!_d3.active)d3Resize();});
+    function d3Resize(){
+        if(!_d3.ready)return;
+        const w=window.innerWidth,h=window.innerHeight;
+        _d3.w=w;_d3.h=h;
+        _d3.renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,1.5));
         _d3.renderer.setSize(w,h,false);
-        _d3.cam.aspect=w/h;_d3.cam.updateProjectionMatrix();
-        _d3.active=true;_d3.shown=true;
-        requestAnimationFrame(d3Loop);
-        void cv.offsetWidth;cv.classList.add('show');
-        await new Promise(r=>setTimeout(r,320));
+        _d3.cam.aspect=w/h;_d3.cam.updateProjectionMatrix();_d3.cam.updateMatrixWorld(true);
+        d3Layout();
+        if(!_d3.active)d3Idle();
     }
-    function d3Throw(face){
+    /* where the dice rest in the roll bar (screen pixels) */
+    function d3Layout(){
+        const slot=document.getElementById('dice-slot-right');if(!slot)return;
+        const r=slot.getBoundingClientRect();
+        const two=quickGameActive;
+        const e=Math.max(18,Math.min(r.width,r.height)*(two?0.56:0.82));
+        const cx=r.left+r.width/2,cy=r.top+r.height/2;
+        _d3.barE=e;
+        if(two){
+            _d3.bar[0]={x:cx-e*0.58,y:cy};
+            _d3.bar[1]={x:Math.min(cx+e*0.58,_d3.w-e/2-6),y:cy};
+        } else {
+            _d3.bar[0]={x:cx,y:cy};_d3.bar[1]={x:cx,y:cy};
+        }
+    }
+    /* screen pixel -> point on the table (y=0 plane) */
+    function d3Ground(px,py,out){
+        const v=_d3.v,c=_d3.cam.position;
+        v.set(px/_d3.w*2-1,-(py/_d3.h*2-1),0.5).unproject(_d3.cam);
+        const dy=v.y-c.y;
+        const t=dy<-1e-4?-c.y/dy:0;
+        out.x=c.x+(v.x-c.x)*t;out.z=c.z+(v.z-c.z)*t;
+    }
+    /* put die i so its middle sits at cur[i] with an edge of cur[i].e screen pixels */
+    function d3Place(i){
+        const c=_d3.cur[i],d=_d3.dice[i],g=_d3.g1,g2=_d3.g2;
+        d3Ground(c.x,c.y+c.e*0.35,g);
+        d3Ground(c.x+10,c.y+c.e*0.35,g2);
+        const upp=Math.abs(g2.x-g.x)/10;
+        d.object.scale.setScalar(c.e*upp/0.46);
+        d.object.position.set(g.x,0,g.z);
+    }
+    /* draw the resting state (dice in the roll bar) once */
+    function d3Idle(){
+        if(!_d3.ready)return;
+        const n=quickGameActive?2:1;
+        for(let i=0;i<2;i++){
+            const d=_d3.dice[i];
+            d.object.visible=i<n;
+            if(i<n){_d3.cur[i]={x:_d3.bar[i].x,y:_d3.bar[i].y,e:_d3.barE};d3Place(i);}
+        }
+        _d3.renderer.render(_d3.scene,_d3.cam);
+    }
+    function d3SyncColor(){
+        if(!_d3.ready||_d3.active)return;
+        const p=players[turnIdx];if(!p||_d3.hex===p.avatar.color)return;
+        _d3.hex=p.avatar.color;
+        _d3.dice.forEach(d=>d.setColor(p.avatar.color));
+        d3Idle();
+    }
+    function d3Refresh(){
+        if(!d3Init()||_d3.active)return;
+        d3Layout();d3SyncColor();d3Idle();
+    }
+    function d3Frame(){
+        if(!_d3.active)return;
+        const now=performance.now();
+        for(let k=_d3.tw.length-1;k>=0;k--){
+            const t=_d3.tw[k],u=Math.min(1,(now-t.t0)/t.dur),e=1-Math.pow(1-u,3),c=_d3.cur[t.i];
+            c.x=t.from.x+(t.to.x-t.from.x)*e;
+            c.y=t.from.y+(t.to.y-t.from.y)*e-Math.sin(Math.PI*u)*t.arc;
+            c.e=t.from.e+(t.to.e-t.from.e)*e;
+            if(u>=1){_d3.tw.splice(k,1);t.done();}
+        }
+        for(let i=0;i<2;i++){
+            const d=_d3.dice[i];
+            if(d.object.visible){
+                d.update(now);
+                const lf=d.object.children[0];lf.position.y=0.23+(lf.position.y-0.23)*0.4; /* keep the hop low so the dice stay on screen */
+                d3Place(i);
+            }
+        }
+        _d3.renderer.render(_d3.scene,_d3.cam);
+        _d3.raf=requestAnimationFrame(d3Frame);
+    }
+    function d3Start(){
+        if(_d3.active)return;
+        _d3.active=true;_d3.tw=[];
+        document.getElementById('dice3d').classList.add('stage');
+        _d3.raf=requestAnimationFrame(d3Frame);
+    }
+    function d3Stop(){
+        _d3.active=false;cancelAnimationFrame(_d3.raf);
+        document.getElementById('dice3d').classList.remove('stage');
+        d3Idle();
+    }
+    function d3Tween(i,to,dur,arc){
         return new Promise(res=>{
-            let done=false;const fin=()=>{if(!done){done=true;res();}};
-            _d3.die.roll(face,fin,{reduceMotion:d3RM()});
-            setTimeout(fin,2500); /* safety: never let a stalled animation freeze the turn */
+            let fin=false;
+            const done=()=>{if(fin)return;fin=true;Object.assign(_d3.cur[i],{x:to.x,y:to.y,e:to.e});res();};
+            const c=_d3.cur[i];
+            _d3.tw.push({i,from:{x:c.x,y:c.y,e:c.e},to,t0:performance.now(),dur,arc,done});
+            setTimeout(done,dur+600); /* safety: a stalled animation can never freeze the turn */
         });
     }
-    async function d3Hide(){
-        const cv=document.getElementById('dice3d');
-        cv.classList.remove('show');
-        await new Promise(r=>setTimeout(r,320));
-        cv.style.display='none';_d3.active=false;_d3.shown=false;
+    /* dice leave the roll bar and pop up in the middle of the screen */
+    async function d3Fly(hex,n){
+        _d3.n=n;
+        d3Layout();
+        _d3.hex=hex;
+        for(let i=0;i<2;i++){
+            const d=_d3.dice[i];
+            d.setColor(hex);
+            d.object.visible=i<n;
+            _d3.cur[i]={x:_d3.bar[i].x,y:_d3.bar[i].y,e:_d3.barE};
+        }
+        d3Start();
+        const e=Math.max(70,Math.min(125,Math.min(_d3.w,_d3.h)*0.2)),cy=_d3.h*0.48;
+        _d3.readTop=cy+e*0.95+40;
+        const to=n===2?[{x:_d3.w/2-e*0.75,y:cy,e},{x:_d3.w/2+e*0.75,y:cy,e}]:[{x:_d3.w/2,y:cy,e}];
+        const rm=d3RM();
+        await Promise.all(to.map((t,i)=>d3Tween(i,t,rm?150:480,rm?0:90)));
     }
-    /* bar numeral box leaves the bar, the 3D die takes the stage */
-    async function diceGoTo3d(hex){
-        const d=document.getElementById('dice-box');
-        d.classList.add('dice-rise-out');await new Promise(r=>setTimeout(r,350));
-        d.classList.remove('dice-rise-out');d.classList.add('dice-hidden3d');
-        await d3Show(hex);
+    /* throw every die; each one lands showing exactly the face it was given */
+    function d3ThrowAll(faces){
+        return Promise.all(faces.map((f,i)=>new Promise(res=>{
+            let done=false;const fin=()=>{if(!done){done=true;res();}};
+            _d3.dice[i].roll(f,fin,{reduceMotion:d3RM()});
+            setTimeout(fin,2500);
+        })));
     }
-    /* shows a number under the die (only needed when the die can't show it: Quick Game 7-10, doubled/halved/cut rolls) */
+    /* shows a number under the dice (only when a roll gets doubled / halved / cut, since then the dice can no longer show it) */
     function diceReadout(n){
         const d=document.getElementById('dice-box');
         d.innerText=n;
-        if(!_d3.shown)return;
-        d.classList.remove('dice-hidden3d');
+        if(!_d3.active)return;
+        d.style.setProperty('--d3-readout-top',_d3.readTop+'px');
         d.classList.add('dice-cinematic','dice-readout');
     }
+    /* dice fly back to the roll bar, resting on the faces they rolled */
     async function diceReturnToBar3d(){
         const d=document.getElementById('dice-box');
-        const hadReadout=d.classList.contains('dice-readout');
-        const hide=d3Hide();
-        if(hadReadout){d.classList.add('dice-return-out');await new Promise(r=>setTimeout(r,350));}
-        await hide;
-        d.classList.remove('dice-cinematic','dice-readout','dice-hidden3d','dice-return-out','dice-red','dice-teal','dice-contract');
-        d.classList.add('dice-reappear');await new Promise(r=>setTimeout(r,350));
-        d.classList.remove('dice-reappear');
-        d.style.animation='diceGlow 3s ease-in-out infinite';
+        d.classList.remove('dice-cinematic','dice-readout','dice-red','dice-teal','dice-contract');
+        d.style.removeProperty('--d3-readout-top');
+        const n=_d3.n,rm=d3RM();
+        d3Layout();
+        await Promise.all([...Array(n).keys()].map(i=>d3Tween(i,{x:_d3.bar[i].x,y:_d3.bar[i].y,e:_d3.barE},rm?150:480,rm?0:90)));
+        d3Stop();
     }
     async function diceGoToCinematic(){
         const d=document.getElementById('dice-box');
@@ -3705,23 +3837,26 @@
         document.getElementById('roll-btn').disabled=true;
         const dice=document.getElementById('dice-box');dice.innerText="?";
         const _use3d=d3Init();
-        if(_use3d)await diceGoTo3d(p.avatar.color);else await diceGoToCinematic();
-        vuStartRoll();  /* needle resets to -45 and bounces */
         let roll;
-        const _rollMax=quickGameActive?10:6;
+        /* the game decides the roll: one die normally, two in Quick Game (sum, 2-12). The 3D dice are only told which faces to land on. */
+        const _d1=1+Math.floor(Math.random()*6),_d2=quickGameActive?1+Math.floor(Math.random()*6):0;
+        roll=_d1+_d2;
         if(_use3d){
-            /* the game decides the roll; the 3D die only shows it (it has 6 faces, so Quick Game 7-10 lands on roll-6 and the number shows under it) */
-            roll=Math.floor(Math.random()*_rollMax)+1;
+            await d3Fly(p.avatar.color,_d2?2:1);
+            vuStartRoll();  /* needle resets to -45 and bounces */
             playDiceRoll();if(!d3RM())setTimeout(playDiceRoll,380);
-            await d3Throw(roll>6?roll-6:roll);
-            if(roll>6)diceReadout(roll);
+            await d3ThrowAll(_d2?[_d1,_d2]:[_d1]);
         } else {
+            /* emergency fallback (no WebGL / libraries): the old numeral box */
+            await diceGoToCinematic();
+            vuStartRoll();
+            const _rollMax=quickGameActive?12:6;
             for(let j=0;j<16;j++){
                 dice.innerText=Math.floor(Math.random()*_rollMax)+1;
                 if(j%4===0)playDiceRoll();
                 await new Promise(r=>setTimeout(r,50));
             }
-            roll=Math.floor(Math.random()*_rollMax)+1;dice.innerText=roll;
+            dice.innerText=roll;
         }
         /* VU needle settles on roll value */
         vuRollAnimation(roll);
