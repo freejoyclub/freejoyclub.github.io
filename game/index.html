@@ -1,7 +1,7 @@
 <!DOCTYPE html><html lang="en"><head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Fearjoy - Game (v100.33)</title>
+    <title>Fearjoy - Game (v100.38)</title>
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
@@ -137,6 +137,178 @@
   root.FearjoyDice = { create, COLORS, roundedBox, pipTexture };
 })(window);
     </script>
+    <!-- Gold FEAR/JOY coin (fearjoy-coin.js from LP1), pasted as is. It needs three.js, which loads deferred, so it is held here as text
+         and started by loadFearjoyCoin() once three.js is ready (same code, nothing rewritten). -->
+    <script type="text/plain" id="fearjoy-coin-src">
+/* fearjoy-coin.js
+   The shiny bronze FEAR / JOY coin from the Fearjoy LP1 page (freejoy.club/LP1), pulled out so /game can use it.
+   Needs three.js r128 loaded first: window.THREE. No other files.
+
+   Use:
+     const coin = FearjoyCoin.create({ size: 1 });      // size 1 = a coin 0.6 three.js units across; scale it to suit
+     scene.add(coin.object);                            // a THREE.Group: put it where the coin should land (y = 0 is the ground it lands on)
+     // when the flip happens (result is optional: pass 'FEAR' or 'JOY' if the game already decided, or leave it out for a random 50/50):
+     const result = coin.flip('JOY', face => { ...use the result... });
+     // every frame:
+     coin.update(performance.now());
+     // optional: stand on its edge and spin slowly until flipped (what LP1 does while it waits to be tapped)
+     coin.setIdle(true);
+   Other bits: coin.face is 'FEAR' or 'JOY' (what is facing up now, or the target while flipping), coin.height is the height above the ground right now
+   (0 when landed; use it to shrink and fade a blob shadow), coin.busy is true while flipping, coin.dispose() frees the textures.
+   The flip: about 1.3 seconds, at least 3 full sideways turns (left over right, like a thumb flip), it hops up, lands flat with a small bounce, and the lettering is
+   upright on both faces. Pass { reduceMotion: true } as the third argument to flip() for a quick 250 ms version.
+   The lettering uses the Striker Sans font if the page has it ('KCStrikerSans'); otherwise it falls back to Arial Black. Pass { font: "'YourFont', sans-serif" } to change it. */
+(function (root) {
+  'use strict';
+  const THREE = root.THREE;
+  const TAU = Math.PI * 2;
+  const ease = k => 1 - Math.pow(1 - k, 3);
+  const BOUNCE_MS = 380;
+  const bounceAt = (ms, amp) => { const u = ms / BOUNCE_MS; return u >= 1 ? 0 : amp * (1 - u) * Math.abs(Math.sin(u * Math.PI * 2)); };
+
+  /* ---- shiny bronze: a "matcap" is a pre-lit sphere picture; wrapped on the coin it gives a polished-metal sheen that sweeps across as the coin turns ---- */
+  const shadeHex = (hex, f) => {   /* f > 0 mixes toward white, f < 0 toward black */
+    const n = parseInt(hex.slice(1), 16), t = f > 0 ? 255 : 0, a = Math.abs(f);
+    const ch = sh => Math.round(((n >> sh) & 255) * (1 - a) + t * a);
+    return 'rgb(' + ch(16) + ',' + ch(8) + ',' + ch(0) + ')';
+  };
+  const LIGHT = new THREE.Vector3(-0.45, 0.55, 0.7).normalize();
+  const specAt = (nx, ny, nz, power) => {
+    const hx = LIGHT.x, hy = LIGHT.y, hz = LIGHT.z + 1, hl = Math.sqrt(hx * hx + hy * hy + hz * hz);
+    return Math.pow(Math.max(0, (nx * hx + ny * hy + nz * hz) / hl), power);
+  };
+  let matcapTex = null;
+  const bronzeMatcap = () => {
+    if (matcapTex) return matcapTex;
+    const S = 128, c = document.createElement('canvas');
+    c.width = c.height = S;
+    const g = c.getContext('2d'), img = g.createImageData(S, S);
+    for (let y = 0; y < S; y++) for (let x = 0; x < S; x++) {
+      let nx = (x + 0.5) / S * 2 - 1, ny = 1 - (y + 0.5) / S * 2;
+      const r2 = nx * nx + ny * ny;
+      if (r2 > 1) { const r = Math.sqrt(r2); nx /= r; ny /= r; }
+      const nz = Math.sqrt(Math.max(0, 1 - nx * nx - ny * ny));
+      const d = Math.max(0, nx * LIGHT.x + ny * LIGHT.y + nz * LIGHT.z);
+      const v = 120 + 95 * d + 30 * nz + 230 * specAt(nx, ny, nz, 40), i = (y * S + x) * 4;
+      img.data[i] = Math.min(255, v); img.data[i + 1] = Math.min(255, v * 0.97); img.data[i + 2] = Math.min(255, v * 0.92); img.data[i + 3] = 255;
+    }
+    g.putImageData(img, 0, 0);
+    matcapTex = new THREE.CanvasTexture(c);
+    return matcapTex;
+  };
+
+  function create(opts) {
+    opts = opts || {};
+    const size = opts.size || 1;
+    const font = opts.font || "'KCStrikerSans', 'Arial Black', Arial, sans-serif";
+    const base = opts.base || '#e0b878', ink = opts.ink || '#6b4420';
+    const R = 0.3 * size, H = 0.03 * size;   /* radius and half thickness */
+
+    /* the two faces: a painted canvas each (lettering stays sharp and redraws when the font arrives) */
+    const redraws = [];
+    const face = text => {
+      const c = document.createElement('canvas');
+      c.width = c.height = 256;
+      const g = c.getContext('2d');
+      const draw = () => {
+        const rg = g.createRadialGradient(96, 90, 8, 128, 128, 160);
+        rg.addColorStop(0, shadeHex(base, 0.35)); rg.addColorStop(0.5, base); rg.addColorStop(1, shadeHex(base, -0.3));
+        g.fillStyle = rg; g.fillRect(0, 0, 256, 256);
+        const st = g.createLinearGradient(40, 0, 216, 256);   /* polished streak */
+        st.addColorStop(0.28, 'rgba(255,255,255,0)'); st.addColorStop(0.42, 'rgba(255,250,235,0.32)'); st.addColorStop(0.55, 'rgba(255,255,255,0)');
+        g.fillStyle = st; g.fillRect(0, 0, 256, 256);
+        g.lineWidth = 7; g.strokeStyle = shadeHex(base, 0.45); g.beginPath(); g.arc(128, 128, 114, 0, TAU); g.stroke();   /* raised rim */
+        g.lineWidth = 3; g.strokeStyle = shadeHex(base, -0.45); g.beginPath(); g.arc(128, 128, 106, 0, TAU); g.stroke();
+        let px = 64; g.font = px + 'px ' + font;
+        while (px > 24 && g.measureText(text).width > 170) { px -= 4; g.font = px + 'px ' + font; }
+        g.textAlign = 'center'; g.textBaseline = 'middle';
+        g.fillStyle = 'rgba(255,245,220,0.55)'; g.fillText(text, 130, 135);   /* lettering: highlight, then ink */
+        g.fillStyle = ink; g.fillText(text, 128, 132);
+      };
+      draw();
+      const tex = new THREE.CanvasTexture(c);
+      tex.center.set(0.5, 0.5); tex.rotation = Math.PI / 2;   /* keeps the text upright on both faces */
+      tex.anisotropy = 4;
+      redraws.push(() => { draw(); tex.needsUpdate = true; });
+      return tex;
+    };
+    const mc = bronzeMatcap();
+    const mk = (map, col) => new THREE.MeshMatcapMaterial({ matcap: mc, map: map, color: col || new THREE.Color(1.3, 1.3, 1.3) });
+    const mats = [mk(null, new THREE.Color(base).multiplyScalar(1.45)), mk(face('FEAR')), mk(face('JOY'))];   /* edge, top (FEAR), bottom (JOY) */
+    const mesh = new THREE.Mesh(new THREE.CylinderGeometry(R, R, H * 2, 48), mats);
+    if (document.fonts && document.fonts.load) {
+      const fam = (font.match(/'([^']+)'/) || [])[1];
+      if (fam) document.fonts.load('64px ' + font).then(() => redraws.forEach(f => f())).catch(() => {});
+    }
+
+    /* the group stack (outer to inner): object (the game places this) > lift (up and down) > roll (sideways flip) > spin (edge spin) > flipper (stand up / lie down) > coin */
+    const object = new THREE.Group();
+    const lift = new THREE.Group(); object.add(lift);
+    const roll = new THREE.Group(); lift.add(roll);
+    const spin = new THREE.Group(); roll.add(spin);
+    const flipper = new THREE.Group(); spin.add(flipper);
+    flipper.add(mesh);
+    lift.position.y = H;
+
+    const st = { flip: null, idle: false, land: 0, face: 'FEAR', height: 0 };
+    const api = {
+      object,
+      get face() { return st.flip ? st.flip.result : st.face; },
+      get height() { return st.height; },
+      get busy() { return !!st.flip; },
+      setIdle(on) {
+        if (st.flip) return;
+        st.idle = !!on;
+        if (!on) { flipper.rotation.x = 0; spin.rotation.y = 0; lift.position.y = H; st.height = 0; }
+      },
+      flip(result, onLand, o) {
+        if (st.flip) return st.flip.result;
+        if (result !== 'FEAR' && result !== 'JOY') result = Math.random() < 0.5 ? 'FEAR' : 'JOY';
+        const want = result === 'JOY' ? 1 : 0, z0 = roll.rotation.z;
+        let n = Math.round(z0 / Math.PI) + 6;   /* at least 6 half turns: an even total leaves FEAR up, an odd total leaves JOY up */
+        if (n % 2 !== want) n++;
+        const y0 = spin.rotation.y;
+        st.flip = { t0: performance.now(), dur: o && o.reduceMotion ? 250 : 1320, hop: o && o.reduceMotion ? 0 : 1.1 * (R / 0.495), reduce: !!(o && o.reduceMotion),
+          a0: flipper.rotation.x, z0, z1: n * Math.PI, y0, y1: Math.round(y0 / TAU) * TAU, fromEdge: st.idle, py0: lift.position.y, result, cb: onLand };
+        st.idle = false; st.land = 0;
+        return result;
+      },
+      update(now) {
+        now = now || performance.now();
+        if (st.idle && !st.flip) {   /* standing on its edge, slowly spinning */
+          spin.rotation.y = now * 0.0011; flipper.rotation.x = Math.PI / 2;
+          lift.position.y = R + 0.012 * size; st.height = lift.position.y - H;
+          return;
+        }
+        const f = st.flip;
+        if (f) {
+          const k = Math.min(1, (now - f.t0) / f.dur), e = ease(k);
+          flipper.rotation.x = f.a0 * (1 - e);   /* from standing on its edge (if it was) down to lying flat */
+          roll.rotation.z = f.z0 + (f.z1 - f.z0) * e;
+          spin.rotation.y = f.y0 + (f.y1 - f.y0) * e;
+          const yFlip = H + (Math.abs(Math.sin(flipper.rotation.x)) + Math.abs(Math.sin(roll.rotation.z))) * R + Math.sin(Math.PI * k) * f.hop;   /* lift so the turning edge never dips into the ground */
+          lift.position.y = f.fromEdge ? f.py0 + (yFlip - f.py0) * Math.min(1, k * 6) : yFlip;
+          st.height = lift.position.y - H;
+          if (k >= 1) {
+            flipper.rotation.x = 0; roll.rotation.z = f.z1; spin.rotation.y = f.y1; lift.position.y = H; st.height = 0;
+            st.face = f.result; st.flip = null; st.land = f.reduce ? 0 : now;
+            if (f.cb) f.cb(f.result);
+          }
+        } else if (st.land) {   /* little landing bounce */
+          const ms = now - st.land, b = bounceAt(ms, 0.18 * R);
+          lift.position.y = H + b; st.height = b;
+          if (ms >= BOUNCE_MS) { st.land = 0; lift.position.y = H; st.height = 0; }
+        }
+      },
+      dispose() {
+        mesh.geometry.dispose(); mats.forEach(m => { if (m.map) m.map.dispose(); m.dispose(); });
+      }
+    };
+    return api;
+  }
+  root.FearjoyCoin = { create };
+})(typeof window !== 'undefined' ? window : this);
+    </script>
     <style>
         * { -webkit-tap-highlight-color:transparent; -webkit-touch-callout:none; outline:none; }
         @font-face { font-family:'KCStrikerSans'; src:url('KCStrikerSans.otf') format('opentype'); font-weight:normal; font-style:normal; }
@@ -227,7 +399,7 @@
         #page-bg {
             position:fixed; inset:0; z-index:-2; pointer-events:none;
             background:#ffffff;
-            transition:background 0.5s ease;
+            transition:background 0.3s ease;
         }
         /* Event-color glow — solid-centered radial glow that originates from a space's
            position (--glow-x/--glow-y, percent of viewport) and expands outward, fading
@@ -1037,7 +1209,7 @@
                 <button class="nav-menu-btn btn-restart" onclick="confirmSoftRestart();closeNavMenu()"><span class="nav-icon">🔄</span> Restart Tour</button>
                 <button class="nav-menu-btn btn-newband" onclick="confirmHardReset();closeNavMenu()"><span class="nav-icon">💀</span> New Band</button>
                 <button class="nav-menu-btn btn-home" onclick="confirmGoHome()"><span class="nav-icon">🏠</span> Fearjoy - Home</button>
-                <button class="nav-menu-btn embed-only" onclick="backToDesk()"><span class="nav-icon">🖥️</span> Back to the Desk</button>
+                <button class="nav-menu-btn embed-only" onclick="backToDesk()"><span class="nav-icon">🖥️</span> Back to the Studio</button>
                 <button class="nav-menu-btn btn-store" onclick="goOut('https://freejoy.club')"><span class="nav-icon">👕</span> Store</button>
                 <button class="nav-menu-btn btn-album" onclick="goOut('https://freejoy.club')"><span class="nav-icon">▶️</span> Play the Album</button>
                 <div class="nav-menu-btn" style="border-color:rgba(255,255,255,0.12);color:rgba(255,255,255,0.55);cursor:default;overflow:hidden;position:relative;display:flex;align-items:center;gap:6px;padding-left:8px;padding-right:0;"><button id="bgmusic-playpause" onclick="toggleBgMusic()" style="flex-shrink:0;background:transparent;border:1px solid rgba(255,255,255,0.25);color:rgba(255,255,255,0.7);border-radius:4px;width:24px;height:24px;cursor:pointer;font-size:0.6rem;padding:0;line-height:1;">⏸</button><div style="overflow:hidden;flex-grow:1;"><span style="display:inline-block;white-space:nowrap;animation:nowPlayingScroll 10s linear infinite;">🎶 Now Playing: Unreleased Fearjoy Jam&nbsp;&nbsp;•&nbsp;&nbsp;🎶 Now Playing: Unreleased Fearjoy Jam&nbsp;&nbsp;•&nbsp;&nbsp;</span></div></div>
@@ -1168,7 +1340,7 @@
                         <button class="nav-menu-btn btn-tracks" onclick="toggleTracks()"><span class="nav-icon" id="setup-tracks-icon">🎵</span> TRACKS: <span id="setup-tracks-status">ON</span></button>
                         <button class="nav-menu-btn btn-sfx" onclick="toggleSfx()"><span class="nav-icon" id="setup-sfx-icon">🔔</span> SFX: <span id="setup-sfx-status">ON</span></button>
                         <button class="nav-menu-btn btn-home" onclick="confirmGoHome()"><span class="nav-icon">🏠</span> Fearjoy - Home</button>
-                <button class="nav-menu-btn embed-only" onclick="backToDesk()"><span class="nav-icon">🖥️</span> Back to the Desk</button>
+                <button class="nav-menu-btn embed-only" onclick="backToDesk()"><span class="nav-icon">🖥️</span> Back to the Studio</button>
                         <button class="nav-menu-btn" onclick="closeSetupMenu()" style="border-color:#555;color:rgba(255,255,255,0.5);">✕ Close <span class="kb-hint" style="position:static;display:inline;margin-left:4px;">[Esc]</span></button>
                     </div>
                 </div>
@@ -1190,6 +1362,9 @@
     // BUCKET - add files here:
     // ══════════════════════════════════════════════════════
     /* EMBED: true when the game runs inside the LP1 TV frame (?embed=1) or any iframe */
+    /* AUTO DAY / NIGHT BACKGROUND: dark from DARK_FROM o'clock until LIGHT_FROM o'clock by the device's own clock, light the rest of the day.
+       Edit these two numbers (0-24; decimals work, e.g. 17.5 = 5:30 PM). A manual background pick always wins and turns auto off for good. */
+    const DARK_FROM=18, LIGHT_FROM=6;
     const IS_EMBED=(()=>{try{return new URLSearchParams(location.search).has('embed')||window.self!==window.top;}catch(e){return true;}})();
     if(IS_EMBED)document.documentElement.classList.add('embed');
     function goOut(url){if(IS_EMBED){try{window.open(url,'_top');}catch(e){location.href=url;}}else{window.open(url,'_blank');}}
@@ -1592,6 +1767,7 @@
     function toggleSfx(){sfxEnabled=!sfxEnabled;syncAudioUI();}
 
     let bgColor=null; /* null = default white; otherwise the applied hex, persisted */
+    let bgManual=false; /* true once the player has picked a background themselves (or had one saved): auto day/night never touches it again */
     function toggleQuickGame(){
         quickGameActive=!quickGameActive;
         const btn=document.getElementById('quickgame-btn');
@@ -1605,12 +1781,26 @@
     /* Applies and persists a background color. hex=null resets to the CSS default (white).
        This is the single source of truth — used by the wheel picker, the quick
        black/white toggle in the menu, and prefs restoration on load. */
-    function applyBgColor(hex){
+    function applyBgColor(hex,auto){
         bgColor=hex;
         document.getElementById('page-bg').style.background=hex||'';
         renderBgWheel();
-        saveDisplayPrefs();
+        if(!auto){bgManual=true;saveDisplayPrefs();} /* auto day/night changes are never saved or counted as a manual pick */
     }
+    /* Auto day/night: only used while the player has not chosen a background. Checked on load and when the tab becomes visible again (never on a timer). */
+    function autoBgIsDark(){
+        const d=new Date(),t=d.getHours()+d.getMinutes()/60;
+        return DARK_FROM>LIGHT_FROM?(t>=DARK_FROM||t<LIGHT_FROM):(t>=DARK_FROM&&t<LIGHT_FROM);
+    }
+    function autoBgCheck(instant){
+        if(bgManual)return;
+        const want=autoBgIsDark()?'#000000':null;
+        if(want===bgColor)return;
+        const pb=document.getElementById('page-bg');
+        if(instant&&pb){pb.style.transition='none';applyBgColor(want,true);void pb.offsetWidth;pb.style.transition='';}
+        else applyBgColor(want,true);
+    }
+    document.addEventListener('visibilitychange',()=>{if(!document.hidden)autoBgCheck(false);});
     function saveDisplayPrefs(){
         try{ localStorage.setItem('fearjoy_display_prefs',JSON.stringify({bgColor})); }catch(e){}
     }
@@ -1619,6 +1809,7 @@
             const raw=localStorage.getItem('fearjoy_display_prefs');
             if(!raw)return;
             const prefs=JSON.parse(raw);
+            bgManual=true; /* anything saved here came from a manual pick */
             if(prefs.bgColor){
                 bgColor=prefs.bgColor;
                 document.getElementById('page-bg').style.background=bgColor;
@@ -2020,7 +2211,7 @@
         'slide1.wav','slide2.wav','slide3.wav','slide4.wav',
         'dice1.wav','dice2.wav','dice3.wav','dice4.wav','dicedone.wav','coin.wav',
     ];
-    const VIDEO_FILES=['trevortrim.mp4'];
+    const VIDEO_FILES=[]; /* Remedy clip is now optional (tap-to-play), not preloaded */
 
     function startPreload(){
         const wrap=document.getElementById('preload-bar-wrap');
@@ -2446,6 +2637,7 @@
     window.addEventListener('DOMContentLoaded',()=>{
         renderBgWheel();
         loadDisplayPrefs();
+        autoBgCheck(true); /* no saved choice: white by day, black at night */
     });
 
     // ══════════════════════════════════════════════
@@ -2917,6 +3109,22 @@
         document.documentElement.style.setProperty('--space-size',Math.max(20,Math.min(64,size*0.062))+'px');
     }
 
+    /* BOARD ALWAYS WINS: the board is re-fitted whenever the space it lives in (#board-scroll) changes size.
+       The passes strip is drawn AFTER the board is first sized, and Safari (iPad) also changes the visible height when
+       its toolbar shows/hides, so a one-time size left the board too big and the strip sat on top of its bottom edge. */
+    let _bsW=0,_bsH=0;
+    function _watchBoardScroll(){
+        const sc=document.getElementById('board-scroll');
+        if(!sc||!window.ResizeObserver)return;
+        new ResizeObserver(()=>{
+            if(sc.clientWidth===_bsW&&sc.clientHeight===_bsH)return;
+            _bsW=sc.clientWidth;_bsH=sc.clientHeight;
+            sizeBoardOuter();
+            if(document.getElementById('s0'))updatePositions();
+        }).observe(sc);
+    }
+    document.addEventListener('DOMContentLoaded',_watchBoardScroll);
+
     // ══════════════════════════════════════════════
     // DRAWER MODE (mobile pass drawer)
     // (grid/tape/arrow layout system and rotation lock removed in v100 —
@@ -2940,6 +3148,7 @@
         sizeBoardOuter();
         if(document.getElementById('s0')){
             renderPasses();
+            sizeBoardOuter(); /* passes just changed the strip height: fit the board to what is left */
             updatePositions();
         }
     }
@@ -3082,7 +3291,7 @@
             if(img&&url)img.src=url;
         });
     }
-    document.addEventListener('DOMContentLoaded',()=>{try{d3Init();}catch(e){}}); /* 3D dice ready before the game starts, so the old numeral box never shows */
+    document.addEventListener('DOMContentLoaded',()=>{try{loadFearjoyCoin();}catch(e){}try{d3Init();}catch(e){}}); /* 3D dice ready before the game starts, so the old numeral box never shows */
     document.addEventListener('DOMContentLoaded',()=>{
         if(!(window.THREE&&THREE.STLLoader))return;
         ['jesse','marco','grant'].forEach(id=>loadBust(id).then(refreshSetupBusts));
@@ -3227,6 +3436,15 @@
         if(cur>avail&&cur>0){
             const z=Math.max(0.2,avail/cur);
             cards.forEach(c=>{c.style.zoom=z;});
+        }
+        /* Vertical screens: the strip may use at most ~16% of the screen height, so the board keeps the rest.
+           Cards shrink (never below 35%) instead of taking space from the board. */
+        if(vertical){
+            const maxH=Math.max(70,window.innerHeight*0.16-24); /* 24 = strip padding */
+            const tallest=Math.max(...cards.map(c=>c.getBoundingClientRect().height));
+            if(tallest>maxH){
+                cards.forEach(c=>{c.style.zoom=Math.max(0.35,(parseFloat(c.style.zoom)||1)*maxH/tallest);});
+            }
         }
     }
 
@@ -3616,6 +3834,7 @@
                 d3Place(i);
             }
         }
+        if(_d3.coin&&_d3.coin.object.visible){_d3.coin.update(now);d3PlaceCoin();}
         _d3.renderer.render(_d3.scene,_d3.cam);
         _d3.raf=requestAnimationFrame(d3Frame);
     }
@@ -3682,6 +3901,35 @@
         d3Layout();
         await Promise.all([...Array(n).keys()].map(i=>d3Tween(i,{x:_d3.bar[i].x,y:_d3.bar[i].y,e:_d3.barE},rm?150:480,rm?0:90)));
         d3Stop();
+    }
+    /* GOLD COIN (fearjoy-coin.js). Drawn in the same transparent full-screen scene as the dice (no extra WebGL context),
+       placed over the empty #coin box in the popup. If WebGL / three.js / the coin code is missing, the old CSS coin is used. */
+    function loadFearjoyCoin(){
+        if(window.FearjoyCoin||!window.THREE)return;
+        const t=document.getElementById('fearjoy-coin-src');if(!t)return;
+        const sc=document.createElement('script');sc.textContent=t.textContent;document.head.appendChild(sc);
+    }
+    function d3CoinOk(){return !!(window.FearjoyCoin&&d3Init());}
+    function d3PlaceCoin(){
+        const c=_d3.coinPos,g=_d3.g1,g2=_d3.g2;
+        d3Ground(c.x,c.y,g);d3Ground(c.x+10,c.y,g2);
+        const upp=Math.abs(g2.x-g.x)/10;
+        _d3.coin.object.scale.setScalar(c.e*upp/0.6); /* size 1 = a coin 0.6 units across */
+        _d3.coin.object.position.set(g.x,0,g.z);
+    }
+    function d3CoinFlip(result,onLand){
+        if(!_d3.coin){_d3.coin=FearjoyCoin.create({size:1});_d3.scene.add(_d3.coin.object);}
+        const r=document.getElementById('coin').getBoundingClientRect();
+        _d3.coinPos={x:r.left+r.width/2,y:r.top+r.height/2,e:Math.min(r.width,r.height)};
+        _d3.coin.object.visible=true;
+        d3PlaceCoin();
+        _d3.coinOn=true;
+        d3Start();
+        _d3.coin.flip(result,onLand,{reduceMotion:d3RM()});
+    }
+    function d3CoinEnd(){
+        if(_d3.coin)_d3.coin.object.visible=false;
+        if(_d3.coinOn){_d3.coinOn=false;d3Stop();}
     }
     async function diceGoToCinematic(){
         const d=document.getElementById('dice-box');
@@ -3777,8 +4025,6 @@
         const p=players[capturedTurnIdx];
         spacesTriggeredThisTurn=new Set(); /* fresh slate each roll */
         p.wasPassivelyMoved=false; /* clear any leftover passive-move flag from Grammy swap etc */
-        /* Mobile video activation bridge — prime media stack on user gesture */
-        try{const _vp=document.createElement('video');_vp.src='trevortrim.mp4';_vp.muted=true;_vp.load();}catch(e){}
         /* Set both guards — isRolling stays true until endTurn */
         isRolling=true;isMoving=true;
         document.getElementById('roll-btn').disabled=true;
@@ -4198,20 +4444,31 @@
             pBtn.innerText="FLIP COIN";
             pBtn.onclick=()=>{
                 playSfx('coinflip.wav');
-                pBtn.style.display='none';coin.innerText="?";coin.style.display='flex';coin.classList.add('flipping');
-                setTimeout(()=>{
-                    const win=Math.random()>0.5;
-                    coin.innerText=win?"JOY":"FEAR";coin.classList.remove('flipping');
+                pBtn.style.display='none';
+                const win=Math.random()>0.5; /* same 50/50 rule; decided first, then handed to the coin */
+                const landed=()=>{
                     if(win)playSfx('coinclip.wav');else playSfx('spookyclip1.wav');
                     pageGlowAt(p.pos,win?'#5cffc9':'#ff4444');
                     setTimeout(async()=>{
-                        modal.style.display='none';coin.style.display='none';
+                        modal.style.display='none';coin.style.display='none';d3CoinEnd();
                         await new Promise(res=>setTimeout(res,800));
                         /* Plot armor absorbs FEAR result — player stays, no rewind */
                         if(!win&&checkPlotArmor(capturedTurnIdx,true)){endTurn();return;}
                         movePlayer(win?1:-1,false,capturedTurnIdx);
                     },1200);
-                },1200);
+                };
+                if(d3CoinOk()){
+                    /* 3D gold coin: #coin becomes an empty, invisible box that holds the coin's place in the popup */
+                    coin.style.cssText='width:140px;height:140px;margin:25px auto;display:flex;';
+                    coin.innerText='';
+                    d3CoinFlip(win?'JOY':'FEAR',landed);
+                } else {
+                    coin.innerText="?";coin.style.display='flex';coin.classList.add('flipping');
+                    setTimeout(()=>{
+                        coin.innerText=win?"JOY":"FEAR";coin.classList.remove('flipping');
+                        landed();
+                    },1200);
+                }
             };
         } else if(r.isDmitri){
             pBtn.innerText="BREATHE (15s)";sBtn.innerText="SKIP (-2)";sBtn.style.display='inline-block';
@@ -4231,8 +4488,7 @@
             const fadeOutVideo=(vid)=>{if(!vid)return;if(vid._ambDucked){vid._ambDucked=false;releaseAmbient();}let vol=vid.volume||1;const fade=setInterval(()=>{if(vol>0.1){vol-=0.1;vid.volume=vol;}else{vid.pause();clearInterval(fade);}},200);};
             if(r.choice==='remedy'){
                 const remedyDesc=document.createElement('div');
-                remedyDesc.innerHTML=`<div id="video-wrapper" style="position:relative;width:70%;margin:0 auto 14px;border-radius:8px;overflow:hidden;background:#000;border:1px solid #333;animation:videoKeepAlive 4s ease-in-out infinite;"><div id="close-video" style="position:absolute;top:5px;right:10px;color:white;cursor:pointer;font-size:22px;font-weight:bold;z-index:10;text-shadow:0 0 5px #000;">×</div><video id="remedy-video" style="width:100%;display:block;" autoplay playsinline muted><source src="trevortrim.mp4?v=24" type="video/mp4"></video></div>
-                <div style="margin-bottom:8px;">The cure for your obscurity!<br>A major label likes your sound.<br><b style="color:var(--joy-glow);">Sign for +6 spaces now!</b></div>
+                remedyDesc.innerHTML=`<div style="margin-bottom:8px;">The cure for your obscurity!<br>A major label likes your sound.<br><b style="color:var(--joy-glow);">Sign for +6 spaces now!</b></div>
                 <div style="font-family:'Courier New',monospace;font-size:0.88rem;color:rgba(255,255,255,0.72);margin-top:8px;"><span style="display:inline-block;animation:phoneWiggle 1.8s ease-in-out infinite;">📱</span> Hey, it's your lawyer. I suggest you:</div>`;
                 const fpBtn2=document.createElement('button');
                 fpBtn2.style.cssText='display:block;margin:8px auto 0;padding:7px 16px;background:transparent;border:1px solid rgba(255,255,255,0.3);color:rgba(255,255,255,0.55);font-family:Courier New,monospace;font-size:0.8rem;border-radius:6px;cursor:pointer;letter-spacing:1px;transition:all 0.2s;';
@@ -4243,27 +4499,29 @@
                 `<div style="color:#00ff88;">Move +6 now!</div>`+
                 `<div style="color:#ff4444;">Every future roll above 5 gets cut in half.</div>`+
                 `<div>You may pass the <span style="color:#00ff88;">Gatekeeper</span> freely as a signed artist.</div>`;
+                const clipBtn=document.createElement('div');
+                clipBtn.style.cssText='margin-top:10px;font-size:0.8rem;color:rgba(255,255,255,0.45);cursor:pointer;text-decoration:underline;';
+                clipBtn.innerText='\u25B6 Watch the clip (optional)';
+                clipBtn.onclick=()=>{
+                    if(document.getElementById('remedy-video'))return;
+                    clipBtn.style.display='none';
+                    const w=document.createElement('div');
+                    w.style.cssText='margin-top:10px;border-radius:8px;overflow:hidden;background:#000;border:1px solid #333;';
+                    const v=document.createElement('video');
+                    v.id='remedy-video';v.controls=true;v.playsInline=true;v.setAttribute('playsinline','');v.style.cssText='width:100%;display:block;';
+                    v.src='trevortrim.mp4?v=24';
+                    v.addEventListener('play',()=>{if(!v._ambDucked){v._ambDucked=true;duckAmbient();}});
+                    v.addEventListener('pause',()=>{if(v._ambDucked){v._ambDucked=false;releaseAmbient();}});
+                    v.addEventListener('ended',()=>{if(v._ambDucked){v._ambDucked=false;releaseAmbient();}});
+                    w.appendChild(v);fp2body.appendChild(w);
+                    v.muted=videoShouldBeMuted();v.volume=0.8;
+                    v.play().catch(()=>{});
+                };
+                fp2body.appendChild(clipBtn);
                 fpBtn2.onclick=()=>{const open=fp2body.style.display==='block';fp2body.style.display=open?'none':'block';fpBtn2.innerText=open?'Read the Fine Print ⬇️':'Hide Fine Print ⬆️';};
                 remedyDesc.appendChild(fpBtn2);remedyDesc.appendChild(fp2body);
                 desc.innerHTML='';desc.appendChild(remedyDesc);
-                setTimeout(()=>{
-                    const cv=document.getElementById('close-video');const vid=document.getElementById('remedy-video');
-                    if(cv)cv.onclick=(e)=>{e.stopPropagation();fadeOutVideo(vid);document.getElementById('video-wrapper').style.display='none';};
-                    if(vid){
-                        vid.load();
-                        vid.play().then(()=>{
-                            /* Respect master mute + tracks toggle — videos are tracks */
-                            vid.muted=videoShouldBeMuted();vid.volume=0.8;
-                            if(!vid._ambDucked){
-                                vid._ambDucked=true;duckAmbient();
-                                vid.addEventListener('ended',()=>{if(vid._ambDucked){vid._ambDucked=false;releaseAmbient();}},{once:true});
-                            }
-                        }).catch(()=>{vid.muted=true;vid.play().catch(()=>{});});
-                        const _rnudge=setInterval(()=>{if(document.hidden)return;if(vid&&!vid.paused){}else if(vid&&!vid.ended){vid.load();vid.play().catch(()=>{});}},2000);
-                        vid.addEventListener('ended',()=>clearInterval(_rnudge),{once:true});
-                    }
-                    setTimeout(()=>playSfx('remedyclip.wav'),150);
-                },50);
+                setTimeout(()=>playSfx('remedyclip.wav'),200);
             }
             pBtn.innerText=r.choice==='remedy'?"SIGN CONTRACT (+6)":"INVEST IN MERCH (-4)";
             sBtn.style.display='inline-block';sBtn.innerText="PASS";
