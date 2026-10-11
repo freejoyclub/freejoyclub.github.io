@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- HOME (v5) -->
+<!-- HOME (v6) -->
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
@@ -58,6 +58,19 @@ background-size: 400% 400%;
 }
 /* v17: the sweeping background repaints the whole page every frame, so it only runs on computers (phones keep it still, which is much lighter) */
 @media (hover: hover) and (pointer: fine) { body { animation: sweep 20s ease infinite; } }
+
+/* v36: the game board picture, blurred and half see-through, sits behind everything on top of the warm gradient (set in CONFIG.bgImage; it fades in once it has loaded, and nothing shows if the file is missing) */
+#bgArt {
+position: fixed;
+top: -6%; left: -6%; width: 112%; height: 112%;   /* a little oversize so the blur never shows an edge */
+background: center / cover no-repeat;
+filter: blur(14px);
+opacity: 0;
+transition: opacity 1.4s ease;
+pointer-events: none;
+z-index: -1;
+}
+#bgArt.on { opacity: 0.5; }
 
 /* Vignette overlay (same as home) */
 body::before {
@@ -577,7 +590,7 @@ body { padding-bottom: 64px; }
 .lore-actions { display: flex; gap: 10px; flex-wrap: wrap; }
 
 /* ============ v21: the page is just the desk and the bottom bar. Shop and credits are popups; every old bottom button lives in the menu. ============ */
-:root { --rackh: 58px; }
+:root { --rackh: 54px; }
 @media (max-width: 860px) { :root { --rackh: 46px; } }
 html, body { height: 100%; overflow: hidden; }
 body { padding-bottom: 0; }
@@ -625,6 +638,33 @@ dialog.big { width: 100vw; max-height: 86vh; max-height: 86dvh; margin: auto 0 0
 .rk.rk-off { opacity: 0.4; filter: grayscale(1); pointer-events: none; cursor: default; }   /* the full store: grayed out until it opens */
 .rk-menu-txt { margin-left: 2px; }
 
+/* ============ v28/v30: the bottom bar is a "CD player". One round button at its left cycles (fades) between the Spotify, YouTube and Apple Music logos; click it for the one showing. ============ */
+.cd-streams { display: flex; flex: none; position: relative; }
+.cd-btn { --cd: var(--rkh, 38px); flex: none; width: var(--cd); height: var(--cd); border-radius: 50%; padding: 0; display: grid; place-items: center; cursor: var(--hand); position: relative; top: 0;
+border: 1px solid #141416; background: linear-gradient(#6c7075, #4a4d52 55%, #34373a);
+box-shadow: 0 3px 0 #131315, 0 5px 7px rgba(0,0,0,0.55), inset 0 1px 0 rgba(255,255,255,0.3);
+transition: transform 0.06s, box-shadow 0.06s, filter 0.15s; -webkit-tap-highlight-color: transparent; }
+.cd-btn:hover { filter: brightness(1.14); }
+.cd-btn:active { transform: translateY(3px); box-shadow: 0 0 0 #131315, inset 0 3px 8px rgba(0,0,0,0.8); }
+.cd-btn:focus-visible { outline: 2px solid #ffd36b; outline-offset: 2px; }
+.cd-face { grid-area: 1 / 1; width: 76%; height: 76%; border-radius: 50%; background: var(--sc, #888); display: grid; place-items: center; overflow: hidden; opacity: 0; transition: opacity 0.6s ease; box-shadow: inset 0 0 0 1px rgba(0,0,0,0.3), inset 0 5px 7px rgba(255,255,255,0.28); font-family: 'KCStrikerSans', sans-serif; color: #fff; text-align: center; white-space: pre; line-height: 1.05; font-size: calc(var(--cd) * 0.165); letter-spacing: 0; }
+.cd-face.on { opacity: 1; }
+.cd-face img { width: 72%; height: 72%; object-fit: contain; display: block; pointer-events: none; }
+.cd-sub { position: absolute; left: 0; bottom: calc(100% + 16px); display: flex; flex-direction: column; gap: 8px; padding: 10px; border-radius: 14px; background: linear-gradient(#2c2c31, #151517); border: 1px solid #4a4a50; box-shadow: 0 8px 22px rgba(0,0,0,0.6); opacity: 0; transform: translateY(14px); pointer-events: none; visibility: hidden; transition: opacity 0.18s, transform 0.18s, visibility 0s 0.18s; }
+.cd-streams.open .cd-sub { opacity: 1; transform: none; pointer-events: auto; visibility: visible; transition: opacity 0.18s, transform 0.18s; }
+.cd-streams.open .cd-btn { box-shadow: 0 0 0 #131315, inset 0 3px 8px rgba(0,0,0,0.8), 0 0 12px #ffd36b; transform: translateY(3px); }
+.cd-opt { font-size: 0.8rem; letter-spacing: 1px; padding: 8px 16px 8px 10px; justify-content: flex-start; min-width: 190px; gap: 10px; }
+.cd-opt::before { display: none; }
+.cd-opt .cd-face { width: 26px; height: 26px; flex: none; opacity: 1; font-size: 0.35rem; }
+/* v31: everything on the bar is the same height (--rkh): the round button, menu, LCD, play, knob, BG and mute */
+.rack { --rkh: 38px; }
+@media (max-width: 860px) { .rack { --rkh: 32px; } }
+.rack-in > .rk, .rack-ctl .rk, .rack-in > .rack-lcd { height: var(--rkh); box-sizing: border-box; }
+.rack .rack-lcd .lcd-track span { line-height: calc(var(--rkh) - 2px); }
+.rack .rk-knob { width: var(--rkh); height: var(--rkh); box-sizing: border-box; }
+.rack .rk-knob::after { height: calc(var(--rkh) * 0.3); transform-origin: 50% calc(var(--rkh) / 2 - 5px); }
+@media (prefers-reduced-motion: reduce) { .cd-face { transition: none; } }
+
 /* the game on the TV: a plain screen (thin bezel, faint scan lines and glow) that uses all the room it can */
 #gameOverlay { position: fixed; inset: 0; z-index: 400; background: #040404; display: flex; box-sizing: border-box; padding: max(4px, env(safe-area-inset-top)) max(4px, env(safe-area-inset-right)) max(4px, env(safe-area-inset-bottom)) max(4px, env(safe-area-inset-left)); }
 #gameOverlay[hidden] { display: none; }
@@ -669,6 +709,7 @@ try { if (location.hash) history.replaceState(null, '', location.pathname + loca
 </script>
 </head>
 <body>
+<div id="bgArt" aria-hidden="true"></div>
 
 <div class="content">
 
@@ -695,7 +736,7 @@ try { if (location.hash) history.replaceState(null, '', location.pathname + loca
 <p class="sub">Made by Jesse:<br>Mini sculptures of the band (~2")<br><span class="sub-small">Collectible limited-edition companion to The Game</span></p>
 <div class="grid" id="productGrid"></div>
 </section>
-<button type="button" class="btn small dlg-back" data-close>Back to the desk</button>
+<button type="button" class="btn small dlg-back" data-close>Back to the studio</button>
 </div>
 </dialog>
 
@@ -770,8 +811,9 @@ try { if (location.hash) history.replaceState(null, '', location.pathname + loca
 <div class="rack" role="toolbar" aria-label="Site menu and music">
 <div class="rack-in">
 <button type="button" class="rk c-menu" id="rackMenu" aria-label="Open the menu" aria-expanded="false" aria-controls="rackNav"><span class="burger"></span><span class="rk-menu-txt">Menu</span></button>
-<a class="rk c-home lit" href="/" id="rackHome" aria-current="page">Home</a>
+<div class="cd-streams" id="cdStreams" role="group" aria-label="Listen on"></div>
 <nav class="rack-nav" id="rackNav" aria-label="Menu">
+<a class="rk c-home lit" href="/" id="rackHome" aria-current="page">Home</a>
 <button type="button" class="rk c-pieces" data-open="kits">Game Pieces</button>
 <button type="button" class="rk c-game" data-open="game">Play Online</button>
 <a class="rk c-album" href="/LP1/" data-go="Go to the Fearjoy: The Game album page?">The Album</a>
@@ -798,17 +840,17 @@ try { if (location.hash) history.replaceState(null, '', location.pathname + loca
 <iframe id="gameFrame" title="Fearjoy: The Game" allow="autoplay; fullscreen; clipboard-write"></iframe>
 <div class="go-crt" aria-hidden="true"></div>
 </div>
-<button type="button" class="go-x" id="gameX" aria-label="Back to the desk">&#10005;</button>
+<button type="button" class="go-x" id="gameX" aria-label="Back to the studio">&#10005;</button>
 <div class="go-ask" id="gameAsk" hidden>
-<p>Back to the desk? The game in progress will end.</p>
-<div class="go-ask-btns"><button type="button" class="btn small" id="gameStay">Keep playing</button><button type="button" class="btn small" id="gameLeave">Back to the desk</button></div>
+<p>Back to the studio? The game in progress will end.</p>
+<div class="go-ask-btns"><button type="button" class="btn small" id="gameStay">Keep playing</button><button type="button" class="btn small" id="gameLeave">Back to the studio</button></div>
 </div>
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/STLLoader.js"></script>
 <script>
-// HOME (v5)
+// HOME (v6)
 const toTop = () => { try { window.scrollTo({ top: 0, left: 0, behavior: 'instant' }); } catch (e) { window.scrollTo(0, 0); } };
 toTop();
 window.addEventListener('load', toTop);
@@ -832,12 +874,19 @@ const CONFIG = {
   shipKit: 7,                      // continental US shipping PER 3-piece or full band kit, in dollars (added to the Venmo amount)
   shipSingle: 5,                   // continental US shipping for single pieces, up to 6 pieces
   shipSingleMore: 3,               // plus this much for every additional 6 single pieces
-  streamLinks: { spotify: '', apple: '', youtube: '', more: '' },   // links for the four big buttons on the TV. Empty = a "coming soon" popup.
+  streamLinks: { spotify: '', apple: '', youtube: '', more: '' },   // links for the round streaming button in the bottom bar (it cycles Spotify, YouTube, Apple Music). 'more' is not used now. Empty = a "coming soon" popup.
   streamLogos: { spotify: ['/images/logo-spotify.svg', '/images/spotify.svg', '/images/logo-spotify.png'], apple: ['/images/logo-apple-music.svg', '/images/apple-music.svg', '/images/apple.svg', '/images/logo-apple-music.png'], youtube: ['/images/logo-youtube.svg', '/images/youtube.svg', '/images/logo-youtube.png'] },   // logo pictures for the TV buttons (any shape, transparent background is best). Missing = the name is written instead.
   insertImage: '/images/rulebook.png',   // the vinyl insert leaning under the table (tap it to go to the album page, /LP1)
   vinylUrl: '',                    // where the record on the table sends you to buy it. Empty = the "Send me the album" email form opens instead.
   shippingNote: 'Shipping is confirmed by reply before you pay.'
 };
+(function () {   /* page background picture: loads quietly, then fades in */
+  const el = document.getElementById('bgArt'), src = CONFIG.bgImage;
+  if (!el || !src) return;
+  const im = new Image();
+  im.onload = () => { el.style.backgroundImage = 'url("' + src + '")'; requestAnimationFrame(() => el.classList.add('on')); };
+  im.src = src;
+})();
 
 const PEOPLE = [
   { id: 'jesse',   name: 'Jesse',   stl: 'Jesse Bust.stl' },
@@ -894,8 +943,8 @@ const PRODUCTS = [
     id: 'deluxe', type: 'deluxe', name: 'Angel Investor Edition', price: 444, cta: 'Inquire', badge: 'One of one',
     pieces: ['jesse', 'marco', 'grant'],
     blurb: 'The only one ever made. This hand-finished edition is the best way to support our fully-independent art.',
-    includes: ['Custom-painted player pieces: Jesse, Marco and Grant', 'Dichroic glass die (color-shifting, iridescent)', 'Handmade custom real-bronze Fear/Joy coin', 'Free entry to any future show'],
-    more: ['Heads are resin printed, not plastic', 'Signed record', 'Fully unique, collectible, handmade', 'Any piece of clothing from the full store', 'Handwritten lyric sheet', "You'll be added to the album credits"]
+    includes: ['Hand-painted resin pieces (Jesse, Marco, Grant)', 'Dichroic glass die (color-shifting, iridescent)', 'Brass Fearjoy coin (made by Jesse)', 'Free entry to any future show'],
+    more: ['Fully unique, collectible, made by Jesse', 'Any piece of clothing from the merch store', 'Handwritten lyric sheet', "You'll be added to the album credits", 'Heads are high-quality resin, not plastic']
   }
 ];
 
@@ -1345,6 +1394,20 @@ function roundedBox(size, radius, seg) {
       p.copy(q).addScaledVector(n, radius);
       nor.setXYZ(i, n.x, n.y, n.z);
     }
+    pos.setXYZ(i, p.x, p.y, p.z);
+  }
+  return geo;
+}
+function roundedBoxWHD(w, h, d, radius, sw, sh, sd) {   /* a box with smooth rounded edges and corners (any size) */
+  const geo = new THREE.BoxGeometry(w, h, d, sw, sh, sd);
+  const pos = geo.attributes.position, nor = geo.attributes.normal;
+  const hx = w / 2 - radius, hy = h / 2 - radius, hz = d / 2 - radius;
+  const p = new THREE.Vector3(), q = new THREE.Vector3(), n = new THREE.Vector3();
+  for (let i = 0; i < pos.count; i++) {
+    p.fromBufferAttribute(pos, i);
+    q.set(Math.max(-hx, Math.min(hx, p.x)), Math.max(-hy, Math.min(hy, p.y)), Math.max(-hz, Math.min(hz, p.z)));
+    n.copy(p).sub(q);
+    if (n.lengthSq() > 1e-9) { n.normalize(); p.copy(q).addScaledVector(n, radius); nor.setXYZ(i, n.x, n.y, n.z); }
     pos.setXYZ(i, p.x, p.y, p.z);
   }
   return geo;
@@ -1843,7 +1906,7 @@ function makeDesk(el) {
   v.scene = new THREE.Scene();
   v.camera = new THREE.PerspectiveCamera(30, 16 / 10, 1, 60);   /* a tighter depth range keeps the flat shadows from flickering */
   v.scene.add(new THREE.HemisphereLight(0xffffff, 0x6b4a42, 0.66));
-  const key = new THREE.DirectionalLight(0xffffff, 0.46); key.position.set(3, 6, 5); v.scene.add(key);
+  const key = new THREE.DirectionalLight(0xffffff, 0.46); key.position.set(6, 6, 5); v.scene.add(key);   /* moved right so the vinyl's shine is not under the board */
   const rim = new THREE.DirectionalLight(0xffd9b0, 0.26); rim.position.set(-4, 3, -3); v.scene.add(rim);
   v.stage = new THREE.Group();
   v.scene.add(v.stage);
@@ -1993,65 +2056,70 @@ function makeDesk(el) {
   const slabAt = (w, h, d, r, b, mat, x, y, z) => { const m = new THREE.Mesh(woodUV(roundedSlab(w, h, d, r, b)), mat); m.position.set(x, y, z); tv.add(m); return m; };
   slabAt(2.1, 1.8, 0.95, 0.03, 0.018, tvWood, 0, 1.0, 0);   /* small corners: a boxy cabinet */
   slabAt(1.6, 1.35, 0.5, 0.07, 0.04, tvWoodDark, 0, 1.0, -0.72);
-  /* four big 3D streaming buttons down the right side of the TV (they replace the two little black knobs). Logo pictures come from CONFIG.streamLogos; until a picture loads the name is written instead. */
+  /* right side of the TV, centered in the wood to the right of the screen: a small speaker on top, and two channel buttons (CH up and CH down) below it. All slightly rounded rectangles. */
+  const PNX = 0.83;
   const panelBack = new THREE.Mesh(roundedScreenGeo(0.33, 1.28, 0.05), std(0x20140c, 0.8));
-  panelBack.position.set(0.85, 1.15, 0.478);
+  panelBack.position.set(PNX, 1.15, 0.478);
   tv.add(panelBack);
-  const STREAMS = [
-    { id: 'spotify', name: 'Spotify', lines: ['Spotify'], color: '#1DB954' },
-    { id: 'apple', name: 'Apple Music', lines: ['Apple', 'Music'], color: '#FA243C' },
-    { id: 'youtube', name: 'YouTube', lines: ['YouTube'], color: '#E60000' },
-    { id: 'more', name: 'More', lines: [], color: '#8f98a8' }
-  ];
+  const spkCv = document.createElement('canvas'); spkCv.width = 256; spkCv.height = 324;
+  (() => {   /* the speaker grille: a field of little holes */
+    const g = spkCv.getContext('2d');
+    g.fillStyle = '#0f1011'; g.fillRect(0, 0, 256, 324);
+    for (let y = 16; y < 324; y += 22) for (let x = 16; x < 256; x += 22) {
+      g.fillStyle = '#000'; g.beginPath(); g.arc(x, y + 1, 7, 0, Math.PI * 2); g.fill();
+      g.fillStyle = '#4a4e53'; g.beginPath(); g.arc(x, y, 6, 0, Math.PI * 2); g.fill();
+      g.fillStyle = '#16181a'; g.beginPath(); g.arc(x + 1, y + 1.5, 4.5, 0, Math.PI * 2); g.fill();
+    }
+  })();
+  const spkTex = new THREE.CanvasTexture(spkCv); spkTex.anisotropy = 4;
+  const spk = new THREE.Group();
+  spk.position.set(PNX, 1.45, 0.48);
+  tv.add(spk);
+  const spkRim = new THREE.Mesh(roundedSlab(0.27, 0.34, 0.04, 0.045, 0.012), std(0x34373a, 0.45, 0.3));
+  spkRim.position.z = 0.02;
+  spk.add(spkRim);
+  const spkFace = new THREE.Mesh(roundedScreenGeo(0.22, 0.29, 0.03), new THREE.MeshStandardMaterial({ map: spkTex, roughness: 0.7 }));
+  spkFace.position.z = 0.0405;
+  spk.add(spkFace);
   const STREAM_FONT = "'KCStrikerSans', 'Arial Black', sans-serif";
-  const strBtns = [];
-  STREAMS.forEach((s, i) => {
-    const cv = document.createElement('canvas'); cv.width = cv.height = 192;
-    const tex = new THREE.CanvasTexture(cv);
-    tex.anisotropy = 4;
-    const logoNames = [].concat((CONFIG.streamLogos || {})[s.id] || []);   /* each file name is tried in turn until one loads */
-    const tryLogo = k => { if (k >= logoNames.length) return; const im = new Image(); im.onload = () => { s.img = im; s.draw(); }; im.onerror = () => tryLogo(k + 1); im.src = logoNames[k]; };
-    tryLogo(0);
-    s.draw = () => {
-      const g = cv.getContext('2d'), W = 192;
-      g.clearRect(0, 0, W, W);
-      g.fillStyle = s.color; g.beginPath(); g.arc(W / 2, W / 2, W / 2, 0, Math.PI * 2); g.fill();   /* the service color fills the circle behind the logo */
-      const rg = g.createRadialGradient(W * 0.4, W * 0.35, 8, W / 2, W / 2, W * 0.62);
-      rg.addColorStop(0, 'rgba(255,255,255,0.3)'); rg.addColorStop(1, 'rgba(255,255,255,0)');
-      g.fillStyle = rg; g.beginPath(); g.arc(W / 2, W / 2, W / 2, 0, Math.PI * 2); g.fill();
-      if (s.id === 'more') {   /* the "(...)" more button: three dots, drawn here */
-        g.fillStyle = '#ffffff';
-        [W * 0.27, W * 0.5, W * 0.73].forEach(x => { g.beginPath(); g.arc(x, W / 2, 15, 0, Math.PI * 2); g.fill(); });
-      } else if (s.img) {
-        const nw = s.img.naturalWidth || 200, nh = s.img.naturalHeight || 200;   /* an .svg with no set size reports 0 in some browsers */
-        const k = Math.min(W * 0.7 / nw, W * 0.7 / nh), iw = nw * k, ih = nh * k;
-        g.drawImage(s.img, (W - iw) / 2, (W - ih) / 2, iw, ih);
-      } else {   /* no logo picture yet: write the name */
-        g.fillStyle = '#ffffff'; g.textAlign = 'center'; g.textBaseline = 'middle';
-        let px = 44;
-        g.font = px + 'px ' + STREAM_FONT;
-        while (px > 18 && s.lines.some(t => g.measureText(t).width > 140)) { px -= 2; g.font = px + 'px ' + STREAM_FONT; }
-        s.lines.forEach((t, j) => g.fillText(t, W / 2, W / 2 + (j - (s.lines.length - 1) / 2) * (px + 4)));
-      }
+  const CHANS = [{ dir: 1, y: 0.99 }, { dir: -1, y: 0.76 }];
+  const chBtns = [];
+  const chDraws = [];
+  CHANS.forEach(c => {
+    const cv = document.createElement('canvas'); cv.width = 192; cv.height = 128;
+    const tex = new THREE.CanvasTexture(cv); tex.anisotropy = 4;
+    const draw = () => {
+      const g = cv.getContext('2d'), W = 192, H = 128, R = 20;
+      g.clearRect(0, 0, W, H);
+      const bg = g.createLinearGradient(0, 0, 0, H); bg.addColorStop(0, '#b4b9bf'); bg.addColorStop(1, '#7d838a');
+      g.fillStyle = bg;
+      g.beginPath(); g.moveTo(R, 0); g.lineTo(W - R, 0); g.quadraticCurveTo(W, 0, W, R); g.lineTo(W, H - R); g.quadraticCurveTo(W, H, W - R, H); g.lineTo(R, H); g.quadraticCurveTo(0, H, 0, H - R); g.lineTo(0, R); g.quadraticCurveTo(0, 0, R, 0); g.closePath(); g.fill();
+      g.fillStyle = '#1b1d1f'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.font = '30px ' + STREAM_FONT;
+      const up = c.dir > 0;
+      g.fillText('CH', W / 2, up ? 34 : 94);
+      g.beginPath();
+      if (up) { g.moveTo(W / 2, 56); g.lineTo(W / 2 + 24, 98); g.lineTo(W / 2 - 24, 98); }
+      else { g.moveTo(W / 2, 72); g.lineTo(W / 2 + 24, 30); g.lineTo(W / 2 - 24, 30); }
+      g.closePath(); g.fill();
       tex.needsUpdate = true;
     };
-    s.draw();
+    draw(); chDraws.push(draw);
     const grp = new THREE.Group();
-    grp.position.set(0.85, 1.6 - i * 0.3, 0.48);
+    grp.position.set(PNX, c.y, 0.48);
     tv.add(grp);
-    const base = new THREE.Mesh(new THREE.CylinderGeometry(0.117, 0.131, 0.063, 36), std(0x34373a, 0.45, 0.3));
-    base.rotation.x = Math.PI / 2; base.position.z = 0.0315;
+    const base = new THREE.Mesh(roundedSlab(0.23, 0.17, 0.063, 0.04, 0.014), std(0x34373a, 0.45, 0.3));
+    base.position.z = 0.0315;
     grp.add(base);
-    const face = new THREE.Mesh(new THREE.CircleGeometry(0.097, 36), new THREE.MeshStandardMaterial({ map: tex, roughness: 0.4 }));
+    const face = new THREE.Mesh(roundedScreenGeo(0.18, 0.12, 0.025), new THREE.MeshStandardMaterial({ map: tex, roughness: 0.4 }));
     face.position.z = 0.0642;
     grp.add(face);
     grp.userData.press = 0;
-    strBtns.push(grp);
-    hitBox(0.31, 0.31, 0.25, 0.85, 1.6 - i * 0.3, 0.55, 'stream', tv).userData = { tag: 'stream', btn: grp, idx: i };
+    chBtns.push(grp);
+    hitBox(0.26, 0.2, 0.25, PNX, c.y, 0.55, 'chan', tv).userData = { tag: 'chan', btn: grp, dir: c.dir };
   });
-  if (document.fonts && document.fonts.load) document.fonts.load("44px 'KCStrikerSans'").then(() => STREAMS.forEach(s => s.draw && s.draw())).catch(() => {});
+  if (document.fonts && document.fonts.load) document.fonts.load("30px 'KCStrikerSans'").then(() => chDraws.forEach(f => f())).catch(() => {});
   /* square screen */
-  slabAt(1.57, 1.57, 0.08, 0.2, 0.025, grayBezel, -0.18, 1.0, 0.475);   /* rounded screen bezel (thin) */
+  slabAt(1.57, 1.57, 0.08, 0.14, 0.025, grayBezel, -0.18, 1.0, 0.475);   /* rounded screen bezel (thin) */
   const screenHolder = new THREE.Group();   /* sets the screen size (a little bigger than 1.35); screenGrp inside is what the click animation squashes */
   screenHolder.position.set(-0.18, 1.0, 0.518);
   screenHolder.scale.setScalar(1.074);
@@ -2060,7 +2128,7 @@ function makeDesk(el) {
   screenHolder.add(screenGrp);
   const screenMat = new THREE.MeshBasicMaterial({ color: 0xffffff });
   screenMat.color.setHex(0x0e2a1e);
-  const scrGeo = roundedScreenGeo(1.35, 1.35, 0.15);   /* rounded screen corners, shared by the picture and the glass layers */
+  const scrGeo = roundedScreenGeo(1.35, 1.35, 0.1);   /* rounded screen corners, shared by the picture and the glass layers */
   const screen = new THREE.Mesh(scrGeo, screenMat);
   screenGrp.add(screen);
   const tvImgP = new Promise(res => new THREE.TextureLoader().load(CONFIG.tvImage, tex => {
@@ -2199,7 +2267,7 @@ function makeDesk(el) {
   const endLore = () => {}, hideSecretTV = () => {};
 
   const tvLight = new THREE.PointLight(0xa8d4ff, 0.55, 7);   /* faint blue spill onto the desk and the crew */
-  tvLight.position.set(-0.2, 2.6, -0.2);
+  tvLight.position.set(1.6, 2.6, -0.2);   /* moved right: this light is what makes the vinyl shine, so the shine now sits in the middle/right of the record */
   stage.add(tvLight);
 
   /* ---------- little radio, on the table next to the board: click for streaming (soon), drag the knob for volume ---------- */
@@ -2233,7 +2301,13 @@ function makeDesk(el) {
   const led = new THREE.Mesh(new THREE.SphereGeometry(0.035, 12, 10), ledMat); led.position.set(0.58, 0.32, 0.262); radio.add(led);
   const ledHalo = new THREE.Sprite(new THREE.SpriteMaterial({ map: haloTex, color: 0xff3a2a, transparent: true, opacity: 0, blending: THREE.AdditiveBlending, depthWrite: false }));
   ledHalo.scale.set(0.4, 0.4, 1); ledHalo.position.set(0.58, 0.32, 0.3); radio.add(ledHalo);
-  const handle = new THREE.Mesh(new THREE.TorusGeometry(0.32, 0.022, 8, 28, Math.PI), chrome); handle.position.set(0, 0.84, 0); radio.add(handle);
+  const hP = new THREE.CurvePath(), hw = 0.3, hh = 0.22, hr = 0.08, hv = (x, y) => new THREE.Vector3(x, y, 0);   /* the handle: a rounded rectangle, tube-thick */
+  hP.add(new THREE.LineCurve3(hv(-hw, -0.03), hv(-hw, hh - hr)));
+  hP.add(new THREE.QuadraticBezierCurve3(hv(-hw, hh - hr), hv(-hw, hh), hv(-hw + hr, hh)));
+  hP.add(new THREE.LineCurve3(hv(-hw + hr, hh), hv(hw - hr, hh)));
+  hP.add(new THREE.QuadraticBezierCurve3(hv(hw - hr, hh), hv(hw, hh), hv(hw, hh - hr)));
+  hP.add(new THREE.LineCurve3(hv(hw, hh - hr), hv(hw, -0.03)));
+  const handle = new THREE.Mesh(new THREE.TubeGeometry(hP, 120, 0.034, 10, false), chrome); handle.position.set(0, 0.84, 0); radio.add(handle);
   const ant = new THREE.Mesh(new THREE.CylinderGeometry(0.012, 0.012, 0.8, 8), chrome); ant.position.set(0.64, 1.24, -0.1); ant.rotation.z = -0.35; radio.add(ant);
   hitBox(1.4, 0.95, 0.65, 0, 0.47, 0, 'radio', radio);
   hitBox(0.5, 0.5, 0.3, 0.3, 0.32, 0.3, 'knob', radio);
@@ -2245,7 +2319,7 @@ function makeDesk(el) {
   joyG.scale.setScalar(1.3);
   stage.add(joyG);
   const joyBlob = blob(1.3, 1.04, 2.35, 2.08, 0.7);
-  const joyBase = new THREE.Mesh(new THREE.BoxGeometry(0.72, 0.12, 0.5), std(0x2f3136, 0.55, 0.2)); joyBase.position.y = 0.06; joyG.add(joyBase);
+  const joyBase = new THREE.Mesh(roundedBoxWHD(0.72, 0.12, 0.5, 0.04, 36, 6, 25), std(0x2f3136, 0.55, 0.2)); joyBase.position.y = 0.06; joyG.add(joyBase);
   const joyBtn = new THREE.Mesh(new THREE.CylinderGeometry(0.07, 0.08, 0.05, 20), std(0xe8c13a, 0.4)); joyBtn.position.set(0.24, 0.145, 0.08); joyG.add(joyBtn);
   const joyStick = new THREE.Group(); joyStick.position.set(-0.12, 0.12, 0); joyG.add(joyStick);
   const joyBoot = new THREE.Mesh(new THREE.SphereGeometry(0.1, 16, 8, 0, Math.PI * 2, 0, Math.PI / 2), std(0x151517, 0.7)); joyStick.add(joyBoot);
@@ -2265,13 +2339,25 @@ function makeDesk(el) {
   const insertTex = new THREE.TextureLoader().load(CONFIG.insertImage);
   const insertEdge = std(0xa9a392, 0.8), insertTop = new THREE.MeshStandardMaterial({ map: insertTex, color: 0xa8a8a8, roughness: 0.85 });   /* dimmer: it sits in the shade under the desk */
   insertG.add(new THREE.Mesh(new THREE.BoxGeometry(1.7, 0.03, 1.7), [insertEdge, insertEdge, insertTop, insertEdge, insertEdge, insertEdge]));   /* cardstock thick */
+  /* a pen lying on the vinyl insert (the point faces the way it should) */
+  const lPen = new THREE.Group(); lPen.position.set(0.3, 0.052, 0.5); lPen.rotation.y = 0.5; insertG.add(lPen);
+  const lpBody = new THREE.Mesh(new THREE.CylinderGeometry(0.036, 0.036, 0.9, 14), std(0x1f3f9e, 0.35, 0.2)); lpBody.rotation.z = Math.PI / 2; lPen.add(lpBody);
+  const lpTip = new THREE.Mesh(new THREE.ConeGeometry(0.036, 0.12, 14), std(0xc9ced4, 0.3, 0.7)); lpTip.rotation.z = -Math.PI / 2; lpTip.position.x = 0.5; lPen.add(lpTip);
+  const lpClip = new THREE.Mesh(new THREE.BoxGeometry(0.28, 0.012, 0.025), std(0xd8b04a, 0.3, 0.7)); lpClip.position.set(-0.28, 0.04, 0); lPen.add(lpClip);
   const insertBlob = blob(2.1, 2.1, -1.5, 2.15, 0.55); insertBlob.position.y = FLOOR + 0.004;
   hitBox(1.7, 0.3, 1.7, 0, 0.05, 0, 'insert', insertG);
 
-  /* the mailbox: a blue box with an arched top, a door that says EMAIL LIST, and a red flag on the side that pops up when you tap it */
+  /* ---------- the mailbox pole: a wooden post on the floor just left of the table. The mailbox on top sits up over the desk a little. ---------- */
+  const PLX = -2.45, PLZ = 2.7, PLTOP = 0.72;   /* where the post stands, and the height of its top */
+  const poleG = new THREE.Group(); stage.add(poleG);
+  const poleBody = new THREE.Mesh(new THREE.BoxGeometry(0.13, PLTOP - FLOOR, 0.13), legWood);
+  poleBody.position.set(PLX, (PLTOP + FLOOR) / 2, PLZ); poleG.add(poleBody);
+  const poleBlob = blob(0.9, 0.9, PLX, PLZ, 0.6); poleBlob.position.y = FLOOR + 0.004;
+  /* a mailbox on a pole, standing on the floor beside the left end of the table and reaching up over the desk: a blue box with an arched top, a door that says EMAIL LIST, and a red flag on the side that pops up when you tap it */
   const mailG = new THREE.Group();
-  mailG.position.set(0.3, FLOOR, 2.85);
-  mailG.rotation.y = 0.12;
+  mailG.position.set(PLX, PLTOP, PLZ);
+  mailG.rotation.y = 0.3;
+  mailG.scale.setScalar(1.3);
   stage.add(mailG);
   const mailBlue = std(0x3d6db5, 0.45, 0.15), mailDark = std(0x2b5192, 0.5, 0.15), mailRed = std(0xc9382c, 0.45), mailMetal = std(0xb9bec6, 0.35, 0.6);
   const MB_W = 0.62, MB_H = 0.26, MB_D = 0.78;   /* width, height of the square lower part, depth (front to back) */
@@ -2295,18 +2381,19 @@ function makeDesk(el) {
   const mbDoor = new THREE.Mesh(doorGeo, new THREE.MeshStandardMaterial({ map: mbDoorTex, roughness: 0.55, metalness: 0.1 }));
   mbDoor.position.set(0, 0.06, MB_D / 2 + 0.004); mailG.add(mbDoor);
   const mbKnob = new THREE.Mesh(new THREE.SphereGeometry(0.035, 12, 10), mailMetal); mbKnob.position.set(0, 0.06 + 0.08, MB_D / 2 + 0.03); mailG.add(mbKnob);
-  const mailFlag = new THREE.Group(); mailFlag.position.set(MB_W / 2 + 0.02, 0.04 + MB_H * 0.8, -0.05); mailG.add(mailFlag);
+  const mailFlag = new THREE.Group(); mailFlag.position.set(-(MB_W / 2 + 0.02), 0.04 + MB_H * 0.8, -0.05); mailG.add(mailFlag);
   const mfPole = new THREE.Mesh(new THREE.BoxGeometry(0.035, 0.3, 0.035), mailMetal); mfPole.position.y = 0.15; mailFlag.add(mfPole);
   const mfPlate = new THREE.Mesh(new THREE.BoxGeometry(0.03, 0.13, 0.2), mailRed); mfPlate.position.set(0, 0.26, 0.1); mailFlag.add(mfPlate);
-  const mailBlob = blob(1.3, 1.3, 0.3, 2.85, 0.55); mailBlob.position.y = FLOOR + 0.004;
-  hitBox(0.9, 0.85, 1.0, 0, 0.4, 0, 'mailbox', mailG);
+    hitBox(0.9, 0.85, 1.0, 0, 0.4, 0, 'mailbox', mailG);
   let mailT = 0;
 
-  /* the letter: a cream envelope with air-mail edges that says CONTACT US, and a blue pen lying across it */
+  /* the letter: a cream envelope with air-mail edges that says CONTACT US, leaning against the bottom of the pole */
   const letterG = new THREE.Group();
-  letterG.position.set(1.55, FLOOR, 2.55);
-  letterG.rotation.y = -0.22;
+  const LS = 0.8, LEAN = 0.2;   /* size, and how far it leans back from straight up */
+  letterG.position.set(PLX + 0.1, FLOOR + 0.5 * 0.85 * LS * Math.cos(LEAN) + 0.1, PLZ + 0.06 + 0.5 * 0.85 * LS * Math.sin(LEAN) + 0.04);
+  letterG.rotation.y = -0.12;
   stage.add(letterG);
+  const letterLean = new THREE.Group(); letterLean.rotation.x = Math.PI / 2 - LEAN; letterLean.scale.setScalar(LS); letterG.add(letterLean);   /* stood up on its long edge, leaning back */
   const lcW = 520, lcH = 340;
   const drawLetter = (g, w, h) => {
     g.fillStyle = '#efe4c6'; g.fillRect(0, 0, w, h);
@@ -2316,28 +2403,25 @@ function makeDesk(el) {
       g.beginPath(); g.moveTo(x, 0); g.lineTo(x + 26, 0); g.lineTo(x + 26 - h, h); g.lineTo(x - h, h); g.fill();
     }
     g.restore();
-    g.strokeStyle = 'rgba(90,60,30,0.35)'; g.lineWidth = 2;   /* the flap */
+    g.fillStyle = 'rgba(110,75,35,0.2)'; g.beginPath(); g.moveTo(24, 24); g.lineTo(w / 2, h * 0.52); g.lineTo(w - 24, 24); g.closePath(); g.fill();   /* the flap, shaded */
+    g.strokeStyle = 'rgba(60,35,15,0.75)'; g.lineWidth = 4; g.lineJoin = 'round';   /* the fold */
     g.beginPath(); g.moveTo(24, 24); g.lineTo(w / 2, h * 0.52); g.lineTo(w - 24, 24); g.stroke();
     g.fillStyle = '#c9382c'; g.fillRect(w - 112, 34, 70, 82);   /* a stamp */
     g.strokeStyle = '#efe4c6'; g.lineWidth = 3; g.setLineDash([5, 4]); g.strokeRect(w - 108, 38, 62, 74); g.setLineDash([]);
     g.fillStyle = '#efe4c6'; g.font = "bold 30px 'KCStrikerSans', sans-serif"; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText('FJ', w - 77, 76);
     g.fillStyle = '#3a2a1c';
-    g.font = "bold 58px 'KCPelletierTyped', 'Courier New', monospace"; g.fillText('CONTACT US', w / 2 - 12, h * 0.72);
+    g.font = "bold 76px 'KCPelletierTyped', 'Courier New', monospace"; g.fillText('CONTACT', w / 2 - 12, h * 0.64); g.fillText('US', w / 2 - 12, h * 0.85);
   };
   const letterTex = mkTex(lcW, lcH, drawLetter);
   const letterSide = std(0xcdbf9e, 0.85);
   const letterBox = new THREE.Mesh(new THREE.BoxGeometry(1.3, 0.04, 0.85), [letterSide, letterSide, new THREE.MeshStandardMaterial({ map: letterTex, color: 0xd8d8d8, roughness: 0.8 }), letterSide, letterSide, letterSide]);
-  letterBox.position.y = 0.02; letterG.add(letterBox);
-  if (document.fonts && document.fonts.load) Promise.all([document.fonts.load("58px 'KCPelletierTyped'"), document.fonts.load("30px 'KCStrikerSans'")]).then(() => {   /* redraw once the fonts are ready */
+  letterLean.add(letterBox);
+  if (document.fonts && document.fonts.load) Promise.all([document.fonts.load("76px 'KCPelletierTyped'"), document.fonts.load("30px 'KCStrikerSans'")]).then(() => {   /* redraw once the fonts are ready */
     drawLetter(letterTex.image.getContext('2d'), lcW, lcH); letterTex.needsUpdate = true;
     drawDoor(mbDoorTex.image.getContext('2d'), 256, 256); mbDoorTex.needsUpdate = true;
   }).catch(() => {});
-  const lPen = new THREE.Group(); lPen.position.set(-0.2, 0.04 + 0.036, -0.14); lPen.rotation.y = 0.12; letterG.add(lPen);
-  const lpBody = new THREE.Mesh(new THREE.CylinderGeometry(0.036, 0.036, 0.9, 14), std(0x1f3f9e, 0.35, 0.2)); lpBody.rotation.z = Math.PI / 2; lPen.add(lpBody);
-  const lpTip = new THREE.Mesh(new THREE.ConeGeometry(0.036, 0.12, 14), std(0xc9ced4, 0.3, 0.7)); lpTip.rotation.z = Math.PI / 2; lpTip.position.x = 0.5; lPen.add(lpTip);
-  const lpClip = new THREE.Mesh(new THREE.BoxGeometry(0.28, 0.012, 0.025), std(0xd8b04a, 0.3, 0.7)); lpClip.position.set(-0.28, 0.04, 0); lPen.add(lpClip);
-  const letterBlob = blob(1.8, 1.4, 1.55, 2.55, 0.5); letterBlob.position.y = FLOOR + 0.004;
-  hitBox(1.5, 0.3, 1.1, 0, 0.1, 0.05, 'letter', letterG);
+  const letterBlob = blob(1.1, 0.7, PLX + 0.1, PLZ + 0.3, 0.45); letterBlob.position.y = FLOOR + 0.004;
+  hitBox(1.05, 0.75, 0.4, 0, 0.38, 0, 'letter', letterG);
   let letterT = 0;
 
   /* ---------- cream vinyl record lying on the table, poking out from under the board (its red center label shows a little). Hover: it slides out a little. Click: it wiggles, then the buy popup opens. ---------- */
@@ -2360,20 +2444,6 @@ function makeDesk(el) {
   vinylG.add(new THREE.Mesh(new THREE.CylinderGeometry(VR, VR, VT, 72), [std(0xb8a878, 0.5), vCap, vCap]));
   hitBox(VR * 2, VT * 2, VR * 2, 0, 0, 0, 'vinyl', vinylG);
   let vSlide = 0;
-  const streamDlg = document.getElementById('streamDlg');
-  streamDlg.addEventListener('click', e => { if (e.target === streamDlg) streamDlg.close(); });
-  document.getElementById('streamOk').addEventListener('click', () => streamDlg.close());
-  function showSoon(title, msg) {   /* the shared "coming soon" popup */
-    document.getElementById('streamTitle').textContent = title;
-    document.getElementById('streamMsg').textContent = msg;
-    if (!streamDlg.open) { try { streamDlg.showModal(); } catch (x) { streamDlg.setAttribute('open', ''); } }
-  }
-  function openStream(i) {   /* a streaming button: opens its link, or a placeholder until the link is live */
-    const s = STREAMS[i], url = (CONFIG.streamLinks || {})[s.id];
-    if (url) window.open(url, '_blank', 'noopener');
-    else if (s.id === 'more') showSoon('More ways to listen', 'More links coming soon.');
-    else showSoon(s.name, 'The ' + s.name + ' link is coming soon.');
-  }
   let wigList = null, wigLast = null;   /* hover wiggle: a quick damped yaw shake when the pointer lands on an item */
   let hoverGroup = null, glowItems = null, knobDrag = null, knobMoved = 0, ledOn = false, coinLand = 0, dieLand = 0;
   const setKnob = vol => { knob.rotation.z = 2.35 - vol * 4.7; };   /* quiet = turned left, loud = turned right */
@@ -2452,7 +2522,7 @@ function makeDesk(el) {
   deck.add(dieRoot);
   const yawG = new THREE.Group();
   dieRoot.add(yawG);
-  const die = makeClearDie('red', 1);   /* opaque red, white pips */
+  const die = makeDichroicDie(true);   /* the Angel edition's color-shifting glass die with gold pips, with rounded corners */
   die.scale.setScalar(DIE_SCALE);
   yawG.add(die);
   hitBox(0.8, 0.8, 0.8, 0, 0, 0, 'die', dieRoot);
@@ -2484,6 +2554,9 @@ function makeDesk(el) {
   infoM.position.z = 0.1305; infoM.renderOrder = 9; infoM.visible = false;
   screenGrp.add(infoM);
   let info = 0, infoBlink = true, infoBlinkT = 0;
+  const adJesse = headFor(jIdx, marble().clone());   /* a floating Jesse head in front of the ad, beside the price burst */
+  adJesse.scale.setScalar(0.3); adJesse.position.set(0.47, -0.37, 0.2); adJesse.visible = false;
+  screenGrp.add(adJesse);
   const INFO_FONT = "'KCStrikerSans', 'Arial Black', sans-serif", INFO_HEAD = "'KCOraleSans', 'Arial Black', sans-serif";
   function drawInfo() {
     const g = infoCv.getContext('2d'), W = INFO_PX;
@@ -2514,14 +2587,49 @@ function makeDesk(el) {
     infoTex.needsUpdate = true;
   }
   if (document.fonts && document.fonts.load) Promise.all([document.fonts.load("46px 'KCStrikerSans'"), document.fonts.load("60px 'KCOraleSans'"), document.fonts.load("18px 'KCPelletierTyped'")]).then(() => { if (info) drawInfo(); }).catch(() => {});
-  function showInfoTV() {
+  /* a short burst of static on the TV, then fn (used to switch to the ad and back) */
+  let blip = null, piecesTouched = false, autoAd = 0, autoAdT0 = 0, infoAuto = false;
+  function tvBlip(fn) { blip = { t0: performance.now(), fn }; staticM.visible = !REDUCE; jesse.visible = false; }
+  function cancelBlip() { if (!blip) return; blip = null; staticM.visible = false; jesse.visible = !menuOn && !secret && !info && !lore; }
+  function showInfoTV(auto) {
     if (menuOn || v.tvT || v.navigated || intro.busy) return;
+    infoAuto = auto === true;
     hideSecretTV(); endLore();
     infoBlink = true; infoBlinkT = performance.now(); drawInfo();
-    infoM.visible = true; jesse.visible = false; info = performance.now();
+    infoM.visible = true; adJesse.visible = true; jesse.visible = false; info = performance.now();
     Sound.oneUp();
   }
-  function hideInfoTV() { if (!info) return; info = 0; infoM.visible = false; jesse.visible = !menuOn && !secret && !lore; }
+  function hideInfoTV() { if (!info) return; info = 0; infoAuto = false; infoM.visible = false; adJesse.visible = false; jesse.visible = !menuOn && !secret && !lore; }
+  /* TV channels: CH up / down flip between the game screen and the LIMITED EDITION ad through a burst of static. The ad also shows once by itself. */
+  function changeChannel(dir) {
+    if (menuOn || v.tvT || v.navigated || intro.busy) return;
+    if (info) { hideInfoTV(); tvBlip(() => { jesse.visible = !menuOn && !secret && !info && !lore; }); }
+    else tvBlip(() => { showInfoTV(true); if (!info) jesse.visible = !menuOn && !secret && !lore; });
+  }
+  function tvTick(now) {   /* called every frame */
+    if (blip) {
+      if (menuOn || v.tvT || info) cancelBlip();
+      else {
+        if (!REDUCE) drawStatic();
+        if (now - blip.t0 > (REDUCE ? 0 : 420)) { const f = blip.fn; blip = null; staticM.visible = false; f(); }
+      }
+    }
+    if (!autoAd && intro.phase === 'done' && !intro.busy) {   /* 5 seconds after the page settles, if no piece has been touched: static, then the ad (once) */
+      if (!autoAdT0) autoAdT0 = now;
+      else if (now - autoAdT0 > 5000) {
+        autoAd = 1;
+        const gameEl = document.getElementById('gameOverlay');
+        const busyNow = piecesTouched || menuOn || v.tvT || v.navigated || secret || info || blip || document.querySelector('dialog[open]') || (gameEl && !gameEl.hidden);
+        if (!busyNow) tvBlip(() => { showInfoTV(true); if (!info) jesse.visible = !menuOn && !secret && !lore; });
+      }
+    }
+    if (info) {
+      if (now - info > (infoAuto ? 6000 : 3000)) {
+        if (infoAuto) { hideInfoTV(); tvBlip(() => { jesse.visible = !menuOn && !secret && !info && !lore; }); }
+        else { hideInfoTV(); goTo('kits'); }
+      } else if (now - infoBlinkT > 380) { infoBlinkT = now; infoBlink = !infoBlink; drawInfo(); }
+    }
+  }
   function infoAt(e) {   /* is the pointer on the ad? */
     if (!info) return false;
     const r = el.getBoundingClientRect();
@@ -2541,7 +2649,7 @@ function makeDesk(el) {
   ldM.position.z = 0.1255; ldM.renderOrder = 5; ldM.visible = false;
   screenGrp.add(ldM);
   const ldCoinG = new THREE.Group();   /* flattened front to back, so the coin reads as a picture on the screen glass (scanlines and glow go over it) */
-  ldCoinG.position.set(0, 0.03, 0.128); ldCoinG.scale.set(1, 1, 0.04); ldCoinG.visible = false;
+  ldCoinG.position.set(0, 0.108, 0.128); ldCoinG.scale.set(1, 1, 0.04); ldCoinG.visible = false;
   screenGrp.add(ldCoinG);
   /* the layers in front of the picture (scan lines, glow, menu, static, ads...) sit a little in front of it, and the camera looks down, so they used to look lower than the picture and the gray border. Lift each one by the exact amount that cancels that, so everything lines up from the camera angle. */
   const LAYER_LIFT = 1.6 * Math.tan(EL) / 3;   /* the TV is scaled 3 tall and 1.6 deep */
@@ -2555,7 +2663,7 @@ function makeDesk(el) {
   ldCoin.material.forEach(m => { m.depthTest = false; });
   ldCoin.renderOrder = 6;
   ldFlip.add(ldCoin);
-  function drawLoading(frac, now) {
+  function drawLoading(frac, now, inserted) {
     const g = ldCv.getContext('2d'), W = LD_PX;
     g.fillStyle = '#070b1c'; g.fillRect(0, 0, W, W);
     g.strokeStyle = 'rgba(90,140,255,0.14)'; g.lineWidth = 1;
@@ -2563,16 +2671,46 @@ function makeDesk(el) {
     g.strokeStyle = '#ffd36b'; g.lineWidth = 6; g.strokeRect(24, 24, W - 48, W - 48);
     g.strokeStyle = '#ff7a59'; g.lineWidth = 2; g.strokeRect(38, 38, W - 76, W - 76);
     g.textAlign = 'center'; g.textBaseline = 'middle';
-    fitText(g, 'FEARJOY', 380, 64, "'KCOraleSans', 'Arial Black', sans-serif");
-    g.fillStyle = '#ff7a59'; g.fillText('FEARJOY', W / 2 + 3, 94); g.fillStyle = '#ffffff'; g.fillText('FEARJOY', W / 2, 91);
-    g.font = '40px ' + LD_STRIKER; g.fillStyle = '#ffd36b'; g.textAlign = 'left';
-    const w3 = g.measureText('LOADING...').width;
-    g.fillText('LOADING' + '.'.repeat(1 + Math.floor(now / 350) % 3), (W - w3) / 2, 372);
-    g.strokeStyle = '#ffd36b'; g.lineWidth = 3; g.strokeRect(96, 400, 320, 26);
-    g.fillStyle = '#64ff8f'; g.fillRect(100, 404, Math.max(2, 312 * frac), 18);
-    g.textAlign = 'center';
-    if (Math.floor(now / 500) % 2 === 0) { g.fillStyle = '#7fb0ff'; g.font = "20px 'KCPelletierTyped', 'Courier New', monospace"; g.fillText('INSERT COIN', W / 2, 462); }
+    const blink = Math.floor(now / 500) % 2 === 0;
+    /* the coin slot: a metal plate with a slit (the coin slides into it) */
+    const px = W / 2 - 75, py = 382, pw = 150, ph = 84, pr = 14;
+    const pg = g.createLinearGradient(0, py, 0, py + ph); pg.addColorStop(0, '#dde0e5'); pg.addColorStop(1, '#7d838b');
+    g.fillStyle = pg; g.strokeStyle = '#25282c'; g.lineWidth = 4;
+    g.beginPath(); g.moveTo(px + pr, py); g.lineTo(px + pw - pr, py); g.quadraticCurveTo(px + pw, py, px + pw, py + pr); g.lineTo(px + pw, py + ph - pr); g.quadraticCurveTo(px + pw, py + ph, px + pw - pr, py + ph); g.lineTo(px + pr, py + ph); g.quadraticCurveTo(px, py + ph, px, py + ph - pr); g.lineTo(px, py + pr); g.quadraticCurveTo(px, py, px + pr, py); g.closePath(); g.fill(); g.stroke();
+    [[px + 14, py + 14], [px + pw - 14, py + 14], [px + 14, py + ph - 14], [px + pw - 14, py + ph - 14]].forEach(q => { g.fillStyle = '#555a60'; g.beginPath(); g.arc(q[0], q[1], 5, 0, Math.PI * 2); g.fill(); });
+    g.fillStyle = inserted ? '#64ff8f' : (blink ? '#ffd36b' : '#8a7a3a'); g.fillRect(W / 2 - 11, 392, 22, 64);   /* the glow around the slit */
+    g.fillStyle = '#030303'; g.fillRect(W / 2 - 7, 396, 14, 56);
+    if (!inserted) {
+      g.fillStyle = blink ? '#ffd36b' : '#b89a3e'; g.font = '36px ' + LD_STRIKER; g.fillText('INSERT COIN', W / 2, 352);
+      g.fillStyle = '#7fb0ff'; g.font = "20px 'KCPelletierTyped', 'Courier New', monospace"; g.fillText('tap the coin', W / 2, 78);
+    } else {
+      g.font = '40px ' + LD_STRIKER; g.fillStyle = '#ffd36b'; g.textAlign = 'left';
+      const w3 = g.measureText('LOADING...').width;
+      g.fillText('LOADING' + '.'.repeat(1 + Math.floor(now / 350) % 3), (W - w3) / 2, 200);
+      g.strokeStyle = '#ffd36b'; g.lineWidth = 3; g.strokeRect(96, 236, 320, 26);
+      g.fillStyle = '#64ff8f'; g.fillRect(100, 240, Math.max(2, 312 * frac), 18);
+    }
     ldTex.needsUpdate = true;
+  }
+  const LD_R = 0.285;   /* the loading coin's radius on the screen */
+  const ldYof = py => ldM.position.y + (256 - py) / 512 * 1.35 + (ldCoinG.position.z - ldM.position.z) * LAYER_LIFT;   /* a picture row of the loading screen -> a height in the screen group */
+  function ldCoinStep(now) {   /* the coin spins on its edge; after a tap it turns edge-on, shrinks over the slit and slides in */
+    if (!intro.coinT) { ldSpin.rotation.y = now * 0.0018; return; }
+    const k = Math.min(1, (now - intro.coinT) / 1000), a = Math.min(1, k / 0.5), u = Math.max(0, (k - 0.5) / 0.5);
+    const ea = 1 - Math.pow(1 - a, 3), s = 1 - 0.7 * ea, sy = s * (1 - u), yTop = ldYof(396);
+    ldSpin.rotation.y = intro.coinR0 + (intro.coinR1 - intro.coinR0) * ea;
+    ldCoinG.position.y = u > 0 ? yTop + LD_R * sy : intro.coinY0 + (yTop + LD_R * s - intro.coinY0) * ea;
+    ldCoinG.scale.set(s, Math.max(0.001, sy), 0.04);
+    if (k >= 1) { ldCoinG.visible = false; intro.coinDone = true; }
+  }
+  function insertCoin() {
+    if (intro.coinT || (intro.phase !== 'load' && intro.phase !== 'warm')) return;
+    intro.coinT = performance.now(); intro.coinY0 = ldCoinG.position.y;
+    const r0 = ldSpin.rotation.y; let r1 = Math.PI / 2 + Math.PI * Math.ceil((r0 - Math.PI / 2) / Math.PI);
+    if (r1 - r0 < 0.4) r1 += Math.PI;
+    intro.coinR0 = r0; intro.coinR1 = r1;
+    Sound.coin();
+    drawLoading(intro.shown, intro.coinT, true);
   }
   function wrapDrop(objs, delay, H, shadows, amp) {   /* each thing sits in its own group, which is what falls (so nothing else about it has to change) */
     const par = objs[0].parent, g = new THREE.Group();
@@ -2593,11 +2731,11 @@ function makeDesk(el) {
     wrapDrop([dieRoot], 1.2, 5, [dieShadow], 0.14);
     wrapDrop([coinRoot], 1.3, 4, [coinShadow], 0.12);
     wrapDrop([insertG], 0.85, 0.7, [insertBlob], 0.04);
-    wrapDrop([mailG], 0.95, 0.7, [mailBlob], 0.04);
-    wrapDrop([letterG], 1.05, 0.7, [letterBlob], 0.04);
+    wrapDrop([poleG, mailG], 1.4, 4, [poleBlob], 0.1);
+    wrapDrop([letterG], 1.5, 4, [letterBlob], 0.1);
     drops.forEach(d => { d.g.visible = false; d.sh.forEach(s => { s.visible = false; }); });
     jesse.visible = false; ldM.visible = true; ldCoinG.visible = true;
-    drawLoading(0, 0);
+    drawLoading(0, 0, false);
     const track = (p, ms) => {   /* every download counts, but none can hold the intro for more than 8 seconds */
       const t = { done: false };
       introTasks.push(t);
@@ -2621,14 +2759,15 @@ function makeDesk(el) {
     if (intro.phase === 'load' || intro.phase === 'warm') {
       const done = introTasks.filter(x => x.done).length, frac = intro.phase === 'warm' ? 1 : done / introTasks.length;
       intro.shown += (frac - intro.shown) * 0.1;
-      ldSpin.rotation.y = now * 0.0018;   /* a little faster than the coin on the table */
-      if (now - ldDraw > 110) { ldDraw = now; drawLoading(intro.shown, now); }
+      ldCoinStep(now);
+      if (now - ldDraw > 110) { ldDraw = now; drawLoading(intro.shown, now, !!intro.coinT); }
       if (intro.phase === 'load') {
         if ((done === introTasks.length && now - intro.t0 > 2400) || now - intro.t0 > 10500) { warmUp(); intro.phase = 'warm'; intro.tw = now; intro.calm = 0; intro.prev = now; }
       } else {   /* the loading screen stays up until the page has been drawing steadily for a moment (and never more than 2 seconds extra) */
         const dtf = now - intro.prev; intro.prev = now;
         intro.calm = dtf < 26 ? intro.calm + 1 : 0;
-        if ((now - intro.tw > 600 && intro.calm >= 10) || now - intro.tw > 2200) startDrop(now);
+        if (!intro.coinT && now - intro.tw > 12000) insertCoin();   /* nobody tapped the coin: put it in for them */
+        if (intro.coinDone && ((now - intro.tw > 600 && intro.calm >= 10) || now - intro.tw > 2200)) startDrop(now);   /* the items drop once the coin is in and everything is ready */
       }
       return;
     }
@@ -2672,13 +2811,23 @@ function makeDesk(el) {
     pickObj = h && h.object.userData.tag !== 'block' ? h.object : null;   /* the table and board hide whatever is behind them */
     return pickObj ? pickObj.userData.tag : null;
   }
+  function ldCoinAt(e) {   /* is the pointer on the loading coin? */
+    if (!ldCoinG.visible || intro.coinT || (intro.phase !== 'load' && intro.phase !== 'warm')) return false;
+    const r = el.getBoundingClientRect();
+    ndc.set(((e.clientX - r.left) / r.width) * 2 - 1, -((e.clientY - r.top) / r.height) * 2 + 1);
+    ray.setFromCamera(ndc, v.camera);
+    const hit = ray.intersectObject(ldM, false)[0];
+    if (!hit) return false;
+    const p = screenGrp.worldToLocal(hit.point.clone());
+    return Math.hypot(p.x - ldCoinG.position.x, p.y - ldCoinG.position.y) < 0.33;
+  }
   el.addEventListener('pointerdown', e => {
     knobMoved = 0;
     if (intro.busy) return;
     if (pick(e) === 'knob') { knobDrag = { x0: e.clientX, y0: e.clientY, v0: Sound.getVolume() }; try { el.setPointerCapture(e.pointerId); } catch (x) {} }
   });
   el.addEventListener('pointermove', e => {
-    if (intro.busy) { el.style.cursor = 'default'; hoverGroup = null; return; }
+    if (intro.busy) { el.style.cursor = ldCoinAt(e) ? 'var(--hand)' : 'default'; hoverGroup = null; return; }
     if (knobDrag) {   /* turning the volume knob: right or up = louder, left or down = quieter (diagonal counts too) */
       const d = (e.clientX - knobDrag.x0) - (e.clientY - knobDrag.y0);
       knobMoved = Math.max(knobMoved, Math.abs(d));
@@ -2692,7 +2841,7 @@ function makeDesk(el) {
     }
     const tag = pick(e);
     el.style.cursor = tag && !(menuOn && tag === 'tv') ? 'var(--hand)' : 'default';
-    hoverGroup = tag === 'stream' ? pickObj.userData.btn : tag === 'insert' ? insertG : tag === 'mailbox' ? mailG : tag === 'letter' ? letterG : tag === 'tv' ? (menuOn ? null : tv) : tag === 'bust' ? pickObj.userData.bust : tag === 'coin' ? coinRoot : tag === 'die' ? dieRoot : tag === 'vinyl' ? vinylG : tag === 'joystick' ? joyG : tag === 'radio' ? radio : tag === 'knob' ? knob : null;
+    hoverGroup = tag === 'chan' ? pickObj.userData.btn : tag === 'insert' ? insertG : tag === 'mailbox' ? mailG : tag === 'letter' ? letterG : tag === 'tv' ? (menuOn ? null : tv) : tag === 'bust' ? pickObj.userData.bust : tag === 'coin' ? coinRoot : tag === 'die' ? dieRoot : tag === 'vinyl' ? vinylG : tag === 'joystick' ? joyG : tag === 'radio' ? radio : tag === 'knob' ? knob : null;
   });
   const endKnob = () => { knobDrag = null; };
   el.addEventListener('pointerup', endKnob);
@@ -2701,12 +2850,13 @@ function makeDesk(el) {
   el.addEventListener('pointerleave', () => { hoverGroup = null; });
   function openTvMenu() { if (menuOn || v.tvT || v.navigated || intro.busy) return; hideSecretTV(); hideInfoTV(); endLore(); Sound.oneUp(); v.tvMode = 'open'; v.tvSwapped = false; v.tvT = performance.now(); }
   el.addEventListener('click', e => {
-    if (intro.busy) return;
+    if (intro.busy) { if (ldCoinAt(e)) insertCoin(); return; }
     if (info && infoAt(e)) { hideInfoTV(); goTo('kits'); return; }
     if (menuOn && !v.tvT) { const o = menuAt(e); if (o) { if (o === 'start') startGame(); else closeMenu(); return; } }
     const tag = pick(e);
     let menuClosing = false;
     if (menuOn && !v.tvT && tag) { closeMenu(); menuClosing = true; if (tag === 'joystick' || tag === 'tv') return; }   /* the menu does not take over: tapping the joystick again, the TV, or anything else puts it away */
+    if (tag === 'coin' || tag === 'die' || tag === 'bust') { piecesTouched = true; cancelBlip(); if (info && tag !== 'bust') hideInfoTV(); }
     if (tag === 'coin') doFlip();
     else if (tag === 'die') doRoll();
     else if (tag === 'bust') {
@@ -2723,7 +2873,12 @@ function makeDesk(el) {
     else if (tag === 'knob') {   /* a plain tap on the knob steps the volume; dragging turns it */
       if (knobMoved < 5) { const cur = Sound.getVolume(); setKnob(Sound.setVolume(cur >= 0.99 ? 0 : Math.min(1, Math.round(cur * 4) / 4 + 0.25))); }
     }
-    else if (tag === 'stream') { pickObj.userData.btn.userData.press = performance.now(); Sound.slide(); openStream(pickObj.userData.idx); }
+    else if (tag === 'chan') {   /* CH up / down: another channel (a little static, then the LIMITED EDITION ad) */
+      const d = pickObj.userData.dir;
+      pickObj.userData.btn.userData.press = performance.now(); Sound.slide();
+      const go = () => { cancelBlip(); changeChannel(d); };
+      if (menuClosing) setTimeout(go, 800); else go();
+    }
     else if (tag === 'insert') { Sound.slide(); askGo('/LP1/', 'Go to the Fearjoy: The Game album page?'); }
     else if (tag === 'mailbox') { mailT = performance.now(); Sound.slide(); setTimeout(openMail, REDUCE ? 0 : 650); }
     else if (tag === 'letter') { letterT = performance.now(); Sound.slide(); setTimeout(openContact, REDUCE ? 0 : 450); }
@@ -2755,10 +2910,10 @@ function makeDesk(el) {
     joyBtn.position.y = jk < 0.25 ? 0.12 : 0.145;
     if (jk >= 1) joyT = 0;
     const mlk = mailT ? Math.min(1, (now - mailT) / 1700) : 1;   /* mailbox: the red flag swings up when tapped, then back down */
-    mailFlag.rotation.z = REDUCE ? -1.9 : -1.9 + 1.9 * Math.min(1, Math.sin(Math.min(1, mlk * 1.15) * Math.PI) * 1.6);
+    mailFlag.rotation.z = REDUCE ? 1.9 : 1.9 - 1.9 * Math.min(1, Math.sin(Math.min(1, mlk * 1.15) * Math.PI) * 1.6);
     if (mlk >= 1) mailT = 0;
-    const llk = letterT ? Math.min(1, (now - letterT) / 500) : 1;   /* letter: the pen rolls a little when tapped */
-    lPen.rotation.y = 0.12 + (REDUCE ? 0 : Math.sin(llk * Math.PI * 3) * (1 - llk) * 0.35);
+    const llk = letterT ? Math.min(1, (now - letterT) / 500) : 1;   /* letter: it rocks a little against the pole when tapped */
+    letterLean.rotation.x = Math.PI / 2 - LEAN + (REDUCE ? 0 : Math.sin(llk * Math.PI * 3) * (1 - llk) * 0.1);
     if (llk >= 1) letterT = 0;
     /* TV glass flicker (a brief dip every so often) and the blue spill light */
     const fl = REDUCE ? 1 : 0.9 + 0.06 * Math.sin(t / 83) + 0.04 * Math.sin(t / 37 + 1.3) - (Math.sin(t / 2300) > 0.985 ? 0.3 : 0);
@@ -2767,7 +2922,7 @@ function makeDesk(el) {
     barTex.offset.y = REDUCE ? 0 : -((t / 7000) % 1);
     tvLight.intensity = 0.55 * fl;
     /* hover glow: whatever is under the pointer warms up slightly (the radio knob too, while it is turned) */
-    if (!glowItems) glowItems = [tv, radio, knob, coinRoot, dieRoot, vinylG, joyG, insertG, mailG, letterG].concat(crew, strBtns).map(g => ({ g, k: 0, s: g === knob || strBtns.indexOf(g) >= 0 ? 1.2 : 1 }));
+    if (!glowItems) glowItems = [tv, radio, knob, coinRoot, dieRoot, vinylG, joyG, insertG, mailG, letterG].concat(crew, chBtns).map(g => ({ g, k: 0, s: g === knob || chBtns.indexOf(g) >= 0 ? 1.2 : 1 }));
     const hg = knobDrag ? knob : hoverGroup;
     glowItems.forEach(it => {
       const tgt = it.g === hg ? 1 : 0;
@@ -2776,11 +2931,14 @@ function makeDesk(el) {
       if (Math.abs(tgt - it.k) < 0.01) it.k = tgt;
       applyGlow(it.g, it.k, it.s);
     });
-    if (!wigList) wigList = glowItems.map(it => it.g).filter(g => g !== tv && g !== knob && g !== vinylG && strBtns.indexOf(g) < 0).map(g => ({ g, off: 0, t0: 0, crew: crew.indexOf(g) >= 0 }));
+    if (!wigList) wigList = glowItems.map(it => it.g).filter(g => g !== tv && g !== knob && g !== vinylG && chBtns.indexOf(g) < 0).map(g => ({ g, off: 0, t0: 0, crew: crew.indexOf(g) >= 0 }));
     if (hg !== wigLast) { wigLast = hg; const w = wigList.find(x => x.g === hg); if (w && !REDUCE) w.t0 = now; }
     wigList.forEach(w => { if (!w.t0) return; const k = Math.min(1, (now - w.t0) / (w.crew ? 700 : 520)); w.off = Math.sin(k * Math.PI * (w.crew ? 6 : 5)) * (1 - k) * (w.crew ? 0.34 : 0.1); if (!w.crew) w.g.rotation.y += w.off; if (k >= 1) w.t0 = 0; });   /* the player pieces shake about 3x harder than the rest */
     if (menuOn && now - menuBlinkT > 500) { menuBlinkT = now; menuBlink = !menuBlink; drawMenu(); }   /* selector arrow blinks */
-    strBtns.forEach(b => { const pt = b.userData.press ? Math.max(0, 1 - (now - b.userData.press) / 160) : 0; b.position.z = 0.48 - 0.035 * pt; });   /* TV buttons press in */
+    if (info && !REDUCE) { adJesse.position.y = -0.37 + Math.sin(now / 520) * 0.025; adJesse.rotation.y = Math.sin(now / 760) * 0.55; }   /* bobs and turns */
+    if (die.userData.tint) die.userData.tint((now / 9000) % 1);   /* the glass slowly shifts color */
+    chBtns.forEach(b => { const pt = b.userData.press ? Math.max(0, 1 - (now - b.userData.press) / 160) : 0; b.position.z = 0.48 - 0.035 * pt; });   /* TV buttons press in */
+    tvTick(now);   /* channel change and the auto ad: static, ad, static, back to the game screen */
     /* radio light pulses while the song plays */
     ledHalo.material.opacity = ledOn ? 0.7 + (REDUCE ? 0 : 0.2 * Math.sin(t / 220)) : 0;
     crew.forEach((h, i) => {
@@ -2887,18 +3045,18 @@ function goldPipTexture(n) {
   });
   return (goldPipCache[n] = new THREE.CanvasTexture(c));
 }
-function makeDichroicDie() {
+function makeDichroicDie(rounded) {   /* rounded = soft corners (the desk die); otherwise straight edges and sharp corners (the Angel edition card) */
   const g = new THREE.Group();
-  const geo = new THREE.BoxGeometry(0.46, 0.46, 0.46);   /* straight edges and sharp corners, not rounded */
+  const geo = rounded ? roundedBox(0.46, 0.07, 12) : new THREE.BoxGeometry(0.46, 0.46, 0.46);
   const mc = rainbowMatcap();
   /* see-through glass again (half transparent) whose color shifts with the angle, like dichroic glass */
-  const body = new THREE.Mesh(geo, FACES.map(() => new THREE.MeshMatcapMaterial({ matcap: mc, transparent: true, opacity: 0.5, side: THREE.DoubleSide, depthWrite: false })));
+  const body = new THREE.Mesh(geo, FACES.map(() => new THREE.MeshMatcapMaterial({ matcap: mc, transparent: true, opacity: rounded ? 0.72 : 0.5, side: THREE.DoubleSide, depthWrite: false })));
   const pips = new THREE.Mesh(geo, FACES.map(n => new THREE.MeshBasicMaterial({ map: goldPipTexture(n), transparent: true, depthWrite: false })));
   pips.scale.setScalar(1.006);
   body.renderOrder = 1;
   pips.renderOrder = 2;
   g.add(body, pips);
-  g.userData.tint = h => body.material.forEach((m, i) => m.color.setHSL((((h + i * 0.09) % 1) + 1) % 1, 0.55, 0.78));
+  g.userData.tint = h => body.material.forEach((m, i) => m.color.setHSL((((h + i * 0.09) % 1) + 1) % 1, 0.55, rounded ? 0.9 : 0.78));
   g.userData.tint(0);
   return g;
 }
@@ -3347,8 +3505,50 @@ $$('[data-open]').forEach(b => b.addEventListener('click', () => {
 
 /* ---------- rack bar: lit buttons, streaming (soon) button, volume knob ---------- */
 const rack = $('.rack'), rackMenu = $('#rackMenu');
-const setRackMenu = on => { rack.classList.toggle('open', on); rackMenu.classList.toggle('lit', on); rackMenu.setAttribute('aria-expanded', String(on)); };   /* the slide-out menu */
-rackMenu.addEventListener('click', e => { e.stopPropagation(); setRackMenu(!rack.classList.contains('open')); });
+
+/* ---------- CD player: the streaming circles. Logo pictures come from CONFIG.streamLogos (each file name is tried in turn); until one loads the name is written. ---------- */
+const showSoon = (title, msg) => openSoon(title, msg);   /* the shared "coming soon" popup */
+const STREAMS = [
+  { id: 'spotify', name: 'Spotify', lines: ['Spotify'], color: '#1DB954' },
+  { id: 'youtube', name: 'YouTube', lines: ['YouTube'], color: '#E60000' },
+  { id: 'apple', name: 'Apple Music', lines: ['Apple', 'Music'], color: '#FA243C' }
+];
+function openStream(i) {   /* a streaming circle: opens its link, or a placeholder until the link is live */
+  const s = STREAMS[i], url = (CONFIG.streamLinks || {})[s.id];
+  if (url) window.open(url, '_blank', 'noopener');
+  else showSoon(s.name, 'The ' + s.name + ' link is coming soon.');
+}
+const cdBox = $('#cdStreams');
+const cdBtn = document.createElement('button'); cdBtn.type = 'button'; cdBtn.className = 'cd-btn'; cdBtn.setAttribute('aria-label', 'Listen to the album'); cdBtn.setAttribute('aria-haspopup', 'true'); cdBtn.setAttribute('aria-expanded', 'false');
+const cdFace = s => {   /* a round face for one service: its color with its logo (each file name in CONFIG.streamLogos is tried in turn; until one loads the name is written) */
+  const face = document.createElement('span'); face.className = 'cd-face'; face.style.setProperty('--sc', s.color); face.textContent = s.lines.join('\n');
+  const names = [].concat((CONFIG.streamLogos || {})[s.id] || []);
+  const tryLogo = k => { if (k >= names.length) return; const im = new Image(); im.alt = ''; im.draggable = false; im.onload = () => { face.textContent = ''; face.appendChild(im); }; im.onerror = () => tryLogo(k + 1); im.src = names[k]; };
+  tryLogo(0);
+  return face;
+};
+const cdFaces = STREAMS.map(s => { const f = cdFace(s); cdBtn.appendChild(f); return f; });   /* stacked on top of each other; the one with .on is showing */
+let cdI = 0;
+const cdShow = i => { cdI = i; cdFaces.forEach((f, j) => f.classList.toggle('on', j === i)); };
+cdShow(0);
+setInterval(() => cdShow((cdI + 1) % STREAMS.length), 2200);   /* about every 2 seconds, fading from one logo to the next */
+cdBox.appendChild(cdBtn);
+/* the little sub menu above the button: pick a streaming service */
+const cdSub = document.createElement('div'); cdSub.className = 'cd-sub'; cdSub.setAttribute('role', 'menu');
+STREAMS.forEach((s, i) => {
+  const o = document.createElement('button'); o.type = 'button'; o.className = 'rk cd-opt'; o.setAttribute('role', 'menuitem');
+  const f = cdFace(s); f.classList.add('on'); o.appendChild(f);
+  o.appendChild(document.createTextNode(s.name));
+  o.addEventListener('click', () => { Sound.slide(); setCd(false); openStream(i); });
+  cdSub.appendChild(o);
+});
+cdBox.appendChild(cdSub);
+const setCd = on => { cdBox.classList.toggle('open', on); cdBtn.setAttribute('aria-expanded', String(on)); };
+cdBtn.addEventListener('click', e => { e.stopPropagation(); Sound.slide(); setRackMenu(false); setCd(!cdBox.classList.contains('open')); });
+document.addEventListener('click', e => { if (cdBox.classList.contains('open') && !e.target.closest('.cd-sub')) setCd(false); });
+document.addEventListener('keydown', e => { if (e.key === 'Escape') setCd(false); });
+const setRackMenu = on => { rack.classList.toggle('open', on); rackMenu.classList.toggle('lit', on); rackMenu.setAttribute('aria-expanded', String(on)); };   /* the slide-out menu on narrow screens */
+rackMenu.addEventListener('click', e => { e.stopPropagation(); setCd(false); setRackMenu(!rack.classList.contains('open')); });
 document.addEventListener('click', e => { if (rack.classList.contains('open') && !e.target.closest('.rack-nav')) setRackMenu(false); });
 document.addEventListener('keydown', e => { if (e.key === 'Escape') setRackMenu(false); });
 $('#rackNav').addEventListener('click', e => { if (e.target.closest('.rk')) setRackMenu(false); });   /* picking something closes the panel */
