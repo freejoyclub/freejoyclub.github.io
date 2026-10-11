@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- LP1 (v38) -->
+<!-- LP1 (v39) -->
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
@@ -589,6 +589,10 @@ box-sizing: border-box;
 .sheet .pq .stepper { font-size: 1.1rem; gap: 10px; }
 .sheet .pq .stepper button { width: 32px; height: 32px; font-size: 1.1rem; }
 .sheet .shipnote { font-size: 0.8rem; opacity: 0.75; margin: 6px 0 0; line-height: 1.4; }
+.sheet .promo summary { font-family: 'KCPelletierTyped', 'Courier New', monospace; font-size: 0.85rem; letter-spacing: 1.5px; text-transform: uppercase; opacity: 0.8; cursor: var(--hand); }
+.sheet .promorow { display: flex; gap: 8px; margin-top: 8px; }
+.sheet .promorow input { flex: 1; min-width: 0; text-transform: uppercase; }
+.sheet .promorow .btn { width: auto; font-size: 1.05rem; padding: 10px 18px; }
 
 /* single piece card: the piece picker sits on top */
 .top-opts { display: flex; flex-direction: column; gap: 8px; padding: 0 6px; }
@@ -868,6 +872,11 @@ try { if (location.hash) history.replaceState(null, '', location.pathname + loca
 <h3 id="sheetTitle"></h3>
 <div id="sheetOptions"></div>
 <div id="shipOpts"></div>
+<details class="promo" id="promoBox">
+<summary>Discount code</summary>
+<div class="promorow"><input id="promoIn" type="text" placeholder="PLAYER20" autocomplete="off" autocapitalize="characters" spellcheck="false"><button type="button" class="btn small" id="promoApply">Apply</button></div>
+<p class="shipnote" id="promoMsg"></p>
+</details>
 <label>Your name<input id="oName" type="text" autocomplete="name"></label>
 <label>Email or Instagram<input id="oContact" type="text" autocomplete="email"></label>
 <label>Ship to (or we'll ask)<textarea id="oShip" autocomplete="street-address"></textarea></label>
@@ -996,7 +1005,7 @@ try { if (location.hash) history.replaceState(null, '', location.pathname + loca
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/STLLoader.js"></script>
 <script>
-// LP1 (v38)
+// LP1 (v39)
 const toTop = () => { try { window.scrollTo({ top: 0, left: 0, behavior: 'instant' }); } catch (e) { window.scrollTo(0, 0); } };
 toTop();
 window.addEventListener('load', toTop);
@@ -2172,7 +2181,7 @@ function makeDesk(el) {
 
   /* camera: fixed, looking down at the table. The distance is worked out from a few key points so the TV fills the width on any screen shape. */
   const EL = THREE.MathUtils.degToRad(36), LOOK = new THREE.Vector3(0, 1.85, 0);
-  const FIT_PTS = [[3.15, 4.0, -1.5], [1.05, 5.1, -2.1], [2.95, 0, 2.6], [2.9, -1.0, 3.05], [-2.9, -1.0, 3.05]];
+  const FIT_PTS = [[3.15, 4.0, -1.5], [1.05, 5.1, -2.1], [-1.0, 5.4, -1.3], [2.95, 0, 2.6], [2.9, -1.0, 3.05], [-2.9, -1.0, 3.05]];
   v.fit = function () {
     const w = el.clientWidth || 640, h = el.clientHeight || 400;
     v.renderer.setPixelRatio(Math.max(0.75, Math.min(window.devicePixelRatio || 1, 1.75, Math.sqrt(2600000 / (w * h)))));   /* the desk fills the screen now, so cap the total pixels on very big windows */
@@ -2947,12 +2956,12 @@ function makeDesk(el) {
   const photoG = new THREE.Group();
   photoG.rotation.order = 'YXZ';
   photoG.rotation.set(0, -0.45, 0);
-  photoG.position.set(2.2, 0, 0.8);   /* on the desk, between the radio and the joystick; the record (bottom at 0.002) lies over its left edge */
+  photoG.position.set(2.15, 0, 0.3);   /* on the desk, between the radio and the joystick; the record (bottom at 0.002) lies over its left edge */
   stage.add(photoG);
   const photoP = new Promise(res => new THREE.TextureLoader().load(loreUrl(CONFIG.floorPhoto), tex => {
     const img = tex.image, a = img && img.width && img.height ? img.width / img.height : 1;
-    let pw = 0.6 * a, ph = 0.6;   /* picture size, longest side 0.6 */
-    if (pw > 0.6) { pw = 0.6; ph = 0.6 / a; }
+    let pw = 0.8 * a, ph = 0.8;   /* picture size, longest side 0.8 */
+    if (pw > 0.8) { pw = 0.8; ph = 0.8 / a; }
     const bd = 0.04;   /* thin white print border */
     const paper = new THREE.Mesh(new THREE.BoxGeometry(pw + bd * 2, 0.001, ph + bd * 2), std(0xe9e5da, 0.85));   /* paper thin enough to slide under the record */
     paper.material.polygonOffset = true; paper.material.polygonOffsetFactor = -2; paper.material.polygonOffsetUnits = -2;
@@ -3130,6 +3139,32 @@ function makeDesk(el) {
     hitBox(0.94, 1.35, 0.84, h.position.x, 0.67, h.position.z, 'bust', deck).userData.bust = h;   /* click target sits on the stage, because the bust group is cleared when the real STL loads */
   });
 
+  /* ---------- the "FULL STORE" sign: a little painted plate fixed to the top of the TV, with an arrow. Tap it to go to /store ---------- */
+  const signG = new THREE.Group();
+  signG.position.set(-1.95, 5.0, -1.3);
+  signG.rotation.z = 0.035;
+  stage.add(signG);
+  const signCv = document.createElement('canvas'); signCv.width = 512; signCv.height = 160;
+  const signTex = new THREE.CanvasTexture(signCv); signTex.anisotropy = 4;
+  function drawSign() {
+    const g = signCv.getContext('2d'), W = 512, H = 160, F = "'KCStrikerSans', 'Arial Black', sans-serif";
+    g.fillStyle = '#ffd36b'; g.fillRect(0, 0, W, H);
+    g.strokeStyle = '#7a1e1e'; g.lineWidth = 8; g.strokeRect(10, 10, W - 20, H - 20);
+    g.strokeStyle = '#7a1e1e'; g.lineWidth = 2; g.strokeRect(22, 22, W - 44, H - 44);
+    g.textAlign = 'center'; g.textBaseline = 'middle';
+    g.fillStyle = '#3a0f10'; g.font = '74px ' + F;
+    let px = 74; while (px > 20 && g.measureText('FULL STORE').width > 330) { px -= 2; g.font = px + 'px ' + F; }
+    g.fillText('FULL STORE', 214, 84);
+    g.fillStyle = '#c4271b'; g.beginPath(); g.moveTo(398, 62); g.lineTo(436, 62); g.lineTo(436, 42); g.lineTo(480, 80); g.lineTo(436, 118); g.lineTo(436, 98); g.lineTo(398, 98); g.closePath(); g.fill();   /* the arrow */
+    g.fillStyle = '#7a1e1e'; [[34, 34], [W - 34, 34], [34, H - 34], [W - 34, H - 34]].forEach(p => { g.beginPath(); g.arc(p[0], p[1], 4, 0, Math.PI * 2); g.fill(); });   /* screws */
+    signTex.needsUpdate = true;
+  }
+  drawSign();
+  if (document.fonts && document.fonts.load) document.fonts.load("40px 'KCStrikerSans'").then(drawSign).catch(() => {});
+  const signEdge = std(0x3a1d10, 0.7), signFace = new THREE.MeshStandardMaterial({ map: signTex, roughness: 0.55 });
+  signG.add(new THREE.Mesh(new THREE.BoxGeometry(1.9, 0.6, 0.07), [signEdge, signEdge, signEdge, signEdge, signFace, signEdge]));
+  hitBox(1.95, 0.65, 0.3, 0, 0, 0.05, 'storesign', signG);
+
   /* ---------- coin: lies flat on the desk, real 50/50 ---------- */
   const COIN_ROT_TOP = Math.PI / 2, COIN_ROT_BOT = Math.PI / 2;   /* keeps the text upright on both faces: JOY is turned the other way so it reads upright while the coin spins on its edge and after a sideways flip */
   const COIN_SCALE = 1.65, COIN_H = 0.03 * COIN_SCALE, COIN_R = 0.3 * COIN_SCALE;
@@ -3297,9 +3332,7 @@ function makeDesk(el) {
     if (welcome || REDUCE) return;
     welcome = performance.now(); drawWelcome();
     welM.visible = true; jesse.visible = false;
-    welTargets = [{ g: dieRoot, dy: 0.12 }, { g: coinRoot, dy: 0.1 }].concat(crew.map(h => ({ g: h, dy: 0.45 })));
-    welTargets.forEach(q => { q.x = scrPt(q.g, q.dy).x; });
-    welTargets.sort((a, b) => a.x - b.x);   /* left to right, so the pointer sweeps across the table */
+    welTargets = [{ g: crew[0], dy: 0.45 }, { g: dieRoot, dy: 0.12 }, { g: crew[2], dy: 0.45 }, { g: coinRoot, dy: 0.1 }, { g: joyG, dy: 0.6 }, { g: null }];   /* a head, the dice, another head, the coin, the joystick, then back to the TV (g null) */
     wPtr.style.opacity = '1';
   }
   function endWelcome(quiet) {
@@ -3324,7 +3357,8 @@ function makeDesk(el) {
     if (t < T0) pos = wander(t);
     else {
       const i = Math.min(welTargets.length - 1, Math.floor((t - T0) / SL)), k = Math.min(1, (t - T0 - i * SL) / SL);
-      const to = scrPt(welTargets[i].g, welTargets[i].dy), from = i === 0 ? wander(T0) : scrPt(welTargets[i - 1].g, welTargets[i - 1].dy);
+      const at = q => q.g ? scrPt(q.g, q.dy) : sc;   /* the last stop has no piece: it is the middle of the TV screen */
+      const to = at(welTargets[i]), from = i === 0 ? wander(T0) : at(welTargets[i - 1]);
       const m = Math.min(1, k / 0.5), e = 1 - Math.pow(1 - m, 3);   /* hops over in the first half, then hovers (the piece does its hover animation) */
       pos = { x: from.x + (to.x - from.x) * e, y: from.y + (to.y - from.y) * e - Math.sin(m * Math.PI) * 16 };
       if (m >= 1) hov = welTargets[i].g;
@@ -3391,7 +3425,7 @@ function makeDesk(el) {
       g.fillStyle = blink ? '#ffd36b' : '#b89a3e'; g.font = '116px ' + LD_STRIKER;
       g.fillText('INSERT', W / 2, 172); g.fillText('COIN', W / 2, 296);
       const ax = 410 + (Math.floor(now / 350) % 2) * 10;   /* a little arrow at the bottom right, pointing at the coin slot (it is just right of the screen) */
-      g.fillStyle = '#ffd36b'; g.beginPath(); g.moveTo(ax, 392); g.lineTo(ax + 30, 416); g.lineTo(ax, 440); g.closePath(); g.fill();
+      g.fillStyle = '#ffd36b'; g.beginPath(); g.moveTo(ax, 340); g.lineTo(ax + 30, 364); g.lineTo(ax, 388); g.closePath(); g.fill();
     } else {
       g.font = '40px ' + LD_STRIKER; g.fillStyle = '#ffd36b'; g.textAlign = 'left';
       const w3 = g.measureText('LOADING...').width;
@@ -3500,6 +3534,7 @@ function makeDesk(el) {
     crew.forEach((h, i) => wrapDrop([h], 0.9 + i * 0.1, 5, [crewBlobs[i]], 0.12));
     wrapDrop([dieRoot], 1.2, 5, [dieShadow], 0.14);
     wrapDrop([coinRoot], 1.3, 4, [coinShadow], 0.12);
+    wrapDrop([signG], 1.1, 0.7, [], 0.04);
     wrapDrop([howG], 0.85, 0.7, [howBlob], 0.04);
     wrapDrop([noteG], 0.95, 0.7, [noteBlob], 0.04);
     wrapDrop([photoG], 1.0, 0.7, [], 0.04);
@@ -3610,7 +3645,7 @@ function makeDesk(el) {
     if (loreAt(e)) { el.style.cursor = 'var(--hand)'; hoverGroup = null; return; }   /* a lore picture is on the TV: click it to save it */
     const tag = pick(e);
     el.style.cursor = tag && !(menuOn && tag === 'tv') ? 'var(--hand)' : 'default';
-    hoverGroup = tag === 'chan' ? pickObj.userData.btn : tag === 'howto' ? howG : tag === 'notebook' ? noteG : tag === 'photo' ? photoG : tag === 'mic' ? micG : tag === 'mailbox' ? mailG : tag === 'letter' ? letterG : tag === 'tv' ? (menuOn ? null : tv) : tag === 'bust' ? pickObj.userData.bust : tag === 'coin' ? coinRoot : tag === 'die' ? dieRoot : tag === 'vinyl' ? vinylG : tag === 'joystick' ? joyG : tag === 'radio' ? radio : tag === 'knob' ? knob : null;
+    hoverGroup = tag === 'chan' ? pickObj.userData.btn : tag === 'howto' ? howG : tag === 'notebook' ? noteG : tag === 'photo' ? photoG : tag === 'mic' ? micG : tag === 'mailbox' ? mailG : tag === 'letter' ? letterG : tag === 'tv' ? (menuOn ? null : tv) : tag === 'bust' ? pickObj.userData.bust : tag === 'coin' ? coinRoot : tag === 'die' ? dieRoot : tag === 'vinyl' ? vinylG : tag === 'joystick' ? joyG : tag === 'radio' ? radio : tag === 'knob' ? knob : tag === 'storesign' ? signG : null;
   });
   const endKnob = () => { knobDrag = null; };
   el.addEventListener('pointerup', endKnob);
@@ -3662,6 +3697,7 @@ function makeDesk(el) {
     else if (tag === 'mailbox') { mailT = performance.now(); Sound.slide(); setTimeout(openMail, REDUCE ? 0 : 650); }
     else if (tag === 'letter') { letterT = performance.now(); Sound.slide(); setTimeout(openContact, REDUCE ? 0 : 450); }
     else if (tag === 'mic') { micT = performance.now(); Sound.slide(); if (menuClosing) setTimeout(() => startLore('video'), 800); else startLore('video'); }
+    else if (tag === 'storesign') { Sound.slide(); askGo('/store/', 'Go to the full store?'); }
     else if (tag === 'tv') openTvMenu();
     else if (tag === 'joystick') { joyT = performance.now(); openTvMenu(); }
   });
@@ -3705,7 +3741,7 @@ function makeDesk(el) {
     barTex.offset.y = REDUCE ? 0 : -((t / 7000) % 1);
     tvLight.intensity = 0.55 * fl;
     /* hover glow: whatever is under the pointer warms up slightly (the radio knob too, while it is turned) */
-    if (!glowItems) glowItems = [tv, radio, knob, coinRoot, dieRoot, vinylG, joyG, howG, noteG, photoG, micG, mailG, letterG].concat(crew, chBtns).map(g => ({ g, k: 0, s: g === knob || chBtns.indexOf(g) >= 0 ? 1.2 : 1 }));
+    if (!glowItems) glowItems = [tv, radio, knob, coinRoot, dieRoot, vinylG, joyG, howG, noteG, photoG, micG, mailG, letterG, signG].concat(crew, chBtns).map(g => ({ g, k: 0, s: g === knob || chBtns.indexOf(g) >= 0 ? 1.2 : 1 }));
     const hg = knobDrag ? knob : hoverGroup;
     glowItems.forEach(it => {
       const tgt = it.g === hg ? 1 : 0;
@@ -3714,7 +3750,7 @@ function makeDesk(el) {
       if (Math.abs(tgt - it.k) < 0.01) it.k = tgt;
       applyGlow(it.g, it.k, it.s);
     });
-    if (!wigList) wigList = glowItems.map(it => it.g).filter(g => g !== tv && g !== knob && g !== vinylG && chBtns.indexOf(g) < 0).map(g => ({ g, off: 0, t0: 0, crew: crew.indexOf(g) >= 0 }));
+    if (!wigList) wigList = glowItems.map(it => it.g).filter(g => g !== tv && g !== knob && g !== vinylG && g !== signG && chBtns.indexOf(g) < 0).map(g => ({ g, off: 0, t0: 0, crew: crew.indexOf(g) >= 0 }));
     if (hg !== wigLast) { wigLast = hg; const w = wigList.find(x => x.g === hg); if (w && !REDUCE) w.t0 = now; }
     wigList.forEach(w => { if (!w.t0) return; const k = Math.min(1, (now - w.t0) / (w.crew ? 700 : 520)); w.off = Math.sin(k * Math.PI * (w.crew ? 6 : 5)) * (1 - k) * (w.crew ? 0.34 : 0.1); if (!w.crew) w.g.rotation.y += w.off; if (k >= 1) w.t0 = 0; });   /* the player pieces shake about 3x harder than the rest */
     if (menuOn && now - menuBlinkT > 500) { menuBlinkT = now; menuBlink = !menuBlink; drawMenu(); }   /* selector arrow blinks */
@@ -4070,7 +4106,8 @@ function qtyOf(p) {
 function calc(p) {
   const qty = qtyOf(p);
   const sub = Math.round(p.price * 100) * qty;
-  return { qty, sub: sub / 100, total: sub / 100 };
+  const disc = promo ? Math.round(sub * promo.pct / 100) : 0;   /* a discount code takes a percent off the pieces (not shipping) */
+  return { qty, sub: sub / 100, disc: disc / 100, total: (sub - disc) / 100 };
 }
 
 function refreshCards() {
@@ -4163,6 +4200,24 @@ const SHIP = [
   { id: 'other', label: () => 'Other (please inquire)', short: 'Other', cost: () => null }
 ];
 let shipId = 'us';
+
+/* discount codes: PLAYER and a number is that many percent off (checked here in the page only) */
+let promo = null;
+const promoParse = str => { const m = /^PLAYER0*(\d{1,2})$/i.exec(String(str).trim()); const n = m ? Number(m[1]) : 0; return n >= 1 && n <= 99 ? { code: 'PLAYER' + n, pct: n } : null; };
+function promoShow() {   /* fill the little dropdown from what was applied before */
+  $('#promoIn').value = promo ? promo.code : '';
+  $('#promoMsg').textContent = promo ? promo.code + ' applied: ' + promo.pct + '% off.' : '';
+  $('#promoBox').open = !!promo;
+}
+function applyPromo() {
+  const raw = $('#promoIn').value.trim();
+  promo = promoParse(raw);
+  if (cur) updateSheet();
+  $('#promoMsg').textContent = promo ? promo.code + ' applied: ' + promo.pct + '% off.' : (raw ? 'That code is not valid. Codes look like PLAYER20.' : '');
+  if (promo) $('#promoIn').value = promo.code;
+}
+$('#promoApply').addEventListener('click', applyPromo);
+$('#promoIn').addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); applyPromo(); } });
 const shipPick = () => SHIP.find(x => x.id === shipId) || SHIP[0];
 function renderShip() {
   const box = $('#shipOpts');
@@ -4185,6 +4240,7 @@ function orderText(p) {
   if (p.type === 'single') lines.push(`Pieces: ${PEOPLE.filter(pp => st.pick.has(pp.id)).map(pp => pp.name + ' x' + st.pick.get(pp.id)).join(', ') || '(none picked yet)'}`);
   if (p.type !== 'deluxe') {
     const sc = sh.cost(p);
+    if (c.disc) lines.push(`Discount code: ${promo.code} (${promo.pct}% off, -${money(c.disc)})`);
     lines.push(`Shipping: ${sh.label(p)}`, sc == null ? `Total: ${money(c.total)} plus shipping (to be quoted)` : `Total: ${money(c.total + sc)}${sc ? ' (includes shipping)' : ''}`);
   } else lines.push(`Price: ${money(p.price)}`);
   lines.push('', `Name: ${$('#oName').value}`, `Contact: ${$('#oContact').value}`, `Ship to: ${$('#oShip').value}`);
@@ -4197,6 +4253,7 @@ function updateSheet() {
   const st = S[p.id];
   const qn = $('#qtyNum'); if (qn) qn.textContent = st.qty;
   renderShip();
+  $('#promoBox').style.display = p.type === 'deluxe' ? 'none' : '';   /* no code on the one-of-one inquiry */
   const pq = $('#pieceQty');
   if (pq) pq.innerHTML = Array.from(st.pick.entries()).map(([id, n]) => {
     const who = PEOPLE.find(x => x.id === id);
@@ -4209,6 +4266,7 @@ function updateSheet() {
   } else {
     const sh = shipPick(), sc = sh.cost(p);
     rows = `<div class="row"><span>${c.qty} x ${money(p.price)}</span><span>${money(c.sub)}</span></div>`;
+    if (c.disc) rows += `<div class="row"><span>Discount (${promo.code}, ${promo.pct}% off)</span><span>-${money(c.disc)}</span></div>`;
     rows += `<div class="row"><span>Shipping: ${sh.short}</span><span>${sc == null ? 'to be quoted' : money(sc)}</span></div>`;
     rows += `<div class="row tot"><span>${sc == null ? 'Total so far' : 'Total'}</span><span>${symHTML(money(c.total + (sc || 0)))}</span></div>`;
   }
@@ -4247,6 +4305,7 @@ function openSheet(pid) {
   $('#sheetTitle').innerHTML = symHTML(cur.type === 'deluxe' ? 'Angel Investor inquiry' : `Order: ${cur.name}`);
   $('#sheetOptions').innerHTML = sheetOptionsHTML(cur);
   renderShip();
+  promoShow();
   refreshCards();
   if (dlg.showModal) dlg.showModal(); else dlg.setAttribute('open', '');
 }
@@ -4465,6 +4524,7 @@ $('#goYes').addEventListener('click', () => { goGoing = true; location.href = go
 $('#goNo').addEventListener('click', () => goDlg.close());
 goDlg.addEventListener('click', e => { if (e.target === goDlg) goDlg.close(); });
 goDlg.addEventListener('close', () => { if (goBtn && !goGoing) goBtn.classList.remove('lit'); });
+function askGo(href, msg) { goHref = href; goBtn = null; goGoing = false; $('#goMsg').textContent = msg; try { goDlg.showModal(); } catch (x) { goDlg.setAttribute('open', ''); } }   /* the desk objects use the same "Go to ...?" question */
 const rackPlay = $('#rackPlay'), rackLcd = $('#rackLcd'), rackKnob = $('#rackKnob');
 const lcdSay = (txt, still) => { rackLcd.querySelectorAll('.lcd-track span').forEach(sp => { sp.textContent = txt; }); rackLcd.classList.toggle('still', !!still); };   /* WELCOME until the song has been played, then the title while it plays and PAUSED when it is paused */
 let lcdPlayed = false;
