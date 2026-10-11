@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- LP1 (v27) -->
+<!-- LP1 (v35) -->
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
@@ -685,7 +685,7 @@ dialog.wide { width: min(96vw, 1100px); }
 .lore-actions { display: flex; gap: 10px; flex-wrap: wrap; }
 
 /* ============ v21: the page is just the desk and the bottom bar. Shop and credits are popups; every old bottom button lives in the menu. ============ */
-:root { --rackh: 58px; }
+:root { --rackh: 54px; }
 @media (max-width: 860px) { :root { --rackh: 46px; } }
 html, body { height: 100%; overflow: hidden; }
 body { padding-bottom: 0; }
@@ -727,13 +727,39 @@ dialog.big { width: 100vw; max-height: 86vh; max-height: 86dvh; margin: auto 0 0
 .rack-nav { position: absolute; left: 0; bottom: calc(100% + 16px); display: grid; grid-template-columns: 1fr 1fr; gap: 8px; padding: 10px; border-radius: 14px; background: linear-gradient(#2c2c31, #151517); border: 1px solid #4a4a50; box-shadow: 0 8px 22px rgba(0,0,0,0.6); opacity: 0; transform: translateY(14px); pointer-events: none; visibility: hidden; transition: opacity 0.18s, transform 0.18s, visibility 0s 0.18s; max-height: calc(100dvh - var(--rackh) - 40px); overflow-y: auto; }
 .rack.open .rack-nav { opacity: 1; transform: none; pointer-events: auto; visibility: visible; transition: opacity 0.18s, transform 0.18s; }
 .rack-nav .rk { font-size: 0.8rem; letter-spacing: 1px; padding: 9px 16px 9px 12px; justify-content: flex-start; min-width: 150px; }
-.rack-nav .rk-bg-nav { display: none; }
-@media (max-width: 860px) { .rack-nav .rk-bg-nav { display: inline-flex; } }
+.rack-nav .rk-bg-nav { display: inline-flex; }
 @media (max-width: 520px) { .rack-nav { grid-template-columns: 1fr; } .rack-nav .rk { min-width: 190px; } }
 .c-pieces { --c: #ffd36b; } .c-credits { --c: #ff9ec7; } .c-how { --c: #8fd0ff; } .c-stream { --c: #6dff9a; } .c-ig { --c: #ff7ac6; } .c-mail { --c: #6fb4ff; } .c-contact { --c: #ffecd2; }
 .rk[aria-disabled="true"] { opacity: 0.7; }
 .rk.rk-off { opacity: 0.4; filter: grayscale(1); pointer-events: none; cursor: default; }   /* the full store: grayed out until it opens */
 .rk-menu-txt { margin-left: 2px; }
+
+/* ============ v28/v30: the bottom bar is a "CD player". One round button at its left cycles (fades) between the Spotify, YouTube and Apple Music logos; click it for the one showing. ============ */
+.cd-streams { display: flex; flex: none; position: relative; }
+.cd-btn { --cd: var(--rkh, 38px); flex: none; width: var(--cd); height: var(--cd); border-radius: 50%; padding: 0; display: grid; place-items: center; cursor: var(--hand); position: relative; top: 0;
+border: 1px solid #141416; background: linear-gradient(#6c7075, #4a4d52 55%, #34373a);
+box-shadow: 0 3px 0 #131315, 0 5px 7px rgba(0,0,0,0.55), inset 0 1px 0 rgba(255,255,255,0.3);
+transition: transform 0.06s, box-shadow 0.06s, filter 0.15s; -webkit-tap-highlight-color: transparent; }
+.cd-btn:hover { filter: brightness(1.14); }
+.cd-btn:active { transform: translateY(3px); box-shadow: 0 0 0 #131315, inset 0 3px 8px rgba(0,0,0,0.8); }
+.cd-btn:focus-visible { outline: 2px solid #ffd36b; outline-offset: 2px; }
+.cd-face { grid-area: 1 / 1; width: 76%; height: 76%; border-radius: 50%; background: var(--sc, #888); display: grid; place-items: center; overflow: hidden; opacity: 0; transition: opacity 0.6s ease; box-shadow: inset 0 0 0 1px rgba(0,0,0,0.3), inset 0 5px 7px rgba(255,255,255,0.28); font-family: 'KCStrikerSans', sans-serif; color: #fff; text-align: center; white-space: pre; line-height: 1.05; font-size: calc(var(--cd) * 0.165); letter-spacing: 0; }
+.cd-face.on { opacity: 1; }
+.cd-face img { width: 72%; height: 72%; object-fit: contain; display: block; pointer-events: none; }
+.cd-sub { position: absolute; left: 0; bottom: calc(100% + 16px); display: flex; flex-direction: column; gap: 8px; padding: 10px; border-radius: 14px; background: linear-gradient(#2c2c31, #151517); border: 1px solid #4a4a50; box-shadow: 0 8px 22px rgba(0,0,0,0.6); opacity: 0; transform: translateY(14px); pointer-events: none; visibility: hidden; transition: opacity 0.18s, transform 0.18s, visibility 0s 0.18s; }
+.cd-streams.open .cd-sub { opacity: 1; transform: none; pointer-events: auto; visibility: visible; transition: opacity 0.18s, transform 0.18s; }
+.cd-streams.open .cd-btn { box-shadow: 0 0 0 #131315, inset 0 3px 8px rgba(0,0,0,0.8), 0 0 12px #ffd36b; transform: translateY(3px); }
+.cd-opt { font-size: 0.8rem; letter-spacing: 1px; padding: 8px 16px 8px 10px; justify-content: flex-start; min-width: 190px; gap: 10px; }
+.cd-opt::before { display: none; }
+.cd-opt .cd-face { width: 26px; height: 26px; flex: none; opacity: 1; font-size: 0.35rem; }
+/* v31: everything on the bar is the same height (--rkh): the round button, menu, LCD, play, knob, BG and mute */
+.rack { --rkh: 38px; }
+@media (max-width: 860px) { .rack { --rkh: 32px; } }
+.rack-in > .rk, .rack-ctl .rk, .rack-in > .rack-lcd { height: var(--rkh); box-sizing: border-box; }
+.rack .rack-lcd .lcd-track span { line-height: calc(var(--rkh) - 2px); }
+.rack .rk-knob { width: var(--rkh); height: var(--rkh); box-sizing: border-box; }
+.rack .rk-knob::after { height: calc(var(--rkh) * 0.3); transform-origin: 50% calc(var(--rkh) / 2 - 5px); }
+@media (prefers-reduced-motion: reduce) { .cd-face { transition: none; } }
 
 /* the game on the TV: a plain screen (thin bezel, faint scan lines and glow) that uses all the room it can */
 #gameOverlay { position: fixed; inset: 0; z-index: 400; background: #040404; display: flex; box-sizing: border-box; padding: max(4px, env(safe-area-inset-top)) max(4px, env(safe-area-inset-right)) max(4px, env(safe-area-inset-bottom)) max(4px, env(safe-area-inset-left)); }
@@ -798,7 +824,7 @@ try { if (location.hash) history.replaceState(null, '', location.pathname + loca
 <p class="sub">Made by Jesse:<br>Mini sculptures of the band (~2")<br><span class="sub-small">Collectible limited-edition companion to The Game</span></p>
 <div class="grid" id="productGrid"></div>
 </section>
-<button type="button" class="btn small dlg-back" data-close>Back to the desk</button>
+<button type="button" class="btn small dlg-back" data-close>Back to the studio</button>
 </div>
 </dialog>
 
@@ -817,7 +843,7 @@ try { if (location.hash) history.replaceState(null, '', location.pathname + loca
 <p>Special thanks to our families, friends, supporters, listeners, teachers, creator, and each other (in no particular order).</p>
 </div>
 </section>
-<button type="button" class="btn small dlg-back" data-close>Back to the desk</button>
+<button type="button" class="btn small dlg-back" data-close>Back to the studio</button>
 </div>
 </dialog>
 
@@ -915,8 +941,9 @@ try { if (location.hash) history.replaceState(null, '', location.pathname + loca
 <div class="rack" role="toolbar" aria-label="Site menu and music">
 <div class="rack-in">
 <button type="button" class="rk c-menu" id="rackMenu" aria-label="Open the menu" aria-expanded="false" aria-controls="rackNav"><span class="burger"></span><span class="rk-menu-txt">Menu</span></button>
-<a class="rk c-home" href="https://freejoy.club" data-go="Go to Fearjoy's home page?">Home</a>
+<div class="cd-streams" id="cdStreams" role="group" aria-label="Listen on"></div>
 <nav class="rack-nav" id="rackNav" aria-label="Menu">
+<a class="rk c-home" href="https://freejoy.club" data-go="Go to Fearjoy's home page?">Home</a>
 <button type="button" class="rk c-pieces" data-open="kits">Game Pieces</button>
 <button type="button" class="rk c-credits" data-open="credits">Credits &amp; Lyrics</button>
 <button type="button" class="rk c-how" id="howBtn">How to Play</button>
@@ -933,8 +960,7 @@ try { if (location.hash) history.replaceState(null, '', location.pathname + loca
 <div class="rack-lcd on still" id="rackLcd"><div class="lcd-track"><span>WELCOME</span><span aria-hidden="true">WELCOME</span><span aria-hidden="true">WELCOME</span></div></div>
 <div class="rack-ctl">
 <button type="button" class="rk c-play" id="rackPlay" aria-pressed="false" aria-label="Play or pause The Endless Jam">&#9654;</button>
-<span class="rk-vol"><span class="rk-vol-label">Vol</span><span class="rk-knob" id="rackKnob" role="slider" tabindex="0" aria-label="Music volume" aria-valuemin="0" aria-valuemax="100" aria-valuenow="50"></span></span>
-<button type="button" class="rk c-bg" id="rackBg" aria-pressed="false" aria-label="Keep the music playing in the background">BG<span class="more"> play</span></button>
+<span class="rk-vol"><span class="rk-vol-label">Vol</span><span class="rk-knob" id="rackKnob" role="slider" tabindex="0" aria-label="Music volume" aria-valuemin="0" aria-valuemax="100" aria-valuenow="70"></span></span>
 <button type="button" class="rk c-mute" id="muteBtn" aria-pressed="false" aria-label="Mute all sound">Mute</button>
 </div>
 </div>
@@ -946,17 +972,17 @@ try { if (location.hash) history.replaceState(null, '', location.pathname + loca
 <iframe id="gameFrame" title="Fearjoy: The Game" allow="autoplay; fullscreen; clipboard-write"></iframe>
 <div class="go-crt" aria-hidden="true"></div>
 </div>
-<button type="button" class="go-x" id="gameX" aria-label="Back to the desk">&#10005;</button>
+<button type="button" class="go-x" id="gameX" aria-label="Back to the studio">&#10005;</button>
 <div class="go-ask" id="gameAsk" hidden>
-<p>Back to the desk? The game in progress will end.</p>
-<div class="go-ask-btns"><button type="button" class="btn small" id="gameStay">Keep playing</button><button type="button" class="btn small" id="gameLeave">Back to the desk</button></div>
+<p>Back to the studio? The game in progress will end.</p>
+<div class="go-ask-btns"><button type="button" class="btn small" id="gameStay">Keep playing</button><button type="button" class="btn small" id="gameLeave">Back to the studio</button></div>
 </div>
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/STLLoader.js"></script>
 <script>
-// LP1 (v27)
+// LP1 (v35)
 const toTop = () => { try { window.scrollTo({ top: 0, left: 0, behavior: 'instant' }); } catch (e) { window.scrollTo(0, 0); } };
 toTop();
 window.addEventListener('load', toTop);
@@ -976,17 +1002,18 @@ const CONFIG = {
   useRealStl: true,                // busts load from each person's "stl" path below. false = placeholder shapes only
   preferLite: true,                // try Jesse_Bust_lite.stl etc. first (about 1 MB each), then fall back to the full files
   stlFolders: ['./', '/LP1/', '/images/'],  // where to look for the STL files, in order. './' = the same folder as this page
+  floorPhoto: 'camcorder.jpg',   // the small printed photo on the floor (a file in the bucket folder below); tap it to see it on the TV, where a tap saves it
   tvImage: '/images/35-board.png?v=9',  // game board picture on the desk TV. The ?v=9 makes browsers fetch the newest copy: bump the number whenever you swap the file
   sfxFolder: '/sfx/',              // sound effects (coinflip, dice1, dice2, dice5, 1up, slide1) and the radio song (endless-jam-jgg-1.mp3)
   loreFolder: '/game/bucket/',     // the lore bucket: pictures that flash on the desk TV
   loreSeconds: 3,                  // how long a lore picture stays on the TV
   loreVideos: ['game sfx story.mp4', 'j-drum-tracking.mp4', 'js-mistake.mp4', 'sploinky-garret.mp4', 'story harmony hunting tunnel.mp4', 'story mu nightdrive 3.mp4'],                  // lore videos (.mp4) in the same folder. Add file names here. They download quietly in the background after the page loads (thin bar along the bottom of the TV) and join the channel changes once ready
   loreVideoMax: 25,                // a lore video stops after this many seconds even if it is longer
-  lorePics: ['1st band promo.png', 'CP-30.jpg', 'Chilis.jpg', 'IMG_20200116_191840_549.jpg', 'creepin.JPG', 'fine-china.jpg', 'fj stone.png', 'foot only.jpg', 'forbidden-stache.jpg', 'g j wed.jpeg', 'g sticker.png', 'g-wedding.jpg', 'game v1.png', 'j dusty 1.jpg', 'j-g-18.jpg', 'marco lay.jpg', 'milwaukeedee grant.jpg', 'miramar wheel bunz ariel.jpg', 'morganshootsthings Grant & jesse 2.jpg', 'morganshootsthings Grant & jesse.jpg', 'morganshootsthings Grant ok.jpg', 'the 3 straights.jpg', 'walkin.JPG', 'yung-jesse.jpg'],   // pictures (no .heic). Add new file names here.
+  lorePics: ['1st band promo.png', 'CP-30.jpg', 'Chilis.jpg', 'IMG_20200116_191840_549.jpg', 'creepin.JPG', 'fine-china.jpg', 'fj stone.png', 'foot only.jpg', 'forbidden-stache.jpg', 'g j wed.jpeg', 'g sticker.png', 'g-wedding.jpg', 'game v1.png', 'j dusty 1.jpg', 'j-g-18.jpg', 'marco lay.jpg', 'milwaukeedee grant.jpg', 'miramar wheel bunz ariel.jpg', 'morganshootsthings Grant & jesse 2.jpg', 'morganshootsthings Grant & jesse.jpg', 'morganshootsthings Grant ok.jpg', 'the 3 straights.jpg', 'walkin.JPG', 'yung-jesse.jpg', 'back-cover.jpg', 'best stand.jpg', 'camcorder.jpg', 'cool stand 1.jpg', 'cool stand 2.jpg', 'game detail.jpg', 'goofy ahh.jpg', 'grant solo.jpg', 'jesse solo.jpg', 'marco solo.jpg', 'silly jump 1.jpg'],   // pictures (no .heic). Add new file names here.
   shipKit: 7,                      // continental US shipping PER 3-piece or full band kit, in dollars (added to the Venmo amount)
   shipSingle: 5,                   // continental US shipping for single pieces, up to 6 pieces
   shipSingleMore: 3,               // plus this much for every additional 6 single pieces
-  streamLinks: { spotify: '', apple: '', youtube: '', more: '' },   // links for the four big buttons on the TV. Empty = a "coming soon" popup.
+  streamLinks: { spotify: '', apple: '', youtube: '', more: '' },   // links for the round streaming button in the bottom bar (it cycles Spotify, YouTube, Apple Music). 'more' is not used now. Empty = a "coming soon" popup.
   streamLogos: { spotify: ['/images/logo-spotify.svg', '/images/spotify.svg', '/images/logo-spotify.png'], apple: ['/images/logo-apple-music.svg', '/images/apple-music.svg', '/images/apple.svg', '/images/logo-apple-music.png'], youtube: ['/images/logo-youtube.svg', '/images/youtube.svg', '/images/logo-youtube.png'] },   // logo pictures for the TV buttons (any shape, transparent background is best). Missing = the name is written instead.
   howImage: '/images/rulebook.png',   // the how-to sheet lying under the table (tap it for the How to Play pictures)
   vinylUrl: '',                    // where the record on the table sends you to buy it. Empty = a "coming soon" popup.
@@ -1059,15 +1086,15 @@ const TRACKS = [
   T("Dayspring", [["Marco Jaimez", "vocals"], ["Jesse Carl", "drums, production"], ["Grant Clementi", "vocals, acoustic guitar, synth bass, keys"], ["Garrett Waite", "electric guitar, electric bass"]], "[Verse 1]\nStaring at the ceiling\nAnd my heart is barely beating\nOn the first day of my life\nContemplate the meaning\nOf forever it’s so fleeting\nBut I made it through the night\nOff the walls these empty halls\nThey echo back my voice\nSo it goes, if I’m alone\nI’ll call into the void asking\n\n[Chorus]\nWho’s the maker, creator?\nIs it true that everything is\nWithin you? Fixing the broken\nI’m brand new\nI let it be here\nI let it all go\n\n[Verse 2]\nAnd the sun sets on another life\nSo a new one can begin\nSunset (sunset), sunrise (sunrise)\nHalf-truths (half-truths), white lies (white lies)\nLove me (love me), loathe me (loathe me)\nLeave me (leave me) lonely asking\n\n[Chorus]\nWho’s the maker, creator?\nIs it true that everything is\nWithin you? Fixing the broken\nI’m brand new\nI let it be here\nI let it all go\n\n[Bridge]\nYou’ve got your head in the clouds\nI'm trying to breathe underwater\nI’d go alone to go fast\nI’d take you with to go farther\nSo I’ll turn around and never look back\n\n[Chorus / Outro]\nNever look back\nWho’s the maker, creator?\nIs it You?"),
   T("Figment", [["Marco Jaimez", "lyrics, vocals"], ["Jesse Carl", "drums, bass, synths, production"], ["Grant Clementi", "vocals, organ, synths, production"], ["Tim Wolf", "electric guitar"], ["Garrett Waite", "acoustic guitar, upright bass"]], "[Verse 1]\nYou left me reeling\nWith all of the things you said\nAnd you’re not leaving\nYou’re living inside my head\nI’ve got a feeling\nThat everything’s getting\nDarker, colder, harder to explain\nHow can I reason\nWhen everyone is insane?\nThere’s no defeating\nThe chaos inside my brain\nYou won’t believe it\nBut I know we’re\nTearing through the simulation now\n\n[Chorus]\nI think I made a mistake\nWhen I let you through that door\nI want to be unafraid\nWhen you tell me that we’re not alone\nBut I’m shaken up\nWill I always wonder if\nAny of this is real?\n\n[Verse 2]\nI want to explain away\nAll the little mysteries\nLooking for some sympathy\nI wonder if there’s more to it\nThe point of why we all exist\nIt hits right to the bone\nAre these thoughts even my own?\n\n[Chorus]\nI think I made a mistake\nWhen I let you through that door\nI want to be unafraid\nWhen you tell me that we’re not alone\nBut I’m shaken up\nWill I always wonder if\nAny of this is real?\n\n[Instrumental Bridge]\n\n[Chorus]\nI think I made a mistake\nWhen I let you through that door\nI want to be unafraid\nWhen you tell me that we’re not alone\nBut I’m shaken up\nWill I always wonder if\nAny of this is real?"),
   T("Remedy", [["Grant Clementi", "vocals, guitar, synth bass, keys, production"], ["Marco Jaimez", "vocals"], ["Carolyn Clementi", "vocals"], ["Jesse Carl", "production"]], "[Verse 1]\nGiver taker we can make it\nHappen once again\nWar on nature was a failure\nWhy can't we befriend\nAny extrahuman spirit\nWhat they gonna say?\nIf you're not afraid to hear it\nCome on step this way\n\n[Verse 2]\nI am the Remedy\nDon't let 'em let you think\nI am the enemy\nI'm in your blood\nI'm everywhere you see\nYou cannot live without\nI'm the only thing that you\nShould ever think about\nI'm everything\nI'm all you'll ever need\n(I'm all you'll ever need)\n\n[Chorus 1]\nGive me power I'll give you peace\nRestful days, serenity\nLeave your burden up to me, me, me\n\n[Verse 3]\nIt's time to give the devil his due\nThe devil in me sees the devil in you\nI'm a means to an end\nSo let me in\nCome on let the world go crazy\n\n[Verse 4]\nWe can make it happen once again\nWar on nature was a failure\nWhy can't we pretend\nAny all-consuming power's\nEver gonna last\nOne day you're a human\nBut these things they change so fast\n\n[Chorus 2]\nGive me power I'll give you peace\nRestful days, serenity\nLeave your burden up to me, me\nCome on let the world go crazy\nI'm the answer I'm the soul\nI am vision I am control\nI'm your life now let it go, go, go\n\n[Outro]\nWe only need (only need)\nWe only need time\nWe only need (only need)\nWe only need time\nWe only need (only need)\nWe only need time\nWe only need (only need)\nWe only need"),
-  T("Dmitri", [["Grant Clementi", "written by, production, vocals, keyboards, guitars, percussion, FX"], ["Marco Jaimez", "vocals"], ["Jesse Carl", "drums, production"], ["Garrett Waite", "guitars"], ["Matthew Sherman", "bass"], ["Fearjoy", "mixing"], ["Justin Perkins", "mastering at Mystery Room Mastering"], ["Michael Darden", "special thanks"], ["Khalil", "special thanks"], ["Dmitri", "special thanks (my friend)"]], "[Verse 1]\nI remember but I haven’t seen his face in years\nThrough the door he ran up to greet me\nIn a second he took away my doubt and fear\nHe said hey my name’s Dmitri\nI can’t talk to my friends but\nI can talk to my God about it\nAs soon as it happened\nMy brain went and forgot about it\n\n[Pre-Chorus]\nHow long had I been waitin’\nFor some inspiration?\n\n[Chorus 1]\nOh let me tell you ‘bout the way he taught me\nAll that he could teach me\nYou won’t learn half as much in years of school\nAs one day with Dmitri\nOne day with Dmitri\nOne day with Dmitri\n\n[Bridge 1]\n(He said)\nI only got 5 minutes to show you the ropes\nOver there’s where your brain makes your dreams and hopes\nYour life is meaningful but somehow still it’s only a joke\nWe’ll meet again if you transcend or if you choke\n\n[Bridge 2]\nHe’s livin’ in my head\nAnd when I’m almost dead\nHe’ll come beside my bed\nAnd show me what to do\nIn every flower bed\nAnd when your blood runs red\nHe’s livin’ in my head\nAnd livin’ in yours too\n\n[Chorus 2]\nOh let me tell you ‘bout the way\nHe taught me all that he could teach me\nI’m so indebted to my friend\nThe one\nThe only Dmitri\nYeah, yeah\nThe only Dmitri\nThe only Dmitri\n\n[Outro]\nI can’t talk to my friends\nI can talk to my God about it\nAs soon as it happened\nMy brain went and forgot"),
+  T("Dmitri", [["Grant Clementi", "lyrics, production, vocals, keyboards, guitars, percussion"], ["Marco Jaimez", "vocals"], ["Jesse Carl", "drums, production"], ["Garrett Waite", "electric and acoustic guitar"], ["Matt Sherman", "bass"], ["Michael Darden", "production"], ["Khalil", "special thanks"], ["Aime Bertot", "special thanks"], ["Hwaneetah", "special thanks"], ["Dmitri", "special thanks (my friend)"]], "[Verse 1]\nI remember but I haven’t seen his face in years\nThrough the door he ran up to greet me\nIn a second he took away my doubt and fear\nHe said hey my name’s Dmitri\nI can’t talk to my friends but\nI can talk to my God about it\nAs soon as it happened\nMy brain went and forgot about it\n\n[Pre-Chorus]\nHow long had I been waitin’\nFor some inspiration?\n\n[Chorus 1]\nOh let me tell you ‘bout the way he taught me\nAll that he could teach me\nYou won’t learn half as much in years of school\nAs one day with Dmitri\nOne day with Dmitri\nOne day with Dmitri\n\n[Bridge 1]\n(He said)\nI only got 5 minutes to show you the ropes\nOver there’s where your brain makes your dreams and hopes\nYour life is meaningful but somehow still it’s only a joke\nWe’ll meet again if you transcend or if you choke\n\n[Bridge 2]\nHe’s livin’ in my head\nAnd when I’m almost dead\nHe’ll come beside my bed\nAnd show me what to do\nIn every flower bed\nAnd when your blood runs red\nHe’s livin’ in my head\nAnd livin’ in yours too\n\n[Chorus 2]\nOh let me tell you ‘bout the way\nHe taught me all that he could teach me\nI’m so indebted to my friend\nThe one\nThe only Dmitri\nYeah, yeah\nThe only Dmitri\nThe only Dmitri\n\n[Outro]\nI can’t talk to my friends\nI can talk to my God about it\nAs soon as it happened\nMy brain went and forgot"),
   T("It Happens", [["Grant Clementi", "vocals, lyrics, keys"], ["Jesse Carl", "drums, production"], ["Carolyn Clementi", "vocals"], ["Tim Wolf", "guitar, harmonies"], ["Matthew Sherman", "bass"], ["Garrett Waite", "guitar"]], "How did I get here\nWhere am I going\nTrying to stay clear\nOut in the open\nI try and I try and I try\nBut nothing changes\nThe moment I finally stop\nTryna rearrange it\n\nIt happens\nSuddenly, instantly\nIt happens\nFinally, now I see\n\nTime ceases to exist\nEvery time we feel like this\nDon't let it slip away\nRealize it's going to anyway\nThat's ok, It'll happen once again\nWhen you're not trying to make it happen\nThat's ok, It'll happen once again\nWhen you're not trying to make it happen\n\nTime is the only truth\nWatch it slip away\nWhen you quit seeking\nForever in a day\n\nIt happens\nSuddenly, instantly\nIt happens\nFinally, now I see\nIt happens\nSuddenly, instantly\nIt happens\nFinally, now I see"),
   T("Nightdrive", [["Marco Jaimez", "lyrics, vocals"], ["Grant Clementi", "lyrics, vocals, keys, production"], ["Jesse Carl", "drums, bass, production, percussion"], ["Tim Wolf", "guitars"]], "[Verse 1]\nYou took the backroads when you had to go\nBut somehow I knew you never would return\nYou're in the rearview but I'll turn around\nI see that silver lining and now there is no hiding\n\n[Prechorus 1]\nAll this moonlight\nMakes the room bright\nAll the faces\nFading out of focus\n\n[Chorus]\nWhen all your stars are falling\nWhen all the light has turned to black\nBending and breaking from the weight of it all\nWhen the day is gone\nAnd you’re moving on\nI’ll be the light to find you\nI’d drive all night to get you back\n\n[Verse 2]\nDarkness calling\nEngine stalling\nCan I cut through the fog without you by my side?\nFalling short of what you wanted to be\nBut I can finally see the signs\nThat the road ahead will find me\n\n[Prechorus 2]\nI gave you the moon but you needed the sun\nI gave you the room when you wanted to run\nRemembered your face even when it was\nFading out of focus\nAll this moonlight\nMakes the room bright\nAll the faces\nFading out of focus\n\n[Chorus]\nWhen all your stars are falling\nWhen all the light has turned to black\nBending and breaking from the weight of it all\nWhen the day is gone\nAnd you’re moving on\nI’ll be the light to find you\nI’d drive all night to get you back"),
   T("Ghost 2", [["Marco Jaimez", "lyrics, vocals"], ["Grant Clementi", "lyrics, vocals, synths, percussion"], ["Jesse Carl", "drums, production"], ["Matt Sherman", "bass"], ["Garrett Waite", "acoustic guitar, electric guitar"], ["Shawn Bost", "additional keys"], ["Ruby Clementi", "\"hello?\""]], "Your ghost is in my room\nI hear your voice inside the telephone\nIf I can’t be with you\nI will wander my whole life alone\nA spectre in the gloom\nYou crawl out of my mind and up the wall\nIf you can’t be my all\nThen I will settle being miserable\nAgain and again and again and again and again\nEvery time you fly away\nThere was more that I could say\nBut I'm paralyzed and words don't reach my lips\n\nEvery time the lights go down\nSuddenly I hear a sound\nIt's you, it’s you, it’s you\n\nI wonder where you are\nI hear your voice inside when I'm alone\nSo I look down at the telephone\nBut I know what I'm not gonna see\n\nYour pictures line these walls\nBut this vacant house is not a home\nAnd I wish that I was not alone\nBut you never seem to visit when it's coldest\nAnd I need you here the most\n\nEvery time you fly away\nThere was more that I could say\nBut I'm paralyzed and words don't reach my lips\nEvery time the lights go down\nSuddenly I hear a sound\nAnd the memories replay\nWith you, with you, with you\nAnd the memories replay\nWith you, with you, with you\nAnd the memories replay"),
   T("Maya", [["Grant Clementi", "vocals, lyrics, instruments, production"], ["Marco Jaimez", "vocals, lyrics"], ["Evan Lane", "viola"], ["Jesse Carl", "production"], ["Carolyn Clementi", "background vocals"]], "[Verse]\nI know I\nGotta wake up from this illusion\nShow me why\nI've been lost in confusion\n\nShe got the key, She wrote the code\nShe knows the way, She got the soul\nShe got the key, She wrote the code\nThe first in line, The last to know\n\nLet go of\nEverything I've been choosing\nBut I love it\nSo I stay\nLost inside this illusion\n\n[Chorus]\nWe only get so many days\nHelp me find a way\nShow me what lies beyond the gray\nHelp me find a way\nI feel it! You feel it too!\nNo running from the truth\nAccepting what we are\n\n[Bridge]\nThese plans I create fall right through my hands\nDon't want to lay but can hardly stand\nFrom this illusion I turned and ran away\n\n[CHORUS]\n\n[Outro]\nMaya, Maya, you've been asleep\nSecret's out now, nothing to keep\nFlying higher, diving so deep\nI desire more than I need\nGot to wake up, I've been asleep\nSeeds I sow now, one day I'll reap\nMaya, Maya, you've been asleep\nMy mind's made up, got to wake up"),
-  T("Tellus", [], ""),
-  T("Void", [], "What if I never come down, I just stay up here?\nWould I even make it back if we disappeared?\nWould it be alright if I came back in a year?\nI can't get by\nI can't get by\n\nWhat if I stayed up here and I never came down?\nHead above the stratosphere but feet on the ground\nWould it be alright down there if I'm not around?\nI can’t get by\nI can’t get by on my own\n\nOn my own\nOn my own\n\nI can’t get by\nI can’t get by on my own"),
-  T("The Endless Smile", [["Grant Clementi", "lyrics, vocals, instruments, production"], ["Ruby Clementi", "lyrics, vocals"], ["Isaac Clementi", "piano"], ["Our Friends", "laughter"]], "The endless smile\nIn the ground\nWhy not start\nStart right now\n\nTime to start\nPracticing your smile\nCuz it's all\nAll you'll leave behind\n\nFlesh and bone\nOnce the former's gone\nAll that's left\nThe smile that you put on\n\nEach time\nWe see the light\nWhen we smile\nWith the endless smile\n\nThe endless smile\nIn the ground\nWhy not start\nStart right now\n\nDon't you wait\nWait until you drop\nOnce you start\nYou can't make it stop\n\nEach time\nWe see the light\nWhen we smile\nWith the endless smile\nTeeth wide\nWe feel so bright\nWhen we smile\nWith the endless smile\n\nThe endless smile\nIn the ground\nWhy not start\nStart right now"),
-  T("Swimmin", [], "Why can't you just enjoy the moment?\nYou keep on asking yourself\nYou like to push pull and hold it\nLike it was somebody else\n\nYou take this bliss and postpone it\nThere's always something to do\nJust tune yourself in and own it\nIt's up to no one but you\n\nWhat you gotta do?\nWhat you gotta say?\nWho you gotta talk to?\nWhat you gotta find?\nWho you gotta pay?\nWhat ya holding on to?\n(X2)\n\nWhy don't you swim\nOut of your mind\nThe top of your spine\nIs where you live\nBut not tonight\nTonight we're goin’ swimmin’\nTonight we're goin’ swimmin’\n\nYou try to smooth out the thought ripples in your mind\nWith a flat iron\nCome on, don't you know it's futile?\nAnd catapult your mind every night\nSomewhere you were only ever meant to\nTravel to a few times\nGo with the rhythm of the tide\nLet it pull you to the side\nTake a ride on your new mind\n(You'll be fine)\n\nWhat you gotta do?\nWhat you gotta say?\nWho you gotta talk to?\nWhat you gotta find?\nWho you gotta pay?\nWhat ya holding on to?\n(X2)\n\nBefore you swim\nOut of your mind\nThe top of your spine\nIs where you live\nBut not tonight\nTonight we're goin’ swimmin’\nTonight we're goin’ swimmin’\nTonight we're goin’ swimmin’")
+  T("Tellus", [["Marco Jaimez", "vocals"], ["Grant Clementi", "vocals, synths"], ["Jesse Carl", "drums, percussion, production"], ["Emmett Wesolowski", "guitars"], ["Shawn Bost", "keys, synth bass"]], ""),
+  T("Void", [["Jesse Carl", "drums, production, keys, guitars"], ["Grant Clementi", "lyrics, vocals, production"], ["Marco Jaimez", "vocals"], ["Matt Sherman", "bass"], ["Timothy Wolf", "guitars"], ["Jamie Breiwick", "trumpet"]], "What if I never come down, I just stay up here?\nWould I even make it back if we disappeared?\nWould it be alright if I came back in a year?\nI can't get by\nI can't get by\n\nWhat if I stayed up here and I never came down?\nHead above the stratosphere but feet on the ground\nWould it be alright down there if I'm not around?\nI can’t get by\nI can’t get by on my own\n\nOn my own\nOn my own\n\nI can’t get by\nI can’t get by on my own"),
+  T("The Endless Smile", [["Grant Clementi", "lyrics, vocals, instruments, production"], ["Ruby Clementi", "lyrics, vocals"], ["Isaac Clementi", "piano"], ["Our Friends", "laughter"], ["Aime Bertot", "special thanks"]], "The endless smile\nIn the ground\nWhy not start\nStart right now\n\nTime to start\nPracticing your smile\nCuz it's all\nAll you'll leave behind\n\nFlesh and bone\nOnce the former's gone\nAll that's left\nThe smile that you put on\n\nEach time\nWe see the light\nWhen we smile\nWith the endless smile\n\nThe endless smile\nIn the ground\nWhy not start\nStart right now\n\nDon't you wait\nWait until you drop\nOnce you start\nYou can't make it stop\n\nEach time\nWe see the light\nWhen we smile\nWith the endless smile\nTeeth wide\nWe feel so bright\nWhen we smile\nWith the endless smile\n\nThe endless smile\nIn the ground\nWhy not start\nStart right now"),
+  T("Swimmin", [["Grant Clementi", "lyrics, vocals, instruments, production"], ["Jesse Carl", "cymbals, percussion"], ["Clay Bushman", "special thanks"], ["Ruby", "special thanks"], ["Dmitri", "special thanks"]], "Why can't you just enjoy the moment?\nYou keep on asking yourself\nYou like to push pull and hold it\nLike it was somebody else\n\nYou take this bliss and postpone it\nThere's always something to do\nJust tune yourself in and own it\nIt's up to no one but you\n\nWhat you gotta do?\nWhat you gotta say?\nWho you gotta talk to?\nWhat you gotta find?\nWho you gotta pay?\nWhat ya holding on to?\n(X2)\n\nWhy don't you swim\nOut of your mind\nThe top of your spine\nIs where you live\nBut not tonight\nTonight we're goin’ swimmin’\nTonight we're goin’ swimmin’\n\nYou try to smooth out the thought ripples in your mind\nWith a flat iron\nCome on, don't you know it's futile?\nAnd catapult your mind every night\nSomewhere you were only ever meant to\nTravel to a few times\nGo with the rhythm of the tide\nLet it pull you to the side\nTake a ride on your new mind\n(You'll be fine)\n\nWhat you gotta do?\nWhat you gotta say?\nWho you gotta talk to?\nWhat you gotta find?\nWho you gotta pay?\nWhat ya holding on to?\n(X2)\n\nBefore you swim\nOut of your mind\nThe top of your spine\nIs where you live\nBut not tonight\nTonight we're goin’ swimmin’\nTonight we're goin’ swimmin’\nTonight we're goin’ swimmin’")
 ];
 /* ===================================================================== */
 
@@ -1118,7 +1145,7 @@ const Sound = (() => {
   const DIR = CONFIG.sfxFolder;
   const AC = window.AudioContext || window.webkitAudioContext;
   const SFX = ['coinflip.wav', 'dice1.wav', 'dice2.wav', 'dice5.wav', '1up.wav', 'slide1.wav'];
-  let ctx = null, master = null, muted = false, vol = 0.5, el = null, musicGain = null, playing = false, bgPlay = false;
+  let ctx = null, master = null, muted = false, vol = 0.7, el = null, musicGain = null, playing = false, bgPlay = false;
   const raw = {}, bufs = {}, decoding = {};
   const DICE_SFX = ['dice1.wav', 'dice2.wav', 'dice5.wav'];
   const VOL = { coin: 0.3, dice: 0.8, oneUp: 0.25, slide: 0.64 };   /* share of each file's original volume: coin 30%, dice 80%, 1up 25%, slide 64% */
@@ -1603,6 +1630,20 @@ function roundedBox(size, radius, seg) {
       p.copy(q).addScaledVector(n, radius);
       nor.setXYZ(i, n.x, n.y, n.z);
     }
+    pos.setXYZ(i, p.x, p.y, p.z);
+  }
+  return geo;
+}
+function roundedBoxWHD(w, h, d, radius, sw, sh, sd) {   /* a box with smooth rounded edges and corners (any size) */
+  const geo = new THREE.BoxGeometry(w, h, d, sw, sh, sd);
+  const pos = geo.attributes.position, nor = geo.attributes.normal;
+  const hx = w / 2 - radius, hy = h / 2 - radius, hz = d / 2 - radius;
+  const p = new THREE.Vector3(), q = new THREE.Vector3(), n = new THREE.Vector3();
+  for (let i = 0; i < pos.count; i++) {
+    p.fromBufferAttribute(pos, i);
+    q.set(Math.max(-hx, Math.min(hx, p.x)), Math.max(-hy, Math.min(hy, p.y)), Math.max(-hz, Math.min(hz, p.z)));
+    n.copy(p).sub(q);
+    if (n.lengthSq() > 1e-9) { n.normalize(); p.copy(q).addScaledVector(n, radius); nor.setXYZ(i, n.x, n.y, n.z); }
     pos.setXYZ(i, p.x, p.y, p.z);
   }
   return geo;
@@ -2101,7 +2142,7 @@ function makeDesk(el) {
   v.scene = new THREE.Scene();
   v.camera = new THREE.PerspectiveCamera(30, 16 / 10, 1, 60);   /* a tighter depth range keeps the flat shadows from flickering */
   v.scene.add(new THREE.HemisphereLight(0xffffff, 0x6b4a42, 0.66));
-  const key = new THREE.DirectionalLight(0xffffff, 0.46); key.position.set(3, 6, 5); v.scene.add(key);
+  const key = new THREE.DirectionalLight(0xffffff, 0.46); key.position.set(6, 6, 5); v.scene.add(key);   /* moved right so the vinyl's shine is not under the board */
   const rim = new THREE.DirectionalLight(0xffd9b0, 0.26); rim.position.set(-4, 3, -3); v.scene.add(rim);
   v.stage = new THREE.Group();
   v.scene.add(v.stage);
@@ -2251,65 +2292,70 @@ function makeDesk(el) {
   const slabAt = (w, h, d, r, b, mat, x, y, z) => { const m = new THREE.Mesh(woodUV(roundedSlab(w, h, d, r, b)), mat); m.position.set(x, y, z); tv.add(m); return m; };
   slabAt(2.1, 1.8, 0.95, 0.03, 0.018, tvWood, 0, 1.0, 0);   /* small corners: a boxy cabinet */
   slabAt(1.6, 1.35, 0.5, 0.07, 0.04, tvWoodDark, 0, 1.0, -0.72);
-  /* four big 3D streaming buttons down the right side of the TV (they replace the two little black knobs). Logo pictures come from CONFIG.streamLogos; until a picture loads the name is written instead. */
+  /* right side of the TV, centered in the wood to the right of the screen: a small speaker on top, and two channel buttons (CH up and CH down) below it. All slightly rounded rectangles. */
+  const PNX = 0.83;
   const panelBack = new THREE.Mesh(roundedScreenGeo(0.33, 1.28, 0.05), std(0x20140c, 0.8));
-  panelBack.position.set(0.85, 1.15, 0.478);
+  panelBack.position.set(PNX, 1.15, 0.478);
   tv.add(panelBack);
-  const STREAMS = [
-    { id: 'spotify', name: 'Spotify', lines: ['Spotify'], color: '#1DB954' },
-    { id: 'apple', name: 'Apple Music', lines: ['Apple', 'Music'], color: '#FA243C' },
-    { id: 'youtube', name: 'YouTube', lines: ['YouTube'], color: '#E60000' },
-    { id: 'more', name: 'More', lines: [], color: '#8f98a8' }
-  ];
+  const spkCv = document.createElement('canvas'); spkCv.width = 256; spkCv.height = 324;
+  (() => {   /* the speaker grille: a field of little holes */
+    const g = spkCv.getContext('2d');
+    g.fillStyle = '#0f1011'; g.fillRect(0, 0, 256, 324);
+    for (let y = 16; y < 324; y += 22) for (let x = 16; x < 256; x += 22) {
+      g.fillStyle = '#000'; g.beginPath(); g.arc(x, y + 1, 7, 0, Math.PI * 2); g.fill();
+      g.fillStyle = '#4a4e53'; g.beginPath(); g.arc(x, y, 6, 0, Math.PI * 2); g.fill();
+      g.fillStyle = '#16181a'; g.beginPath(); g.arc(x + 1, y + 1.5, 4.5, 0, Math.PI * 2); g.fill();
+    }
+  })();
+  const spkTex = new THREE.CanvasTexture(spkCv); spkTex.anisotropy = 4;
+  const spk = new THREE.Group();
+  spk.position.set(PNX, 1.45, 0.48);
+  tv.add(spk);
+  const spkRim = new THREE.Mesh(roundedSlab(0.27, 0.34, 0.04, 0.045, 0.012), std(0x34373a, 0.45, 0.3));
+  spkRim.position.z = 0.02;
+  spk.add(spkRim);
+  const spkFace = new THREE.Mesh(roundedScreenGeo(0.22, 0.29, 0.03), new THREE.MeshStandardMaterial({ map: spkTex, roughness: 0.7 }));
+  spkFace.position.z = 0.0405;
+  spk.add(spkFace);
   const STREAM_FONT = "'KCStrikerSans', 'Arial Black', sans-serif";
-  const strBtns = [];
-  STREAMS.forEach((s, i) => {
-    const cv = document.createElement('canvas'); cv.width = cv.height = 192;
-    const tex = new THREE.CanvasTexture(cv);
-    tex.anisotropy = 4;
-    const logoNames = [].concat((CONFIG.streamLogos || {})[s.id] || []);   /* each file name is tried in turn until one loads */
-    const tryLogo = k => { if (k >= logoNames.length) return; const im = new Image(); im.onload = () => { s.img = im; s.draw(); }; im.onerror = () => tryLogo(k + 1); im.src = logoNames[k]; };
-    tryLogo(0);
-    s.draw = () => {
-      const g = cv.getContext('2d'), W = 192;
-      g.clearRect(0, 0, W, W);
-      g.fillStyle = s.color; g.beginPath(); g.arc(W / 2, W / 2, W / 2, 0, Math.PI * 2); g.fill();   /* the service color fills the circle behind the logo */
-      const rg = g.createRadialGradient(W * 0.4, W * 0.35, 8, W / 2, W / 2, W * 0.62);
-      rg.addColorStop(0, 'rgba(255,255,255,0.3)'); rg.addColorStop(1, 'rgba(255,255,255,0)');
-      g.fillStyle = rg; g.beginPath(); g.arc(W / 2, W / 2, W / 2, 0, Math.PI * 2); g.fill();
-      if (s.id === 'more') {   /* the "(...)" more button: three dots, drawn here */
-        g.fillStyle = '#ffffff';
-        [W * 0.27, W * 0.5, W * 0.73].forEach(x => { g.beginPath(); g.arc(x, W / 2, 15, 0, Math.PI * 2); g.fill(); });
-      } else if (s.img) {
-        const nw = s.img.naturalWidth || 200, nh = s.img.naturalHeight || 200;   /* an .svg with no set size reports 0 in some browsers */
-        const k = Math.min(W * 0.7 / nw, W * 0.7 / nh), iw = nw * k, ih = nh * k;
-        g.drawImage(s.img, (W - iw) / 2, (W - ih) / 2, iw, ih);
-      } else {   /* no logo picture yet: write the name */
-        g.fillStyle = '#ffffff'; g.textAlign = 'center'; g.textBaseline = 'middle';
-        let px = 44;
-        g.font = px + 'px ' + STREAM_FONT;
-        while (px > 18 && s.lines.some(t => g.measureText(t).width > 140)) { px -= 2; g.font = px + 'px ' + STREAM_FONT; }
-        s.lines.forEach((t, j) => g.fillText(t, W / 2, W / 2 + (j - (s.lines.length - 1) / 2) * (px + 4)));
-      }
+  const CHANS = [{ dir: 1, y: 0.99 }, { dir: -1, y: 0.76 }];
+  const chBtns = [];
+  const chDraws = [];
+  CHANS.forEach(c => {
+    const cv = document.createElement('canvas'); cv.width = 192; cv.height = 128;
+    const tex = new THREE.CanvasTexture(cv); tex.anisotropy = 4;
+    const draw = () => {
+      const g = cv.getContext('2d'), W = 192, H = 128, R = 20;
+      g.clearRect(0, 0, W, H);
+      const bg = g.createLinearGradient(0, 0, 0, H); bg.addColorStop(0, '#b4b9bf'); bg.addColorStop(1, '#7d838a');
+      g.fillStyle = bg;
+      g.beginPath(); g.moveTo(R, 0); g.lineTo(W - R, 0); g.quadraticCurveTo(W, 0, W, R); g.lineTo(W, H - R); g.quadraticCurveTo(W, H, W - R, H); g.lineTo(R, H); g.quadraticCurveTo(0, H, 0, H - R); g.lineTo(0, R); g.quadraticCurveTo(0, 0, R, 0); g.closePath(); g.fill();
+      g.fillStyle = '#1b1d1f'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.font = '30px ' + STREAM_FONT;
+      const up = c.dir > 0;
+      g.fillText('CH', W / 2, up ? 34 : 94);
+      g.beginPath();
+      if (up) { g.moveTo(W / 2, 56); g.lineTo(W / 2 + 24, 98); g.lineTo(W / 2 - 24, 98); }
+      else { g.moveTo(W / 2, 72); g.lineTo(W / 2 + 24, 30); g.lineTo(W / 2 - 24, 30); }
+      g.closePath(); g.fill();
       tex.needsUpdate = true;
     };
-    s.draw();
+    draw(); chDraws.push(draw);
     const grp = new THREE.Group();
-    grp.position.set(0.85, 1.6 - i * 0.3, 0.48);
+    grp.position.set(PNX, c.y, 0.48);
     tv.add(grp);
-    const base = new THREE.Mesh(new THREE.CylinderGeometry(0.117, 0.131, 0.063, 36), std(0x34373a, 0.45, 0.3));
-    base.rotation.x = Math.PI / 2; base.position.z = 0.0315;
+    const base = new THREE.Mesh(roundedSlab(0.23, 0.17, 0.063, 0.04, 0.014), std(0x34373a, 0.45, 0.3));
+    base.position.z = 0.0315;
     grp.add(base);
-    const face = new THREE.Mesh(new THREE.CircleGeometry(0.097, 36), new THREE.MeshStandardMaterial({ map: tex, roughness: 0.4 }));
+    const face = new THREE.Mesh(roundedScreenGeo(0.18, 0.12, 0.025), new THREE.MeshStandardMaterial({ map: tex, roughness: 0.4 }));
     face.position.z = 0.0642;
     grp.add(face);
     grp.userData.press = 0;
-    strBtns.push(grp);
-    hitBox(0.31, 0.31, 0.25, 0.85, 1.6 - i * 0.3, 0.55, 'stream', tv).userData = { tag: 'stream', btn: grp, idx: i };
+    chBtns.push(grp);
+    hitBox(0.26, 0.2, 0.25, PNX, c.y, 0.55, 'chan', tv).userData = { tag: 'chan', btn: grp, dir: c.dir };
   });
-  if (document.fonts && document.fonts.load) document.fonts.load("44px 'KCStrikerSans'").then(() => STREAMS.forEach(s => s.draw && s.draw())).catch(() => {});
+  if (document.fonts && document.fonts.load) document.fonts.load("30px 'KCStrikerSans'").then(() => chDraws.forEach(f => f())).catch(() => {});
   /* square screen */
-  slabAt(1.57, 1.57, 0.08, 0.2, 0.025, grayBezel, -0.18, 1.0, 0.475);   /* rounded screen bezel (thin) */
+  slabAt(1.57, 1.57, 0.08, 0.14, 0.025, grayBezel, -0.18, 1.0, 0.475);   /* rounded screen bezel (thin) */
   const screenHolder = new THREE.Group();   /* sets the screen size (a little bigger than 1.35); screenGrp inside is what the click animation squashes */
   screenHolder.position.set(-0.18, 1.0, 0.518);
   screenHolder.scale.setScalar(1.074);
@@ -2318,7 +2364,7 @@ function makeDesk(el) {
   screenHolder.add(screenGrp);
   const screenMat = new THREE.MeshBasicMaterial({ color: 0xffffff });
   screenMat.color.setHex(0x0e2a1e);
-  const scrGeo = roundedScreenGeo(1.35, 1.35, 0.15);   /* rounded screen corners, shared by the picture and the glass layers */
+  const scrGeo = roundedScreenGeo(1.35, 1.35, 0.1);   /* rounded screen corners, shared by the picture and the glass layers */
   const screen = new THREE.Mesh(scrGeo, screenMat);
   screenGrp.add(screen);
   const tvImgP = new Promise(res => new THREE.TextureLoader().load(CONFIG.tvImage, tex => {
@@ -2506,7 +2552,6 @@ function makeDesk(el) {
     g.fillStyle = '#7fb0ff'; g.font = "24px 'KCPelletierTyped', 'Courier New', monospace"; g.fillText('a free song for you', W / 2, 266);
     g.fillStyle = '#ffd36b'; g.fillRect(SEC_DL.x0, SEC_DL.y0, SEC_DL.x1 - SEC_DL.x0, SEC_DL.y1 - SEC_DL.y0);
     g.fillStyle = '#12162e'; fitText(g, 'DOWNLOAD THE ENDLESS JAM', 340, 30, "'KCStrikerSans', 'Arial Black', sans-serif"); g.fillText('DOWNLOAD THE ENDLESS JAM', W / 2, (SEC_DL.y0 + SEC_DL.y1) / 2 + 2);
-    g.fillStyle = '#7fb0ff'; g.font = "18px 'KCPelletierTyped', 'Courier New', monospace"; g.fillText('mp3 - tap anywhere else to close', W / 2, 438);
     secTex.needsUpdate = true;
   }
   if (document.fonts && document.fonts.load) Promise.all([document.fonts.load("36px 'KCStrikerSans'"), document.fonts.load("96px 'KCOraleSans'"), document.fonts.load("20px 'KCPelletierTyped'")]).then(() => { if (secret) drawSecret(); }).catch(() => {});
@@ -2596,8 +2641,10 @@ function makeDesk(el) {
     if (++cur.failed < 3) { const it = pickLore(cur.kind); if (it) { loadLore(cur, it); return; } }
     cur.phase = 'out'; cur.t0 = performance.now(); staticM.visible = !REDUCE;
   }
+  let chLast = -1;   /* the last channel that was tuned in (its place in loreItems) */
   function loadLore(cur, item) {
     cur.item = item; cur.video = item.video; cur.tex = null; cur.ended = false;
+    chLast = loreItems().findIndex(i => i.name === item.name);
     if (item.video) {
       vidEl.onloadeddata = () => {
         if (lore !== cur) return;
@@ -2625,10 +2672,18 @@ function makeDesk(el) {
     jesse.visible = !menuOn && !secret && !info;
     lore = null;
   }
-  function startLore(kind) {
+  function changeChannel(dir) {   /* CH up / down: the next or previous one in order (pictures first, then videos), wrapping around */
+    const all = loreItems();
+    if (!all.length) return;
+    const cur = lore ? all.findIndex(i => i.name === lore.item.name) : chLast;
+    const nx = cur < 0 ? (dir > 0 ? 0 : all.length - 1) : (cur + dir + all.length) % all.length;
+    startLore(null, all[nx]);
+  }
+  function startLore(kind, forced) {   /* forced = a specific channel (the CH buttons); otherwise a random pick */
     if (menuOn || v.tvT || v.navigated || secret || info) return;
-    const item = pickLore(kind);
+    const item = forced || pickLore(kind);
     if (!item) return;
+    cancelBlip();
     endLore();
     lore = { phase: 'in', t0: performance.now(), kind, tex: null, item, video: false, failed: 0, paused: false, ended: false, silent: false, file: null };
     jesse.visible = false; staticM.visible = !REDUCE; loreM.visible = false; loreBg.visible = false; titleM.visible = false;
@@ -2658,7 +2713,23 @@ function makeDesk(el) {
   }
   function loreTick(now) {   /* called every frame */
     if (secret && now - secret > 6000) hideSecretTV();
-    if (info) { if (now - info > 3000) { hideInfoTV(); goTo('kits'); } else if (now - infoBlinkT > 380) { infoBlinkT = now; infoBlink = !infoBlink; drawInfo(); } }
+    if (blip) {
+      if (menuOn || v.tvT || lore || secret || info) cancelBlip();
+      else {
+        if (!REDUCE) drawStatic();
+        if (now - blip.t0 > (REDUCE ? 0 : 420)) { const f = blip.fn; blip = null; staticM.visible = false; f(); }
+      }
+    }
+    if (!autoAd && intro.phase === 'done' && !intro.busy) {   /* 5 seconds after the page settles, if no piece has been touched: static, then the ad (once) */
+      if (!autoAdT0) autoAdT0 = now;
+      else if (now - autoAdT0 > 5000) {
+        autoAd = 1;
+        const gameEl = document.getElementById('gameOverlay');
+        const busyNow = piecesTouched || menuOn || v.tvT || v.navigated || lore || secret || info || blip || document.querySelector('dialog[open]') || (gameEl && !gameEl.hidden);
+        if (!busyNow) tvBlip(() => { showInfoTV(true); if (!info) jesse.visible = !menuOn && !secret && !lore; });
+      }
+    }
+    if (info) { if (now - info > (infoAuto ? 6000 : 3000)) { if (infoAuto) { hideInfoTV(); tvBlip(() => { jesse.visible = !menuOn && !secret && !info && !lore; }); } else { hideInfoTV(); goTo('kits'); } } else if (now - infoBlinkT > 380) { infoBlinkT = now; infoBlink = !infoBlink; drawInfo(); } }
     const bar = vidLoading && !menuOn;
     loadM.visible = bar;
     if (bar) loadM.scale.x = Math.max(0.01, (vidDone + vidFrac) / vidNames.length);
@@ -2716,7 +2787,7 @@ function makeDesk(el) {
     if (it) saveLore(it, fp);
   });
   const tvLight = new THREE.PointLight(0xa8d4ff, 0.55, 7);   /* faint blue spill onto the desk and the crew */
-  tvLight.position.set(-0.2, 2.6, -0.2);
+  tvLight.position.set(1.6, 2.6, -0.2);   /* moved right: this light is what makes the vinyl shine, so the shine now sits in the middle/right of the record */
   stage.add(tvLight);
 
   /* ---------- little radio, on the table next to the board: click for the song, drag the knob for volume ---------- */
@@ -2750,7 +2821,13 @@ function makeDesk(el) {
   const led = new THREE.Mesh(new THREE.SphereGeometry(0.035, 12, 10), ledMat); led.position.set(0.58, 0.32, 0.262); radio.add(led);
   const ledHalo = new THREE.Sprite(new THREE.SpriteMaterial({ map: haloTex, color: 0xff3a2a, transparent: true, opacity: 0, blending: THREE.AdditiveBlending, depthWrite: false }));
   ledHalo.scale.set(0.4, 0.4, 1); ledHalo.position.set(0.58, 0.32, 0.3); radio.add(ledHalo);
-  const handle = new THREE.Mesh(new THREE.TorusGeometry(0.32, 0.022, 8, 28, Math.PI), chrome); handle.position.set(0, 0.84, 0); radio.add(handle);
+  const hP = new THREE.CurvePath(), hw = 0.3, hh = 0.22, hr = 0.08, hv = (x, y) => new THREE.Vector3(x, y, 0);   /* the handle: a rounded rectangle, tube-thick */
+  hP.add(new THREE.LineCurve3(hv(-hw, -0.03), hv(-hw, hh - hr)));
+  hP.add(new THREE.QuadraticBezierCurve3(hv(-hw, hh - hr), hv(-hw, hh), hv(-hw + hr, hh)));
+  hP.add(new THREE.LineCurve3(hv(-hw + hr, hh), hv(hw - hr, hh)));
+  hP.add(new THREE.QuadraticBezierCurve3(hv(hw - hr, hh), hv(hw, hh), hv(hw, hh - hr)));
+  hP.add(new THREE.LineCurve3(hv(hw, hh - hr), hv(hw, -0.03)));
+  const handle = new THREE.Mesh(new THREE.TubeGeometry(hP, 120, 0.034, 10, false), chrome); handle.position.set(0, 0.84, 0); radio.add(handle);
   const ant = new THREE.Mesh(new THREE.CylinderGeometry(0.012, 0.012, 0.8, 8), chrome); ant.position.set(0.64, 1.24, -0.1); ant.rotation.z = -0.35; radio.add(ant);
   hitBox(1.4, 0.95, 0.65, 0, 0.47, 0, 'radio', radio);
   hitBox(0.5, 0.5, 0.3, 0.3, 0.32, 0.3, 'knob', radio);
@@ -2762,7 +2839,7 @@ function makeDesk(el) {
   joyG.scale.setScalar(1.3);
   stage.add(joyG);
   const joyBlob = blob(1.3, 1.04, 2.35, 2.08, 0.7);
-  const joyBase = new THREE.Mesh(new THREE.BoxGeometry(0.72, 0.12, 0.5), std(0x2f3136, 0.55, 0.2)); joyBase.position.y = 0.06; joyG.add(joyBase);
+  const joyBase = new THREE.Mesh(roundedBoxWHD(0.72, 0.12, 0.5, 0.04, 36, 6, 25), std(0x2f3136, 0.55, 0.2)); joyBase.position.y = 0.06; joyG.add(joyBase);
   const joyBtn = new THREE.Mesh(new THREE.CylinderGeometry(0.07, 0.08, 0.05, 20), std(0xe8c13a, 0.4)); joyBtn.position.set(0.24, 0.145, 0.08); joyG.add(joyBtn);
   const joyStick = new THREE.Group(); joyStick.position.set(-0.12, 0.12, 0); joyG.add(joyStick);
   const joyBoot = new THREE.Mesh(new THREE.SphereGeometry(0.1, 16, 8, 0, Math.PI * 2, 0, Math.PI / 2), std(0x151517, 0.7)); joyStick.add(joyBoot);
@@ -2811,11 +2888,11 @@ function makeDesk(el) {
   };
   drawNote();
   if (document.fonts && document.fonts.load) document.fonts.load("34px 'KCPelletierTyped'").then(drawNote).catch(() => {});
-  const noteSide = std(0x3c141b, 0.85), notePaper = std(0xb0a994, 0.95);
-  const noteBox = new THREE.Mesh(new THREE.BoxGeometry(1.0, 0.11, 1.3), [noteSide, noteSide, new THREE.MeshStandardMaterial({ map: noteTex, roughness: 0.7 }), noteSide, noteSide, noteSide]);
+  const noteSide = std(0x3c141b, 0.85), notePaper = std(0xb0a994, 0.95), notePageEdge = std(0xf4f1e8, 0.9);
+  const noteBox = new THREE.Mesh(new THREE.BoxGeometry(1.0, 0.11, 1.3), [notePageEdge, noteSide, new THREE.MeshStandardMaterial({ map: noteTex, roughness: 0.7 }), noteSide, notePageEdge, noteSide]);
   noteBox.position.y = 0.055; noteG.add(noteBox);
   const pages = new THREE.Mesh(new THREE.BoxGeometry(0.96, 0.07, 1.26), notePaper); pages.position.set(0.05, 0.055, 0); noteG.add(pages);
-  const spine = new THREE.Mesh(new THREE.BoxGeometry(0.07, 0.115, 1.3), std(0x2e0f15, 0.7)); spine.position.set(-0.465, 0.057, 0); noteG.add(spine);
+  const spine = new THREE.Mesh(new THREE.BoxGeometry(0.08, 0.118, 1.312), std(0x2e0f15, 0.7)); spine.position.set(-0.465, 0.056, 0); noteG.add(spine);
   const band = new THREE.Mesh(new THREE.BoxGeometry(0.035, 0.12, 1.32), std(0x151517, 0.6)); band.position.set(0.3, 0.057, 0); noteG.add(band);
   const pen = new THREE.Group(); pen.position.set(-0.02, 0.15, 0.12); pen.rotation.y = 0.6; noteG.add(pen);
   const penBody = new THREE.Mesh(new THREE.CylinderGeometry(0.036, 0.036, 0.9, 14), std(0x1f3f9e, 0.35, 0.2)); penBody.rotation.z = Math.PI / 2; pen.add(penBody);
@@ -2823,6 +2900,27 @@ function makeDesk(el) {
   const penClip = new THREE.Mesh(new THREE.BoxGeometry(0.28, 0.012, 0.025), std(0xd8b04a, 0.3, 0.7)); penClip.position.set(-0.28, 0.04, 0); pen.add(penClip);
   const noteBlob = blob(1.5, 1.8, 1.3, 2.2, 0.55); noteBlob.position.y = FLOOR + 0.004;
   hitBox(1.1, 0.4, 1.4, 0, 0.12, 0, 'notebook', noteG);
+
+  /* a small printed photo lying on the floor to the right of the notebook (camcorder.jpg from the bucket). The print takes the picture's own shape, so there is no empty space. Tap it: it plays on the TV like any lore picture, and a tap there saves it. */
+  const photoG = new THREE.Group();
+  photoG.rotation.order = 'YXZ';
+  photoG.rotation.set(0.03, -0.5, 0.02);
+  photoG.position.set(2.55, FLOOR + 0.03, 2.4);
+  stage.add(photoG);
+  const photoBlob = blob(1.2, 1.2, 2.55, 2.4, 0.5); photoBlob.position.y = FLOOR + 0.004;
+  const photoP = new Promise(res => new THREE.TextureLoader().load(loreUrl(CONFIG.floorPhoto), tex => {
+    const img = tex.image, a = img && img.width && img.height ? img.width / img.height : 1;
+    let pw = 0.8 * a, ph = 0.8;   /* picture size, longest side 0.8 */
+    if (pw > 0.8) { pw = 0.8; ph = 0.8 / a; }
+    const bd = 0.04;   /* thin white print border */
+    const paper = new THREE.Mesh(new THREE.BoxGeometry(pw + bd * 2, 0.012, ph + bd * 2), std(0xe9e5da, 0.85));
+    paper.position.y = 0.006; photoG.add(paper);
+    const face = new THREE.Mesh(new THREE.PlaneGeometry(pw, ph), new THREE.MeshStandardMaterial({ map: tex, roughness: 0.6, emissive: 0xffffff, emissiveMap: tex, emissiveIntensity: 0.3 }));
+    face.rotation.x = -Math.PI / 2; face.position.y = 0.0135; photoG.add(face);
+    noHit(paper); noHit(face);
+    hitBox(pw + bd * 2 + 0.1, 0.2, ph + bd * 2 + 0.1, 0, 0.05, 0, 'photo', photoG);
+    res();
+  }, undefined, () => { stage.remove(photoBlob); stage.remove(photoG); res(); }));
 
   /* a stage mic lying on the floor between the how-to sheet and the notebook (tap it to play one of the videos on the TV) */
   const micG = new THREE.Group();
@@ -2866,6 +2964,7 @@ function makeDesk(el) {
   const mailG = new THREE.Group();
   mailG.position.set(PLX, PLTOP, PLZ);
   mailG.rotation.y = 0.3;
+  mailG.scale.setScalar(1.3);
   stage.add(mailG);
   const mailBlue = std(0x3d6db5, 0.45, 0.15), mailDark = std(0x2b5192, 0.5, 0.15), mailRed = std(0xc9382c, 0.45), mailMetal = std(0xb9bec6, 0.35, 0.6);
   const MB_W = 0.62, MB_H = 0.26, MB_D = 0.78;   /* width, height of the square lower part, depth (front to back) */
@@ -2898,7 +2997,7 @@ function makeDesk(el) {
   /* the letter: a cream envelope with air-mail edges that says CONTACT US, leaning against the bottom of the pole */
   const letterG = new THREE.Group();
   const LS = 0.8, LEAN = 0.2;   /* size, and how far it leans back from straight up */
-  letterG.position.set(PLX + 0.1, FLOOR + 0.5 * 0.85 * LS * Math.cos(LEAN) + 0.03, PLZ + 0.06 + 0.5 * 0.85 * LS * Math.sin(LEAN) + 0.04);
+  letterG.position.set(PLX + 0.1, FLOOR + 0.5 * 0.85 * LS * Math.cos(LEAN) + 0.1, PLZ + 0.06 + 0.5 * 0.85 * LS * Math.sin(LEAN) + 0.04);
   letterG.rotation.y = -0.12;
   stage.add(letterG);
   const letterLean = new THREE.Group(); letterLean.rotation.x = Math.PI / 2 - LEAN; letterLean.scale.setScalar(LS); letterG.add(letterLean);   /* stood up on its long edge, leaning back */
@@ -2911,19 +3010,20 @@ function makeDesk(el) {
       g.beginPath(); g.moveTo(x, 0); g.lineTo(x + 26, 0); g.lineTo(x + 26 - h, h); g.lineTo(x - h, h); g.fill();
     }
     g.restore();
-    g.strokeStyle = 'rgba(90,60,30,0.35)'; g.lineWidth = 2;   /* the flap */
+    g.fillStyle = 'rgba(110,75,35,0.2)'; g.beginPath(); g.moveTo(24, 24); g.lineTo(w / 2, h * 0.52); g.lineTo(w - 24, 24); g.closePath(); g.fill();   /* the flap, shaded */
+    g.strokeStyle = 'rgba(60,35,15,0.75)'; g.lineWidth = 4; g.lineJoin = 'round';   /* the fold */
     g.beginPath(); g.moveTo(24, 24); g.lineTo(w / 2, h * 0.52); g.lineTo(w - 24, 24); g.stroke();
     g.fillStyle = '#c9382c'; g.fillRect(w - 112, 34, 70, 82);   /* a stamp */
     g.strokeStyle = '#efe4c6'; g.lineWidth = 3; g.setLineDash([5, 4]); g.strokeRect(w - 108, 38, 62, 74); g.setLineDash([]);
     g.fillStyle = '#efe4c6'; g.font = "bold 30px 'KCStrikerSans', sans-serif"; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText('FJ', w - 77, 76);
     g.fillStyle = '#3a2a1c';
-    g.font = "bold 58px 'KCPelletierTyped', 'Courier New', monospace"; g.fillText('CONTACT US', w / 2 - 12, h * 0.72);
+    g.font = "bold 76px 'KCPelletierTyped', 'Courier New', monospace"; g.fillText('CONTACT', w / 2 - 12, h * 0.64); g.fillText('US', w / 2 - 12, h * 0.85);
   };
   const letterTex = mkTex(lcW, lcH, drawLetter);
   const letterSide = std(0xcdbf9e, 0.85);
   const letterBox = new THREE.Mesh(new THREE.BoxGeometry(1.3, 0.04, 0.85), [letterSide, letterSide, new THREE.MeshStandardMaterial({ map: letterTex, color: 0xd8d8d8, roughness: 0.8 }), letterSide, letterSide, letterSide]);
   letterLean.add(letterBox);
-  if (document.fonts && document.fonts.load) Promise.all([document.fonts.load("58px 'KCPelletierTyped'"), document.fonts.load("30px 'KCStrikerSans'")]).then(() => {   /* redraw once the fonts are ready */
+  if (document.fonts && document.fonts.load) Promise.all([document.fonts.load("76px 'KCPelletierTyped'"), document.fonts.load("30px 'KCStrikerSans'")]).then(() => {   /* redraw once the fonts are ready */
     drawLetter(letterTex.image.getContext('2d'), lcW, lcH); letterTex.needsUpdate = true;
     drawDoor(mbDoorTex.image.getContext('2d'), 256, 256); mbDoorTex.needsUpdate = true;
   }).catch(() => {});
@@ -2951,20 +3051,6 @@ function makeDesk(el) {
   vinylG.add(new THREE.Mesh(new THREE.CylinderGeometry(VR, VR, VT, 72), [std(0xb8a878, 0.5), vCap, vCap]));
   hitBox(VR * 2, VT * 2, VR * 2, 0, 0, 0, 'vinyl', vinylG);
   let vSlide = 0;
-  const streamDlg = document.getElementById('streamDlg');
-  streamDlg.addEventListener('click', e => { if (e.target === streamDlg) streamDlg.close(); });
-  document.getElementById('streamOk').addEventListener('click', () => streamDlg.close());
-  function showSoon(title, msg) {   /* the shared "coming soon" popup */
-    document.getElementById('streamTitle').textContent = title;
-    document.getElementById('streamMsg').textContent = msg;
-    if (!streamDlg.open) { try { streamDlg.showModal(); } catch (x) { streamDlg.setAttribute('open', ''); } }
-  }
-  function openStream(i) {   /* a streaming button: opens its link, or a placeholder until the link is live */
-    const s = STREAMS[i], url = (CONFIG.streamLinks || {})[s.id];
-    if (url) window.open(url, '_blank', 'noopener');
-    else if (s.id === 'more') showSoon('More ways to listen', 'More links coming soon.');
-    else showSoon(s.name, 'The ' + s.name + ' link is coming soon.');
-  }
   let wigList = null, wigLast = null;   /* hover wiggle: a quick damped yaw shake when the pointer lands on an item */
   let hoverGroup = null, glowItems = null, knobDrag = null, knobMoved = 0, ledOn = false, lastDie = 0, lastCoin = '', coinLand = 0, dieLand = 0;
   const setKnob = vol => { knob.rotation.z = 2.35 - vol * 4.7; };   /* quiet = turned left, loud = turned right */
@@ -3044,7 +3130,7 @@ function makeDesk(el) {
   deck.add(dieRoot);
   const yawG = new THREE.Group();
   dieRoot.add(yawG);
-  const die = makeClearDie('red', 1);   /* opaque red, white pips */
+  const die = makeDichroicDie(true);   /* the Angel edition's color-shifting glass die with gold pips, with rounded corners */
   die.scale.setScalar(DIE_SCALE);
   yawG.add(die);
   hitBox(0.8, 0.8, 0.8, 0, 0, 0, 'die', dieRoot);
@@ -3077,6 +3163,9 @@ function makeDesk(el) {
   infoM.position.z = 0.1305; infoM.renderOrder = 9; infoM.visible = false;
   screenGrp.add(infoM);
   let info = 0, infoBlink = true, infoBlinkT = 0;
+  const adJesse = headFor(jIdx, marble().clone());   /* a floating Jesse head in front of the ad, beside the price burst */
+  adJesse.scale.setScalar(0.3); adJesse.position.set(0.47, -0.37, 0.2); adJesse.visible = false;
+  screenGrp.add(adJesse);
   const INFO_FONT = "'KCStrikerSans', 'Arial Black', sans-serif", INFO_HEAD = "'KCOraleSans', 'Arial Black', sans-serif";
   function drawInfo() {
     const g = infoCv.getContext('2d'), W = INFO_PX;
@@ -3107,14 +3196,19 @@ function makeDesk(el) {
     infoTex.needsUpdate = true;
   }
   if (document.fonts && document.fonts.load) Promise.all([document.fonts.load("46px 'KCStrikerSans'"), document.fonts.load("60px 'KCOraleSans'"), document.fonts.load("18px 'KCPelletierTyped'")]).then(() => { if (info) drawInfo(); }).catch(() => {});
-  function showInfoTV() {
+  /* a short burst of static on the TV, then fn (used to switch to the ad and back) */
+  let blip = null, piecesTouched = false, autoAd = 0, autoAdT0 = 0, infoAuto = false;
+  function tvBlip(fn) { blip = { t0: performance.now(), fn }; staticM.visible = !REDUCE; jesse.visible = false; }
+  function cancelBlip() { if (!blip) return; blip = null; staticM.visible = false; jesse.visible = !menuOn && !secret && !info && !lore; }
+  function showInfoTV(auto) {
     if (menuOn || v.tvT || v.navigated || intro.busy) return;
+    infoAuto = auto === true;
     hideSecretTV(); endLore();
     infoBlink = true; infoBlinkT = performance.now(); drawInfo();
-    infoM.visible = true; jesse.visible = false; info = performance.now();
+    infoM.visible = true; adJesse.visible = true; jesse.visible = false; info = performance.now();
     Sound.oneUp();
   }
-  function hideInfoTV() { if (!info) return; info = 0; infoM.visible = false; jesse.visible = !menuOn && !secret && !lore; }
+  function hideInfoTV() { if (!info) return; info = 0; infoAuto = false; infoM.visible = false; adJesse.visible = false; jesse.visible = !menuOn && !secret && !lore; }
   function infoAt(e) {   /* is the pointer on the ad? */
     if (!info) return false;
     const r = el.getBoundingClientRect();
@@ -3134,7 +3228,7 @@ function makeDesk(el) {
   ldM.position.z = 0.1255; ldM.renderOrder = 5; ldM.visible = false;
   screenGrp.add(ldM);
   const ldCoinG = new THREE.Group();   /* flattened front to back, so the coin reads as a picture on the screen glass (scanlines and glow go over it) */
-  ldCoinG.position.set(0, 0.03, 0.128); ldCoinG.scale.set(1, 1, 0.04); ldCoinG.visible = false;
+  ldCoinG.position.set(0, 0.108, 0.128); ldCoinG.scale.set(1, 1, 0.04); ldCoinG.visible = false;
   screenGrp.add(ldCoinG);
   /* the layers in front of the picture (scan lines, glow, menu, static, ads...) sit a little in front of it, and the camera looks down, so they used to look lower than the picture and the gray border. Lift each one by the exact amount that cancels that, so everything lines up from the camera angle. */
   const LAYER_LIFT = 1.6 * Math.tan(EL) / 3;   /* the TV is scaled 3 tall and 1.6 deep */
@@ -3148,7 +3242,7 @@ function makeDesk(el) {
   ldCoin.material.forEach(m => { m.depthTest = false; });
   ldCoin.renderOrder = 6;
   ldFlip.add(ldCoin);
-  function drawLoading(frac, now) {
+  function drawLoading(frac, now, inserted) {
     const g = ldCv.getContext('2d'), W = LD_PX;
     g.fillStyle = '#070b1c'; g.fillRect(0, 0, W, W);
     g.strokeStyle = 'rgba(90,140,255,0.14)'; g.lineWidth = 1;
@@ -3156,16 +3250,46 @@ function makeDesk(el) {
     g.strokeStyle = '#ffd36b'; g.lineWidth = 6; g.strokeRect(24, 24, W - 48, W - 48);
     g.strokeStyle = '#ff7a59'; g.lineWidth = 2; g.strokeRect(38, 38, W - 76, W - 76);
     g.textAlign = 'center'; g.textBaseline = 'middle';
-    fitText(g, 'FEARJOY', 380, 64, "'KCOraleSans', 'Arial Black', sans-serif");
-    g.fillStyle = '#ff7a59'; g.fillText('FEARJOY', W / 2 + 3, 94); g.fillStyle = '#ffffff'; g.fillText('FEARJOY', W / 2, 91);
-    g.font = '40px ' + LD_STRIKER; g.fillStyle = '#ffd36b'; g.textAlign = 'left';
-    const w3 = g.measureText('LOADING...').width;
-    g.fillText('LOADING' + '.'.repeat(1 + Math.floor(now / 350) % 3), (W - w3) / 2, 372);
-    g.strokeStyle = '#ffd36b'; g.lineWidth = 3; g.strokeRect(96, 400, 320, 26);
-    g.fillStyle = '#64ff8f'; g.fillRect(100, 404, Math.max(2, 312 * frac), 18);
-    g.textAlign = 'center';
-    if (Math.floor(now / 500) % 2 === 0) { g.fillStyle = '#7fb0ff'; g.font = "20px 'KCPelletierTyped', 'Courier New', monospace"; g.fillText('INSERT COIN', W / 2, 462); }
+    const blink = Math.floor(now / 500) % 2 === 0;
+    /* the coin slot: a metal plate with a slit (the coin slides into it) */
+    const px = W / 2 - 75, py = 382, pw = 150, ph = 84, pr = 14;
+    const pg = g.createLinearGradient(0, py, 0, py + ph); pg.addColorStop(0, '#dde0e5'); pg.addColorStop(1, '#7d838b');
+    g.fillStyle = pg; g.strokeStyle = '#25282c'; g.lineWidth = 4;
+    g.beginPath(); g.moveTo(px + pr, py); g.lineTo(px + pw - pr, py); g.quadraticCurveTo(px + pw, py, px + pw, py + pr); g.lineTo(px + pw, py + ph - pr); g.quadraticCurveTo(px + pw, py + ph, px + pw - pr, py + ph); g.lineTo(px + pr, py + ph); g.quadraticCurveTo(px, py + ph, px, py + ph - pr); g.lineTo(px, py + pr); g.quadraticCurveTo(px, py, px + pr, py); g.closePath(); g.fill(); g.stroke();
+    [[px + 14, py + 14], [px + pw - 14, py + 14], [px + 14, py + ph - 14], [px + pw - 14, py + ph - 14]].forEach(q => { g.fillStyle = '#555a60'; g.beginPath(); g.arc(q[0], q[1], 5, 0, Math.PI * 2); g.fill(); });
+    g.fillStyle = inserted ? '#64ff8f' : (blink ? '#ffd36b' : '#8a7a3a'); g.fillRect(W / 2 - 11, 392, 22, 64);   /* the glow around the slit */
+    g.fillStyle = '#030303'; g.fillRect(W / 2 - 7, 396, 14, 56);
+    if (!inserted) {
+      g.fillStyle = blink ? '#ffd36b' : '#b89a3e'; g.font = '36px ' + LD_STRIKER; g.fillText('INSERT COIN', W / 2, 352);
+      g.fillStyle = '#7fb0ff'; g.font = "20px 'KCPelletierTyped', 'Courier New', monospace"; g.fillText('tap the coin', W / 2, 78);
+    } else {
+      g.font = '40px ' + LD_STRIKER; g.fillStyle = '#ffd36b'; g.textAlign = 'left';
+      const w3 = g.measureText('LOADING...').width;
+      g.fillText('LOADING' + '.'.repeat(1 + Math.floor(now / 350) % 3), (W - w3) / 2, 200);
+      g.strokeStyle = '#ffd36b'; g.lineWidth = 3; g.strokeRect(96, 236, 320, 26);
+      g.fillStyle = '#64ff8f'; g.fillRect(100, 240, Math.max(2, 312 * frac), 18);
+    }
     ldTex.needsUpdate = true;
+  }
+  const LD_R = 0.285;   /* the loading coin's radius on the screen */
+  const ldYof = py => ldM.position.y + (256 - py) / 512 * 1.35 + (ldCoinG.position.z - ldM.position.z) * LAYER_LIFT;   /* a picture row of the loading screen -> a height in the screen group */
+  function ldCoinStep(now) {   /* the coin spins on its edge; after a tap it turns edge-on, shrinks over the slit and slides in */
+    if (!intro.coinT) { ldSpin.rotation.y = now * 0.0018; return; }
+    const k = Math.min(1, (now - intro.coinT) / 1000), a = Math.min(1, k / 0.5), u = Math.max(0, (k - 0.5) / 0.5);
+    const ea = 1 - Math.pow(1 - a, 3), s = 1 - 0.7 * ea, sy = s * (1 - u), yTop = ldYof(396);
+    ldSpin.rotation.y = intro.coinR0 + (intro.coinR1 - intro.coinR0) * ea;
+    ldCoinG.position.y = u > 0 ? yTop + LD_R * sy : intro.coinY0 + (yTop + LD_R * s - intro.coinY0) * ea;
+    ldCoinG.scale.set(s, Math.max(0.001, sy), 0.04);
+    if (k >= 1) { ldCoinG.visible = false; intro.coinDone = true; }
+  }
+  function insertCoin() {
+    if (intro.coinT || (intro.phase !== 'load' && intro.phase !== 'warm')) return;
+    intro.coinT = performance.now(); intro.coinY0 = ldCoinG.position.y;
+    const r0 = ldSpin.rotation.y; let r1 = Math.PI / 2 + Math.PI * Math.ceil((r0 - Math.PI / 2) / Math.PI);
+    if (r1 - r0 < 0.4) r1 += Math.PI;
+    intro.coinR0 = r0; intro.coinR1 = r1;
+    Sound.coin();
+    drawLoading(intro.shown, intro.coinT, true);
   }
   function wrapDrop(objs, delay, H, shadows, amp) {   /* each thing sits in its own group, which is what falls (so nothing else about it has to change) */
     const par = objs[0].parent, g = new THREE.Group();
@@ -3187,18 +3311,19 @@ function makeDesk(el) {
     wrapDrop([coinRoot], 1.3, 4, [coinShadow], 0.12);
     wrapDrop([howG], 0.85, 0.7, [howBlob], 0.04);
     wrapDrop([noteG], 0.95, 0.7, [noteBlob], 0.04);
+    wrapDrop([photoG], 1.0, 0.7, [photoBlob], 0.04);
     wrapDrop([micG], 1.05, 0.7, [micBlob], 0.04);
     wrapDrop([poleG, mailG], 1.4, 4, [poleBlob], 0.1);
     wrapDrop([letterG], 1.5, 4, [letterBlob], 0.1);
     drops.forEach(d => { d.g.visible = false; d.sh.forEach(s => { s.visible = false; }); });
     jesse.visible = false; ldM.visible = true; ldCoinG.visible = true;
-    drawLoading(0, 0);
+    drawLoading(0, 0, false);
     const track = (p, ms) => {   /* every download counts, but none can hold the intro for more than 8 seconds */
       const t = { done: false };
       introTasks.push(t);
       Promise.race([Promise.resolve(p), new Promise(r => setTimeout(r, ms || 8000))]).catch(() => {}).then(() => { t.done = true; });
     };
-    track(tvImgP); track(howTexP); track(kickLoads(v)); track(Sound.whenLoaded());
+    track(tvImgP); track(howTexP); track(photoP); track(kickLoads(v)); track(Sound.whenLoaded());
     track(document.fonts && document.fonts.load ? Promise.all([document.fonts.load("64px 'KCOraleSans'"), document.fonts.load("40px 'KCStrikerSans'"), document.fonts.load("20px 'KCPelletierTyped'")]) : null);
     track(new Promise(res => { const im = new Image(); im.onload = im.onerror = () => res(); im.src = '/images/how-to-credits.png'; }));
   }
@@ -3217,14 +3342,15 @@ function makeDesk(el) {
     if (intro.phase === 'load' || intro.phase === 'warm') {
       const done = introTasks.filter(x => x.done).length, frac = intro.phase === 'warm' ? 1 : done / introTasks.length;
       intro.shown += (frac - intro.shown) * 0.1;
-      ldSpin.rotation.y = now * 0.0018;   /* a little faster than the coin on the table */
-      if (now - ldDraw > 110) { ldDraw = now; drawLoading(intro.shown, now); }
+      ldCoinStep(now);
+      if (now - ldDraw > 110) { ldDraw = now; drawLoading(intro.shown, now, !!intro.coinT); }
       if (intro.phase === 'load') {
         if ((done === introTasks.length && now - intro.t0 > 2400) || now - intro.t0 > 10500) { warmUp(); intro.phase = 'warm'; intro.tw = now; intro.calm = 0; intro.prev = now; }
       } else {   /* the loading screen stays up until the page has been drawing steadily for a moment (and never more than 2 seconds extra) */
         const dtf = now - intro.prev; intro.prev = now;
         intro.calm = dtf < 26 ? intro.calm + 1 : 0;
-        if ((now - intro.tw > 600 && intro.calm >= 10) || now - intro.tw > 2200) startDrop(now);
+        if (!intro.coinT && now - intro.tw > 12000) insertCoin();   /* nobody tapped the coin: put it in for them */
+        if (intro.coinDone && ((now - intro.tw > 600 && intro.calm >= 10) || now - intro.tw > 2200)) startDrop(now);   /* the items drop once the coin is in and everything is ready */
       }
       return;
     }
@@ -3251,7 +3377,7 @@ function makeDesk(el) {
   }
 
   /* a 3 on the die and JOY on the coin (both from real rolls and flips) unlock the secret download: THREEJOY, shown on the TV screen */
-  function checkSecret() { if (lastDie === 3 && lastCoin === 'JOY' && !menuOn && !v.tvT) { lastDie = 0; lastCoin = ''; showSecretTV(); } }
+  function checkSecret() { if (lastDie === 3 && lastCoin === 'JOY' && !menuOn && !v.tvT) showSecretTV(); }   /* every time a roll or flip lands on a 3 with JOY showing, so the same combo shows the link again */
 
   /* ---------- clicking ---------- */
   const ray = new THREE.Raycaster(), ndc = new THREE.Vector2();
@@ -3270,13 +3396,23 @@ function makeDesk(el) {
     pickObj = h && h.object.userData.tag !== 'block' ? h.object : null;   /* the table and board hide whatever is behind them */
     return pickObj ? pickObj.userData.tag : null;
   }
+  function ldCoinAt(e) {   /* is the pointer on the loading coin? */
+    if (!ldCoinG.visible || intro.coinT || (intro.phase !== 'load' && intro.phase !== 'warm')) return false;
+    const r = el.getBoundingClientRect();
+    ndc.set(((e.clientX - r.left) / r.width) * 2 - 1, -((e.clientY - r.top) / r.height) * 2 + 1);
+    ray.setFromCamera(ndc, v.camera);
+    const hit = ray.intersectObject(ldM, false)[0];
+    if (!hit) return false;
+    const p = screenGrp.worldToLocal(hit.point.clone());
+    return Math.hypot(p.x - ldCoinG.position.x, p.y - ldCoinG.position.y) < 0.33;
+  }
   el.addEventListener('pointerdown', e => {
     knobMoved = 0;
     if (intro.busy) return;
     if (pick(e) === 'knob') { knobDrag = { x0: e.clientX, y0: e.clientY, v0: Sound.getVolume() }; try { el.setPointerCapture(e.pointerId); } catch (x) {} }
   });
   el.addEventListener('pointermove', e => {
-    if (intro.busy) { el.style.cursor = 'default'; hoverGroup = null; return; }
+    if (intro.busy) { el.style.cursor = ldCoinAt(e) ? 'var(--hand)' : 'default'; hoverGroup = null; return; }
     if (knobDrag) {   /* turning the volume knob: right or up = louder, left or down = quieter (diagonal counts too) */
       const d = (e.clientX - knobDrag.x0) - (e.clientY - knobDrag.y0);
       knobMoved = Math.max(knobMoved, Math.abs(d));
@@ -3292,7 +3428,7 @@ function makeDesk(el) {
     if (loreAt(e)) { el.style.cursor = 'var(--hand)'; hoverGroup = null; return; }   /* a lore picture is on the TV: click it to save it */
     const tag = pick(e);
     el.style.cursor = tag && !(menuOn && tag === 'tv') ? 'var(--hand)' : 'default';
-    hoverGroup = tag === 'stream' ? pickObj.userData.btn : tag === 'howto' ? howG : tag === 'notebook' ? noteG : tag === 'mic' ? micG : tag === 'mailbox' ? mailG : tag === 'letter' ? letterG : tag === 'tv' ? (menuOn ? null : tv) : tag === 'bust' ? pickObj.userData.bust : tag === 'coin' ? coinRoot : tag === 'die' ? dieRoot : tag === 'vinyl' ? vinylG : tag === 'joystick' ? joyG : tag === 'radio' ? radio : tag === 'knob' ? knob : null;
+    hoverGroup = tag === 'chan' ? pickObj.userData.btn : tag === 'howto' ? howG : tag === 'notebook' ? noteG : tag === 'photo' ? photoG : tag === 'mic' ? micG : tag === 'mailbox' ? mailG : tag === 'letter' ? letterG : tag === 'tv' ? (menuOn ? null : tv) : tag === 'bust' ? pickObj.userData.bust : tag === 'coin' ? coinRoot : tag === 'die' ? dieRoot : tag === 'vinyl' ? vinylG : tag === 'joystick' ? joyG : tag === 'radio' ? radio : tag === 'knob' ? knob : null;
   });
   const endKnob = () => { knobDrag = null; };
   el.addEventListener('pointerup', endKnob);
@@ -3301,7 +3437,7 @@ function makeDesk(el) {
   el.addEventListener('pointerleave', () => { hoverGroup = null; });
   function openTvMenu() { if (menuOn || v.tvT || v.navigated || intro.busy) return; hideSecretTV(); hideInfoTV(); endLore(); Sound.oneUp(); v.tvMode = 'open'; v.tvSwapped = false; v.tvT = performance.now(); }
   el.addEventListener('click', e => {
-    if (intro.busy) return;
+    if (intro.busy) { if (ldCoinAt(e)) insertCoin(); return; }
     if (info && infoAt(e)) { hideInfoTV(); goTo('kits'); return; }
     if (secret) { const o = secretAt(e); if (o) { if (o === 'dl') downloadSong(); hideSecretTV(); return; } }
     if (menuOn && !v.tvT) { const o = menuAt(e); if (o) { if (o === 'start') startGame(); else closeMenu(); return; } }
@@ -3309,6 +3445,7 @@ function makeDesk(el) {
     const tag = pick(e);
     let menuClosing = false;
     if (menuOn && !v.tvT && tag) { closeMenu(); menuClosing = true; if (tag === 'joystick' || tag === 'tv') return; }   /* the menu does not take over: tapping the joystick again, the TV, or anything else puts it away */
+    if (tag === 'coin' || tag === 'die' || tag === 'bust') { piecesTouched = true; cancelBlip(); if (info && tag !== 'bust') hideInfoTV(); }
     if (tag === 'coin') doFlip();
     else if (tag === 'die') doRoll();
     else if (tag === 'bust') {
@@ -3325,9 +3462,19 @@ function makeDesk(el) {
     else if (tag === 'knob') {   /* a plain tap on the knob steps the volume; dragging turns it */
       if (knobMoved < 5) { const cur = Sound.getVolume(); setKnob(Sound.setVolume(cur >= 0.99 ? 0 : Math.min(1, Math.round(cur * 4) / 4 + 0.25))); }
     }
-    else if (tag === 'stream') { pickObj.userData.btn.userData.press = performance.now(); Sound.slide(); openStream(pickObj.userData.idx); }
+    else if (tag === 'chan') {   /* CH up / down: step through the lore in order */
+      const d = pickObj.userData.dir;
+      pickObj.userData.btn.userData.press = performance.now(); Sound.slide();
+      const go = () => { hideSecretTV(); hideInfoTV(); cancelBlip(); changeChannel(d); };
+      if (menuClosing) setTimeout(go, 800); else go();
+    }
     else if (tag === 'howto') { Sound.slide(); document.getElementById('howBtn').click(); }
     else if (tag === 'notebook') { Sound.slide(); goTo('credits'); }
+    else if (tag === 'photo') {   /* the floor photo plays on the TV as a lore picture (tap the TV picture to save it) */
+      Sound.slide();
+      const go = () => { hideSecretTV(); hideInfoTV(); cancelBlip(); startLore(null, loreItems().find(i => i.name === CONFIG.floorPhoto) || { name: CONFIG.floorPhoto, video: false }); };
+      if (menuClosing) setTimeout(go, 800); else go();
+    }
     else if (tag === 'mailbox') { mailT = performance.now(); Sound.slide(); setTimeout(openMail, REDUCE ? 0 : 650); }
     else if (tag === 'letter') { letterT = performance.now(); Sound.slide(); setTimeout(openContact, REDUCE ? 0 : 450); }
     else if (tag === 'mic') { micT = performance.now(); Sound.slide(); if (menuClosing) setTimeout(() => startLore('video'), 800); else startLore('video'); }
@@ -3374,7 +3521,7 @@ function makeDesk(el) {
     barTex.offset.y = REDUCE ? 0 : -((t / 7000) % 1);
     tvLight.intensity = 0.55 * fl;
     /* hover glow: whatever is under the pointer warms up slightly (the radio knob too, while it is turned) */
-    if (!glowItems) glowItems = [tv, radio, knob, coinRoot, dieRoot, vinylG, joyG, howG, noteG, micG, mailG, letterG].concat(crew, strBtns).map(g => ({ g, k: 0, s: g === knob || strBtns.indexOf(g) >= 0 ? 1.2 : 1 }));
+    if (!glowItems) glowItems = [tv, radio, knob, coinRoot, dieRoot, vinylG, joyG, howG, noteG, photoG, micG, mailG, letterG].concat(crew, chBtns).map(g => ({ g, k: 0, s: g === knob || chBtns.indexOf(g) >= 0 ? 1.2 : 1 }));
     const hg = knobDrag ? knob : hoverGroup;
     glowItems.forEach(it => {
       const tgt = it.g === hg ? 1 : 0;
@@ -3383,11 +3530,13 @@ function makeDesk(el) {
       if (Math.abs(tgt - it.k) < 0.01) it.k = tgt;
       applyGlow(it.g, it.k, it.s);
     });
-    if (!wigList) wigList = glowItems.map(it => it.g).filter(g => g !== tv && g !== knob && g !== vinylG && strBtns.indexOf(g) < 0).map(g => ({ g, off: 0, t0: 0, crew: crew.indexOf(g) >= 0 }));
+    if (!wigList) wigList = glowItems.map(it => it.g).filter(g => g !== tv && g !== knob && g !== vinylG && chBtns.indexOf(g) < 0).map(g => ({ g, off: 0, t0: 0, crew: crew.indexOf(g) >= 0 }));
     if (hg !== wigLast) { wigLast = hg; const w = wigList.find(x => x.g === hg); if (w && !REDUCE) w.t0 = now; }
     wigList.forEach(w => { if (!w.t0) return; const k = Math.min(1, (now - w.t0) / (w.crew ? 700 : 520)); w.off = Math.sin(k * Math.PI * (w.crew ? 6 : 5)) * (1 - k) * (w.crew ? 0.34 : 0.1); if (!w.crew) w.g.rotation.y += w.off; if (k >= 1) w.t0 = 0; });   /* the player pieces shake about 3x harder than the rest */
     if (menuOn && now - menuBlinkT > 500) { menuBlinkT = now; menuBlink = !menuBlink; drawMenu(); }   /* selector arrow blinks */
-    strBtns.forEach(b => { const pt = b.userData.press ? Math.max(0, 1 - (now - b.userData.press) / 160) : 0; b.position.z = 0.48 - 0.035 * pt; });   /* TV buttons press in */
+    if (info && !REDUCE) { adJesse.position.y = -0.37 + Math.sin(now / 520) * 0.025; adJesse.rotation.y = Math.sin(now / 760) * 0.55; }   /* bobs and turns */
+    if (die.userData.tint) die.userData.tint((now / 9000) % 1);   /* the glass slowly shifts color */
+    chBtns.forEach(b => { const pt = b.userData.press ? Math.max(0, 1 - (now - b.userData.press) / 160) : 0; b.position.z = 0.48 - 0.035 * pt; });   /* TV buttons press in */
     loreTick(now);   /* channel change: static, lore, static, back to the game screen */
     /* radio light pulses while the song plays */
     ledHalo.material.opacity = ledOn ? 0.7 + (REDUCE ? 0 : 0.2 * Math.sin(t / 220)) : 0;
@@ -3495,18 +3644,18 @@ function goldPipTexture(n) {
   });
   return (goldPipCache[n] = new THREE.CanvasTexture(c));
 }
-function makeDichroicDie() {
+function makeDichroicDie(rounded) {   /* rounded = soft corners (the desk die); otherwise straight edges and sharp corners (the Angel edition card) */
   const g = new THREE.Group();
-  const geo = new THREE.BoxGeometry(0.46, 0.46, 0.46);   /* straight edges and sharp corners, not rounded */
+  const geo = rounded ? roundedBox(0.46, 0.07, 12) : new THREE.BoxGeometry(0.46, 0.46, 0.46);
   const mc = rainbowMatcap();
   /* see-through glass again (half transparent) whose color shifts with the angle, like dichroic glass */
-  const body = new THREE.Mesh(geo, FACES.map(() => new THREE.MeshMatcapMaterial({ matcap: mc, transparent: true, opacity: 0.5, side: THREE.DoubleSide, depthWrite: false })));
+  const body = new THREE.Mesh(geo, FACES.map(() => new THREE.MeshMatcapMaterial({ matcap: mc, transparent: true, opacity: rounded ? 0.72 : 0.5, side: THREE.DoubleSide, depthWrite: false })));
   const pips = new THREE.Mesh(geo, FACES.map(n => new THREE.MeshBasicMaterial({ map: goldPipTexture(n), transparent: true, depthWrite: false })));
   pips.scale.setScalar(1.006);
   body.renderOrder = 1;
   pips.renderOrder = 2;
   g.add(body, pips);
-  g.userData.tint = h => body.material.forEach((m, i) => m.color.setHSL((((h + i * 0.09) % 1) + 1) % 1, 0.55, 0.78));
+  g.userData.tint = h => body.material.forEach((m, i) => m.color.setHSL((((h + i * 0.09) % 1) + 1) % 1, 0.55, rounded ? 0.9 : 0.78));
   g.userData.tint(0);
   return g;
 }
@@ -4065,8 +4214,57 @@ $$('[data-open]').forEach(b => b.addEventListener('click', () => {
 
 /* ---------- rack bar: lit buttons, play/pause, volume knob, background play ---------- */
 const rack = $('.rack'), rackMenu = $('#rackMenu');
+
+/* ---------- CD player: the streaming circles. Logo pictures come from CONFIG.streamLogos (each file name is tried in turn); until one loads the name is written. ---------- */
+const streamDlg = document.getElementById('streamDlg');
+streamDlg.addEventListener('click', e => { if (e.target === streamDlg) streamDlg.close(); });
+document.getElementById('streamOk').addEventListener('click', () => streamDlg.close());
+function showSoon(title, msg) {   /* the shared "coming soon" popup */
+  document.getElementById('streamTitle').textContent = title;
+  document.getElementById('streamMsg').textContent = msg;
+  if (!streamDlg.open) { try { streamDlg.showModal(); } catch (x) { streamDlg.setAttribute('open', ''); } }
+}
+const STREAMS = [
+  { id: 'spotify', name: 'Spotify', lines: ['Spotify'], color: '#1DB954' },
+  { id: 'youtube', name: 'YouTube', lines: ['YouTube'], color: '#E60000' },
+  { id: 'apple', name: 'Apple Music', lines: ['Apple', 'Music'], color: '#FA243C' }
+];
+function openStream(i) {   /* a streaming circle: opens its link, or a placeholder until the link is live */
+  const s = STREAMS[i], url = (CONFIG.streamLinks || {})[s.id];
+  if (url) window.open(url, '_blank', 'noopener');
+  else showSoon(s.name, 'The ' + s.name + ' link is coming soon.');
+}
+const cdBox = $('#cdStreams');
+const cdBtn = document.createElement('button'); cdBtn.type = 'button'; cdBtn.className = 'cd-btn'; cdBtn.setAttribute('aria-label', 'Listen to the album'); cdBtn.setAttribute('aria-haspopup', 'true'); cdBtn.setAttribute('aria-expanded', 'false');
+const cdFace = s => {   /* a round face for one service: its color with its logo (each file name in CONFIG.streamLogos is tried in turn; until one loads the name is written) */
+  const face = document.createElement('span'); face.className = 'cd-face'; face.style.setProperty('--sc', s.color); face.textContent = s.lines.join('\n');
+  const names = [].concat((CONFIG.streamLogos || {})[s.id] || []);
+  const tryLogo = k => { if (k >= names.length) return; const im = new Image(); im.alt = ''; im.draggable = false; im.onload = () => { face.textContent = ''; face.appendChild(im); }; im.onerror = () => tryLogo(k + 1); im.src = names[k]; };
+  tryLogo(0);
+  return face;
+};
+const cdFaces = STREAMS.map(s => { const f = cdFace(s); cdBtn.appendChild(f); return f; });   /* stacked on top of each other; the one with .on is showing */
+let cdI = 0;
+const cdShow = i => { cdI = i; cdFaces.forEach((f, j) => f.classList.toggle('on', j === i)); };
+cdShow(0);
+setInterval(() => cdShow((cdI + 1) % STREAMS.length), 2200);   /* about every 2 seconds, fading from one logo to the next */
+cdBox.appendChild(cdBtn);
+/* the little sub menu above the button: pick a streaming service */
+const cdSub = document.createElement('div'); cdSub.className = 'cd-sub'; cdSub.setAttribute('role', 'menu');
+STREAMS.forEach((s, i) => {
+  const o = document.createElement('button'); o.type = 'button'; o.className = 'rk cd-opt'; o.setAttribute('role', 'menuitem');
+  const f = cdFace(s); f.classList.add('on'); o.appendChild(f);
+  o.appendChild(document.createTextNode(s.name));
+  o.addEventListener('click', () => { Sound.slide(); setCd(false); openStream(i); });
+  cdSub.appendChild(o);
+});
+cdBox.appendChild(cdSub);
+const setCd = on => { cdBox.classList.toggle('open', on); cdBtn.setAttribute('aria-expanded', String(on)); };
+cdBtn.addEventListener('click', e => { e.stopPropagation(); Sound.slide(); setRackMenu(false); setCd(!cdBox.classList.contains('open')); });
+document.addEventListener('click', e => { if (cdBox.classList.contains('open') && !e.target.closest('.cd-sub')) setCd(false); });
+document.addEventListener('keydown', e => { if (e.key === 'Escape') setCd(false); });
 const setRackMenu = on => { rack.classList.toggle('open', on); rackMenu.classList.toggle('lit', on); rackMenu.setAttribute('aria-expanded', String(on)); };   /* the slide-out menu on narrow screens */
-rackMenu.addEventListener('click', e => { e.stopPropagation(); setRackMenu(!rack.classList.contains('open')); });
+rackMenu.addEventListener('click', e => { e.stopPropagation(); setCd(false); setRackMenu(!rack.classList.contains('open')); });
 document.addEventListener('click', e => { if (rack.classList.contains('open') && !e.target.closest('.rack-nav')) setRackMenu(false); });
 document.addEventListener('keydown', e => { if (e.key === 'Escape') setRackMenu(false); });
 $('#rackNav').addEventListener('click', e => { if (e.target.closest('.rk') && !e.target.closest('#rackBg2')) setRackMenu(false); });   /* picking something closes the panel */
@@ -4083,9 +4281,10 @@ $('#goYes').addEventListener('click', () => { goGoing = true; location.href = go
 $('#goNo').addEventListener('click', () => goDlg.close());
 goDlg.addEventListener('click', e => { if (e.target === goDlg) goDlg.close(); });
 goDlg.addEventListener('close', () => { if (goBtn && !goGoing) goBtn.classList.remove('lit'); });
-const rackPlay = $('#rackPlay'), rackLcd = $('#rackLcd'), rackBg = $('#rackBg'), rackKnob = $('#rackKnob');
+const rackPlay = $('#rackPlay'), rackLcd = $('#rackLcd'), rackKnob = $('#rackKnob');
 const lcdSay = (txt, still) => { rackLcd.querySelectorAll('.lcd-track span').forEach(sp => { sp.textContent = txt; }); rackLcd.classList.toggle('still', !!still); };   /* WELCOME until the song has been played, then the title while it plays and PAUSED when it is paused */
 let lcdPlayed = false;
+setTimeout(() => { if (!lcdPlayed) lcdSay('PAUSED', true); }, 4000);   /* WELCOME for a few seconds, then PAUSED until the song is played */
 Sound.onRadio(on => { rackPlay.setAttribute('aria-pressed', String(on)); rackPlay.innerHTML = on ? '&#10074;&#10074;' : '&#9654;'; if (on) { lcdPlayed = true; lcdSay('\u25B6 THE ENDLESS JAM (UNRELEASED) - FEARJOY', false); } else if (lcdPlayed) lcdSay('PAUSED', true); });
 rackPlay.addEventListener('click', () => Sound.toggleRadio());
 const showRackKnob = v => { rackKnob.style.setProperty('--a', (-135 + v * 270) + 'deg'); rackKnob.setAttribute('aria-valuenow', String(Math.round(v * 100))); };
@@ -4101,13 +4300,12 @@ rackKnob.addEventListener('keydown', e => {
   if (e.key === 'ArrowUp' || e.key === 'ArrowRight') { e.preventDefault(); Sound.setVolume(Sound.getVolume() + 0.05); }
   else if (e.key === 'ArrowDown' || e.key === 'ArrowLeft') { e.preventDefault(); Sound.setVolume(Sound.getVolume() - 0.05); }
 });
-const rackBg2 = $('#rackBg2');   /* the same switch lives in the slide-out menu on narrow screens */
+const rackBg2 = $('#rackBg2');   /* the background play switch lives in the menu */
 const toggleBg = () => {
   const on = Sound.setBackground(!Sound.isBackground());
-  [rackBg, rackBg2].forEach(b => b.setAttribute('aria-pressed', String(on)));
+  rackBg2.setAttribute('aria-pressed', String(on));
   toast(on ? 'Background play on: the jam keeps going in the background.' : 'Background play off.');
 };
-rackBg.addEventListener('click', toggleBg);
 rackBg2.addEventListener('click', toggleBg);
 
 /* ---------- email list form (the mailbox opens it) ---------- */
