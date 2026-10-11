@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- LP1 (v35) -->
+<!-- LP1 (v38) -->
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
@@ -59,6 +59,19 @@ background-size: 400% 400%;
 }
 /* v17: the sweeping background repaints the whole page every frame, so it only runs on computers (phones keep it still, which is much lighter) */
 @media (hover: hover) and (pointer: fine) { body { animation: sweep 20s ease infinite; } }
+
+/* v36: the game board picture, blurred and half see-through, sits behind everything on top of the warm gradient (set in CONFIG.bgImage; it fades in once it has loaded, and nothing shows if the file is missing) */
+#bgArt {
+position: fixed;
+top: -6%; left: -6%; width: 112%; height: 112%;   /* a little oversize so the blur never shows an edge */
+background: center / cover no-repeat;
+filter: blur(14px);
+opacity: 0;
+transition: opacity 1.4s ease;
+pointer-events: none;
+z-index: -1;
+}
+#bgArt.on { opacity: 0.5; }
 
 /* Vignette overlay (same as home) */
 body::before {
@@ -798,6 +811,7 @@ try { if (location.hash) history.replaceState(null, '', location.pathname + loca
 </script>
 </head>
 <body>
+<div id="bgArt" aria-hidden="true"></div>
 
 <div class="content">
 
@@ -982,7 +996,7 @@ try { if (location.hash) history.replaceState(null, '', location.pathname + loca
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/STLLoader.js"></script>
 <script>
-// LP1 (v35)
+// LP1 (v38)
 const toTop = () => { try { window.scrollTo({ top: 0, left: 0, behavior: 'instant' }); } catch (e) { window.scrollTo(0, 0); } };
 toTop();
 window.addEventListener('load', toTop);
@@ -1002,6 +1016,7 @@ const CONFIG = {
   useRealStl: true,                // busts load from each person's "stl" path below. false = placeholder shapes only
   preferLite: true,                // try Jesse_Bust_lite.stl etc. first (about 1 MB each), then fall back to the full files
   stlFolders: ['./', '/LP1/', '/images/'],  // where to look for the STL files, in order. './' = the same folder as this page
+  bgImage: '/images/35-board-bg.webp',   // page background: the game board, blurred and half see-through (a small copy of the board; the full-size png is far too heavy for a background)
   floorPhoto: 'camcorder.jpg',   // the small printed photo on the floor (a file in the bucket folder below); tap it to see it on the TV, where a tap saves it
   tvImage: '/images/35-board.png?v=9',  // game board picture on the desk TV. The ?v=9 makes browsers fetch the newest copy: bump the number whenever you swap the file
   sfxFolder: '/sfx/',              // sound effects (coinflip, dice1, dice2, dice5, 1up, slide1) and the radio song (endless-jam-jgg-1.mp3)
@@ -1009,7 +1024,7 @@ const CONFIG = {
   loreSeconds: 3,                  // how long a lore picture stays on the TV
   loreVideos: ['game sfx story.mp4', 'j-drum-tracking.mp4', 'js-mistake.mp4', 'sploinky-garret.mp4', 'story harmony hunting tunnel.mp4', 'story mu nightdrive 3.mp4'],                  // lore videos (.mp4) in the same folder. Add file names here. They download quietly in the background after the page loads (thin bar along the bottom of the TV) and join the channel changes once ready
   loreVideoMax: 25,                // a lore video stops after this many seconds even if it is longer
-  lorePics: ['1st band promo.png', 'CP-30.jpg', 'Chilis.jpg', 'IMG_20200116_191840_549.jpg', 'creepin.JPG', 'fine-china.jpg', 'fj stone.png', 'foot only.jpg', 'forbidden-stache.jpg', 'g j wed.jpeg', 'g sticker.png', 'g-wedding.jpg', 'game v1.png', 'j dusty 1.jpg', 'j-g-18.jpg', 'marco lay.jpg', 'milwaukeedee grant.jpg', 'miramar wheel bunz ariel.jpg', 'morganshootsthings Grant & jesse 2.jpg', 'morganshootsthings Grant & jesse.jpg', 'morganshootsthings Grant ok.jpg', 'the 3 straights.jpg', 'walkin.JPG', 'yung-jesse.jpg', 'back-cover.jpg', 'best stand.jpg', 'camcorder.jpg', 'cool stand 1.jpg', 'cool stand 2.jpg', 'game detail.jpg', 'goofy ahh.jpg', 'grant solo.jpg', 'jesse solo.jpg', 'marco solo.jpg', 'silly jump 1.jpg'],   // pictures (no .heic). Add new file names here.
+  lorePics: ['back-cover.jpg', 'best stand.jpg', 'camcorder.jpg', 'cool stand 1.jpg', 'cool stand 2.jpg', 'game detail.jpg', 'goofy ahh.jpg', 'grant solo.jpg', 'jesse solo.jpg', 'marco solo.jpg', 'silly jump 1.jpg', '1st band promo.png', 'CP-30.jpg', 'Chilis.jpg', 'IMG_20200116_191840_549.jpg', 'creepin.JPG', 'fine-china.jpg', 'fj stone.png', 'foot only.jpg', 'forbidden-stache.jpg', 'g j wed.jpeg', 'g sticker.png', 'g-wedding.jpg', 'game v1.png', 'j dusty 1.jpg', 'j-g-18.jpg', 'marco lay.jpg', 'milwaukeedee grant.jpg', 'miramar wheel bunz ariel.jpg', 'morganshootsthings Grant & jesse 2.jpg', 'morganshootsthings Grant & jesse.jpg', 'morganshootsthings Grant ok.jpg', 'the 3 straights.jpg', 'walkin.JPG', 'yung-jesse.jpg'],   // pictures (no .heic). Add new file names here. The CH buttons go through this list in order, so the newest pictures sit first
   shipKit: 7,                      // continental US shipping PER 3-piece or full band kit, in dollars (added to the Venmo amount)
   shipSingle: 5,                   // continental US shipping for single pieces, up to 6 pieces
   shipSingleMore: 3,               // plus this much for every additional 6 single pieces
@@ -1019,6 +1034,13 @@ const CONFIG = {
   vinylUrl: '',                    // where the record on the table sends you to buy it. Empty = a "coming soon" popup.
   shippingNote: 'Shipping is confirmed by reply before you pay.'
 };
+(function () {   /* page background picture: loads quietly, then fades in */
+  const el = document.getElementById('bgArt'), src = CONFIG.bgImage;
+  if (!el || !src) return;
+  const im = new Image();
+  im.onload = () => { el.style.backgroundImage = 'url("' + src + '")'; requestAnimationFrame(() => el.classList.add('on')); };
+  im.src = src;
+})();
 
 const PEOPLE = [
   { id: 'jesse',   name: 'Jesse',   stl: 'Jesse Bust.stl' },
@@ -1075,8 +1097,8 @@ const PRODUCTS = [
     id: 'deluxe', type: 'deluxe', name: 'Angel Investor Edition', price: 444, cta: 'Inquire', badge: 'One of one',
     pieces: ['jesse', 'marco', 'grant'],
     blurb: 'The only one ever made. This hand-finished edition is the best way to support our fully-independent art.',
-    includes: ['Hand-painted resin pieces (Jesse, Marco, Grant)', 'Dichroic glass die (color-shifting, iridescent)', 'Brass Fearjoy coin (handmade)', 'Free entry to any future show'],
-    more: ['Fully unique, collectible, handmade', 'Any piece of clothing from the merch store', 'Handwritten lyric sheet', "You'll be added to the album credits", 'Heads are high-quality resin, not plastic']
+    includes: ['Hand-painted resin pieces (Jesse, Marco, Grant)', 'Dichroic glass die (color-shifting, iridescent)', 'Brass Fearjoy coin (made by Jesse)', 'Free entry to any future show'],
+    more: ['Fully unique, collectible, made by Jesse', 'Any piece of clothing from the merch store', 'Handwritten lyric sheet', "You'll be added to the album credits", 'Heads are high-quality resin, not plastic']
   }
 ];
 
@@ -2300,25 +2322,25 @@ function makeDesk(el) {
   const spkCv = document.createElement('canvas'); spkCv.width = 256; spkCv.height = 324;
   (() => {   /* the speaker grille: a field of little holes */
     const g = spkCv.getContext('2d');
-    g.fillStyle = '#0f1011'; g.fillRect(0, 0, 256, 324);
+    g.fillStyle = '#26282b'; g.fillRect(0, 0, 256, 324);
     for (let y = 16; y < 324; y += 22) for (let x = 16; x < 256; x += 22) {
       g.fillStyle = '#000'; g.beginPath(); g.arc(x, y + 1, 7, 0, Math.PI * 2); g.fill();
-      g.fillStyle = '#4a4e53'; g.beginPath(); g.arc(x, y, 6, 0, Math.PI * 2); g.fill();
-      g.fillStyle = '#16181a'; g.beginPath(); g.arc(x + 1, y + 1.5, 4.5, 0, Math.PI * 2); g.fill();
+      g.fillStyle = '#7b8086'; g.beginPath(); g.arc(x, y, 6, 0, Math.PI * 2); g.fill();
+      g.fillStyle = '#2b2e31'; g.beginPath(); g.arc(x + 1, y + 1.5, 4.5, 0, Math.PI * 2); g.fill();
     }
   })();
   const spkTex = new THREE.CanvasTexture(spkCv); spkTex.anisotropy = 4;
   const spk = new THREE.Group();
-  spk.position.set(PNX, 1.45, 0.48);
+  spk.position.set(PNX, 1.55, 0.48);
   tv.add(spk);
-  const spkRim = new THREE.Mesh(roundedSlab(0.27, 0.34, 0.04, 0.045, 0.012), std(0x34373a, 0.45, 0.3));
+  const spkRim = new THREE.Mesh(roundedSlab(0.27, 0.34, 0.04, 0.045, 0.012), std(0x4a4e53, 0.45, 0.3));
   spkRim.position.z = 0.02;
   spk.add(spkRim);
   const spkFace = new THREE.Mesh(roundedScreenGeo(0.22, 0.29, 0.03), new THREE.MeshStandardMaterial({ map: spkTex, roughness: 0.7 }));
   spkFace.position.z = 0.0405;
   spk.add(spkFace);
   const STREAM_FONT = "'KCStrikerSans', 'Arial Black', sans-serif";
-  const CHANS = [{ dir: 1, y: 0.99 }, { dir: -1, y: 0.76 }];
+  const CHANS = [{ dir: 1, y: 1.21 }, { dir: -1, y: 0.954 }];
   const chBtns = [];
   const chDraws = [];
   CHANS.forEach(c => {
@@ -2330,12 +2352,11 @@ function makeDesk(el) {
       const bg = g.createLinearGradient(0, 0, 0, H); bg.addColorStop(0, '#b4b9bf'); bg.addColorStop(1, '#7d838a');
       g.fillStyle = bg;
       g.beginPath(); g.moveTo(R, 0); g.lineTo(W - R, 0); g.quadraticCurveTo(W, 0, W, R); g.lineTo(W, H - R); g.quadraticCurveTo(W, H, W - R, H); g.lineTo(R, H); g.quadraticCurveTo(0, H, 0, H - R); g.lineTo(0, R); g.quadraticCurveTo(0, 0, R, 0); g.closePath(); g.fill();
-      g.fillStyle = '#1b1d1f'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.font = '30px ' + STREAM_FONT;
+      g.fillStyle = '#1b1d1f';
       const up = c.dir > 0;
-      g.fillText('CH', W / 2, up ? 34 : 94);
-      g.beginPath();
-      if (up) { g.moveTo(W / 2, 56); g.lineTo(W / 2 + 24, 98); g.lineTo(W / 2 - 24, 98); }
-      else { g.moveTo(W / 2, 72); g.lineTo(W / 2 + 24, 30); g.lineTo(W / 2 - 24, 30); }
+      g.beginPath();   /* just the arrow */
+      if (up) { g.moveTo(W / 2, 30); g.lineTo(W / 2 + 36, 98); g.lineTo(W / 2 - 36, 98); }
+      else { g.moveTo(W / 2, 98); g.lineTo(W / 2 + 36, 30); g.lineTo(W / 2 - 36, 30); }
       g.closePath(); g.fill();
       tex.needsUpdate = true;
     };
@@ -2354,6 +2375,28 @@ function makeDesk(el) {
     hitBox(0.26, 0.2, 0.25, PNX, c.y, 0.55, 'chan', tv).userData = { tag: 'chan', btn: grp, dir: c.dir };
   });
   if (document.fonts && document.fonts.load) document.fonts.load("30px 'KCStrikerSans'").then(() => chDraws.forEach(f => f())).catch(() => {});
+  /* a coin slot below the arrow buttons. The loading screen asks for a coin: the coin on the table slides in here. */
+  const SLOT_Y = 0.70, SLOT_ZF = 0.48 + 0.0642;   /* height of the slot, and where the front of its plate is */
+  const slotCv = document.createElement('canvas'); slotCv.width = 192; slotCv.height = 128;
+  (() => {
+    const g = slotCv.getContext('2d'), W = 192, H = 128, R = 20;
+    const rr = (x, y, w, h, r) => { g.beginPath(); g.moveTo(x + r, y); g.lineTo(x + w - r, y); g.quadraticCurveTo(x + w, y, x + w, y + r); g.lineTo(x + w, y + h - r); g.quadraticCurveTo(x + w, y + h, x + w - r, y + h); g.lineTo(x + r, y + h); g.quadraticCurveTo(x, y + h, x, y + h - r); g.lineTo(x, y + r); g.quadraticCurveTo(x, y, x + r, y); g.closePath(); };
+    const bg = g.createLinearGradient(0, 0, 0, H); bg.addColorStop(0, '#d6d9de'); bg.addColorStop(1, '#757b83');
+    g.fillStyle = bg; rr(0, 0, W, H, R); g.fill();
+    g.fillStyle = '#4b4f55'; [[16, 16], [W - 16, 16], [16, H - 16], [W - 16, H - 16]].forEach(q => { g.beginPath(); g.arc(q[0], q[1], 5, 0, Math.PI * 2); g.fill(); });
+    const bz = g.createLinearGradient(0, 18, 0, 110); bz.addColorStop(0, '#e6c36a'); bz.addColorStop(1, '#8a6a22');
+    g.fillStyle = bz; rr(70, 16, 52, 96, 10); g.fill();   /* brass border */
+    g.fillStyle = '#030303'; rr(82, 26, 28, 76, 6); g.fill();   /* the slit */
+    g.fillStyle = 'rgba(255,255,255,0.35)'; g.fillRect(86, 30, 2, 68);
+  })();
+  const slotTex = new THREE.CanvasTexture(slotCv); slotTex.anisotropy = 4;
+  const slotGrp = new THREE.Group(); slotGrp.position.set(PNX, SLOT_Y, 0.48); tv.add(slotGrp);
+  const slotBase = new THREE.Mesh(roundedSlab(0.23, 0.15, 0.063, 0.04, 0.014), std(0x34373a, 0.45, 0.3)); slotBase.position.z = 0.0315; slotGrp.add(slotBase);
+  const slotFace = new THREE.Mesh(roundedScreenGeo(0.18, 0.12, 0.025), new THREE.MeshStandardMaterial({ map: slotTex, roughness: 0.4 })); slotFace.position.z = 0.0642; slotGrp.add(slotFace);
+  const slotGlowTex = (() => { const c = document.createElement('canvas'); c.width = c.height = 64; const g = c.getContext('2d'); const gr = g.createRadialGradient(32, 32, 2, 32, 32, 32); gr.addColorStop(0, 'rgba(255,255,255,1)'); gr.addColorStop(1, 'rgba(255,255,255,0)'); g.fillStyle = gr; g.fillRect(0, 0, 64, 64); return new THREE.CanvasTexture(c); })();
+  const slotGlow = noHit(new THREE.Mesh(new THREE.PlaneGeometry(0.14, 0.17), new THREE.MeshBasicMaterial({ map: slotGlowTex, color: 0xffd36b, transparent: true, opacity: 0, blending: THREE.AdditiveBlending, depthWrite: false })));   /* glows around the slit while it waits for a coin */
+  slotGlow.position.z = 0.066; slotGrp.add(slotGlow);
+  const slotHit = new THREE.Mesh(new THREE.BoxGeometry(0.26, 0.2, 0.25), hitMat); slotHit.position.set(PNX, SLOT_Y, 0.55); tv.add(slotHit);   /* only used by the loading screen (it is not in the normal tap list) */
   /* square screen */
   slabAt(1.57, 1.57, 0.08, 0.14, 0.025, grayBezel, -0.18, 1.0, 0.475);   /* rounded screen bezel (thin) */
   const screenHolder = new THREE.Group();   /* sets the screen size (a little bigger than 1.35); screenGrp inside is what the click animation squashes */
@@ -2642,6 +2685,7 @@ function makeDesk(el) {
     cur.phase = 'out'; cur.t0 = performance.now(); staticM.visible = !REDUCE;
   }
   let chLast = -1;   /* the last channel that was tuned in (its place in loreItems) */
+  let chPress = 0;   /* how many times a CH button was pressed (every third channel is the ad) */
   function loadLore(cur, item) {
     cur.item = item; cur.video = item.video; cur.tex = null; cur.ended = false;
     chLast = loreItems().findIndex(i => i.name === item.name);
@@ -2675,6 +2719,11 @@ function makeDesk(el) {
   function changeChannel(dir) {   /* CH up / down: the next or previous one in order (pictures first, then videos), wrapping around */
     const all = loreItems();
     if (!all.length) return;
+    if (++chPress % 3 === 2) {   /* every third channel is the LIMITED EDITION ad: picture, ad, picture, picture, ad, ... */
+      endLore();
+      tvBlip(() => { showInfoTV(true); if (!info) jesse.visible = !menuOn && !secret && !lore; });
+      return;
+    }
     const cur = lore ? all.findIndex(i => i.name === lore.item.name) : chLast;
     const nx = cur < 0 ? (dir > 0 ? 0 : all.length - 1) : (cur + dir + all.length) % all.length;
     startLore(null, all[nx]);
@@ -2720,15 +2769,8 @@ function makeDesk(el) {
         if (now - blip.t0 > (REDUCE ? 0 : 420)) { const f = blip.fn; blip = null; staticM.visible = false; f(); }
       }
     }
-    if (!autoAd && intro.phase === 'done' && !intro.busy) {   /* 5 seconds after the page settles, if no piece has been touched: static, then the ad (once) */
-      if (!autoAdT0) autoAdT0 = now;
-      else if (now - autoAdT0 > 5000) {
-        autoAd = 1;
-        const gameEl = document.getElementById('gameOverlay');
-        const busyNow = piecesTouched || menuOn || v.tvT || v.navigated || lore || secret || info || blip || document.querySelector('dialog[open]') || (gameEl && !gameEl.hidden);
-        if (!busyNow) tvBlip(() => { showInfoTV(true); if (!info) jesse.visible = !menuOn && !secret && !lore; });
-      }
-    }
+    welcomeTick(now);
+    if (intro.phase === 'done' && !intro.busy) idleTick(now);   /* (the old once-only ad after 5 seconds is replaced by this) */
     if (info) { if (now - info > (infoAuto ? 6000 : 3000)) { if (infoAuto) { hideInfoTV(); tvBlip(() => { jesse.visible = !menuOn && !secret && !info && !lore; }); } else { hideInfoTV(); goTo('kits'); } } else if (now - infoBlinkT > 380) { infoBlinkT = now; infoBlink = !infoBlink; drawInfo(); } }
     const bar = vidLoading && !menuOn;
     loadM.visible = bar;
@@ -2904,23 +2946,24 @@ function makeDesk(el) {
   /* a small printed photo lying on the floor to the right of the notebook (camcorder.jpg from the bucket). The print takes the picture's own shape, so there is no empty space. Tap it: it plays on the TV like any lore picture, and a tap there saves it. */
   const photoG = new THREE.Group();
   photoG.rotation.order = 'YXZ';
-  photoG.rotation.set(0.03, -0.5, 0.02);
-  photoG.position.set(2.55, FLOOR + 0.03, 2.4);
+  photoG.rotation.set(0, -0.45, 0);
+  photoG.position.set(2.2, 0, 0.8);   /* on the desk, between the radio and the joystick; the record (bottom at 0.002) lies over its left edge */
   stage.add(photoG);
-  const photoBlob = blob(1.2, 1.2, 2.55, 2.4, 0.5); photoBlob.position.y = FLOOR + 0.004;
   const photoP = new Promise(res => new THREE.TextureLoader().load(loreUrl(CONFIG.floorPhoto), tex => {
     const img = tex.image, a = img && img.width && img.height ? img.width / img.height : 1;
-    let pw = 0.8 * a, ph = 0.8;   /* picture size, longest side 0.8 */
-    if (pw > 0.8) { pw = 0.8; ph = 0.8 / a; }
+    let pw = 0.6 * a, ph = 0.6;   /* picture size, longest side 0.6 */
+    if (pw > 0.6) { pw = 0.6; ph = 0.6 / a; }
     const bd = 0.04;   /* thin white print border */
-    const paper = new THREE.Mesh(new THREE.BoxGeometry(pw + bd * 2, 0.012, ph + bd * 2), std(0xe9e5da, 0.85));
-    paper.position.y = 0.006; photoG.add(paper);
+    const paper = new THREE.Mesh(new THREE.BoxGeometry(pw + bd * 2, 0.001, ph + bd * 2), std(0xe9e5da, 0.85));   /* paper thin enough to slide under the record */
+    paper.material.polygonOffset = true; paper.material.polygonOffsetFactor = -2; paper.material.polygonOffsetUnits = -2;
+    paper.position.y = 0.0005; photoG.add(paper);
     const face = new THREE.Mesh(new THREE.PlaneGeometry(pw, ph), new THREE.MeshStandardMaterial({ map: tex, roughness: 0.6, emissive: 0xffffff, emissiveMap: tex, emissiveIntensity: 0.3 }));
-    face.rotation.x = -Math.PI / 2; face.position.y = 0.0135; photoG.add(face);
+    face.material.polygonOffset = true; face.material.polygonOffsetFactor = -4; face.material.polygonOffsetUnits = -4;
+    face.rotation.x = -Math.PI / 2; face.position.y = 0.0016; photoG.add(face);
     noHit(paper); noHit(face);
     hitBox(pw + bd * 2 + 0.1, 0.2, ph + bd * 2 + 0.1, 0, 0.05, 0, 'photo', photoG);
     res();
-  }, undefined, () => { stage.remove(photoBlob); stage.remove(photoG); res(); }));
+  }, undefined, () => { stage.remove(photoG); res(); }));
 
   /* a stage mic lying on the floor between the how-to sheet and the notebook (tap it to play one of the videos on the TV) */
   const micG = new THREE.Group();
@@ -3217,6 +3260,93 @@ function makeDesk(el) {
     return ray.intersectObject(infoM, false).length > 0;
   }
 
+  /* ---------- welcome tour: right after the intro the TV says "Welcome. Click Around!" for 5 seconds while a little pointer floats over the screen, then hops off the TV onto the die, the coin and the player pieces (each one does its hover animation). Everything stays clickable; clicking a piece ends it. ---------- */
+  const WEL_MS = 5000;
+  const welCv = document.createElement('canvas'); welCv.width = welCv.height = 512;
+  const welTex = new THREE.CanvasTexture(welCv);
+  const welM = new THREE.Mesh(scrGeo, new THREE.MeshBasicMaterial({ map: welTex }));
+  welM.position.z = 0.1305; welM.renderOrder = 9; welM.visible = false;
+  screenGrp.add(welM);
+  const wPtr = document.createElement('div');   /* the pointer: the same gold arrow as the retro menu, floating over the page (it never takes a click) */
+  wPtr.setAttribute('aria-hidden', 'true');
+  wPtr.style.cssText = 'position:fixed;left:0;top:0;width:34px;height:34px;pointer-events:none;z-index:40;opacity:0;transition:opacity 0.25s;background:' + MENU_CURSOR.replace(/ 3 3, pointer$/, '') + ' no-repeat 0 0 / 34px 34px;filter:drop-shadow(0 3px 4px rgba(0,0,0,0.55));will-change:transform;';
+  document.body.appendChild(wPtr);
+  let welcome = 0, welTargets = null, welHover = null;
+  function drawWelcome() {
+    const g = welCv.getContext('2d'), W = 512;
+    g.fillStyle = '#070b1c'; g.fillRect(0, 0, W, W);
+    g.strokeStyle = 'rgba(90,140,255,0.14)'; g.lineWidth = 1;
+    for (let i = 0; i <= W; i += 32) { g.beginPath(); g.moveTo(i, 0); g.lineTo(i, W); g.stroke(); g.beginPath(); g.moveTo(0, i); g.lineTo(W, i); g.stroke(); }
+    g.strokeStyle = '#ffd36b'; g.lineWidth = 6; g.strokeRect(24, 24, W - 48, W - 48);
+    g.strokeStyle = '#ff7a59'; g.lineWidth = 2; g.strokeRect(38, 38, W - 76, W - 76);
+    g.textAlign = 'center'; g.textBaseline = 'middle';
+    fitText(g, 'WELCOME.', 400, 86, LD_STRIKER); g.fillStyle = '#ffd36b'; g.fillText('WELCOME.', W / 2, 190);
+    fitText(g, 'CLICK AROUND!', 400, 56, LD_STRIKER); g.fillStyle = '#ffffff'; g.fillText('CLICK AROUND!', W / 2, 306);
+    welTex.needsUpdate = true;
+  }
+  if (document.fonts && document.fonts.load) document.fonts.load("40px 'KCStrikerSans'").then(() => { if (welcome) drawWelcome(); }).catch(() => {});
+  const wV = new THREE.Vector3();
+  function scrPt(obj, dy, local) {   /* where a 3D thing is on the page, in pixels (a point on it, or its middle, a little higher if dy) */
+    const r = el.getBoundingClientRect();
+    if (local) obj.localToWorld(wV.copy(local)); else obj.getWorldPosition(wV);
+    wV.y += dy || 0;
+    wV.project(v.camera);
+    return { x: r.left + (wV.x + 1) / 2 * r.width, y: r.top + (1 - wV.y) / 2 * r.height };
+  }
+  function startWelcome() {
+    if (welcome || REDUCE) return;
+    welcome = performance.now(); drawWelcome();
+    welM.visible = true; jesse.visible = false;
+    welTargets = [{ g: dieRoot, dy: 0.12 }, { g: coinRoot, dy: 0.1 }].concat(crew.map(h => ({ g: h, dy: 0.45 })));
+    welTargets.forEach(q => { q.x = scrPt(q.g, q.dy).x; });
+    welTargets.sort((a, b) => a.x - b.x);   /* left to right, so the pointer sweeps across the table */
+    wPtr.style.opacity = '1';
+  }
+  function endWelcome(quiet) {
+    if (!welcome) return;
+    welcome = 0; welM.visible = false; wPtr.style.opacity = '0';
+    if (hoverGroup === welHover) hoverGroup = null;
+    welHover = null;
+    if (quiet) jesse.visible = !menuOn && !secret && !info && !lore;
+    else tvBlip(() => { jesse.visible = !menuOn && !secret && !info && !lore; });   /* a little static, then the game screen again */
+  }
+  function welcomeTick(now) {
+    if (!welcome) return;
+    const gameEl = document.getElementById('gameOverlay');
+    if (menuOn || v.tvT || v.navigated || lore || secret || info || blip || document.querySelector('dialog[open]') || (gameEl && !gameEl.hidden)) { endWelcome(true); return; }
+    const t = now - welcome;
+    if (t > WEL_MS) { endWelcome(false); return; }
+    const sc = scrPt(screenGrp, 0, new THREE.Vector3(0, 0, 0.13)), c2 = scrPt(screenGrp, 0, new THREE.Vector3(0.675, 0.675, 0.13));
+    const hx = Math.abs(c2.x - sc.x), hy = Math.abs(c2.y - sc.y);
+    const wander = tt => ({ x: sc.x + Math.sin(tt * 0.0042) * hx * 0.55, y: sc.y + Math.sin(tt * 0.0057 + 1) * hy * 0.5 });   /* floats around the screen */
+    const T0 = 1300, SL = (WEL_MS - T0 - 150) / welTargets.length;
+    let pos, hov = null;
+    if (t < T0) pos = wander(t);
+    else {
+      const i = Math.min(welTargets.length - 1, Math.floor((t - T0) / SL)), k = Math.min(1, (t - T0 - i * SL) / SL);
+      const to = scrPt(welTargets[i].g, welTargets[i].dy), from = i === 0 ? wander(T0) : scrPt(welTargets[i - 1].g, welTargets[i - 1].dy);
+      const m = Math.min(1, k / 0.5), e = 1 - Math.pow(1 - m, 3);   /* hops over in the first half, then hovers (the piece does its hover animation) */
+      pos = { x: from.x + (to.x - from.x) * e, y: from.y + (to.y - from.y) * e - Math.sin(m * Math.PI) * 16 };
+      if (m >= 1) hov = welTargets[i].g;
+    }
+    welHover = hov; hoverGroup = hov;
+    wPtr.style.transform = 'translate(' + (pos.x - 4).toFixed(1) + 'px,' + (pos.y - 4).toFixed(1) + 'px)';
+  }
+  /* when nobody is doing anything: every 6 to 8 seconds the TV changes by itself: the ad, then 2 pearl shoot pictures, then the ad again, and so on */
+  let idleNext = 0, idleStep = 0, idlePic = 0, lastAct = 0;
+  ['pointerdown', 'keydown', 'wheel', 'touchstart'].forEach(n => window.addEventListener(n, () => { lastAct = performance.now(); }, { passive: true }));
+  function idleTick(now) {
+    const gameEl = document.getElementById('gameOverlay');
+    if (welcome || menuOn || v.tvT || v.navigated || secret || document.hidden || document.querySelector('dialog[open]') || (gameEl && !gameEl.hidden) || now - lastAct < 3000) { idleNext = 0; return; }   /* someone is doing something: start the wait over */
+    if (lore || info || blip) return;   /* its own show is still on */
+    if (!idleNext) { idleNext = now + 6000 + Math.random() * 2000; return; }
+    if (now < idleNext) return;
+    idleNext = now + 6000 + Math.random() * 2000;
+    const step = idleStep++ % 3;
+    if (step === 0) tvBlip(() => { showInfoTV(true); if (!info) jesse.visible = !menuOn && !secret && !lore; });
+    else { const pics = loreItems().filter(i => !i.video).slice(0, 11); if (pics.length) startLore(null, pics[idlePic++ % pics.length]); }
+  }
+
   /* ---------- page-load intro: the TV shows a LOADING screen with a Fearjoy coin spinning on its edge while the busts, the picture, the sounds and the how-to pictures download.
      When everything is ready the TV changes channel to the game screen and everything on the table drops into place. ---------- */
   const intro = { phase: 'done', busy: false, t0: 0, t1: 0, shown: 0 };
@@ -3227,21 +3357,27 @@ function makeDesk(el) {
   const ldM = new THREE.Mesh(scrGeo, new THREE.MeshBasicMaterial({ map: ldTex }));
   ldM.position.z = 0.1255; ldM.renderOrder = 5; ldM.visible = false;
   screenGrp.add(ldM);
-  const ldCoinG = new THREE.Group();   /* flattened front to back, so the coin reads as a picture on the screen glass (scanlines and glow go over it) */
-  ldCoinG.position.set(0, 0.108, 0.128); ldCoinG.scale.set(1, 1, 0.04); ldCoinG.visible = false;
-  screenGrp.add(ldCoinG);
   /* the layers in front of the picture (scan lines, glow, menu, static, ads...) sit a little in front of it, and the camera looks down, so they used to look lower than the picture and the gray border. Lift each one by the exact amount that cancels that, so everything lines up from the camera angle. */
   const LAYER_LIFT = 1.6 * Math.tan(EL) / 3;   /* the TV is scaled 3 tall and 1.6 deep */
   screenGrp.children.forEach(c => { if (c !== jesse && c.position.z > 0.05) c.position.y += c.position.z * LAYER_LIFT; });
-  const ldSpin = new THREE.Group(); ldCoinG.add(ldSpin);
-  const ldFlip = new THREE.Group(); ldFlip.rotation.x = Math.PI / 2; ldSpin.add(ldFlip);
-  const ldCoin = makeCoin(true, { base: '#e0b878', ink: '#6b4420', color: 0xe0b878, metalness: 0.25, roughness: 0.5 });
-  ldCoin.scale.setScalar(0.95);
-  ldCoin.material[1].map.center.set(0.5, 0.5); ldCoin.material[1].map.rotation = COIN_ROT_TOP;
-  ldCoin.material[2].map.center.set(0.5, 0.5); ldCoin.material[2].map.rotation = COIN_ROT_BOT;
-  ldCoin.material.forEach(m => { m.depthTest = false; });
-  ldCoin.renderOrder = 6;
-  ldFlip.add(ldCoin);
+  /* ---------- the loading coin: a lone bronze coin spins on the table while everything loads. Tap it, tap the slot on the TV, or drag the coin to the slot: it slides in, then everything drops. Nobody does anything for 8 seconds: it goes in by itself. ---------- */
+  const IC_HOME = new THREE.Vector3(0.25, COIN_R + 0.012, 1.15);
+  const iRoot = new THREE.Group(); iRoot.position.copy(IC_HOME); iRoot.visible = false; stage.add(iRoot);
+  const iSpin = new THREE.Group(); iRoot.add(iSpin);
+  const iFlip = new THREE.Group(); iFlip.rotation.x = Math.PI / 2; iSpin.add(iFlip);
+  const iCoin = makeCoin(true, { base: '#e0b878', ink: '#6b4420', color: 0xe0b878, metalness: 0.25, roughness: 0.5 });
+  iCoin.scale.setScalar(COIN_SCALE);
+  iCoin.material[1].map.center.set(0.5, 0.5); iCoin.material[1].map.rotation = COIN_ROT_TOP;
+  iCoin.material[2].map.center.set(0.5, 0.5); iCoin.material[2].map.rotation = COIN_ROT_BOT;
+  iFlip.add(iCoin);
+  const iHit = new THREE.Mesh(new THREE.SphereGeometry(0.72, 8, 6), hitMat); iRoot.add(iHit);   /* a generous target (the coin is thin when it turns edge-on) */
+  const iBlob = blob(1.5, 1.5, IC_HOME.x, IC_HOME.z, 0.6); iBlob.visible = false;
+  const slotFront = new THREE.Vector3(), slotIn = new THREE.Vector3();
+  function slotPoints() {   /* where the slit is in the world: a point in front of it, and a point inside the TV */
+    tv.updateMatrixWorld(true);
+    tv.localToWorld(slotFront.set(PNX, SLOT_Y, SLOT_ZF + 0.42));
+    tv.localToWorld(slotIn.set(PNX, SLOT_Y, SLOT_ZF - 0.5));
+  }
   function drawLoading(frac, now, inserted) {
     const g = ldCv.getContext('2d'), W = LD_PX;
     g.fillStyle = '#070b1c'; g.fillRect(0, 0, W, W);
@@ -3251,17 +3387,11 @@ function makeDesk(el) {
     g.strokeStyle = '#ff7a59'; g.lineWidth = 2; g.strokeRect(38, 38, W - 76, W - 76);
     g.textAlign = 'center'; g.textBaseline = 'middle';
     const blink = Math.floor(now / 500) % 2 === 0;
-    /* the coin slot: a metal plate with a slit (the coin slides into it) */
-    const px = W / 2 - 75, py = 382, pw = 150, ph = 84, pr = 14;
-    const pg = g.createLinearGradient(0, py, 0, py + ph); pg.addColorStop(0, '#dde0e5'); pg.addColorStop(1, '#7d838b');
-    g.fillStyle = pg; g.strokeStyle = '#25282c'; g.lineWidth = 4;
-    g.beginPath(); g.moveTo(px + pr, py); g.lineTo(px + pw - pr, py); g.quadraticCurveTo(px + pw, py, px + pw, py + pr); g.lineTo(px + pw, py + ph - pr); g.quadraticCurveTo(px + pw, py + ph, px + pw - pr, py + ph); g.lineTo(px + pr, py + ph); g.quadraticCurveTo(px, py + ph, px, py + ph - pr); g.lineTo(px, py + pr); g.quadraticCurveTo(px, py, px + pr, py); g.closePath(); g.fill(); g.stroke();
-    [[px + 14, py + 14], [px + pw - 14, py + 14], [px + 14, py + ph - 14], [px + pw - 14, py + ph - 14]].forEach(q => { g.fillStyle = '#555a60'; g.beginPath(); g.arc(q[0], q[1], 5, 0, Math.PI * 2); g.fill(); });
-    g.fillStyle = inserted ? '#64ff8f' : (blink ? '#ffd36b' : '#8a7a3a'); g.fillRect(W / 2 - 11, 392, 22, 64);   /* the glow around the slit */
-    g.fillStyle = '#030303'; g.fillRect(W / 2 - 7, 396, 14, 56);
     if (!inserted) {
-      g.fillStyle = blink ? '#ffd36b' : '#b89a3e'; g.font = '36px ' + LD_STRIKER; g.fillText('INSERT COIN', W / 2, 352);
-      g.fillStyle = '#7fb0ff'; g.font = "20px 'KCPelletierTyped', 'Courier New', monospace"; g.fillText('tap the coin', W / 2, 78);
+      g.fillStyle = blink ? '#ffd36b' : '#b89a3e'; g.font = '116px ' + LD_STRIKER;
+      g.fillText('INSERT', W / 2, 172); g.fillText('COIN', W / 2, 296);
+      const ax = 410 + (Math.floor(now / 350) % 2) * 10;   /* a little arrow at the bottom right, pointing at the coin slot (it is just right of the screen) */
+      g.fillStyle = '#ffd36b'; g.beginPath(); g.moveTo(ax, 392); g.lineTo(ax + 30, 416); g.lineTo(ax, 440); g.closePath(); g.fill();
     } else {
       g.font = '40px ' + LD_STRIKER; g.fillStyle = '#ffd36b'; g.textAlign = 'left';
       const w3 = g.measureText('LOADING...').width;
@@ -3271,25 +3401,86 @@ function makeDesk(el) {
     }
     ldTex.needsUpdate = true;
   }
-  const LD_R = 0.285;   /* the loading coin's radius on the screen */
-  const ldYof = py => ldM.position.y + (256 - py) / 512 * 1.35 + (ldCoinG.position.z - ldM.position.z) * LAYER_LIFT;   /* a picture row of the loading screen -> a height in the screen group */
-  function ldCoinStep(now) {   /* the coin spins on its edge; after a tap it turns edge-on, shrinks over the slit and slides in */
-    if (!intro.coinT) { ldSpin.rotation.y = now * 0.0018; return; }
-    const k = Math.min(1, (now - intro.coinT) / 1000), a = Math.min(1, k / 0.5), u = Math.max(0, (k - 0.5) / 0.5);
-    const ea = 1 - Math.pow(1 - a, 3), s = 1 - 0.7 * ea, sy = s * (1 - u), yTop = ldYof(396);
-    ldSpin.rotation.y = intro.coinR0 + (intro.coinR1 - intro.coinR0) * ea;
-    ldCoinG.position.y = u > 0 ? yTop + LD_R * sy : intro.coinY0 + (yTop + LD_R * s - intro.coinY0) * ea;
-    ldCoinG.scale.set(s, Math.max(0.001, sy), 0.04);
-    if (k >= 1) { ldCoinG.visible = false; intro.coinDone = true; }
+  function icStep(now) {   /* the coin: spins by itself, follows a drag, rolls back, or flies to the slot and slides in */
+    const cs = intro.cs;
+    if (cs === 'idle') {
+      iSpin.rotation.y = now * 0.0018; iRoot.position.copy(IC_HOME); iRoot.scale.setScalar(1);
+      const sp = iSpin.rotation.y; iBlob.scale.set(0.15 + 0.7 * Math.abs(Math.cos(sp)), 0.15 + 0.7 * Math.abs(Math.sin(sp)), 1); iBlob.material.opacity = iBlob.userData.op * 0.8;
+    } else if (cs === 'drag') {
+      const ty = Math.round(iSpin.rotation.y / (Math.PI * 2)) * (Math.PI * 2);   /* turns to face the camera while it is held */
+      iSpin.rotation.y += (ty - iSpin.rotation.y) * 0.2;
+      const h = Math.max(0, iRoot.position.y - IC_HOME.y); shade(iBlob, h); iBlob.position.set(iRoot.position.x, iBlob.position.y, iRoot.position.z);
+    } else if (cs === 'back') {
+      const k = Math.min(1, (now - intro.bt) / 450), e = 1 - Math.pow(1 - k, 3);
+      iRoot.position.lerpVectors(intro.bp, IC_HOME, e); iRoot.position.y += Math.sin(Math.PI * k) * 0.25;
+      iSpin.rotation.y += 0.05;
+      iBlob.position.set(iRoot.position.x, iBlob.position.y, iRoot.position.z); shade(iBlob, Math.max(0, iRoot.position.y - IC_HOME.y));
+      if (k >= 1) { intro.cs = 'idle'; iBlob.position.set(IC_HOME.x, iBlob.position.y, IC_HOME.z); }
+    } else if (cs === 'fly') {
+      slotPoints();
+      const k = Math.min(1, (now - intro.coinT) / 1250), a = Math.min(1, k / 0.62), b = Math.max(0, (k - 0.62) / 0.38);
+      const ea = 1 - Math.pow(1 - a, 3);
+      if (b <= 0) {   /* up and over to the front of the slot, turning edge-on and shrinking to fit the slit */
+        iRoot.position.lerpVectors(intro.p0, slotFront, ea); iRoot.position.y += Math.sin(Math.PI * a) * 0.9;
+        iRoot.scale.setScalar(intro.s0 + (0.3 - intro.s0) * ea);
+        iSpin.rotation.y = intro.y0r + (intro.r1 - intro.y0r) * ea;
+      } else {   /* then in through the slit */
+        iRoot.position.lerpVectors(slotFront, slotIn, b * b); iRoot.scale.setScalar(0.3); iSpin.rotation.y = intro.r1;
+      }
+      iBlob.position.set(iRoot.position.x, iBlob.position.y, iRoot.position.z); shade(iBlob, Math.max(0, (iRoot.position.y - IC_HOME.y)) * 2);
+      if (k >= 1) { iRoot.visible = false; iBlob.visible = false; intro.coinDone = true; }
+    }
+  }
+  function slotGlowStep(now) {   /* the slit glows yellow while it waits (brighter when the coin is close), then flashes green */
+    if (intro.coinT) { const k = Math.min(1, (now - intro.coinT) / 1600); slotGlow.material.color.setHex(0x64ff8f); slotGlow.material.opacity = 0.85 * (1 - 0.5 * k); }
+    else { const near = icDrag && iRoot.position.distanceTo(slotFront) < 1.3; slotGlow.material.color.setHex(0xffd36b); slotGlow.material.opacity = near ? 0.95 : 0.3 + 0.3 * Math.sin(now / 260); }
   }
   function insertCoin() {
-    if (intro.coinT || (intro.phase !== 'load' && intro.phase !== 'warm')) return;
-    intro.coinT = performance.now(); intro.coinY0 = ldCoinG.position.y;
-    const r0 = ldSpin.rotation.y; let r1 = Math.PI / 2 + Math.PI * Math.ceil((r0 - Math.PI / 2) / Math.PI);
-    if (r1 - r0 < 0.4) r1 += Math.PI;
-    intro.coinR0 = r0; intro.coinR1 = r1;
+    if (intro.coinT || intro.cs === 'fly' || (intro.phase !== 'load' && intro.phase !== 'warm')) return;
+    intro.coinT = performance.now(); intro.cs = 'fly';
+    intro.p0 = iRoot.position.clone(); intro.s0 = iRoot.scale.x; intro.y0r = iSpin.rotation.y;
+    let r1 = Math.PI / 2 + Math.PI * Math.ceil((intro.y0r - Math.PI / 2) / Math.PI);   /* face sideways (edge toward the slit) */
+    if (r1 - intro.y0r < 0.4) r1 += Math.PI;
+    intro.r1 = r1;
+    slotPoints();
     Sound.coin();
     drawLoading(intro.shown, intro.coinT, true);
+  }
+  let icDrag = null;
+  const icPlane = new THREE.Plane(), icPt = new THREE.Vector3(), icDir = new THREE.Vector3();
+  function icRay(e) { const r = el.getBoundingClientRect(); ndc.set(((e.clientX - r.left) / r.width) * 2 - 1, -((e.clientY - r.top) / r.height) * 2 + 1); ray.setFromCamera(ndc, v.camera); }
+  function introHit(e) {   /* 'coin', 'slot' or null: what the pointer is on during the loading screen */
+    if (intro.coinT || (intro.phase !== 'load' && intro.phase !== 'warm')) return null;
+    icRay(e);
+    if ((intro.cs === 'idle' || intro.cs === 'back') && ray.intersectObject(iHit, false).length) return 'coin';
+    if (ray.intersectObject(slotHit, false).length) return 'slot';
+    return null;
+  }
+  function icDown(e) {
+    if (introHit(e) !== 'coin') return;
+    v.camera.getWorldDirection(icDir);
+    icPlane.setFromNormalAndCoplanarPoint(icDir, iRoot.position);
+    if (!ray.ray.intersectPlane(icPlane, icPt)) return;
+    icDrag = { x0: e.clientX, y0: e.clientY, off: iRoot.position.clone().sub(icPt), moved: 0 };
+    intro.cs = 'drag'; slotPoints();
+    try { el.setPointerCapture(e.pointerId); } catch (x) {}
+    el.style.cursor = 'grabbing';
+  }
+  function icMove(e) {
+    if (icDrag) {
+      icDrag.moved = Math.max(icDrag.moved, Math.hypot(e.clientX - icDrag.x0, e.clientY - icDrag.y0));
+      if (icDrag.moved > 8) { icRay(e); if (ray.ray.intersectPlane(icPlane, icPt)) { iRoot.position.copy(icPt).add(icDrag.off); iRoot.position.y = Math.max(iRoot.position.y, COIN_R * 0.6); } }
+      return;
+    }
+    el.style.cursor = introHit(e) ? 'var(--hand)' : 'default';
+  }
+  function icUp() {   /* a tap, or a drag that ended near the slot: in it goes. Dropped anywhere else: it rolls back to the table. */
+    if (!icDrag) return;
+    const d = icDrag; icDrag = null;
+    if (intro.cs !== 'drag') return;
+    slotPoints();
+    if (d.moved < 8 || iRoot.position.distanceTo(slotFront) < 1.3) insertCoin();
+    else { intro.cs = 'back'; intro.bt = performance.now(); intro.bp = iRoot.position.clone(); }
   }
   function wrapDrop(objs, delay, H, shadows, amp) {   /* each thing sits in its own group, which is what falls (so nothing else about it has to change) */
     const par = objs[0].parent, g = new THREE.Group();
@@ -3311,12 +3502,12 @@ function makeDesk(el) {
     wrapDrop([coinRoot], 1.3, 4, [coinShadow], 0.12);
     wrapDrop([howG], 0.85, 0.7, [howBlob], 0.04);
     wrapDrop([noteG], 0.95, 0.7, [noteBlob], 0.04);
-    wrapDrop([photoG], 1.0, 0.7, [photoBlob], 0.04);
+    wrapDrop([photoG], 1.0, 0.7, [], 0.04);
     wrapDrop([micG], 1.05, 0.7, [micBlob], 0.04);
     wrapDrop([poleG, mailG], 1.4, 4, [poleBlob], 0.1);
     wrapDrop([letterG], 1.5, 4, [letterBlob], 0.1);
     drops.forEach(d => { d.g.visible = false; d.sh.forEach(s => { s.visible = false; }); });
-    jesse.visible = false; ldM.visible = true; ldCoinG.visible = true;
+    jesse.visible = false; ldM.visible = true; iRoot.visible = true; iBlob.visible = true; intro.cs = 'idle';
     drawLoading(0, 0, false);
     const track = (p, ms) => {   /* every download counts, but none can hold the intro for more than 8 seconds */
       const t = { done: false };
@@ -3329,7 +3520,7 @@ function makeDesk(el) {
   }
   function startDrop(now) {   /* channel change to the game screen + everything drops */
     intro.phase = 'drop'; intro.t1 = now;
-    ldM.visible = false; ldCoinG.visible = false;
+    ldM.visible = false; iRoot.visible = false; iBlob.visible = false;
     staticM.visible = true; staticOn = true;
   }
   function warmUp() {   /* draw every falling thing once, unseen (it is hidden again before the screen updates), so shaders and textures are ready before they drop */
@@ -3342,14 +3533,14 @@ function makeDesk(el) {
     if (intro.phase === 'load' || intro.phase === 'warm') {
       const done = introTasks.filter(x => x.done).length, frac = intro.phase === 'warm' ? 1 : done / introTasks.length;
       intro.shown += (frac - intro.shown) * 0.1;
-      ldCoinStep(now);
+      icStep(now); slotGlowStep(now);
+      if (!intro.coinT && !icDrag && now - intro.t0 > 8000) insertCoin();   /* nobody did anything for 8 seconds: put the coin in for them (everything keeps loading meanwhile) */
       if (now - ldDraw > 110) { ldDraw = now; drawLoading(intro.shown, now, !!intro.coinT); }
       if (intro.phase === 'load') {
         if ((done === introTasks.length && now - intro.t0 > 2400) || now - intro.t0 > 10500) { warmUp(); intro.phase = 'warm'; intro.tw = now; intro.calm = 0; intro.prev = now; }
       } else {   /* the loading screen stays up until the page has been drawing steadily for a moment (and never more than 2 seconds extra) */
         const dtf = now - intro.prev; intro.prev = now;
         intro.calm = dtf < 26 ? intro.calm + 1 : 0;
-        if (!intro.coinT && now - intro.tw > 12000) insertCoin();   /* nobody tapped the coin: put it in for them */
         if (intro.coinDone && ((now - intro.tw > 600 && intro.calm >= 10) || now - intro.tw > 2200)) startDrop(now);   /* the items drop once the coin is in and everything is ready */
       }
       return;
@@ -3372,7 +3563,8 @@ function makeDesk(el) {
     });
     if (sec > 2.3) {
       drops.forEach(d => { d.g.visible = true; d.g.position.y = 0; d.sh.forEach(s => { s.visible = true; }); });
-      intro.phase = 'done'; intro.busy = false;
+      intro.phase = 'done'; intro.busy = false; slotGlow.material.opacity = 0; slotGlow.visible = false;
+      startWelcome();
     }
   }
 
@@ -3396,23 +3588,13 @@ function makeDesk(el) {
     pickObj = h && h.object.userData.tag !== 'block' ? h.object : null;   /* the table and board hide whatever is behind them */
     return pickObj ? pickObj.userData.tag : null;
   }
-  function ldCoinAt(e) {   /* is the pointer on the loading coin? */
-    if (!ldCoinG.visible || intro.coinT || (intro.phase !== 'load' && intro.phase !== 'warm')) return false;
-    const r = el.getBoundingClientRect();
-    ndc.set(((e.clientX - r.left) / r.width) * 2 - 1, -((e.clientY - r.top) / r.height) * 2 + 1);
-    ray.setFromCamera(ndc, v.camera);
-    const hit = ray.intersectObject(ldM, false)[0];
-    if (!hit) return false;
-    const p = screenGrp.worldToLocal(hit.point.clone());
-    return Math.hypot(p.x - ldCoinG.position.x, p.y - ldCoinG.position.y) < 0.33;
-  }
   el.addEventListener('pointerdown', e => {
     knobMoved = 0;
-    if (intro.busy) return;
+    if (intro.busy) { icDown(e); return; }
     if (pick(e) === 'knob') { knobDrag = { x0: e.clientX, y0: e.clientY, v0: Sound.getVolume() }; try { el.setPointerCapture(e.pointerId); } catch (x) {} }
   });
   el.addEventListener('pointermove', e => {
-    if (intro.busy) { el.style.cursor = ldCoinAt(e) ? 'var(--hand)' : 'default'; hoverGroup = null; return; }
+    if (intro.busy) { icMove(e); hoverGroup = null; return; }
     if (knobDrag) {   /* turning the volume knob: right or up = louder, left or down = quieter (diagonal counts too) */
       const d = (e.clientX - knobDrag.x0) - (e.clientY - knobDrag.y0);
       knobMoved = Math.max(knobMoved, Math.abs(d));
@@ -3432,12 +3614,14 @@ function makeDesk(el) {
   });
   const endKnob = () => { knobDrag = null; };
   el.addEventListener('pointerup', endKnob);
+  el.addEventListener('pointerup', icUp);
+  el.addEventListener('pointercancel', icUp);
   el.addEventListener('pointercancel', endKnob);
   el.addEventListener('lostpointercapture', endKnob);
   el.addEventListener('pointerleave', () => { hoverGroup = null; });
   function openTvMenu() { if (menuOn || v.tvT || v.navigated || intro.busy) return; hideSecretTV(); hideInfoTV(); endLore(); Sound.oneUp(); v.tvMode = 'open'; v.tvSwapped = false; v.tvT = performance.now(); }
   el.addEventListener('click', e => {
-    if (intro.busy) { if (ldCoinAt(e)) insertCoin(); return; }
+    if (intro.busy) { if (introHit(e) === 'slot') insertCoin(); return; }
     if (info && infoAt(e)) { hideInfoTV(); goTo('kits'); return; }
     if (secret) { const o = secretAt(e); if (o) { if (o === 'dl') downloadSong(); hideSecretTV(); return; } }
     if (menuOn && !v.tvT) { const o = menuAt(e); if (o) { if (o === 'start') startGame(); else closeMenu(); return; } }
@@ -3445,7 +3629,7 @@ function makeDesk(el) {
     const tag = pick(e);
     let menuClosing = false;
     if (menuOn && !v.tvT && tag) { closeMenu(); menuClosing = true; if (tag === 'joystick' || tag === 'tv') return; }   /* the menu does not take over: tapping the joystick again, the TV, or anything else puts it away */
-    if (tag === 'coin' || tag === 'die' || tag === 'bust') { piecesTouched = true; cancelBlip(); if (info && tag !== 'bust') hideInfoTV(); }
+    if (tag === 'coin' || tag === 'die' || tag === 'bust') { piecesTouched = true; endWelcome(true); cancelBlip(); if (info && tag !== 'bust') hideInfoTV(); }
     if (tag === 'coin') doFlip();
     else if (tag === 'die') doRoll();
     else if (tag === 'bust') {
