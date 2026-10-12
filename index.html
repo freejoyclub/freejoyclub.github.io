@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- HOME (v13) -->
+<!-- HOME (v14) -->
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
@@ -890,7 +890,7 @@ try { if (location.hash) history.replaceState(null, '', location.pathname + loca
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/STLLoader.js"></script>
 <script>
-// HOME (v13)
+// HOME (v14)
 const toTop = () => { try { window.scrollTo({ top: 0, left: 0, behavior: 'instant' }); } catch (e) { window.scrollTo(0, 0); } };
 toTop();
 window.addEventListener('load', toTop);
@@ -3071,7 +3071,7 @@ function makeDesk(el) {
     } else if (cs === 'drag') {
       const ty = Math.round(iSpin.rotation.y / (Math.PI * 2)) * (Math.PI * 2);   /* turns to face the camera while it is held */
       iSpin.rotation.y += (ty - iSpin.rotation.y) * 0.2;
-      const h = Math.max(0, iRoot.position.y - IC_HOME.y); shade(iBlob, h); iBlob.position.set(iRoot.position.x, iBlob.position.y, iRoot.position.z);
+      const bs = icDrag ? icDrag.base : iRoot.position, h = Math.max(0, bs.y - IC_HOME.y); shade(iBlob, h); iBlob.position.set(bs.x, iBlob.position.y, bs.z);   /* (the shadow stays on the table, under the spot the coin is held over) */
     } else if (cs === 'back') {
       const k = Math.min(1, (now - intro.bt) / 450), e = 1 - Math.pow(1 - k, 3);
       iRoot.position.lerpVectors(intro.bp, IC_HOME, e); iRoot.position.y += Math.sin(Math.PI * k) * 0.25;
@@ -3095,7 +3095,7 @@ function makeDesk(el) {
   }
   function slotGlowStep(now) {   /* the slit glows yellow while it waits (brighter when the coin is close), then flashes green */
     if (intro.coinT) { const k = Math.min(1, (now - intro.coinT) / 1600); slotGlow.material.color.setHex(0x64ff8f); slotGlow.material.opacity = 0.85 * (1 - 0.5 * k); }
-    else { const near = icDrag && iRoot.position.distanceTo(slotFront) < 1.3; slotGlow.material.color.setHex(0xffd36b); slotGlow.material.opacity = near ? 0.95 : 0.3 + 0.3 * Math.sin(now / 260); }
+    else { const near = icDrag && icDrag.base.distanceTo(slotFront) < 1.3; slotGlow.material.color.setHex(0xffd36b); slotGlow.material.opacity = near ? 0.95 : 0.3 + 0.3 * Math.sin(now / 260); }
   }
   function insertCoin() {
     if (intro.coinT || intro.cs === 'fly' || (intro.phase !== 'load' && intro.phase !== 'warm')) return;
@@ -3109,6 +3109,7 @@ function makeDesk(el) {
     drawLoading(intro.shown, intro.coinT, true);
   }
   let icDrag = null;
+  const IC_LIFT = 2.2;   /* how far toward the camera the coin is held while dragged */
   const icPlane = new THREE.Plane(), icPt = new THREE.Vector3(), icDir = new THREE.Vector3();
   function icRay(e) { const r = el.getBoundingClientRect(); ndc.set(((e.clientX - r.left) / r.width) * 2 - 1, -((e.clientY - r.top) / r.height) * 2 + 1); ray.setFromCamera(ndc, v.camera); }
   function introHit(e) {   /* 'coin', 'slot' or null: what the pointer is on during the loading screen */
@@ -3123,7 +3124,7 @@ function makeDesk(el) {
     v.camera.getWorldDirection(icDir);
     icPlane.setFromNormalAndCoplanarPoint(icDir, iRoot.position);
     if (!ray.ray.intersectPlane(icPlane, icPt)) return;
-    icDrag = { x0: e.clientX, y0: e.clientY, off: iRoot.position.clone().sub(icPt), moved: 0 };
+    icDrag = { x0: e.clientX, y0: e.clientY, off: iRoot.position.clone().sub(icPt), moved: 0, base: iRoot.position.clone() };
     intro.cs = 'drag'; slotPoints();
     try { el.setPointerCapture(e.pointerId); } catch (x) {}
     el.style.cursor = 'grabbing';
@@ -3131,7 +3132,7 @@ function makeDesk(el) {
   function icMove(e) {
     if (icDrag) {
       icDrag.moved = Math.max(icDrag.moved, Math.hypot(e.clientX - icDrag.x0, e.clientY - icDrag.y0));
-      if (icDrag.moved > 8) { icRay(e); if (ray.ray.intersectPlane(icPlane, icPt)) { iRoot.position.copy(icPt).add(icDrag.off); iRoot.position.y = Math.max(iRoot.position.y, COIN_R * 0.6); } }
+      if (icDrag.moved > 8) { icRay(e); if (ray.ray.intersectPlane(icPlane, icPt)) { iRoot.position.copy(icPt).add(icDrag.off); iRoot.position.y = Math.max(iRoot.position.y, COIN_R * 0.6); icDrag.base.copy(iRoot.position); iRoot.position.addScaledVector(ray.ray.direction, -IC_LIFT); } }
       return;
     }
     el.style.cursor = introHit(e) ? 'var(--hand)' : 'default';
@@ -3141,7 +3142,7 @@ function makeDesk(el) {
     const d = icDrag; icDrag = null;
     if (intro.cs !== 'drag') return;
     slotPoints();
-    if (d.moved < 8 || iRoot.position.distanceTo(slotFront) < 1.3) insertCoin();
+    if (d.moved < 8 || d.base.distanceTo(slotFront) < 1.3) insertCoin();
     else { intro.cs = 'back'; intro.bt = performance.now(); intro.bp = iRoot.position.clone(); }
   }
   function wrapDrop(objs, delay, H, shadows, amp) {   /* each thing sits in its own group, which is what falls (so nothing else about it has to change) */
@@ -3177,6 +3178,13 @@ function makeDesk(el) {
     };
     track(tvImgP); track(kickLoads(v)); track(Sound.whenLoaded());
     track(document.fonts && document.fonts.load ? Promise.all([document.fonts.load("64px 'KCOraleSans'"), document.fonts.load("40px 'KCStrikerSans'"), document.fonts.load("20px 'KCPelletierTyped'")]) : null);
+  }
+  const introLive = () => intro.busy && intro.phase === 'drop' && !!intro.allT;   /* everything has landed: the table can be used even though the screen is still black */
+  function skipIntro() {   /* something was tapped while the screen was still black: end the intro right now (no welcome hint, they are already clicking around) */
+    drops.forEach(d => { d.g.visible = true; d.g.position.y = 0; d.sh.forEach(s => { s.visible = true; }); });
+    intro.phase = 'done'; intro.busy = false; slotGlow.material.opacity = 0; slotGlow.visible = false;
+    screenMat.color.setHex(intro.scrCol);
+    jesse.visible = !menuOn && !secret && !info && !lore;
   }
   function startDrop(now) {   /* channel change to the game screen + everything drops */
     intro.phase = 'drop'; intro.t1 = now;
@@ -3250,11 +3258,11 @@ function makeDesk(el) {
   }
   el.addEventListener('pointerdown', e => {
     knobMoved = 0;
-    if (intro.busy) { icDown(e); return; }
+    if (intro.busy && !introLive()) { icDown(e); return; }
     if (pick(e) === 'knob') { knobDrag = { x0: e.clientX, y0: e.clientY, v0: Sound.getVolume() }; try { el.setPointerCapture(e.pointerId); } catch (x) {} }
   });
   el.addEventListener('pointermove', e => {
-    if (intro.busy) { icMove(e); hoverGroup = null; return; }
+    if (intro.busy && !introLive()) { icMove(e); hoverGroup = null; return; }
     if (knobDrag) {   /* turning the volume knob: right or up = louder, left or down = quieter (diagonal counts too) */
       const d = (e.clientX - knobDrag.x0) - (e.clientY - knobDrag.y0);
       knobMoved = Math.max(knobMoved, Math.abs(d));
@@ -3280,7 +3288,7 @@ function makeDesk(el) {
   el.addEventListener('pointerleave', () => { hoverGroup = null; });
   function openTvMenu() { if (menuOn || v.tvT || v.navigated || intro.busy) return; hideSecretTV(); hideInfoTV(); endLore(); Sound.oneUp(); v.tvMode = 'open'; v.tvSwapped = false; v.tvT = performance.now(); }
   el.addEventListener('click', e => {
-    if (intro.busy) { if (introHit(e) === 'slot') insertCoin(); return; }
+    if (intro.busy) { if (!introLive()) { if (introHit(e) === 'slot') insertCoin(); return; } if (!pick(e)) return; skipIntro(); }
     if (info && infoAt(e)) { hideInfoTV(); goTo('kits'); return; }
     if (loreAt(e)) { openLoreDlg(); return; }
     if (menuOn && !v.tvT) { const o = menuAt(e); if (o) { if (o === 'start') startGame(); else closeMenu(); return; } }
