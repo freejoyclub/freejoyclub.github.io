@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- LP1 (v39) -->
+<!-- LP1 (v42) -->
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
@@ -748,6 +748,21 @@ dialog.big { width: 100vw; max-height: 86vh; max-height: 86dvh; margin: auto 0 0
 @media (max-width: 520px) { .rack-nav { grid-template-columns: 1fr; } .rack-nav .rk { min-width: 190px; } }
 .c-pieces { --c: #ffd36b; } .c-credits { --c: #ff9ec7; } .c-how { --c: #8fd0ff; } .c-stream { --c: #6dff9a; } .c-ig { --c: #ff7ac6; } .c-mail { --c: #6fb4ff; } .c-contact { --c: #ffecd2; }
 .rk[aria-disabled="true"] { opacity: 0.7; }
+/* grouped menu: a short list; the sub menus pop out beside it (over it on narrow screens) */
+.c-bg { --c: #ffd36b; }
+.rack-nav { display: flex; flex-direction: column; overflow: visible; max-height: none; }
+.rack-nav .rk-arrow { margin-left: auto; padding-left: 14px; opacity: 0.8; }
+.rack-sub { position: absolute; left: calc(100% + 8px); bottom: 0; display: none; flex-direction: column; align-items: stretch; gap: 8px; padding: 10px; border-radius: 14px; background: linear-gradient(#2c2c31, #151517); border: 1px solid #4a4a50; box-shadow: 0 8px 22px rgba(0,0,0,0.6); z-index: 3; }
+.rack-sub.on { display: flex; }
+.rack-nav .rack-sub .rk { min-width: 190px; }
+.rack-sub .rk-back { opacity: 0.85; }
+.rack-nav.sub-open > .rk:not(.lit) { opacity: 0.3; filter: saturate(0.3); }   /* the main list fades back while a sub menu is open */
+.rack-nav.sub-open > .rk.lit { box-shadow: 0 0 12px rgba(255,194,122,0.55); }
+.rack-sub { border-color: #7a7a82; box-shadow: 0 10px 28px rgba(0,0,0,0.85), 0 0 0 1px rgba(255,194,122,0.25); }
+.rk-slide { display: flex; align-items: center; gap: 10px; padding: 6px 12px; font-family: 'KCStrikerSans', sans-serif; font-size: 0.8rem; letter-spacing: 1px; text-transform: uppercase; color: #d8d8de; }
+.rk-slide input { flex: 1; min-width: 110px; accent-color: #ffc27a; cursor: var(--hand); }
+@media (max-width: 700px) { .rack-sub { left: 0; right: 0; bottom: 0 !important; } }
+@media (max-height: 560px) { .rack-nav { max-height: calc(100dvh - var(--rackh) - 40px); overflow-y: auto; } }
 .rk.rk-off { opacity: 0.4; filter: grayscale(1); pointer-events: none; cursor: default; }   /* the full store: grayed out until it opens */
 .rk-menu-txt { margin-left: 2px; }
 
@@ -966,19 +981,33 @@ try { if (location.hash) history.replaceState(null, '', location.pathname + loca
 <button type="button" class="rk c-menu" id="rackMenu" aria-label="Open the menu" aria-expanded="false" aria-controls="rackNav"><span class="burger"></span><span class="rk-menu-txt">Menu</span></button>
 <div class="cd-streams" id="cdStreams" role="group" aria-label="Listen on"></div>
 <nav class="rack-nav" id="rackNav" aria-label="Menu">
-<a class="rk c-home" href="https://freejoy.club" data-go="Go to Fearjoy's home page?">Home</a>
-<button type="button" class="rk c-pieces" data-open="kits">Game Pieces</button>
+<a class="rk c-store" href="/store/" data-go="Go to the Fearjoy store?">Store</a>
 <button type="button" class="rk c-credits" data-open="credits">Credits &amp; Lyrics</button>
-<button type="button" class="rk c-how" id="howBtn">How to Play</button>
 <button type="button" class="rk c-game" data-open="game">Play Online</button>
 <a href="#" class="rk c-stream" data-stream data-soon="Stream the Album (soon)" data-live="Stream the Album">Stream the Album (soon)</a>
+<button type="button" class="rk rk-grp rk-keep c-breathe" data-sub="bm" aria-haspopup="true" aria-expanded="false">Breathe / Move<span class="rk-arrow">&#9656;</span></button>
+<button type="button" class="rk rk-grp rk-keep c-contact" data-sub="touch" aria-haspopup="true" aria-expanded="false">Get in touch<span class="rk-arrow">&#9656;</span></button>
+<button type="button" class="rk rk-grp rk-keep c-bg" data-sub="audio" aria-haspopup="true" aria-expanded="false">Audio<span class="rk-arrow">&#9656;</span></button>
+<a class="rk c-home" href="https://freejoy.club" data-go="Go to Fearjoy's home page?">Home</a>
+<button type="button" id="howBtn" hidden aria-hidden="true"></button>
+<div class="rack-sub" id="sub-bm" role="menu">
+<button type="button" class="rk rk-back rk-keep">&#9666; Menu</button>
 <a class="rk c-breathe" href="/breathe" data-go="Go to a page full of free, easy breathing exercises to feel your best?">Breathe</a>
 <a class="rk c-move" href="/move" data-go="Go to a page full of free, easy movement exercises to feel your best?">Move</a>
-<span class="rk c-store rk-off" aria-disabled="true" title="Coming soon">Full store</span>
-<a class="rk c-ig" href="https://www.instagram.com/fearjoymusic" target="_blank" rel="noopener">Instagram</a>
+</div>
+<div class="rack-sub" id="sub-touch" role="menu">
+<button type="button" class="rk rk-back rk-keep">&#9666; Menu</button>
 <button type="button" class="rk c-mail" data-open="mail">Email List</button>
+<a class="rk c-ig" href="https://www.instagram.com/fearjoymusic" target="_blank" rel="noopener">Instagram</a>
 <button type="button" class="rk c-contact" data-open="contact">Contact Us</button>
-<button type="button" class="rk c-bg rk-bg-nav" id="rackBg2" aria-pressed="false" aria-label="Keep the music playing in the background">Background play audio</button>
+</div>
+<div class="rack-sub" id="sub-audio" role="menu">
+<button type="button" class="rk rk-back rk-keep">&#9666; Menu</button>
+<button type="button" class="rk c-bg rk-keep" id="rackBg2" aria-pressed="false" aria-label="Keep the music playing in the background">Background play audio</button>
+<button type="button" class="rk c-mute rk-keep" id="subMute" aria-pressed="false">Mute</button>
+<label class="rk-slide rk-keep"><span>Volume</span><input type="range" id="subVol" min="0" max="100" step="1" aria-label="Volume"></label>
+<button type="button" class="rk c-play rk-keep" id="subPlay" aria-pressed="false">Play</button>
+</div>
 </nav>
 <div class="rack-lcd on still" id="rackLcd"><div class="lcd-track"><span>WELCOME</span><span aria-hidden="true">WELCOME</span><span aria-hidden="true">WELCOME</span></div></div>
 <div class="rack-ctl">
@@ -1005,7 +1034,7 @@ try { if (location.hash) history.replaceState(null, '', location.pathname + loca
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/STLLoader.js"></script>
 <script>
-// LP1 (v39)
+// LP1 (v42)
 const toTop = () => { try { window.scrollTo({ top: 0, left: 0, behavior: 'instant' }); } catch (e) { window.scrollTo(0, 0); } };
 toTop();
 window.addEventListener('load', toTop);
@@ -2181,7 +2210,7 @@ function makeDesk(el) {
 
   /* camera: fixed, looking down at the table. The distance is worked out from a few key points so the TV fills the width on any screen shape. */
   const EL = THREE.MathUtils.degToRad(36), LOOK = new THREE.Vector3(0, 1.85, 0);
-  const FIT_PTS = [[3.15, 4.0, -1.5], [1.05, 5.1, -2.1], [-1.0, 5.4, -1.3], [2.95, 0, 2.6], [2.9, -1.0, 3.05], [-2.9, -1.0, 3.05]];
+  const FIT_PTS = [[3.15, 4.0, -1.5], [1.05, 5.1, -2.1], [2.2, 6.3, -2.1], [2.95, 0, 2.6], [2.9, -1.0, 3.05], [-2.9, -1.0, 3.05]];
   v.fit = function () {
     const w = el.clientWidth || 640, h = el.clientHeight || 400;
     v.renderer.setPixelRatio(Math.max(0.75, Math.min(window.devicePixelRatio || 1, 1.75, Math.sqrt(2600000 / (w * h)))));   /* the desk fills the screen now, so cap the total pixels on very big windows */
@@ -2843,11 +2872,10 @@ function makeDesk(el) {
 
   /* ---------- little radio, on the table next to the board: click for the song, drag the knob for volume ---------- */
   const radio = new THREE.Group();
-  radio.position.set(2.25, VT, -0.5);   /* back right corner, behind the record */
+  radio.position.set(1.45, 4.9, -2.15);   /* sits on top of the TV (its roof is at height 4.9), like the mic */
   radio.rotation.y = -0.15;
-  radio.scale.setScalar(1.0);
+  radio.scale.setScalar(0.85);
   stage.add(radio);
-  const radioBlob = blob(1.8, 0.9, 2.25, -0.5, 0.7); radioBlob.position.y = VT + 0.004;
   const cream = std(0xb09a72, 0.55), brown = std(0x5a3a26, 0.75), chrome = std(0xa8adb3, 0.3, 0.6);
   const rBody = new THREE.Mesh(roundedSlab(1.3, 0.78, 0.5, 0.12, 0.05), cream);
   rBody.position.y = 0.45; radio.add(rBody);
@@ -2885,11 +2913,11 @@ function makeDesk(el) {
 
   /* ---------- little joystick on the table at the front right, wired to the TV: tap it to open the game start screen (tapping the TV still works too) ---------- */
   const joyG = new THREE.Group();
-  joyG.position.set(2.35, 0, 2.05);
+  joyG.position.set(2.3, 0, -0.55);   /* back right of the desk, where the radio used to be */
   joyG.rotation.y = -0.35;
-  joyG.scale.setScalar(1.3);
+  joyG.scale.setScalar(1.6);
   stage.add(joyG);
-  const joyBlob = blob(1.3, 1.04, 2.35, 2.08, 0.7);
+  const joyBlob = blob(1.6, 1.28, 2.3, -0.55, 0.7);
   const joyBase = new THREE.Mesh(roundedBoxWHD(0.72, 0.12, 0.5, 0.04, 36, 6, 25), std(0x2f3136, 0.55, 0.2)); joyBase.position.y = 0.06; joyG.add(joyBase);
   const joyBtn = new THREE.Mesh(new THREE.CylinderGeometry(0.07, 0.08, 0.05, 20), std(0xe8c13a, 0.4)); joyBtn.position.set(0.24, 0.145, 0.08); joyG.add(joyBtn);
   const joyStick = new THREE.Group(); joyStick.position.set(-0.12, 0.12, 0); joyG.add(joyStick);
@@ -2897,7 +2925,7 @@ function makeDesk(el) {
   const joyShaft = new THREE.Mesh(new THREE.CylinderGeometry(0.03, 0.03, 0.3, 10), chrome); joyShaft.position.y = 0.15; joyStick.add(joyShaft);
   const joyBall = new THREE.Mesh(new THREE.SphereGeometry(0.115, 20, 14), std(0xd8302a, 0.35)); joyBall.position.y = 0.34; joyStick.add(joyBall);
   hitBox(0.9, 0.7, 0.7, 0, 0.3, 0, 'joystick', joyG);
-  const joyCable = noHit(new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3([[2.65, 0.05, 2.0], [2.95, 0.03, 1.75], [2.97, 0.03, 1.2], [2.97, 0.03, 0], [2.93, 0.03, -0.95], [2.9, -0.3, -1.2]].map(q => new THREE.Vector3(q[0], q[1], q[2]))), 40, 0.028, 6, false), std(0x151517, 0.6)));   /* the wire runs along the right edge of the table and over the back toward the TV */
+  const joyCable = noHit(new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3([[2.85, 0.05, -0.62], [2.95, 0.03, -0.8], [2.93, 0.03, -0.98], [2.9, -0.3, -1.2]].map(q => new THREE.Vector3(q[0], q[1], q[2]))), 40, 0.028, 6, false), std(0x151517, 0.6)));   /* the wire runs along the right edge of the table and over the back toward the TV */
   stage.add(joyCable);
   let joyT = 0;
 
@@ -2956,7 +2984,7 @@ function makeDesk(el) {
   const photoG = new THREE.Group();
   photoG.rotation.order = 'YXZ';
   photoG.rotation.set(0, -0.45, 0);
-  photoG.position.set(2.15, 0, 0.3);   /* on the desk, between the radio and the joystick; the record (bottom at 0.002) lies over its left edge */
+  photoG.position.set(2.5, 0, 0.55);   /* on the desk, right side in front of the joystick (which moved to the back right) */
   stage.add(photoG);
   const photoP = new Promise(res => new THREE.TextureLoader().load(loreUrl(CONFIG.floorPhoto), tex => {
     const img = tex.image, a = img && img.width && img.height ? img.width / img.height : 1;
@@ -2976,9 +3004,9 @@ function makeDesk(el) {
 
   /* a stage mic lying on the floor between the how-to sheet and the notebook (tap it to play one of the videos on the TV) */
   const micG = new THREE.Group();
-  micG.position.set(0.1, FLOOR, 2.3);
-  micG.rotation.y = 0.5;
-  micG.scale.setScalar(1.0);
+  micG.position.set(-1.35, 4.9, -2.15);   /* lies on the top of the TV (its roof is at height 4.9) */
+  micG.rotation.y = 0.12;
+  micG.scale.setScalar(1.3);
   stage.add(micG);
   const micGrilleTex = mkTex(128, 64, (g, w, h) => {
     g.fillStyle = '#b9bec6'; g.fillRect(0, 0, w, h);
@@ -2999,10 +3027,9 @@ function makeDesk(el) {
   micPlug.rotation.z = Math.PI / 2; micPlug.position.x = -0.77; micBodyG.add(micPlug);
   micG.updateMatrix();
   const micInv = micG.matrix.clone().invert();   /* the cable is laid out on the floor (x, height, z), then turned into the mic's own space */
-  const micCablePts = [new THREE.Vector3(-0.3, 0.07, 0)].concat([[-0.32, 0.03, 2.3], [-0.22, 0.025, 2.05], [0.0, 0.025, 1.75], [0.14, 0.025, 1.35], [0.16, 0.025, 0.7], [0.16, 0.025, -0.1]].map(q => new THREE.Vector3(q[0], FLOOR + q[1], q[2]).applyMatrix4(micInv)));
+  const micCablePts = [new THREE.Vector3(-0.3, 0.07, 0)].concat([[-1.8, 4.915, -2.45], [-1.9, 4.915, -2.85], [-1.94, 4.84, -2.94], [-1.96, 4.5, -2.96], [-1.96, 4.25, -3.0], [-1.96, 4.25, -3.5], [-1.96, 4.1, -3.74], [-1.94, 3.5, -3.76]].map(q => new THREE.Vector3(q[0], q[1], q[2]).applyMatrix4(micInv)));   /* over the back edge of the roof, then down behind the TV */
   const micCable = new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(micCablePts), 80, 0.014, 6, false), std(0x151517, 0.6));
-  noHit(micCable); micG.add(micCable);   /* a short black cable that curls on the floor */
-  const micBlob = blob(1.5, 0.6, 0.1, 2.3, 0.5); micBlob.position.y = FLOOR + 0.004; micBlob.rotation.z = -0.5;
+  noHit(micCable); micG.add(micCable);   /* a black cable that goes over the back of the TV */
   hitBox(1.75, 0.32, 0.9, -0.15, 0.14, 0.25, 'mic', micG);
   let micT = 0;
 
@@ -3139,31 +3166,61 @@ function makeDesk(el) {
     hitBox(0.94, 1.35, 0.84, h.position.x, 0.67, h.position.z, 'bust', deck).userData.bust = h;   /* click target sits on the stage, because the bust group is cleared when the real STL loads */
   });
 
-  /* ---------- the "FULL STORE" sign: a little painted plate fixed to the top of the TV, with an arrow. Tap it to go to /store ---------- */
-  const signG = new THREE.Group();
-  signG.position.set(-1.95, 5.0, -1.3);
-  signG.rotation.z = 0.035;
-  stage.add(signG);
-  const signCv = document.createElement('canvas'); signCv.width = 512; signCv.height = 160;
-  const signTex = new THREE.CanvasTexture(signCv); signTex.anisotropy = 4;
-  function drawSign() {
-    const g = signCv.getContext('2d'), W = 512, H = 160, F = "'KCStrikerSans', 'Arial Black', sans-serif";
-    g.fillStyle = '#ffd36b'; g.fillRect(0, 0, W, H);
-    g.strokeStyle = '#7a1e1e'; g.lineWidth = 8; g.strokeRect(10, 10, W - 20, H - 20);
-    g.strokeStyle = '#7a1e1e'; g.lineWidth = 2; g.strokeRect(22, 22, W - 44, H - 44);
-    g.textAlign = 'center'; g.textBaseline = 'middle';
-    g.fillStyle = '#3a0f10'; g.font = '74px ' + F;
-    let px = 74; while (px > 20 && g.measureText('FULL STORE').width > 330) { px -= 2; g.font = px + 'px ' + F; }
-    g.fillText('FULL STORE', 214, 84);
-    g.fillStyle = '#c4271b'; g.beginPath(); g.moveTo(398, 62); g.lineTo(436, 62); g.lineTo(436, 42); g.lineTo(480, 80); g.lineTo(436, 118); g.lineTo(436, 98); g.lineTo(398, 98); g.closePath(); g.fill();   /* the arrow */
-    g.fillStyle = '#7a1e1e'; [[34, 34], [W - 34, 34], [34, H - 34], [W - 34, H - 34]].forEach(p => { g.beginPath(); g.arc(p[0], p[1], 4, 0, Math.PI * 2); g.fill(); });   /* screws */
-    signTex.needsUpdate = true;
+  /* ---------- the FEARJOY STORE gift bag on the floor: a teal bag with a Jesse head and a maroon record poking out. Tap it to go to /store ---------- */
+  const bagG = new THREE.Group();
+  bagG.position.set(2.4, FLOOR, 2.6);
+  bagG.rotation.y = -0.18;
+  bagG.scale.setScalar(1.1);
+  stage.add(bagG);
+  const BGW = 1.2, BGH = 1.3, BGD = 0.6;
+  const bagCv = document.createElement('canvas'); bagCv.width = 512; bagCv.height = 555;
+  const bagTex = new THREE.CanvasTexture(bagCv); bagTex.anisotropy = 4;
+  function drawBag() {
+    const g = bagCv.getContext('2d'), W = 512, H = 555, F = "'KCStrikerSans', 'Arial Black', sans-serif";
+    g.fillStyle = '#13737A'; g.fillRect(0, 0, W, H);
+    const sh = g.createLinearGradient(0, 0, W, 0); sh.addColorStop(0, 'rgba(0,0,0,0.18)'); sh.addColorStop(0.5, 'rgba(255,255,255,0.06)'); sh.addColorStop(1, 'rgba(0,0,0,0.2)'); g.fillStyle = sh; g.fillRect(0, 0, W, H);
+    g.fillStyle = 'rgba(0,0,0,0.14)'; g.fillRect(0, H - 22, W, 22);   /* the bottom fold */
+    g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillStyle = '#F3E6C8';
+    [['FEARJOY', 205], ['STORE', 350]].forEach(q => {   /* each word is as big as the wide face lets it be */
+      let px = 240; g.font = px + 'px ' + F;
+      while (px > 20 && g.measureText(q[0]).width > 464) { px -= 2; g.font = px + 'px ' + F; }
+      g.fillText(q[0], W / 2, q[1]);
+    });
+    bagTex.needsUpdate = true;
   }
-  drawSign();
-  if (document.fonts && document.fonts.load) document.fonts.load("40px 'KCStrikerSans'").then(drawSign).catch(() => {});
-  const signEdge = std(0x3a1d10, 0.7), signFace = new THREE.MeshStandardMaterial({ map: signTex, roughness: 0.55 });
-  signG.add(new THREE.Mesh(new THREE.BoxGeometry(1.9, 0.6, 0.07), [signEdge, signEdge, signEdge, signEdge, signFace, signEdge]));
-  hitBox(1.95, 0.65, 0.3, 0, 0, 0.05, 'storesign', signG);
+  drawBag();
+  if (document.fonts && document.fonts.load) document.fonts.load("40px 'KCStrikerSans'").then(drawBag).catch(() => {});
+  const bagSide = std(0x0e5c62, 0.8), bagIn = std(0x061f21, 0.9), bagFront = new THREE.MeshStandardMaterial({ map: bagTex, roughness: 0.75 });
+  const bagBody = new THREE.Mesh(new THREE.BoxGeometry(BGW, BGH, BGD), [bagSide, bagSide, bagIn, bagSide, bagFront, bagSide]);   /* the top is the dark inside of the bag */
+  bagBody.position.y = BGH / 2; bagG.add(bagBody);
+  const bagRope = std(0xd8c9a0, 0.8);
+  [-0.4, 0.4].forEach(x => { const h = new THREE.Mesh(new THREE.TorusGeometry(0.2, 0.016, 8, 24, Math.PI), bagRope); h.rotation.y = Math.PI / 2; h.position.set(x, BGH, 0); bagG.add(h); });   /* two rope handles */
+  const bagHead = headFor(jIdx, marble().clone());   /* Jesse, looking out of the bag */
+  bagHead.scale.setScalar(0.65); bagHead.position.set(-0.3, BGH - 0.4, -0.1);   /* set back so its shoulders stay inside the bag */ bagHead.rotation.y = -0.1;
+  bagG.add(bagHead);
+  /* a CD in a clear jewel case, standing in the bag next to Jesse (all of it fits inside the bag) */
+  const bagCdTex = mkTex(256, 256, (g, w, h) => {
+    const c = w / 2, cg = g.createConicGradient ? g.createConicGradient(0.6, c, c) : g.createLinearGradient(0, 0, w, h);
+    ['#e8e8ee', '#b9c6e8', '#e6c8ee', '#f1f1f4', '#bfe6d8', '#e8e8ee'].forEach((col, i, a) => cg.addColorStop(i / (a.length - 1), col));
+    g.fillStyle = cg; g.beginPath(); g.arc(c, c, 126, 0, Math.PI * 2); g.fill();   /* the shiny disc */
+    g.fillStyle = '#43061F'; g.beginPath(); g.arc(c, c, 100, 0, Math.PI * 2); g.fill();   /* maroon printed side */
+    g.fillStyle = '#D5B38E'; g.beginPath(); g.arc(c, c, 38, 0, Math.PI * 2); g.fill();
+    g.fillStyle = '#d8d8de'; g.beginPath(); g.arc(c, c, 24, 0, Math.PI * 2); g.fill();   /* the clear hub */
+    g.globalCompositeOperation = 'destination-out'; g.beginPath(); g.arc(c, c, 9, 0, Math.PI * 2); g.fill();   /* the hole */
+  });
+  const bagCdMat = new THREE.MeshStandardMaterial({ map: bagCdTex, roughness: 0.3, metalness: 0.45, transparent: true, alphaTest: 0.5, side: THREE.DoubleSide });
+  const cdG = new THREE.Group(); cdG.position.set(0.3, BGH + 0.17, -0.12); cdG.rotation.set(0, -0.12, -0.14); bagG.add(cdG);
+  const cdW = 0.56, cdH = 0.5;
+  const cdClear = new THREE.MeshStandardMaterial({ color: 0xdff3f7, transparent: true, opacity: 0.2, roughness: 0.08, depthWrite: false });
+  const cdRim = new THREE.MeshStandardMaterial({ color: 0xe8f4f6, transparent: true, opacity: 0.6, roughness: 0.15, depthWrite: false });
+  const cdTray = new THREE.Mesh(new THREE.BoxGeometry(cdW - 0.06, cdH - 0.04, 0.01), std(0x141416, 0.6)); cdTray.position.z = -0.024; cdG.add(cdTray);   /* the black tray behind the disc */
+  const cdDisc = new THREE.Mesh(new THREE.CircleGeometry(0.235, 48), bagCdMat); cdDisc.position.z = 0.002; cdG.add(cdDisc);
+  cdG.add(new THREE.Mesh(new THREE.BoxGeometry(cdW, cdH, 0.07), cdClear));   /* the clear case */
+  [[cdW, 0.018, 0.076, 0, cdH / 2 - 0.009], [cdW, 0.018, 0.076, 0, -cdH / 2 + 0.009], [0.05, cdH, 0.078, -cdW / 2 + 0.025, 0], [0.014, cdH, 0.076, cdW / 2 - 0.007, 0]].forEach(q => {
+    const r = new THREE.Mesh(new THREE.BoxGeometry(q[0], q[1], q[2]), cdRim); r.position.set(q[3], q[4], 0); cdG.add(r);   /* the frame and the hinge side */
+  });
+  hitBox(1.35, 2.0, 0.8, 0, 0.95, 0, 'bag', bagG);
+  const bagBlob = blob(2.2, 1.2, 2.4, 2.6, 0.5); bagBlob.position.y = FLOOR + 0.004;
 
   /* ---------- coin: lies flat on the desk, real 50/50 ---------- */
   const COIN_ROT_TOP = Math.PI / 2, COIN_ROT_BOT = Math.PI / 2;   /* keeps the text upright on both faces: JOY is turned the other way so it reads upright while the coin spins on its edge and after a sideways flip */
@@ -3332,7 +3389,7 @@ function makeDesk(el) {
     if (welcome || REDUCE) return;
     welcome = performance.now(); drawWelcome();
     welM.visible = true; jesse.visible = false;
-    welTargets = [{ g: crew[0], dy: 0.45 }, { g: dieRoot, dy: 0.12 }, { g: crew[2], dy: 0.45 }, { g: coinRoot, dy: 0.1 }, { g: joyG, dy: 0.6 }, { g: null }];   /* a head, the dice, another head, the coin, the joystick, then back to the TV (g null) */
+    welTargets = [{ g: crew[0], dy: 0.45 }, { g: dieRoot, dy: 0.12 }, { g: crew[2], dy: 0.45 }, { g: coinRoot, dy: 0.1 }, { g: joyG, dy: 0.75 }, { g: bagG, dy: 0.7 }, { g: null }];   /* a head, the dice, another head, the coin, the joystick, the gift bag, then back to the TV (g null) */
     wPtr.style.opacity = '1';
   }
   function endWelcome(quiet) {
@@ -3529,16 +3586,16 @@ function makeDesk(el) {
     intro.phase = 'load'; intro.busy = true;
     wrapDrop([vinylG], 0.05, 6, [], 0.05);
     wrapDrop([board, deck], 0.2, 7, [boardBlob], 0.12);
-    wrapDrop([radio], 0.45, 6, [radioBlob], 0.1);
+    wrapDrop([radio], 0.45, 6, [], 0.1);
     wrapDrop([joyG], 0.55, 6, [joyBlob, joyCable], 0.1);
     crew.forEach((h, i) => wrapDrop([h], 0.9 + i * 0.1, 5, [crewBlobs[i]], 0.12));
     wrapDrop([dieRoot], 1.2, 5, [dieShadow], 0.14);
     wrapDrop([coinRoot], 1.3, 4, [coinShadow], 0.12);
-    wrapDrop([signG], 1.1, 0.7, [], 0.04);
+    wrapDrop([bagG], 1.1, 5, [bagBlob], 0.12);
     wrapDrop([howG], 0.85, 0.7, [howBlob], 0.04);
     wrapDrop([noteG], 0.95, 0.7, [noteBlob], 0.04);
     wrapDrop([photoG], 1.0, 0.7, [], 0.04);
-    wrapDrop([micG], 1.05, 0.7, [micBlob], 0.04);
+    wrapDrop([micG], 1.05, 0.7, [], 0.04);
     wrapDrop([poleG, mailG], 1.4, 4, [poleBlob], 0.1);
     wrapDrop([letterG], 1.5, 4, [letterBlob], 0.1);
     drops.forEach(d => { d.g.visible = false; d.sh.forEach(s => { s.visible = false; }); });
@@ -3555,8 +3612,8 @@ function makeDesk(el) {
   }
   function startDrop(now) {   /* channel change to the game screen + everything drops */
     intro.phase = 'drop'; intro.t1 = now;
-    ldM.visible = false; iRoot.visible = false; iBlob.visible = false;
-    staticM.visible = true; staticOn = true;
+    ldM.visible = false; iRoot.visible = false; iBlob.visible = false;   /* the screen goes black while everything drops in (the static comes at the end) */
+    intro.scrCol = screenMat.color.getHex(); screenMat.color.setHex(0x000000);   /* (the game picture on the TV is turned off for now) */
   }
   function warmUp() {   /* draw every falling thing once, unseen (it is hidden again before the screen updates), so shaders and textures are ready before they drop */
     drops.forEach(d => { d.g.visible = true; d.sh.forEach(s => { s.visible = true; }); });
@@ -3596,10 +3653,12 @@ function makeDesk(el) {
         if (!d.landed) { d.landed = true; d.sh.forEach(s => { s.visible = true; }); }
       }
     });
-    if (sec > 2.3) {
+    if (!intro.allT && drops.every(d => d.landed)) intro.allT = sec;   /* the moment the last thing has landed */
+    if (sec > Math.max(2.3, (intro.allT || 0) + 0.7) + 2) {   /* everything has dropped in, plus 2 seconds of black screen */
       drops.forEach(d => { d.g.visible = true; d.g.position.y = 0; d.sh.forEach(s => { s.visible = true; }); });
       intro.phase = 'done'; intro.busy = false; slotGlow.material.opacity = 0; slotGlow.visible = false;
-      startWelcome();
+      screenMat.color.setHex(intro.scrCol);   /* the game picture comes back, hidden behind the static */
+      tvBlip(() => { startWelcome(); if (!welcome) jesse.visible = !menuOn && !secret && !info && !lore; });   /* a little static, then the "welcome, click around" screen */
     }
   }
 
@@ -3645,7 +3704,7 @@ function makeDesk(el) {
     if (loreAt(e)) { el.style.cursor = 'var(--hand)'; hoverGroup = null; return; }   /* a lore picture is on the TV: click it to save it */
     const tag = pick(e);
     el.style.cursor = tag && !(menuOn && tag === 'tv') ? 'var(--hand)' : 'default';
-    hoverGroup = tag === 'chan' ? pickObj.userData.btn : tag === 'howto' ? howG : tag === 'notebook' ? noteG : tag === 'photo' ? photoG : tag === 'mic' ? micG : tag === 'mailbox' ? mailG : tag === 'letter' ? letterG : tag === 'tv' ? (menuOn ? null : tv) : tag === 'bust' ? pickObj.userData.bust : tag === 'coin' ? coinRoot : tag === 'die' ? dieRoot : tag === 'vinyl' ? vinylG : tag === 'joystick' ? joyG : tag === 'radio' ? radio : tag === 'knob' ? knob : tag === 'storesign' ? signG : null;
+    hoverGroup = tag === 'chan' ? pickObj.userData.btn : tag === 'howto' ? howG : tag === 'notebook' ? noteG : tag === 'photo' ? photoG : tag === 'mic' ? micG : tag === 'mailbox' ? mailG : tag === 'letter' ? letterG : tag === 'tv' ? (menuOn ? null : tv) : tag === 'bust' ? pickObj.userData.bust : tag === 'coin' ? coinRoot : tag === 'die' ? dieRoot : tag === 'vinyl' ? vinylG : tag === 'joystick' ? joyG : tag === 'radio' ? radio : tag === 'knob' ? knob : tag === 'bag' ? bagG : null;
   });
   const endKnob = () => { knobDrag = null; };
   el.addEventListener('pointerup', endKnob);
@@ -3697,7 +3756,7 @@ function makeDesk(el) {
     else if (tag === 'mailbox') { mailT = performance.now(); Sound.slide(); setTimeout(openMail, REDUCE ? 0 : 650); }
     else if (tag === 'letter') { letterT = performance.now(); Sound.slide(); setTimeout(openContact, REDUCE ? 0 : 450); }
     else if (tag === 'mic') { micT = performance.now(); Sound.slide(); if (menuClosing) setTimeout(() => startLore('video'), 800); else startLore('video'); }
-    else if (tag === 'storesign') { Sound.slide(); askGo('/store/', 'Go to the full store?'); }
+    else if (tag === 'bag') { Sound.slide(); askGo('/store/', 'Go to the Fearjoy store?'); }
     else if (tag === 'tv') openTvMenu();
     else if (tag === 'joystick') { joyT = performance.now(); openTvMenu(); }
   });
@@ -3726,7 +3785,7 @@ function makeDesk(el) {
     joyBtn.position.y = jk < 0.25 ? 0.12 : 0.145;
     if (jk >= 1) joyT = 0;
     const mk = micT ? Math.min(1, (now - micT) / 520) : 1;   /* mic: a little roll back and forth when tapped */
-    micG.rotation.y = 0.5 + (REDUCE ? 0 : Math.sin(mk * Math.PI * 4) * (1 - mk) * 0.18);
+    micG.rotation.y = 0.12 + (REDUCE ? 0 : Math.sin(mk * Math.PI * 4) * (1 - mk) * 0.18);
     if (mk >= 1) micT = 0;
     const mlk = mailT ? Math.min(1, (now - mailT) / 1700) : 1;   /* mailbox: the red flag swings up when tapped, then back down */
     mailFlag.rotation.z = REDUCE ? 1.9 : 1.9 - 1.9 * Math.min(1, Math.sin(Math.min(1, mlk * 1.15) * Math.PI) * 1.6);
@@ -3741,7 +3800,7 @@ function makeDesk(el) {
     barTex.offset.y = REDUCE ? 0 : -((t / 7000) % 1);
     tvLight.intensity = 0.55 * fl;
     /* hover glow: whatever is under the pointer warms up slightly (the radio knob too, while it is turned) */
-    if (!glowItems) glowItems = [tv, radio, knob, coinRoot, dieRoot, vinylG, joyG, howG, noteG, photoG, micG, mailG, letterG, signG].concat(crew, chBtns).map(g => ({ g, k: 0, s: g === knob || chBtns.indexOf(g) >= 0 ? 1.2 : 1 }));
+    if (!glowItems) glowItems = [tv, radio, knob, coinRoot, dieRoot, vinylG, joyG, howG, noteG, photoG, micG, mailG, letterG, bagG].concat(crew, chBtns).map(g => ({ g, k: 0, s: g === knob || chBtns.indexOf(g) >= 0 ? 1.2 : 1 }));
     const hg = knobDrag ? knob : hoverGroup;
     glowItems.forEach(it => {
       const tgt = it.g === hg ? 1 : 0;
@@ -3750,7 +3809,7 @@ function makeDesk(el) {
       if (Math.abs(tgt - it.k) < 0.01) it.k = tgt;
       applyGlow(it.g, it.k, it.s);
     });
-    if (!wigList) wigList = glowItems.map(it => it.g).filter(g => g !== tv && g !== knob && g !== vinylG && g !== signG && chBtns.indexOf(g) < 0).map(g => ({ g, off: 0, t0: 0, crew: crew.indexOf(g) >= 0 }));
+    if (!wigList) wigList = glowItems.map(it => it.g).filter(g => g !== tv && g !== knob && g !== vinylG && chBtns.indexOf(g) < 0).map(g => ({ g, off: 0, t0: 0, crew: crew.indexOf(g) >= 0 }));
     if (hg !== wigLast) { wigLast = hg; const w = wigList.find(x => x.g === hg); if (w && !REDUCE) w.t0 = now; }
     wigList.forEach(w => { if (!w.t0) return; const k = Math.min(1, (now - w.t0) / (w.crew ? 700 : 520)); w.off = Math.sin(k * Math.PI * (w.crew ? 6 : 5)) * (1 - k) * (w.crew ? 0.34 : 0.1); if (!w.crew) w.g.rotation.y += w.off; if (k >= 1) w.t0 = 0; });   /* the player pieces shake about 3x harder than the rest */
     if (menuOn && now - menuBlinkT > 500) { menuBlinkT = now; menuBlink = !menuBlink; drawMenu(); }   /* selector arrow blinks */
@@ -4203,7 +4262,7 @@ let shipId = 'us';
 
 /* discount codes: PLAYER and a number is that many percent off (checked here in the page only) */
 let promo = null;
-const promoParse = str => { const m = /^PLAYER0*(\d{1,2})$/i.exec(String(str).trim()); const n = m ? Number(m[1]) : 0; return n >= 1 && n <= 99 ? { code: 'PLAYER' + n, pct: n } : null; };
+const promoParse = str => { const m = /^PLAYER0*(\d{1,2})$/i.exec(String(str).trim()); const n = m ? Number(m[1]) : 0; return n >= 1 && n <= 30 ? { code: 'PLAYER' + n, pct: n } : null; };
 function promoShow() {   /* fill the little dropdown from what was applied before */
   $('#promoIn').value = promo ? promo.code : '';
   $('#promoMsg').textContent = promo ? promo.code + ' applied: ' + promo.pct + '% off.' : '';
@@ -4506,11 +4565,11 @@ const setCd = on => { cdBox.classList.toggle('open', on); cdBtn.setAttribute('ar
 cdBtn.addEventListener('click', e => { e.stopPropagation(); Sound.slide(); setRackMenu(false); setCd(!cdBox.classList.contains('open')); });
 document.addEventListener('click', e => { if (cdBox.classList.contains('open') && !e.target.closest('.cd-sub')) setCd(false); });
 document.addEventListener('keydown', e => { if (e.key === 'Escape') setCd(false); });
-const setRackMenu = on => { rack.classList.toggle('open', on); rackMenu.classList.toggle('lit', on); rackMenu.setAttribute('aria-expanded', String(on)); };   /* the slide-out menu on narrow screens */
+const setRackMenu = on => { if (!on) openSub(''); rack.classList.toggle('open', on); rackMenu.classList.toggle('lit', on); rackMenu.setAttribute('aria-expanded', String(on)); };   /* the slide-out menu on narrow screens */
 rackMenu.addEventListener('click', e => { e.stopPropagation(); setCd(false); setRackMenu(!rack.classList.contains('open')); });
-document.addEventListener('click', e => { if (rack.classList.contains('open') && !e.target.closest('.rack-nav')) setRackMenu(false); });
+document.addEventListener('click', e => { if (rack.classList.contains('open') && !e.target.closest('.rack-nav') && !subProxy) setRackMenu(false); });
 document.addEventListener('keydown', e => { if (e.key === 'Escape') setRackMenu(false); });
-$('#rackNav').addEventListener('click', e => { if (e.target.closest('.rk') && !e.target.closest('#rackBg2')) setRackMenu(false); });   /* picking something closes the panel */
+$('#rackNav').addEventListener('click', e => { if (e.target.closest('.rk') && !e.target.closest('.rk-keep')) setRackMenu(false); });   /* picking something closes the panel (the sub menu buttons and the audio controls keep it open) */
 /* every rack link asks first ("Go to ...?") before leaving the page */
 const goDlg = $('#goDlg');
 let goHref = '', goBtn = null, goGoing = false;
@@ -4551,6 +4610,30 @@ const toggleBg = () => {
   toast(on ? 'Background play on: the jam keeps going in the background.' : 'Background play off.');
 };
 rackBg2.addEventListener('click', toggleBg);
+
+/* sub menus: Breathe / Move, Get in touch and Audio pop out beside the menu (over it on narrow screens) */
+const subNav = $('#rackNav');
+let subProxy = false;   /* true while the Audio buttons press the bar buttons for you (so the menu stays open) */
+const pressBar = btn => { subProxy = true; btn.click(); subProxy = false; };
+function openSub(id) {
+  subNav.classList.toggle('sub-open', !!id);
+  $$('.rack-sub').forEach(s => s.classList.toggle('on', s.id === 'sub-' + id));
+  $$('.rk-grp').forEach(b => { const on = b.dataset.sub === id; b.classList.toggle('lit', on); b.setAttribute('aria-expanded', String(on)); });
+  const s = id && $('#sub-' + id), b = id && $('.rk-grp[data-sub="' + id + '"]');
+  if (s) s.style.bottom = window.matchMedia('(min-width: 701px)').matches ? Math.max(0, subNav.clientHeight - b.offsetTop - b.offsetHeight) + 'px' : '';   /* beside the button that opened it */
+}
+$$('.rk-grp').forEach(b => b.addEventListener('click', () => { Sound.slide(); openSub($('#sub-' + b.dataset.sub).classList.contains('on') ? '' : b.dataset.sub); }));
+$$('.rk-back').forEach(b => b.addEventListener('click', () => openSub('')));
+/* the Audio sub menu: the same controls as the bar */
+const subMute = $('#subMute'), subPlay = $('#subPlay'), subVol = $('#subVol');
+const syncAudio = () => { const m = Sound.isMuted(); subMute.textContent = m ? 'Unmute' : 'Mute'; subMute.setAttribute('aria-pressed', String(m)); };
+subMute.addEventListener('click', () => { pressBar(muteBtn); syncAudio(); });
+muteBtn.addEventListener('click', syncAudio);
+subPlay.addEventListener('click', () => pressBar(rackPlay));
+subVol.value = Math.round(Sound.getVolume() * 100);
+subVol.addEventListener('input', () => Sound.setVolume(subVol.value / 100));
+Sound.onVolume(v => { subVol.value = Math.round(v * 100); });
+Sound.onRadio(on => { subPlay.textContent = on ? 'Pause' : 'Play'; subPlay.setAttribute('aria-pressed', String(on)); });
 
 /* ---------- email list form (the mailbox opens it) ---------- */
 const emailForm = $('#emailForm'), successMessage = $('#successMessage');
