@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- STORE (v1) -->
+<!-- STORE (v5) -->
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
@@ -589,6 +589,10 @@ box-sizing: border-box;
 .sheet .pq .stepper { font-size: 1.1rem; gap: 10px; }
 .sheet .pq .stepper button { width: 32px; height: 32px; font-size: 1.1rem; }
 .sheet .shipnote { font-size: 0.8rem; opacity: 0.75; margin: 6px 0 0; line-height: 1.4; }
+.sheet .promo summary { font-family: 'KCPelletierTyped', 'Courier New', monospace; font-size: 0.85rem; letter-spacing: 1.5px; text-transform: uppercase; opacity: 0.8; cursor: var(--hand); }
+.sheet .promorow { display: flex; gap: 8px; margin-top: 8px; }
+.sheet .promorow input { flex: 1; min-width: 0; text-transform: uppercase; }
+.sheet .promorow .btn { width: auto; font-size: 1.05rem; padding: 10px 18px; }
 
 /* single piece card: the piece picker sits on top */
 .top-opts { display: flex; flex-direction: column; gap: 8px; padding: 0 6px; }
@@ -742,8 +746,27 @@ dialog.big { width: 100vw; max-height: 86vh; max-height: 86dvh; margin: auto 0 0
 .rack-nav .rk { font-size: 0.8rem; letter-spacing: 1px; padding: 9px 16px 9px 12px; justify-content: flex-start; min-width: 150px; }
 .rack-nav .rk-bg-nav { display: inline-flex; }
 @media (max-width: 520px) { .rack-nav { grid-template-columns: 1fr; } .rack-nav .rk { min-width: 190px; } }
+.scene-tip { position: fixed; left: 0; top: 0; z-index: 80; pointer-events: none; padding: 5px 9px; border-radius: 7px; background: rgba(20,14,12,0.82); border: 1px solid rgba(255,236,210,0.18); color: #f3e6c8; font-family: 'KCPelletierTyped', 'Courier New', monospace; font-size: 12px; line-height: 1.35; letter-spacing: 0.3px; white-space: nowrap; opacity: 0; transition: opacity 0.14s; }
+.scene-tip.on { opacity: 1; }
+.scene-tip small { display: block; opacity: 0.65; font-size: 11px; }
+@media (hover: none) { .scene-tip { display: none; } }
 .c-album { --c: #ffd36b; } .c-vinyl { --c: #ff8a5c; } .c-poster { --c: #9ad0ff; } .c-shirt { --c: #c3a1ff; } .c-floppy { --c: #7dffb0; } .c-pieces { --c: #ffd36b; } .c-credits { --c: #ff9ec7; } .c-how { --c: #8fd0ff; } .c-stream { --c: #6dff9a; } .c-ig { --c: #ff7ac6; } .c-mail { --c: #6fb4ff; } .c-contact { --c: #ffecd2; }
 .rk[aria-disabled="true"] { opacity: 0.7; }
+/* grouped menu: a short list; the sub menus pop out beside it (over it on narrow screens) */
+.c-bg { --c: #ffd36b; }
+.rack-nav { display: flex; flex-direction: column; overflow: visible; max-height: none; }
+.rack-nav .rk-arrow { margin-left: auto; padding-left: 14px; opacity: 0.8; }
+.rack-sub { position: absolute; left: calc(100% + 8px); bottom: 0; display: none; flex-direction: column; align-items: stretch; gap: 8px; padding: 10px; border-radius: 14px; background: linear-gradient(#2c2c31, #151517); border: 1px solid #4a4a50; box-shadow: 0 8px 22px rgba(0,0,0,0.6); z-index: 3; }
+.rack-sub.on { display: flex; }
+.rack-nav .rack-sub .rk { min-width: 190px; }
+.rack-sub .rk-back { opacity: 0.85; }
+.rack-nav.sub-open > .rk:not(.lit) { opacity: 0.3; filter: saturate(0.3); }   /* the main list fades back while a sub menu is open */
+.rack-nav.sub-open > .rk.lit { box-shadow: 0 0 12px rgba(255,194,122,0.55); }
+.rack-sub { border-color: #7a7a82; box-shadow: 0 10px 28px rgba(0,0,0,0.85), 0 0 0 1px rgba(255,194,122,0.25); }
+.rk-slide { display: flex; align-items: center; gap: 10px; padding: 6px 12px; font-family: 'KCStrikerSans', sans-serif; font-size: 0.8rem; letter-spacing: 1px; text-transform: uppercase; color: #d8d8de; }
+.rk-slide input { flex: 1; min-width: 110px; accent-color: #ffc27a; cursor: var(--hand); }
+@media (max-width: 700px) { .rack-sub { left: 0; right: 0; bottom: 0 !important; } }
+@media (max-height: 560px) { .rack-nav { max-height: calc(100dvh - var(--rackh) - 40px); overflow-y: auto; } }
 .rk.rk-off { opacity: 0.4; filter: grayscale(1); pointer-events: none; cursor: default; }   /* the full store: grayed out until it opens */
 .rk-menu-txt { margin-left: 2px; }
 
@@ -873,6 +896,11 @@ try { if (location.hash) history.replaceState(null, '', location.pathname + loca
 <h3 id="sheetTitle"></h3>
 <div id="sheetOptions"></div>
 <div id="shipOpts"></div>
+<details class="promo" id="promoBox">
+<summary>Discount code</summary>
+<div class="promorow"><input id="promoIn" type="text" placeholder="PLAYER20" autocomplete="off" autocapitalize="characters" spellcheck="false"><button type="button" class="btn small" id="promoApply">Apply</button></div>
+<p class="shipnote" id="promoMsg"></p>
+</details>
 <label>Your name<input id="oName" type="text" autocomplete="name"></label>
 <label>Email or Instagram<input id="oContact" type="text" autocomplete="email"></label>
 <label>Ship to (or we'll ask)<textarea id="oShip" autocomplete="street-address"></textarea></label>
@@ -962,24 +990,41 @@ try { if (location.hash) history.replaceState(null, '', location.pathname + loca
 <button type="button" class="rk c-menu" id="rackMenu" aria-label="Open the menu" aria-expanded="false" aria-controls="rackNav"><span class="burger"></span><span class="rk-menu-txt">Menu</span></button>
 <div class="cd-streams" id="cdStreams" role="group" aria-label="Listen on"></div>
 <nav class="rack-nav" id="rackNav" aria-label="Menu">
-<a class="rk c-home" href="https://freejoy.club" data-go="Go to Fearjoy's home page?">Home</a>
-<span class="rk c-store lit" aria-current="page">Store</span>
+<button type="button" class="rk rk-grp rk-keep c-store" data-sub="shop" aria-haspopup="true" aria-expanded="false">Shop<span class="rk-arrow">&#9656;</span></button>
 <a class="rk c-album" href="/LP1/" data-go="Go to the Fearjoy: The Game album page?">The Album</a>
+<button type="button" class="rk c-credits" data-open="credits">Credits &amp; Lyrics</button>
+<button type="button" class="rk c-game" data-open="game">Play Online</button>
+<a href="#" class="rk c-stream" data-stream data-soon="Stream the Album (soon)" data-live="Stream the Album">Stream the Album (soon)</a>
+<button type="button" class="rk rk-grp rk-keep c-breathe" data-sub="bm" aria-haspopup="true" aria-expanded="false">Breathe / Move<span class="rk-arrow">&#9656;</span></button>
+<button type="button" class="rk rk-grp rk-keep c-contact" data-sub="touch" aria-haspopup="true" aria-expanded="false">Get in touch<span class="rk-arrow">&#9656;</span></button>
+<button type="button" class="rk rk-grp rk-keep c-bg" data-sub="audio" aria-haspopup="true" aria-expanded="false">Audio<span class="rk-arrow">&#9656;</span></button>
+<a class="rk c-home" href="https://freejoy.club" data-go="Go to Fearjoy's home page?">Home</a>
+<button type="button" id="howBtn" hidden aria-hidden="true"></button>
+<div class="rack-sub" id="sub-shop" role="menu">
+<button type="button" class="rk rk-back rk-keep">&#9666; Menu</button>
 <button type="button" class="rk c-vinyl" data-open="vinyl">Vinyl</button>
 <button type="button" class="rk c-poster" data-open="poster">Poster</button>
 <button type="button" class="rk c-shirt" data-open="shirt">Shirts</button>
 <button type="button" class="rk c-floppy" data-open="floppy">Digital</button>
-<button type="button" class="rk c-pieces" data-open="kits">Game Pieces</button>
-<button type="button" class="rk c-credits" data-open="credits">Credits &amp; Lyrics</button>
-<button type="button" class="rk c-how" id="howBtn">How to Play</button>
-<button type="button" class="rk c-game" data-open="game">Play Online</button>
-<a href="#" class="rk c-stream" data-stream data-soon="Stream the Album (soon)" data-live="Stream the Album">Stream the Album (soon)</a>
+</div>
+<div class="rack-sub" id="sub-bm" role="menu">
+<button type="button" class="rk rk-back rk-keep">&#9666; Menu</button>
 <a class="rk c-breathe" href="/breathe" data-go="Go to a page full of free, easy breathing exercises to feel your best?">Breathe</a>
 <a class="rk c-move" href="/move" data-go="Go to a page full of free, easy movement exercises to feel your best?">Move</a>
-<a class="rk c-ig" href="https://www.instagram.com/fearjoymusic" target="_blank" rel="noopener">Instagram</a>
+</div>
+<div class="rack-sub" id="sub-touch" role="menu">
+<button type="button" class="rk rk-back rk-keep">&#9666; Menu</button>
 <button type="button" class="rk c-mail" data-open="mail">Email List</button>
+<a class="rk c-ig" href="https://www.instagram.com/fearjoymusic" target="_blank" rel="noopener">Instagram</a>
 <button type="button" class="rk c-contact" data-open="contact">Contact Us</button>
-<button type="button" class="rk c-bg rk-bg-nav" id="rackBg2" aria-pressed="false" aria-label="Keep the music playing in the background">Background play audio</button>
+</div>
+<div class="rack-sub" id="sub-audio" role="menu">
+<button type="button" class="rk rk-back rk-keep">&#9666; Menu</button>
+<button type="button" class="rk c-bg rk-keep" id="rackBg2" aria-pressed="false" aria-label="Keep the music playing in the background">Background play audio</button>
+<button type="button" class="rk c-mute rk-keep" id="subMute" aria-pressed="false">Mute</button>
+<label class="rk-slide rk-keep"><span>Volume</span><input type="range" id="subVol" min="0" max="100" step="1" aria-label="Volume"></label>
+<button type="button" class="rk c-play rk-keep" id="subPlay" aria-pressed="false">Play</button>
+</div>
 </nav>
 <div class="rack-lcd on still" id="rackLcd"><div class="lcd-track"><span>WELCOME</span><span aria-hidden="true">WELCOME</span><span aria-hidden="true">WELCOME</span></div></div>
 <div class="rack-ctl">
@@ -1006,7 +1051,7 @@ try { if (location.hash) history.replaceState(null, '', location.pathname + loca
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/STLLoader.js"></script>
 <script>
-// STORE (v1)
+// STORE (v5)
 const toTop = () => { try { window.scrollTo({ top: 0, left: 0, behavior: 'instant' }); } catch (e) { window.scrollTo(0, 0); } };
 toTop();
 window.addEventListener('load', toTop);
@@ -1042,7 +1087,7 @@ const CONFIG = {
   streamLogos: { spotify: ['/images/logo-spotify.svg', '/images/spotify.svg', '/images/logo-spotify.png'], apple: ['/images/logo-apple-music.svg', '/images/apple-music.svg', '/images/apple.svg', '/images/logo-apple-music.png'], youtube: ['/images/logo-youtube.svg', '/images/youtube.svg', '/images/logo-youtube.png'] },   // logo pictures for the TV buttons (any shape, transparent background is best). Missing = the name is written instead.
   howImage: '/images/rulebook.png',   // the how-to sheet lying under the table (tap it for the How to Play pictures)
   vinylUrl: '',                    // (not used on the store page)
-  coverImage: '/images/35-board-bg.webp',   // the game art on the record covers (a small transparent copy of the board)
+  coverImage: '/images/35-transp-board (1).PNG',   // the game art on the record covers (a small transparent copy of the board)
   posterImage: 'camcorder.jpg',    // the poster on the backdrop: a file in the bucket folder above
   prices: { vinyl: 30, poster: 20, shirt: 30 },   // PLACEHOLDER prices in dollars: set the real ones here
   shipItems: { vinyl: [6, 3], poster: [5, 2], shirt: [5, 2] },   // PLACEHOLDER continental US shipping: [first one, each additional]
@@ -1118,15 +1163,15 @@ const PRODUCTS = [
 
 /* Store items (each opens the order sheet). The album colors are used for the vinyl and the record covers. */
 const ALBUM_COLORS = [
-  { id: 'oxblood', name: 'Oxblood', hex: '#43061F' },
+  { id: 'oxblood', name: 'Maroon', hex: '#43061F' },
   { id: 'forest',  name: 'Forest',  hex: '#004437' },
   { id: 'white',   name: 'White',   hex: '#FFFFFF' },
-  { id: 'teal',    name: 'Teal',    hex: '#13737A' },
-  { id: 'sand',    name: 'Sand',    hex: '#D5B38E' }
+  { id: 'teal',    name: 'Dark teal', hex: '#13737A' },
+  { id: 'sand',    name: 'Tan',    hex: '#D5B38E' }
 ];
 const SHIRT_COLORS = [
-  { id: 'oxblood', name: 'Oxblood', hex: '#43061F', ink: '#D5B38E' },
-  { id: 'teal',    name: 'Teal',    hex: '#13737A', ink: '#FFFFFF' }
+  { id: 'oxblood', name: 'Maroon', hex: '#43061F', ink: '#D5B38E' },
+  { id: 'teal',    name: 'Dark teal', hex: '#13737A', ink: '#FFFFFF' }
 ];
 const SHIRT_SIZES = ['S', 'M', 'L', 'XL', 'XXL'];
 const ITEMS = [
@@ -2209,7 +2254,7 @@ function makeStore(el) {
 
   /* camera: fixed, looking down at the table. The distance is worked out from a few key points so the banner and the table fit on any screen shape. */
   let EL = THREE.MathUtils.degToRad(27); const LOOK = new THREE.Vector3(0, 1.75, 0.3);
-  const FIT_PTS = [[4.0, 5.3, -2.6], [-4.0, 5.3, -2.6], [3.95, -1.0, 3.6], [-3.95, -1.0, 3.6]];
+  const FIT_PTS = [[4.0, 5.3, -2.6], [-4.0, 5.3, -2.6], [3.95, -1.0, 4.3], [-3.95, -1.0, 4.3]];
   v.fit = function () {
     const w = el.clientWidth || 640, h = el.clientHeight || 400;
     v.renderer.setPixelRatio(Math.max(0.75, Math.min(window.devicePixelRatio || 1, 1.75, Math.sqrt(2600000 / (w * h)))));
@@ -2326,6 +2371,18 @@ function makeStore(el) {
   [-5.5, 5.5].forEach(x => { const up = new THREE.Mesh(new THREE.CylinderGeometry(0.06, 0.06, DR_TOP - FLOOR + 0.6, 16), pipeMat); up.position.set(x, (DR_TOP + FLOOR - 0.6) / 2 + 0.05, BDZ + 0.05); noHit(up); stage.add(up); });
   blob(11.5, 1.6, 0, BDZ + 0.7, 0.55).position.y = FLOOR + 0.004;
 
+  /* cloth: a flat grid whose height (and lighting) is moved every frame, so the banner and the shirts ripple a little in 3D. fn(x, y, t, o) writes [height, slope in x, slope in y] into o */
+  const waveGeo = (geo, base, fn, t) => {
+    const P = geo.attributes.position.array, N = geo.attributes.normal.array, o = [0, 0, 0];
+    for (let i = 0; i < P.length; i += 3) {
+      fn(base[i], base[i + 1], t, o);
+      P[i + 2] = o[0];
+      const l = Math.sqrt(o[1] * o[1] + o[2] * o[2] + 1);
+      N[i] = -o[1] / l; N[i + 1] = -o[2] / l; N[i + 2] = 1 / l;
+    }
+    geo.attributes.position.needsUpdate = true; geo.attributes.normal.needsUpdate = true;
+  };
+
   /* the banner: Fearjoy [a red die, not clickable] The Store */
   const BN_W = 5.6, BN_H = 1.1, BNY = 4.35;
   const drawBanner = (g, w, h) => {
@@ -2351,7 +2408,8 @@ function makeStore(el) {
   };
   const bannerTex = redrawTex(mkTex(1400, 280, drawBanner), drawBanner); bannerTex.anisotropy = 4;
   const bannerG = new THREE.Group(); bannerG.position.set(0, BNY, BDZ + 0.12); stage.add(bannerG);
-  const bannerM = noHit(new THREE.Mesh(new THREE.PlaneGeometry(BN_W, BN_H), new THREE.MeshStandardMaterial({ map: bannerTex, roughness: 0.9 })));
+  const bannerGeo = new THREE.PlaneGeometry(BN_W, BN_H, 56, 10), bannerBase = bannerGeo.attributes.position.array.slice();   /* many small squares, so it can ripple */
+  const bannerM = noHit(new THREE.Mesh(bannerGeo, new THREE.MeshStandardMaterial({ map: bannerTex, roughness: 0.9 })));
   bannerG.add(bannerM);
   [-1, 1].forEach(s => {   /* two cords up to the pipe, and grommets */
     const cord = noHit(new THREE.Mesh(new THREE.CylinderGeometry(0.012, 0.012, DR_TOP - BNY - BN_H / 2 + 0.05, 6), std(0x222222, 0.8)));
@@ -2394,8 +2452,24 @@ function makeStore(el) {
     s.lineTo(0.52, -1.7); s.lineTo(-0.52, -1.7); s.lineTo(-0.52, -0.6); s.lineTo(-0.68, -0.76); s.lineTo(-0.9, -0.58); s.lineTo(-0.6, -0.2); s.closePath();
     return s;
   })();
-  const teeGeo = new THREE.ShapeGeometry(teeShape, 12);
-  { const P = teeGeo.attributes.position, uv = new Float32Array(P.count * 2); for (let i = 0; i < P.count; i++) { uv[i * 2] = (P.getX(i) + 0.9) / 1.8; uv[i * 2 + 1] = (P.getY(i) + 1.7) / 1.7; } teeGeo.setAttribute('uv', new THREE.BufferAttribute(uv, 2)); }
+  const makeTeeGeo = () => {
+    const g0 = new THREE.ShapeGeometry(teeShape, 12), ix = g0.index.array, ps = g0.attributes.position.array;
+    let tris = [];
+    for (let i = 0; i < ix.length; i += 3) tris.push([ps[ix[i] * 3], ps[ix[i] * 3 + 1], ps[ix[i + 1] * 3], ps[ix[i + 1] * 3 + 1], ps[ix[i + 2] * 3], ps[ix[i + 2] * 3 + 1]]);
+    for (let l = 0; l < 4; l++) {   /* split every triangle into four, four times over */
+      const nt = [];
+      tris.forEach(t => {
+        const ax = (t[0] + t[2]) / 2, ay = (t[1] + t[3]) / 2, bx = (t[2] + t[4]) / 2, by = (t[3] + t[5]) / 2, cx = (t[4] + t[0]) / 2, cy = (t[5] + t[1]) / 2;
+        nt.push([t[0], t[1], ax, ay, cx, cy], [ax, ay, t[2], t[3], bx, by], [cx, cy, bx, by, t[4], t[5]], [ax, ay, bx, by, cx, cy]);
+      });
+      tris = nt;
+    }
+    const n = tris.length * 3, pos = new Float32Array(n * 3), uv = new Float32Array(n * 2), nor = new Float32Array(n * 3);
+    tris.forEach((t, k) => { for (let j = 0; j < 3; j++) { const v = k * 3 + j, x = t[j * 2], y = t[j * 2 + 1]; pos[v * 3] = x; pos[v * 3 + 1] = y; nor[v * 3 + 2] = 1; uv[v * 2] = (x + 0.9) / 1.8; uv[v * 2 + 1] = (y + 1.7) / 1.7; } });
+    const g = new THREE.BufferGeometry();
+    g.setAttribute('position', new THREE.BufferAttribute(pos, 3)); g.setAttribute('normal', new THREE.BufferAttribute(nor, 3)); g.setAttribute('uv', new THREE.BufferAttribute(uv, 2));
+    return g;
+  };
   const drawTee = (g, w, h, c) => {   /* the shirt: its color, soft fold shading and the print */
     g.fillStyle = c.hex; g.fillRect(0, 0, w, h);
     const gr = g.createLinearGradient(0, 0, w, 0); gr.addColorStop(0, 'rgba(0,0,0,0.22)'); gr.addColorStop(0.3, 'rgba(255,255,255,0.05)'); gr.addColorStop(0.7, 'rgba(0,0,0,0.12)'); gr.addColorStop(1, 'rgba(0,0,0,0.25)'); g.fillStyle = gr; g.fillRect(0, 0, w, h);
@@ -2408,11 +2482,12 @@ function makeStore(el) {
     const grp = new THREE.Group(); grp.position.set(0.95 + i * 1.9, RAIL_Y - 0.05, BDZ + 0.55); stage.add(grp);
     const sw = new THREE.Group(); grp.add(sw);   /* swings from the rail */
     const tex = redrawTex(mkTex(512, 512, (g, w, h) => drawTee(g, w, h, c)), (g, w, h) => drawTee(g, w, h, c)); tex.anisotropy = 4;
+    const teeGeo = makeTeeGeo();
     const tee = new THREE.Mesh(teeGeo, new THREE.MeshStandardMaterial({ map: tex, roughness: 0.92, side: THREE.DoubleSide })); noHit(tee); sw.add(tee);
     const hook = noHit(new THREE.Mesh(new THREE.TorusGeometry(0.06, 0.011, 8, 20, Math.PI * 1.5), pipeMat)); hook.position.y = 0.1; hook.rotation.z = Math.PI * 0.25; sw.add(hook);
     [-1, 1].forEach(s => { const bar = noHit(new THREE.Mesh(new THREE.CylinderGeometry(0.009, 0.009, 0.66, 6), pipeMat)); bar.position.set(s * 0.28, -0.1, 0.005); bar.rotation.z = s * (Math.PI / 2 - 0.3); sw.add(bar); });
     hitBox(1.5, 1.7, 0.3, 0, -0.85, 0.05, 'shirt', sw).userData.shirt = i;
-    grp.userData.sw = sw; grp.userData.ph = i * 1.9;
+    grp.userData.sw = sw; grp.userData.ph = i * 1.9; grp.userData.geo = teeGeo; grp.userData.base = teeGeo.attributes.position.array.slice();
     shirts.push(grp);
   });
 
@@ -2422,7 +2497,7 @@ function makeStore(el) {
   const board = new THREE.Mesh(new THREE.BoxGeometry(BS, BT, BS), [boardWhite, boardWhite, boardTop, boardWhite, boardWhite, boardWhite]);
   board.position.set(BX, BT / 2 + VT, TZ + 0.1);
   board.rotation.y = BROT;
-  board.userData.tag = 'block';
+  board.userData.tag = 'vinyl';   /* the board and the record are one thing: tap either to open the vinyl order */
   stage.add(board); hits.push(board);
   blob(BS + 0.8, BS + 0.8, BX, TZ + 0.1, 0.6);
   const tvImgP = new Promise(res => new THREE.TextureLoader().load(CONFIG.tvImage, tex => {
@@ -2440,7 +2515,7 @@ function makeStore(el) {
     g.fillText('FEARJOY', 128, 112); g.fillText('THE GAME', 128, 156);
     g.fillStyle = '#2a1a14'; g.beginPath(); g.arc(128, 128, 5, 0, Math.PI * 2); g.fill();
   });
-  const VR = 1.25, VX = BX + 1.3, VZ = TZ + 0.05;
+  const VR = 1.05, VX = BX + 1.3, VZ = TZ + 0.05;
   const vinylG = new THREE.Group();
   vinylG.position.set(VX, VT / 2 + 0.002, VZ);
   stage.add(vinylG);
@@ -2454,7 +2529,6 @@ function makeStore(el) {
   radio.rotation.y = -0.25;
   radio.scale.setScalar(1.0);
   stage.add(radio);
-  blob(1.8, 0.9, 3.05, -0.5, 0.7);
   const cream = std(0xb09a72, 0.55), brown = std(0x5a3a26, 0.75), chrome = std(0xa8adb3, 0.3, 0.6);
   const rBody = new THREE.Mesh(roundedSlab(1.3, 0.78, 0.5, 0.12, 0.05), cream);
   rBody.position.y = 0.45; radio.add(rBody);
@@ -2489,12 +2563,13 @@ function makeStore(el) {
   const ant = new THREE.Mesh(new THREE.CylinderGeometry(0.012, 0.012, 0.8, 8), chrome); ant.position.set(0.64, 1.24, -0.1); ant.rotation.z = -0.35; radio.add(ant);
   hitBox(1.4, 0.95, 0.65, 0, 0.47, 0, 'radio', radio);
   hitBox(0.5, 0.5, 0.3, 0.3, 0.32, 0.3, 'knob', radio);
+  blob(1.8, 0.9, 3.05, -0.5, 0.7);
 
   /* ---------- the mailbox (email list) and the letter (contact us), at the left end of the table ---------- */
   const mailG = new THREE.Group();
-  mailG.position.set(-3.1, 0, -0.35);
+  mailG.position.set(-3.15, 0, -0.65);
   mailG.rotation.y = 0.35;
-  mailG.scale.setScalar(1.15);
+  mailG.scale.setScalar(1.45);
   stage.add(mailG);
   const mailBlue = std(0x3d6db5, 0.45, 0.15), mailDark = std(0x2b5192, 0.5, 0.15), mailRed = std(0xc9382c, 0.45), mailMetal = std(0xb9bec6, 0.35, 0.6);
   const MB_W = 0.62, MB_H = 0.26, MB_D = 0.78;   /* width, height of the square lower part, depth (front to back) */
@@ -2523,13 +2598,13 @@ function makeStore(el) {
   const mfPlate = new THREE.Mesh(new THREE.BoxGeometry(0.03, 0.13, 0.2), mailRed); mfPlate.position.set(0, 0.26, 0.1); mailFlag.add(mfPlate);
     hitBox(0.9, 0.85, 1.0, 0, 0.4, 0, 'mailbox', mailG);
   let mailT = 0;
-  blob(1.3, 1.4, -3.1, -0.3, 0.6);
+  blob(1.6, 1.7, -3.15, -0.6, 0.6);
   const letterG = new THREE.Group();
-  const LS = 0.8, LEAN = 0.2;   /* size, and how far it leans back from straight up */
-  letterG.position.set(-3.1, 0.5 * 0.85 * LS * Math.cos(LEAN) + 0.03, 1.15);
+  const LS = 1.05, LEAN = 0.2;   /* size, and how far it leans back from straight up */
+  letterG.position.set(-3.15, 0.02, 1.15);
   letterG.rotation.y = -0.12;
   stage.add(letterG);
-  const letterLean = new THREE.Group(); letterLean.rotation.x = Math.PI / 2 - LEAN; letterLean.scale.setScalar(LS); letterG.add(letterLean);   /* stood up on its long edge, leaning back */
+  const letterLean = new THREE.Group(); letterLean.rotation.x = 0; letterLean.scale.setScalar(LS); letterG.add(letterLean);   /* stood up on its long edge, leaning back */
   const lcW = 520, lcH = 340;
   const drawLetter = (g, w, h) => {
     g.fillStyle = '#efe4c6'; g.fillRect(0, 0, w, h);
@@ -2556,8 +2631,8 @@ function makeStore(el) {
     drawLetter(letterTex.image.getContext('2d'), lcW, lcH); letterTex.needsUpdate = true;
     drawDoor(mbDoorTex.image.getContext('2d'), 256, 256); mbDoorTex.needsUpdate = true;
   }).catch(() => {});
-  blob(1.1, 0.7, -3.1, 1.25, 0.45);
-  hitBox(1.05, 0.75, 0.4, 0, 0.38, 0, 'letter', letterG);
+  blob(1.7, 1.15, -3.15, 1.15, 0.4);
+  hitBox(1.45, 0.2, 1.0, 0, 0.08, 0, 'letter', letterG);
   let letterT = 0;
 
   /* ---------- a floppy disk: the digital goods will live here (song downloads, Bandcamp, stems...). A placeholder for now. ---------- */
@@ -2615,7 +2690,7 @@ function makeStore(el) {
   hitBox(0.8, 0.8, 0.8, 0, 0, 0, 'set', dieRoot);
 
   /* ---------- records leaning in a loose stack under the table: the game art on each color. Tap one to pick that color. ---------- */
-  const SL = 0.82;   /* sleeve size */
+  const SL = 0.85;   /* sleeve size (they stand under the table, so they have to fit in the gap) */
   const coverImg = new Image(); let coverOk = false;
   const drawCover = (g, w, h, c) => {
     g.fillStyle = c.hex; g.fillRect(0, 0, w, h);
@@ -2627,9 +2702,10 @@ function makeStore(el) {
   ALBUM_COLORS.forEach((c, i) => {
     const tex = mkTex(512, 512, (g, w, h) => drawCover(g, w, h, c)); tex.anisotropy = 4;
     const g = new THREE.Group();
-    g.position.set(-0.55 + i * 0.5, FLOOR + SL / 2 * 0.98 + 0.01, 3.2 + (i % 2) * 0.08);
+    const bz = (2 - i) * 0.06;
+    g.position.set(-2.5 + i * 1.25, FLOOR + SL / 2 * (Math.cos(0.22) * Math.cos(bz) + Math.sin(Math.abs(bz))) + 0.06, 2.85 + (i % 2) * 0.08);   /* under the table, tucked behind its front edge, and lifted so the lowest corner clears the floor */
     g.rotation.order = 'YXZ';
-    g.userData.base = { y: (i - 2) * -0.1, x: -0.2, z: (2 - i) * 0.06, py: g.position.y };
+    g.userData.base = { y: (i - 2) * -0.1, x: -0.22, z: bz, py: g.position.y };
     g.rotation.set(g.userData.base.x, g.userData.base.y, g.userData.base.z);
     stage.add(g);
     const sheet = new THREE.Mesh(new THREE.BoxGeometry(SL, SL, 0.022), [sleeveEdge, sleeveEdge, sleeveEdge, sleeveEdge, new THREE.MeshStandardMaterial({ map: tex, roughness: 0.65 }), sleeveEdge]);
@@ -2640,7 +2716,33 @@ function makeStore(el) {
   });
   coverImg.onload = () => { coverOk = true; recs.forEach(g => { drawCover(g.userData.tex.image.getContext('2d'), 512, 512, g.userData.c); g.userData.tex.needsUpdate = true; }); };
   coverImg.src = CONFIG.coverImage;
-  blob(3.2, 1.0, 0.7, 3.25, 0.6).position.y = FLOOR + 0.004;
+  blob(6.6, 1.5, 0, 2.9, 0.6).position.y = FLOOR + 0.004;
+
+  /* ---------- a small tip with the item's name while the mouse is over it (not on touch screens) ---------- */
+  const tipEl = document.createElement('div'); tipEl.className = 'scene-tip'; tipEl.setAttribute('aria-hidden', 'true'); document.body.appendChild(tipEl);
+  const tipText = (tag, obj) => {
+    if (tag === 'vinyl') return ['Fearjoy - The Game (12" vinyl)', 'Custom sleeve colors'];
+    if (tag === 'rec') return ['Fearjoy - The Game (12" vinyl)', ALBUM_COLORS[obj.userData.rec].name + ' sleeve, custom colors'];
+    if (tag === 'poster') return ['Camcorder poster'];
+    if (tag === 'shirt') return ['Fearjoy shirt', SHIRT_COLORS[obj.userData.shirt].name + ', custom colors'];
+    if (tag === 'floppy') return ['Digital goods', 'Coming soon'];
+    if (tag === 'set') return ['Game pieces'];
+    if (tag === 'radio') return ['Radio', 'Tap to play'];
+    if (tag === 'knob') return ['Volume'];
+    if (tag === 'mailbox') return ['Email list'];
+    if (tag === 'letter') return ['Contact us'];
+    return null;
+  };
+  let tipOn = false;
+  const showTip = (tag, obj, e) => {
+    const tx = tag ? tipText(tag, obj) : null;
+    if (!tx) { if (tipOn) { tipOn = false; tipEl.classList.remove('on'); } return; }
+    const html = tx[0] + (tx[1] ? '<small>' + tx[1] + '</small>' : '');
+    if (tipEl.innerHTML !== html) tipEl.innerHTML = html;
+    const w = tipEl.offsetWidth, h = tipEl.offsetHeight;
+    tipEl.style.transform = 'translate(' + Math.round(Math.max(8, Math.min(e.clientX + 14, window.innerWidth - w - 8))) + 'px,' + Math.round(Math.max(8, Math.min(e.clientY + 18, window.innerHeight - h - 8))) + 'px)';
+    if (!tipOn) { tipOn = true; tipEl.classList.add('on'); }
+  };
 
   /* ---------- state, hover and the per-frame loop ---------- */
   let hoverGroup = null, glowItems = null, knobDrag = null, knobMoved = 0, ledOn = false, vSlide = 0;
@@ -2676,9 +2778,11 @@ function makeStore(el) {
       const d = (e.clientX - knobDrag.x0) - (e.clientY - knobDrag.y0);
       knobMoved = Math.max(knobMoved, Math.abs(d));
       setKnob(Sound.setVolume(knobDrag.v0 + d / 150));
+      showTip(null);
       return;
     }
     const tag = pick(e);
+    showTip(tag, pickObj, e);
     el.style.cursor = tag ? 'var(--hand)' : 'default';
     hoverGroup = tag === 'poster' ? posterG : tag === 'shirt' ? pickObj.parent.parent : tag === 'rec' ? pickObj.parent : tag === 'floppy' ? floppyG : tag === 'mailbox' ? mailG : tag === 'letter' ? letterG : tag === 'set' ? setG : tag === 'vinyl' ? vinylG : tag === 'radio' ? radio : tag === 'knob' ? knob : null;
   });
@@ -2686,9 +2790,10 @@ function makeStore(el) {
   el.addEventListener('pointerup', endKnob);
   el.addEventListener('pointercancel', endKnob);
   el.addEventListener('lostpointercapture', endKnob);
-  el.addEventListener('pointerleave', () => { hoverGroup = null; });
+  el.addEventListener('pointerleave', () => { hoverGroup = null; showTip(null); });
   el.addEventListener('click', e => {
     const tag = pick(e);
+    showTip(null);
     if (!tag) return;
     const later = fn => setTimeout(fn, REDUCE ? 0 : 420);
     if (tag === 'vinyl') { wig(vinylG); Sound.slide(); later(() => openSheet('vinyl')); }
@@ -2707,9 +2812,21 @@ function makeStore(el) {
   v.onFrame = function (t) {
     const now = performance.now();
     /* things that sway or shake */
-    shirts.forEach(g => { g.userData.sw.rotation.z = (REDUCE ? 0 : Math.sin(t / 1700 + g.userData.ph) * 0.025) + wobble(g, now, 800) * 0.22; });
+    shirts.forEach(g => {
+      const ph = g.userData.ph, tt = REDUCE ? 0 : t;
+      g.userData.sw.rotation.z = (REDUCE ? 0 : Math.sin(t / 1700 + ph) * 0.05 + Math.sin(t / 650 + ph * 2) * 0.015) + wobble(g, now, 800) * 0.22;
+      waveGeo(g.userData.geo, g.userData.base, (x, y, tm, o) => {   /* the shoulders stay put; the body ripples more the lower it hangs */
+        const k = Math.min(1, Math.max(0, (-y - 0.25) / 0.9)), a = x * 5.5 + y * 1.3 + tm / 1100 + ph, b = x * 3.1 - tm / 1500 + ph * 1.7;
+        o[0] = k * (0.032 * Math.sin(a) + 0.026 * Math.sin(b)); o[1] = k * (0.176 * Math.cos(a) + 0.0806 * Math.cos(b)); o[2] = k * 0.0416 * Math.cos(a);
+      }, tt);
+    });
     posterG.rotation.z = -0.025 + (REDUCE ? 0 : Math.sin(t / 2300) * 0.006) + wobble(posterG, now, 700) * 0.06;
-    bannerG.rotation.z = REDUCE ? 0 : Math.sin(t / 3100) * 0.004;
+    const ba = REDUCE ? 0 : Math.sin(t / 2300) * 0.03 + Math.sin(t / 900 + 1) * 0.012, BL = DR_TOP - BNY;   /* the sign swings from the pipe it hangs on */
+    bannerG.rotation.z = ba; bannerG.position.x = BL * Math.sin(ba); bannerG.position.y = BNY + BL * (1 - Math.cos(ba));
+    waveGeo(bannerGeo, bannerBase, (x, y, tm, o) => {   /* ripples along the cloth, bigger toward the bottom edge */
+      const w = 0.3 + 0.7 * (0.5 - y / BN_H), a = x * 1.7 + tm / 1000, b = x * 4.3 - tm / 1700;
+      o[0] = w * (0.05 * Math.sin(a) + 0.02 * Math.sin(b)); o[1] = w * (0.085 * Math.cos(a) + 0.086 * Math.cos(b)); o[2] = (-0.7 / BN_H) * (0.05 * Math.sin(a) + 0.02 * Math.sin(b));
+    }, REDUCE ? 0 : t);
     floppyG.rotation.y = 0.3 + wobble(floppyG, now, 520) * 0.18;
     radio.rotation.y = -0.25 + wobble(radio, now, 520) * 0.1;
     mailG.rotation.y = 0.35 + wobble(mailG, now, 520) * 0.1;
@@ -2717,17 +2834,18 @@ function makeStore(el) {
     const wv = wobble(vinylG, now, 650);
     vinylG.position.set(VX + wv * 0.07, vinylG.position.y, VZ + vSlide * 0.2);
     vinylG.rotation.y = wv * 0.1;
+    board.rotation.y = BROT + wv * 0.04;   /* the board shakes a little with the record */
     const mlk = mailT ? Math.min(1, (now - mailT) / 1700) : 1;
     mailFlag.rotation.z = REDUCE ? 1.9 : 1.9 - 1.9 * Math.min(1, Math.sin(Math.min(1, mlk * 1.15) * Math.PI) * 1.6);
     if (mlk >= 1) mailT = 0;
     const llk = letterT ? Math.min(1, (now - letterT) / 500) : 1;
-    letterLean.rotation.x = Math.PI / 2 - LEAN + (REDUCE ? 0 : Math.sin(llk * Math.PI * 3) * (1 - llk) * 0.1);
+    letterLean.rotation.z = REDUCE ? 0 : Math.sin(llk * Math.PI * 3) * (1 - llk) * 0.1;   /* lying flat: it rocks side to side when tapped */
     if (llk >= 1) letterT = 0;
     /* hover glow */
-    if (!glowItems) glowItems = [radio, knob, vinylG, posterG, floppyG, mailG, letterG, setG].concat(shirts, recs).map(g => ({ g, k: 0, s: g === knob ? 1.2 : 1 }));
+    if (!glowItems) glowItems = [radio, knob, vinylG, board, posterG, floppyG, mailG, letterG, setG].concat(shirts, recs).map(g => ({ g, k: 0, s: g === knob ? 1.2 : 1 }));
     const hg = knobDrag ? knob : hoverGroup;
     glowItems.forEach(it => {
-      const tgt = it.g === hg ? 1 : 0;
+      const tgt = it.g === hg || (it.g === board && hg === vinylG) ? 1 : 0;   /* the board lights up with the record */
       if (it.k === tgt) return;
       it.k += (tgt - it.k) * 0.18;
       if (Math.abs(tgt - it.k) < 0.01) it.k = tgt;
@@ -2736,7 +2854,7 @@ function makeStore(el) {
     /* the sleeves: they pop up a little when hovered or tapped */
     recs.forEach((g, i) => {
       const b = g.userData.base, it = glowItems.find(x => x.g === g);
-      g.position.y = b.py + (it ? it.k : 0) * 0.07;
+      g.position.y = b.py + (it ? it.k : 0) * 0.04;
       g.rotation.z = b.z + wobble(g, now, 600) * 0.1;
     });
     ledHalo.material.opacity = ledOn ? 0.7 + (REDUCE ? 0 : 0.2 * Math.sin(t / 220)) : 0;
@@ -3027,7 +3145,8 @@ function qtyOf(p) {
 function calc(p) {
   const qty = qtyOf(p);
   const sub = Math.round(p.price * 100) * qty;
-  return { qty, sub: sub / 100, total: sub / 100 };
+  const disc = promo ? Math.round(sub * promo.pct / 100) : 0;   /* a discount code takes a percent off the pieces (not shipping) */
+  return { qty, sub: sub / 100, disc: disc / 100, total: (sub - disc) / 100 };
 }
 
 function refreshCards() {
@@ -3100,8 +3219,8 @@ const qtyHTML = p => `<div class="optlabel" style="margin-top:12px">How many</di
 function sheetOptionsHTML(p) {
   const st = S[p.id];
   if (p.kind === 'vinyl') {
-    return `<div class="prev"><canvas id="itemPrev" width="360" height="250"></canvas></div><div class="optlabel">Vinyl color</div>
-      <div class="swatches" role="group" aria-label="Vinyl color">${ALBUM_COLORS.map((c, i) => `<button type="button" class="sw color" data-opt="vinyl:color:${i}" style="background:${c.hex}" aria-label="${c.name}" title="${c.name}"></button>`).join('')}</div>
+    return `<div class="prev"><canvas id="itemPrev" width="360" height="250"></canvas></div><div class="optlabel">Sleeve color</div>
+      <div class="swatches" role="group" aria-label="Sleeve color">${ALBUM_COLORS.map((c, i) => `<button type="button" class="sw color" data-opt="vinyl:color:${i}" style="background:${c.hex}" aria-label="${c.name}" title="${c.name}"></button>`).join('')}</div>
       <p class="note cname" id="itemNote"></p>${qtyHTML(p)}`;
   }
   if (p.kind === 'shirt') {
@@ -3137,6 +3256,24 @@ const SHIP = [
   { id: 'other', label: () => 'Other (please inquire)', short: 'Other', cost: () => null }
 ];
 let shipId = 'us';
+
+/* discount codes: PLAYER and a number is that many percent off (checked here in the page only) */
+let promo = null;
+const promoParse = str => { const m = /^PLAYER0*(\d{1,2})$/i.exec(String(str).trim()); const n = m ? Number(m[1]) : 0; return n >= 1 && n <= 30 ? { code: 'PLAYER' + n, pct: n } : null; };
+function promoShow() {   /* fill the little dropdown from what was applied before */
+  $('#promoIn').value = promo ? promo.code : '';
+  $('#promoMsg').textContent = promo ? promo.code + ' applied: ' + promo.pct + '% off.' : '';
+  $('#promoBox').open = !!promo;
+}
+function applyPromo() {
+  const raw = $('#promoIn').value.trim();
+  promo = promoParse(raw);
+  if (cur) updateSheet();
+  $('#promoMsg').textContent = promo ? promo.code + ' applied: ' + promo.pct + '% off.' : (raw ? 'That code is not valid. Codes look like PLAYER20.' : '');
+  if (promo) $('#promoIn').value = promo.code;
+}
+$('#promoApply').addEventListener('click', applyPromo);
+$('#promoIn').addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); applyPromo(); } });
 const shipPick = () => SHIP.find(x => x.id === shipId) || SHIP[0];
 function renderShip() {
   const box = $('#shipOpts');
@@ -3155,13 +3292,14 @@ $('#shipOpts').addEventListener('click', e => {
 function orderText(p) {
   const st = S[p.id], c = calc(p), sh = shipPick();
   const lines = [`STORE ORDER: ${p.name}`];
-  if (p.kind === 'vinyl') lines.push(`Vinyl color: ${ALBUM_COLORS[st.color].name} (custom color, same price)`, `Quantity: ${c.qty}`);
+  if (p.kind === 'vinyl') lines.push(`Sleeve color: ${ALBUM_COLORS[st.color].name} (record is cream; any sleeve color, same price)`, `Quantity: ${c.qty}`);
   if (p.kind === 'shirt') lines.push(`Color: ${SHIRT_COLORS[st.color].name}`, `Size: ${st.size}`, `Quantity: ${c.qty}`);
   if (p.kind === 'poster') lines.push(`Quantity: ${c.qty}`);
   if (p.type === 'kit') lines.push(`Die color: ${(DIE_COLORS.find(x => x.id === st.die) || {}).name}`, `Kits: ${c.qty}`);
   if (p.type === 'single') lines.push(`Pieces: ${PEOPLE.filter(pp => st.pick.has(pp.id)).map(pp => pp.name + ' x' + st.pick.get(pp.id)).join(', ') || '(none picked yet)'}`);
   if (p.type !== 'deluxe') {
     const sc = sh.cost(p);
+    if (c.disc) lines.push(`Discount code: ${promo.code} (${promo.pct}% off, -${money(c.disc)})`);
     lines.push(`Shipping: ${sh.label(p)}`, sc == null ? `Total: ${money(c.total)} plus shipping (to be quoted)` : `Total: ${money(c.total + sc)}${sc ? ' (includes shipping)' : ''}`);
   } else lines.push(`Price: ${money(p.price)}`);
   lines.push('', `Name: ${$('#oName').value}`, `Contact: ${$('#oContact').value}`, `Ship to: ${$('#oShip').value}`);
@@ -3172,17 +3310,17 @@ const COVER = new Image(); let coverOk = false;
 COVER.onload = () => { coverOk = true; if (cur && cur.item) drawItemPreview(cur); };
 COVER.src = CONFIG.coverImage;
 function rrect(g, x, y, w, h, r) { g.beginPath(); g.moveTo(x + r, y); g.lineTo(x + w - r, y); g.quadraticCurveTo(x + w, y, x + w, y + r); g.lineTo(x + w, y + h - r); g.quadraticCurveTo(x + w, y + h, x + w - r, y + h); g.lineTo(x + r, y + h); g.quadraticCurveTo(x, y + h, x, y + h - r); g.lineTo(x, y + r); g.quadraticCurveTo(x, y, x + r, y); g.closePath(); }
-function drawVinylPrev(g, W, H, c) {   /* the sleeve with the record sliding out of it, both in the chosen color */
-  const sz = 214, sx = 22, sy = (H - sz) / 2, cx = sx + sz * 0.96, cy = H / 2, R = 104, dark = lum(c.hex) < 140;
+function drawVinylPrev(g, W, H, c) {   /* the sleeve is the chosen color; the record sliding out of it is always cream */
+  const sz = 214, sx = 22, sy = (H - sz) / 2, cx = sx + sz * 0.96, cy = H / 2, R = 104, CREAM = '#EFE3C4';
   const gr = g.createRadialGradient(cx - 20, cy - 24, 6, cx, cy, R);
-  gr.addColorStop(0, shadeHex(c.hex, 0.16)); gr.addColorStop(1, shadeHex(c.hex, -0.16));
+  gr.addColorStop(0, shadeHex(CREAM, 0.1)); gr.addColorStop(1, shadeHex(CREAM, -0.12));
   g.fillStyle = gr; g.beginPath(); g.arc(cx, cy, R, 0, Math.PI * 2); g.fill();   /* the disc */
-  g.strokeStyle = dark ? 'rgba(255,255,255,0.10)' : 'rgba(0,0,0,0.12)'; g.lineWidth = 1;
+  g.strokeStyle = 'rgba(80,50,20,0.14)'; g.lineWidth = 1;
   for (let r = 44; r < R - 4; r += 4) { g.beginPath(); g.arc(cx, cy, r, 0, Math.PI * 2); g.stroke(); }
-  g.fillStyle = 'rgba(255,255,255,0.14)'; g.beginPath(); g.moveTo(cx, cy); g.arc(cx, cy, R - 2, -1.2, -0.7); g.closePath(); g.fill();   /* a shine */
-  g.strokeStyle = 'rgba(0,0,0,0.35)'; g.lineWidth = 2; g.beginPath(); g.arc(cx, cy, R, 0, Math.PI * 2); g.stroke();
-  g.fillStyle = dark ? '#D5B38E' : '#43061F'; g.beginPath(); g.arc(cx, cy, 36, 0, Math.PI * 2); g.fill();   /* the label */
-  g.fillStyle = dark ? '#43061F' : '#D5B38E'; g.font = "11px 'KCStrikerSans', sans-serif"; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText('FEARJOY', cx, cy - 8); g.fillText('THE GAME', cx, cy + 9);
+  g.fillStyle = 'rgba(255,255,255,0.35)'; g.beginPath(); g.moveTo(cx, cy); g.arc(cx, cy, R - 2, -1.2, -0.7); g.closePath(); g.fill();   /* a shine */
+  g.strokeStyle = 'rgba(0,0,0,0.3)'; g.lineWidth = 2; g.beginPath(); g.arc(cx, cy, R, 0, Math.PI * 2); g.stroke();
+  g.fillStyle = '#43061F'; g.beginPath(); g.arc(cx, cy, 36, 0, Math.PI * 2); g.fill();   /* the label */
+  g.fillStyle = '#D5B38E'; g.font = "11px 'KCStrikerSans', sans-serif"; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText('FEARJOY', cx, cy - 8); g.fillText('THE GAME', cx, cy + 9);
   g.fillStyle = 'rgba(0,0,0,0.7)'; g.beginPath(); g.arc(cx, cy, 4, 0, Math.PI * 2); g.fill();
   g.save(); g.shadowColor = 'rgba(0,0,0,0.5)'; g.shadowBlur = 14; g.shadowOffsetX = 4;   /* the sleeve */
   g.fillStyle = c.hex; g.fillRect(sx, sy, sz, sz); g.restore();
@@ -3217,10 +3355,11 @@ function updateSheet() {
   if (p.item) {
     drawItemPreview(p);
     $$('[data-opt]').forEach(b => { const [pid, k, val] = b.dataset.opt.split(':'); b.classList.toggle('sel', String(S[pid][k]) === val); });
-    const nt = $('#itemNote'); if (nt) nt.textContent = ALBUM_COLORS[st.color].name + '. Custom color, same price. We press just a few of each color.';
+    const nt = $('#itemNote'); if (nt) nt.textContent = ALBUM_COLORS[st.color].name + ' sleeve, with a cream record inside. Pick any sleeve color, same price. We print just a few of each.';
   }
   const qn = $('#qtyNum'); if (qn) qn.textContent = st.qty;
   renderShip();
+  $('#promoBox').style.display = p.type === 'deluxe' ? 'none' : '';   /* no code on the one-of-one inquiry */
   const pq = $('#pieceQty');
   if (pq) pq.innerHTML = Array.from(st.pick.entries()).map(([id, n]) => {
     const who = PEOPLE.find(x => x.id === id);
@@ -3233,6 +3372,7 @@ function updateSheet() {
   } else {
     const sh = shipPick(), sc = sh.cost(p);
     rows = `<div class="row"><span>${c.qty} x ${money(p.price)}</span><span>${money(c.sub)}</span></div>`;
+    if (c.disc) rows += `<div class="row"><span>Discount (${promo.code}, ${promo.pct}% off)</span><span>-${money(c.disc)}</span></div>`;
     rows += `<div class="row"><span>Shipping: ${sh.short}</span><span>${sc == null ? 'to be quoted' : money(sc)}</span></div>`;
     rows += `<div class="row tot"><span>${sc == null ? 'Total so far' : 'Total'}</span><span>${symHTML(money(c.total + (sc || 0)))}</span></div>`;
   }
@@ -3271,6 +3411,7 @@ function openSheet(pid) {
   $('#sheetTitle').innerHTML = symHTML(cur.type === 'deluxe' ? 'Angel Investor inquiry' : `Order: ${cur.name}`);   /* (store items open here too) */
   $('#sheetOptions').innerHTML = sheetOptionsHTML(cur);
   renderShip();
+  promoShow();
   refreshCards();
   if (dlg.showModal) dlg.showModal(); else dlg.setAttribute('open', '');
 }
@@ -3478,11 +3619,11 @@ const setCd = on => { cdBox.classList.toggle('open', on); cdBtn.setAttribute('ar
 cdBtn.addEventListener('click', e => { e.stopPropagation(); Sound.slide(); setRackMenu(false); setCd(!cdBox.classList.contains('open')); });
 document.addEventListener('click', e => { if (cdBox.classList.contains('open') && !e.target.closest('.cd-sub')) setCd(false); });
 document.addEventListener('keydown', e => { if (e.key === 'Escape') setCd(false); });
-const setRackMenu = on => { rack.classList.toggle('open', on); rackMenu.classList.toggle('lit', on); rackMenu.setAttribute('aria-expanded', String(on)); };   /* the slide-out menu on narrow screens */
+const setRackMenu = on => { if (!on) openSub(''); rack.classList.toggle('open', on); rackMenu.classList.toggle('lit', on); rackMenu.setAttribute('aria-expanded', String(on)); };   /* the slide-out menu on narrow screens */
 rackMenu.addEventListener('click', e => { e.stopPropagation(); setCd(false); setRackMenu(!rack.classList.contains('open')); });
-document.addEventListener('click', e => { if (rack.classList.contains('open') && !e.target.closest('.rack-nav')) setRackMenu(false); });
+document.addEventListener('click', e => { if (rack.classList.contains('open') && !e.target.closest('.rack-nav') && !subProxy) setRackMenu(false); });
 document.addEventListener('keydown', e => { if (e.key === 'Escape') setRackMenu(false); });
-$('#rackNav').addEventListener('click', e => { if (e.target.closest('.rk') && !e.target.closest('#rackBg2')) setRackMenu(false); });   /* picking something closes the panel */
+$('#rackNav').addEventListener('click', e => { if (e.target.closest('.rk') && !e.target.closest('.rk-keep')) setRackMenu(false); });   /* picking something closes the panel (the sub menu buttons and the audio controls keep it open) */
 /* every rack link asks first ("Go to ...?") before leaving the page */
 const goDlg = $('#goDlg');
 let goHref = '', goBtn = null, goGoing = false;
@@ -3496,6 +3637,7 @@ $('#goYes').addEventListener('click', () => { goGoing = true; location.href = go
 $('#goNo').addEventListener('click', () => goDlg.close());
 goDlg.addEventListener('click', e => { if (e.target === goDlg) goDlg.close(); });
 goDlg.addEventListener('close', () => { if (goBtn && !goGoing) goBtn.classList.remove('lit'); });
+function askGo(href, msg) { goHref = href; goBtn = null; goGoing = false; $('#goMsg').textContent = msg; try { goDlg.showModal(); } catch (x) { goDlg.setAttribute('open', ''); } }   /* the desk objects use the same "Go to ...?" question */
 const rackPlay = $('#rackPlay'), rackLcd = $('#rackLcd'), rackKnob = $('#rackKnob');
 const lcdSay = (txt, still) => { rackLcd.querySelectorAll('.lcd-track span').forEach(sp => { sp.textContent = txt; }); rackLcd.classList.toggle('still', !!still); };   /* WELCOME until the song has been played, then the title while it plays and PAUSED when it is paused */
 let lcdPlayed = false;
@@ -3522,6 +3664,30 @@ const toggleBg = () => {
   toast(on ? 'Background play on: the jam keeps going in the background.' : 'Background play off.');
 };
 rackBg2.addEventListener('click', toggleBg);
+
+/* sub menus: Breathe / Move, Get in touch and Audio pop out beside the menu (over it on narrow screens) */
+const subNav = $('#rackNav');
+let subProxy = false;   /* true while the Audio buttons press the bar buttons for you (so the menu stays open) */
+const pressBar = btn => { subProxy = true; btn.click(); subProxy = false; };
+function openSub(id) {
+  subNav.classList.toggle('sub-open', !!id);
+  $$('.rack-sub').forEach(s => s.classList.toggle('on', s.id === 'sub-' + id));
+  $$('.rk-grp').forEach(b => { const on = b.dataset.sub === id; b.classList.toggle('lit', on); b.setAttribute('aria-expanded', String(on)); });
+  const s = id && $('#sub-' + id), b = id && $('.rk-grp[data-sub="' + id + '"]');
+  if (s) s.style.bottom = window.matchMedia('(min-width: 701px)').matches ? Math.max(0, subNav.clientHeight - b.offsetTop - b.offsetHeight) + 'px' : '';   /* beside the button that opened it */
+}
+$$('.rk-grp').forEach(b => b.addEventListener('click', () => { Sound.slide(); openSub($('#sub-' + b.dataset.sub).classList.contains('on') ? '' : b.dataset.sub); }));
+$$('.rk-back').forEach(b => b.addEventListener('click', () => openSub('')));
+/* the Audio sub menu: the same controls as the bar */
+const subMute = $('#subMute'), subPlay = $('#subPlay'), subVol = $('#subVol');
+const syncAudio = () => { const m = Sound.isMuted(); subMute.textContent = m ? 'Unmute' : 'Mute'; subMute.setAttribute('aria-pressed', String(m)); };
+subMute.addEventListener('click', () => { pressBar(muteBtn); syncAudio(); });
+muteBtn.addEventListener('click', syncAudio);
+subPlay.addEventListener('click', () => pressBar(rackPlay));
+subVol.value = Math.round(Sound.getVolume() * 100);
+subVol.addEventListener('input', () => Sound.setVolume(subVol.value / 100));
+Sound.onVolume(v => { subVol.value = Math.round(v * 100); });
+Sound.onRadio(on => { subPlay.textContent = on ? 'Pause' : 'Play'; subPlay.setAttribute('aria-pressed', String(on)); });
 
 /* ---------- email list form (the mailbox opens it) ---------- */
 const emailForm = $('#emailForm'), successMessage = $('#successMessage');
