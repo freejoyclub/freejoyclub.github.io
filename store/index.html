@@ -2806,8 +2806,10 @@ function makeStore(el) {
   };
   drawBill();
   const billTex = new THREE.CanvasTexture(billCv); billTex.anisotropy = 4;
-  if (document.fonts && document.fonts.load) document.fonts.load("34px 'KCStrikerSans'").then(() => { drawBill(); billTex.needsUpdate = true; }).catch(() => {});
-  const billG = new THREE.Group(); billG.position.set(0.95, 0.008, 2.55); billG.rotation.y = -0.2; stage.add(billG);
+  const billPhoto = new Image();   /* the real picture of the bill replaces the drawn one when it loads (the drawn one stays if the file is missing) */
+  billPhoto.onload = () => { billPhoto.ok = true; billCv.getContext('2d').drawImage(billPhoto, 0, 0, billCv.width, billCv.height); billTex.needsUpdate = true; };
+  billPhoto.src = '/images/2-bill.jpg';
+  if (document.fonts && document.fonts.load) document.fonts.load("34px 'KCStrikerSans'").then(() => { if (!billPhoto.ok) { drawBill(); billTex.needsUpdate = true; } }).catch(() => {});  const billG = new THREE.Group(); billG.position.set(0.95, 0.008, 2.55); billG.rotation.y = -0.2; stage.add(billG);
   const billSide = std(0xb9c9ad, 0.9);
   billG.add(new THREE.Mesh(new THREE.BoxGeometry(1.2, 0.012, 0.51), [billSide, billSide, new THREE.MeshStandardMaterial({ map: billTex, roughness: 0.85 }), billSide, billSide, billSide]));
   const billHit = hitBox(1.3, 0.16, 0.62, 0, 0.04, 0, 'bill', billG);
