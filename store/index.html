@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- STORE (v6) -->
+<!-- STORE (v7) -->
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
@@ -746,7 +746,7 @@ dialog.big { width: 100vw; max-height: 86vh; max-height: 86dvh; margin: auto 0 0
 .rack-nav .rk { font-size: 0.8rem; letter-spacing: 1px; padding: 9px 16px 9px 12px; justify-content: flex-start; min-width: 150px; }
 .rack-nav .rk-bg-nav { display: inline-flex; }
 @media (max-width: 520px) { .rack-nav { grid-template-columns: 1fr; } .rack-nav .rk { min-width: 190px; } }
-.cartbtn { position: fixed; top: 14px; right: 14px; z-index: 90; display: inline-flex; align-items: center; gap: 8px; padding: 9px 13px; border-radius: 12px; background: linear-gradient(#2c2c31, #151517); border: 1px solid #4a4a50; color: #f3e6c8; cursor: var(--hand); box-shadow: 0 4px 12px rgba(0,0,0,0.5); -webkit-tap-highlight-color: transparent; transition: box-shadow 0.4s, border-color 0.4s, color 0.4s; }
+.cartbtn { display: inline-flex; align-items: center; gap: 8px; padding: 9px 13px; border-radius: 12px; background: linear-gradient(#2c2c31, #151517); border: 1px solid #4a4a50; color: #f3e6c8; cursor: var(--hand); box-shadow: 0 4px 12px rgba(0,0,0,0.5); -webkit-tap-highlight-color: transparent; transition: box-shadow 0.4s, border-color 0.4s, color 0.4s; }
 .cartbtn svg { width: 24px; height: 24px; }
 .cartbtn:hover { border-color: #8a8a92; }
 .cartnum { display: none; font-family: 'KCStrikerSans', sans-serif; font-size: 1.15rem; line-height: 1; color: #fff1c8; text-shadow: 0 0 5px #ffb347, 0 0 12px #ff9a1f, 0 0 22px #ff8a00; animation: cartglow 1.8s ease-in-out infinite; }
@@ -756,7 +756,6 @@ dialog.big { width: 100vw; max-height: 86vh; max-height: 86dvh; margin: auto 0 0
 .cartbtn.green svg { filter: drop-shadow(0 0 6px #3dff7a); }
 .cartbtn.bump { animation: cartbump 0.5s; }
 @keyframes cartbump { 0% { transform: scale(1); } 30% { transform: scale(1.22); } 60% { transform: scale(0.95); } 100% { transform: scale(1); } }
-html.game-open .cartbtn { display: none; }
 .billpop { position: fixed; left: 50%; top: 42%; z-index: 120; width: min(78vw, 360px); text-align: center; pointer-events: none; opacity: 0; transform: translate(-50%, -50%) scale(0); }
 .billpop img { width: 100%; display: block; border-radius: 6px; box-shadow: 0 10px 30px rgba(0,0,0,0.6); }
 .billpop p { margin: 12px 0 0; font-family: 'KCOraleSans', sans-serif; font-size: 1.6rem; letter-spacing: 1.5px; text-transform: uppercase; color: #fff; text-shadow: 0 2px 10px rgba(0,0,0,0.8); transition: opacity 0.25s; }
@@ -776,6 +775,41 @@ html.game-open .cartbtn { display: none; }
 .sheet .cline { display: block; font-family: 'KCStrikerSans', sans-serif; font-size: 1.25rem; letter-spacing: 0.6px; opacity: 1; margin-bottom: 4px; }
 .sheet .cfound { display: block; }
 .sheet .totals .row.ok { color: #b6ffb0; }
+.topbar { position: fixed; top: 14px; right: 14px; z-index: 90; display: flex; align-items: center; gap: 10px; }
+html.game-open .topbar { display: none; }
+.viewtog { display: inline-flex; align-items: center; gap: 9px; padding: 9px 12px; border-radius: 12px; background: linear-gradient(#2c2c31, #151517); border: 1px solid #4a4a50; color: #f3e6c8; cursor: var(--hand); box-shadow: 0 4px 12px rgba(0,0,0,0.5); -webkit-tap-highlight-color: transparent; font-family: 'KCPelletierTyped', 'Courier New', monospace; font-size: 0.8rem; letter-spacing: 1.2px; text-transform: uppercase; white-space: nowrap; }
+.viewtog:hover { border-color: #8a8a92; }
+.vt-track { position: relative; width: 34px; height: 18px; border-radius: 9px; background: #07140b; border: 1px solid #000; box-shadow: inset 0 1px 3px rgba(0,0,0,0.8); flex: none; }
+.vt-track i { position: absolute; top: 2px; left: 2px; width: 12px; height: 12px; border-radius: 50%; background: #8a8a92; transition: transform 0.18s, background 0.18s, box-shadow 0.18s; }
+.viewtog[aria-checked="true"] .vt-track i { transform: translateX(16px); background: #ffd36b; box-shadow: 0 0 8px #ffb347; }
+@media (max-width: 520px) { .viewtog { padding: 9px 10px; font-size: 0.7rem; letter-spacing: 0.8px; gap: 7px; } .vt-track { width: 30px; } .viewtog[aria-checked="true"] .vt-track i { transform: translateX(12px); } }
+.listview { display: none; position: fixed; left: 0; right: 0; top: 0; bottom: var(--rackh); z-index: 60; overflow-y: auto; overscroll-behavior: contain; background: linear-gradient(#150d0a, #0d0807); text-align: left; padding: 70px 14px 28px; -webkit-overflow-scrolling: touch; }
+html.list-view .listview { display: block; }
+html.list-view .scene-tip { display: none; }
+.lv-in { max-width: 760px; margin: 0 auto; display: flex; flex-direction: column; gap: 12px; }
+.lv-sec { font-family: 'KCOraleSans', sans-serif; font-size: 1.1rem; letter-spacing: 3px; text-transform: uppercase; margin: 14px 0 0; padding-bottom: 6px; border-bottom: 1px solid rgba(255,255,255,0.2); color: #ffd36b; }
+.lv-sec:first-child { margin-top: 0; }
+.lrow { display: grid; grid-template-columns: 170px 1fr; gap: 16px; align-items: center; padding: 10px 14px 10px 10px; border-radius: 16px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12); }
+.lvis { display: flex; align-items: center; justify-content: center; aspect-ratio: 360 / 250; border-radius: 10px; background: rgba(0,0,0,0.28); overflow: hidden; }
+.lvis canvas { width: 100%; height: 100%; display: block; }
+.lvis img { max-width: 92%; max-height: 92%; object-fit: contain; border-radius: 4px; box-shadow: 0 4px 14px rgba(0,0,0,0.55); }
+.linfo { min-width: 0; display: flex; flex-direction: column; gap: 6px; }
+.linfo h3 { font-family: 'KCOraleSans', sans-serif; font-size: 1.55rem; letter-spacing: 1.5px; text-transform: uppercase; margin: 0; line-height: 1.1; }
+.linfo p { margin: 0; font-family: 'KCPelletierLight', 'Courier New', monospace; font-size: 0.9rem; line-height: 1.4; opacity: 0.85; }
+.lact { display: flex; align-items: center; flex-wrap: wrap; gap: 8px 14px; margin-top: 2px; }
+.lprice { font-family: 'KCOraleSans', sans-serif; font-size: 1.5rem; }
+.lact .btn.small { font-size: 1rem; padding: 8px 18px; }
+@media (max-width: 520px) { .listview { padding: 62px 10px 22px; } .lrow { grid-template-columns: 104px 1fr; gap: 10px; padding: 8px; } .linfo h3 { font-size: 1.2rem; } .linfo p { font-size: 0.8rem; } .lprice { font-size: 1.2rem; } .lact .btn.small { font-size: 0.9rem; padding: 7px 14px; } }
+.jtlink { background: none; border: 0; padding: 4px 2px; color: #ffecd2; font-family: 'KCPelletierTyped', 'Courier New', monospace; font-size: 0.78rem; letter-spacing: 0.8px; text-decoration: underline; opacity: 0.8; cursor: var(--hand); }
+.jtlink:hover { opacity: 1; }
+.buyact { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; }
+.sheet .sheetprice { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; font-size: 1rem; }
+.sheet .sheetprice b { font-family: 'KCOraleSans', sans-serif; font-size: 1.9rem; font-weight: normal; }
+.sheet .justthis > summary { cursor: var(--hand); font-family: 'KCPelletierTyped', 'Courier New', monospace; font-size: 0.9rem; letter-spacing: 1.5px; text-transform: uppercase; padding: 8px 0; text-align: center; opacity: 0.9; list-style: none; text-decoration: underline; }
+.sheet .justthis > summary::-webkit-details-marker { display: none; }
+.sheet .justthis[open] > summary { opacity: 0.7; }
+.sheet .justthis.inq > summary { display: none; }
+.sheet .jt-body { display: flex; flex-direction: column; gap: 12px; padding-top: 6px; border-top: 1px solid rgba(255,255,255,0.18); }
 .scene-tip { position: fixed; left: 0; top: 0; z-index: 80; pointer-events: none; padding: 5px 9px; border-radius: 7px; background: rgba(20,14,12,0.82); border: 1px solid rgba(255,236,210,0.18); color: #f3e6c8; font-family: 'KCPelletierTyped', 'Courier New', monospace; font-size: 12px; line-height: 1.35; letter-spacing: 0.3px; white-space: nowrap; opacity: 0; transition: opacity 0.14s; }
 .scene-tip.on { opacity: 1; }
 .scene-tip small { display: block; opacity: 0.65; font-size: 11px; }
@@ -925,26 +959,36 @@ try { if (location.hash) history.replaceState(null, '', location.pathname + loca
 <button class="x" type="button" id="sheetClose" aria-label="Close">×</button>
 <h3 id="sheetTitle"></h3>
 <div id="sheetOptions"></div>
+<div class="sheetprice" id="sheetPrice"></div>
+<button class="btn" id="addCart" type="button">Add to cart</button>
+<details class="justthis" id="justThis">
+<summary>Order just this</summary>
+<div class="jt-body">
 <div id="shipOpts"></div>
 <details class="promo" id="promoBox">
 <summary>Discount code</summary>
-<div class="promorow"><input id="promoIn" type="text" placeholder="PLAYER20" autocomplete="off" autocapitalize="characters" spellcheck="false"><button type="button" class="btn small" id="promoApply">Apply</button></div>
+<div class="promorow"><input id="promoIn" type="text" autocomplete="off" autocapitalize="characters" spellcheck="false"><button type="button" class="btn small" id="promoApply">Apply</button></div>
 <p class="shipnote" id="promoMsg"></p>
 </details>
 <label>Your name<input id="oName" type="text" autocomplete="name"></label>
 <label>Email or Instagram<input id="oContact" type="text" autocomplete="email"></label>
 <label>Ship to (or we'll ask)<textarea id="oShip" autocomplete="street-address"></textarea></label>
 <div class="totals" id="sheetTotals"></div>
-<button class="btn" id="addCart" type="button">Add to cart</button>
 <a class="btn" id="sendEmail" href="#">1. Email the order</a>
 <button class="btn" id="copyDM" type="button">Or copy it for a DM</button>
 <a class="btn" id="venmoBtn" href="#" target="_blank" rel="noopener">2. Pay with Venmo</a>
 <p class="note" id="sheetNote"></p>
 </div>
+</details>
+</div>
 </dialog>
 
 <!-- ============ CART (top right), the two dollar bill pop, and the cart sheet ============ -->
+<div class="topbar" id="topBar">
+<button type="button" class="viewtog" id="viewTog" role="switch" aria-checked="false" aria-label="Switch between table view and list view"><span id="viewTogTxt">List view</span><span class="vt-track" aria-hidden="true"><i></i></span></button>
 <button type="button" class="cartbtn" id="cartBtn" aria-label="Open the cart, 0 items"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.5 3.5h3l2.2 11.2a1.6 1.6 0 0 0 1.6 1.3h8.1a1.6 1.6 0 0 0 1.6-1.2L20.5 7.5H6.2"/><circle cx="9.6" cy="19.8" r="1.4"/><circle cx="17" cy="19.8" r="1.4"/></svg><span class="cartnum" id="cartNum">0</span></button>
+</div>
+<section class="listview" id="listView" aria-label="Everything in the shop"></section>
 <div class="billpop" id="billPop" aria-hidden="true"><img id="billImg" alt=""><p>Take 2 dollars off your order!</p></div>
 <dialog id="cartDlg">
 <div class="sheet">
@@ -958,7 +1002,7 @@ try { if (location.hash) history.replaceState(null, '', location.pathname + loca
 <p class="shipnote" id="cartShipNote"></p>
 <details class="promo" id="cPromoBox">
 <summary>Discount code</summary>
-<div class="promorow"><input id="cPromoIn" type="text" placeholder="PLAYER20" autocomplete="off" autocapitalize="characters" spellcheck="false"><button type="button" class="btn small" id="cPromoApply">Apply</button></div>
+<div class="promorow"><input id="cPromoIn" type="text" autocomplete="off" autocapitalize="characters" spellcheck="false"><button type="button" class="btn small" id="cPromoApply">Apply</button></div>
 <p class="shipnote" id="cPromoMsg"></p>
 </details>
 <label>Your name<input id="cName" type="text" autocomplete="name"></label>
@@ -1112,7 +1156,7 @@ try { if (location.hash) history.replaceState(null, '', location.pathname + loca
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/STLLoader.js"></script>
 <script>
-// STORE (v6)
+// STORE (v7)
 const toTop = () => { try { window.scrollTo({ top: 0, left: 0, behavior: 'instant' }); } catch (e) { window.scrollTo(0, 0); } };
 toTop();
 window.addEventListener('load', toTop);
@@ -1188,14 +1232,14 @@ const DIE_COLORS = [
 /* Products. This array is the reusable storefront piece: later it can move to a JSON file. */
 const PRODUCTS = [
   {
-    id: 'core-trio', type: 'kit', name: 'Trio Kit', price: 14, cta: 'Order',
+    id: 'core-trio', type: 'kit', name: 'Trio Kit', price: 14, cta: 'Add to cart',
     pieces: ['jesse', 'marco', 'grant'],
     colors: ['red', 'ltyellow', 'green', 'dkblue', 'orange'],
     blurb: 'Jesse, Marco and Grant, plus colored dice and the Fearjoy coin.',
     includes: ['Jesse, Marco and Grant', 'Dice x1', 'Fearjoy Coin x1']
   },
   {
-    id: 'full-band', type: 'kit', name: 'Full Band Kit', price: 18, cta: 'Order',
+    id: 'full-band', type: 'kit', name: 'Full Band Kit', price: 18, cta: 'Add to cart',
     pieces: ['jesse', 'marco', 'grant', 'garrett', 'matt', 'isaac'],
     colors: ['black', 'dkblue', 'ltblue', 'purple', 'red', 'rose', 'lime', 'green', 'ltyellow', 'orange'],
     defaultDie: 'orange',
@@ -1203,7 +1247,7 @@ const PRODUCTS = [
     includes: ['Jesse, Marco, Grant, Garrett, Matt and Isaac', 'Dice x1 (any color)', 'Fearjoy Coin x1']
   },
   {
-    id: 'single', type: 'single', name: 'A-la-carte', price: 6, priceNote: 'each', cta: 'Pick pieces',
+    id: 'single', type: 'single', name: 'A-la-carte', price: 6, priceNote: 'each', cta: 'Add to cart',
     pieces: ['jesse'],
     blurb: 'Just want one head? Grab as many as you like. No die or coin.',
     includes: ['One 3D printed player piece each']
@@ -1226,7 +1270,7 @@ const PRODUCTS = [
 /* Store items (each opens the order sheet). The album colors are used for the vinyl and the record covers. */
 const ALBUM_COLORS = [
   { id: 'oxblood', name: 'Maroon', hex: '#43061F' },
-  { id: 'forest',  name: 'Forest',  hex: '#004437' },
+  { id: 'forest',  name: 'Forest green',  hex: '#004437' },
   { id: 'white',   name: 'White',   hex: '#FFFFFF' },
   { id: 'teal',    name: 'Dark teal', hex: '#13737A' },
   { id: 'sand',    name: 'Tan',    hex: '#D5B38E' }
@@ -1565,7 +1609,7 @@ function productCard(p) {
       <div class="info">
         <div class="buyrow">
           <div class="price" data-price="${p.id}"></div>
-          <button type="button" class="btn small" data-order="${p.id}">${esc(p.cta)}</button>
+          ${buyAct(p)}
         </div>
       </div>`;
     return el;
@@ -1581,7 +1625,7 @@ function productCard(p) {
       ${p.type === 'kit' ? '<div class="optlabel">Die color</div>' + swatchesHTML(p.id) : ''}
       <div class="buyrow">
         <div class="price" data-price="${p.id}"></div>
-        <button type="button" class="btn small" data-order="${p.id}">${esc(p.cta)}</button>
+        ${buyAct(p)}
       </div>
     </div>`;
   return el;
@@ -2568,7 +2612,7 @@ function makeStore(el) {
   board.rotation.y = BROT;
   board.userData.tag = 'vinyl';   /* the board and the record are one thing: tap either to open the vinyl order */
   stage.add(board); hits.push(board);
-  blob(BS + 0.8, BS + 0.8, BX, TZ + 0.1, 0.6);
+  const boardBlob = blob(BS + 0.8, BS + 0.8, BX, TZ + 0.1, 0.6);
   const tvImgP = new Promise(res => new THREE.TextureLoader().load(CONFIG.tvImage, tex => {
     const bt = tex.clone(); bt.needsUpdate = true; bt.anisotropy = 4;
     boardTop.map = bt; boardTop.color.setHex(0xe0e0e0); boardTop.needsUpdate = true; res();
@@ -2632,7 +2676,7 @@ function makeStore(el) {
   const ant = new THREE.Mesh(new THREE.CylinderGeometry(0.012, 0.012, 0.8, 8), chrome); ant.position.set(0.64, 1.24, -0.1); ant.rotation.z = -0.35; radio.add(ant);
   hitBox(1.4, 0.95, 0.65, 0, 0.47, 0, 'radio', radio);
   hitBox(0.5, 0.5, 0.3, 0.3, 0.32, 0.3, 'knob', radio);
-  blob(1.8, 0.9, 3.05, -0.5, 0.7);
+  const radioBlob = blob(1.8, 0.9, 3.05, -0.5, 0.7);
 
   /* ---------- the mailbox (email list) and the letter (contact us), at the left end of the table ---------- */
   const mailG = new THREE.Group();
@@ -2667,7 +2711,7 @@ function makeStore(el) {
   const mfPlate = new THREE.Mesh(new THREE.BoxGeometry(0.03, 0.13, 0.2), mailRed); mfPlate.position.set(0, 0.26, 0.1); mailFlag.add(mfPlate);
     hitBox(0.9, 0.85, 1.0, 0, 0.4, 0, 'mailbox', mailG);
   let mailT = 0;
-  blob(1.6, 1.7, -3.15, -0.6, 0.6);
+  const mailBlob = blob(1.6, 1.7, -3.15, -0.6, 0.6);
   const letterG = new THREE.Group();
   const LS = 1.05, LEAN = 0.2;   /* size, and how far it leans back from straight up */
   letterG.position.set(-3.15, 0.03, 1.15);
@@ -2700,7 +2744,7 @@ function makeStore(el) {
     drawLetter(letterTex.image.getContext('2d'), lcW, lcH); letterTex.needsUpdate = true;
     drawDoor(mbDoorTex.image.getContext('2d'), 256, 256); mbDoorTex.needsUpdate = true;
   }).catch(() => {});
-  blob(1.7, 1.15, -3.15, 1.15, 0.4);
+  const letterBlob = blob(1.7, 1.15, -3.15, 1.15, 0.4);
   hitBox(1.45, 0.2, 1.0, 0, 0.08, 0, 'letter', letterG);
   let letterT = 0;
 
@@ -2724,14 +2768,14 @@ function makeStore(el) {
   const floppyTex = redrawTex(mkTex(256, 256, drawFloppy), drawFloppy);
   const floppyFace = noHit(new THREE.Mesh(new THREE.PlaneGeometry(FL * 0.92, FL * 0.92), new THREE.MeshStandardMaterial({ map: floppyTex, transparent: true, roughness: 0.6 })));
   floppyFace.rotation.x = -Math.PI / 2; floppyFace.position.y = 0.0465; floppyG.add(floppyFace);
-  blob(1.2, 1.2, -3.05, 2.35, 0.5);
+  const floppyBlob = blob(1.2, 1.2, -3.05, 2.35, 0.5);
   hitBox(FL + 0.1, 0.25, FL + 0.1, 0, 0.06, 0, 'floppy', floppyG);
 
   /* ---------- the game pieces: the three busts, the die and the coin, spinning slowly on a tray (tap: the pieces popup) ---------- */
   const TRAY = { x: 2.65, z: 1.5, r: 1.05 };
   const trayG = new THREE.Group(); trayG.position.set(TRAY.x, 0.06, TRAY.z); stage.add(trayG);
   trayG.add(pedestal(TRAY.r, false));
-  blob(TRAY.r * 2.5, TRAY.r * 2.5, TRAY.x, TRAY.z, 0.6);
+  const trayBlob = blob(TRAY.r * 2.5, TRAY.r * 2.5, TRAY.x, TRAY.z, 0.6);
   const setG = new THREE.Group(); setG.scale.setScalar(0.62); trayG.add(setG);   /* the set turns slowly, like the popup */
   const crew = [];
   ['jesse', 'marco', 'grant'].forEach((id, i) => {
@@ -2758,8 +2802,8 @@ function makeStore(el) {
   const die = makeDichroicDie(true); die.scale.setScalar(DIE_SCALE); die.rotation.set(0.35, 0.6, 0); dieRoot.add(die);
   hitBox(0.8, 0.8, 0.8, 0, 0, 0, 'set', dieRoot);
 
-  /* ---------- records leaning in a loose stack under the table: the game art on each color. Tap one to pick that color. ---------- */
-  const SL = 0.85;   /* sleeve size (they stand under the table, so they have to fit in the gap) */
+  /* ---------- records leaning on the front of the table: the game art on each color. Tap one to pick that color. ---------- */
+  const SL = 0.85;   /* sleeve size (they have to fit in the gap under the table) */
   const coverImg = new Image(); let coverOk = false;
   const drawCover = (g, w, h, c) => {
     g.fillStyle = c.hex; g.fillRect(0, 0, w, h);
@@ -2772,7 +2816,7 @@ function makeStore(el) {
     const tex = mkTex(512, 512, (g, w, h) => drawCover(g, w, h, c)); tex.anisotropy = 4;
     const g = new THREE.Group();
     const bz = (2 - i) * 0.06;
-    g.position.set(-2.5 + i * 1.25, FLOOR + SL / 2 * (Math.cos(0.22) * Math.cos(bz) + Math.sin(Math.abs(bz))) + 0.06, 2.85 + (i % 2) * 0.08);   /* under the table, tucked behind its front edge, and lifted so the lowest corner clears the floor */
+    g.position.set(-2.5 + i * 1.25, FLOOR + SL / 2 * (Math.cos(0.22) * Math.cos(bz) + Math.sin(Math.abs(bz))) + 0.06, 3.3 + (i % 2) * 0.08);   /* leaning on the front of the table, out from under it a little, and lifted so the lowest corner clears the floor */
     g.rotation.order = 'YXZ';
     g.userData.base = { y: (i - 2) * -0.1, x: -0.22, z: bz, py: g.position.y };
     g.rotation.set(g.userData.base.x, g.userData.base.y, g.userData.base.z);
@@ -2785,7 +2829,7 @@ function makeStore(el) {
   });
   coverImg.onload = () => { coverOk = true; recs.forEach(g => { drawCover(g.userData.tex.image.getContext('2d'), 512, 512, g.userData.c); g.userData.tex.needsUpdate = true; }); };
   coverImg.src = CONFIG.coverImage;
-  blob(6.6, 1.5, 0, 2.9, 0.6).position.y = FLOOR + 0.004;
+  blob(6.6, 1.5, 0, 3.35, 0.6).position.y = FLOOR + 0.004;
 
   /* ---------- a two dollar bill lying on the table: tap it to take $2 off (the cart code does the rest) ---------- */
   const billCv = document.createElement('canvas'); billCv.width = 640; billCv.height = 272;
@@ -2808,8 +2852,12 @@ function makeStore(el) {
   const billTex = new THREE.CanvasTexture(billCv); billTex.anisotropy = 4;
   const billPhoto = new Image();   /* the real picture of the bill replaces the drawn one when it loads (the drawn one stays if the file is missing) */
   billPhoto.onload = () => { billPhoto.ok = true; billCv.getContext('2d').drawImage(billPhoto, 0, 0, billCv.width, billCv.height); billTex.needsUpdate = true; };
-  billPhoto.src = '/images/2-bill.jpg';
-  if (document.fonts && document.fonts.load) document.fonts.load("34px 'KCStrikerSans'").then(() => { if (!billPhoto.ok) { drawBill(); billTex.needsUpdate = true; } }).catch(() => {});  const billG = new THREE.Group(); billG.position.set(0.95, 0.008, 2.55); billG.rotation.y = -0.2; stage.add(billG);
+  const billFiles = ['/images/2-bill.jpg', '/images/2-bill.jpeg', '/images/2-bill.JPG', '/images/2-bill.png', '/images/2-bill.webp', '/images/2-Bill.jpg'];   /* the first one that exists wins */
+  let billTry = 0;
+  billPhoto.onerror = () => { if (++billTry < billFiles.length) billPhoto.src = billFiles[billTry]; };
+  billPhoto.src = billFiles[0];
+  if (document.fonts && document.fonts.load) document.fonts.load("34px 'KCStrikerSans'").then(() => { if (!billPhoto.ok) { drawBill(); billTex.needsUpdate = true; } }).catch(() => {});
+  const billG = new THREE.Group(); billG.position.set(0.95, 0.008, 2.55); billG.rotation.y = -0.2; stage.add(billG);
   const billSide = std(0xb9c9ad, 0.9);
   billG.add(new THREE.Mesh(new THREE.BoxGeometry(1.2, 0.012, 0.51), [billSide, billSide, new THREE.MeshStandardMaterial({ map: billTex, roughness: 0.85 }), billSide, billSide, billSide]));
   const billHit = hitBox(1.3, 0.16, 0.62, 0, 0.04, 0, 'bill', billG);
@@ -2818,10 +2866,10 @@ function makeStore(el) {
   const tipEl = document.createElement('div'); tipEl.className = 'scene-tip'; tipEl.setAttribute('aria-hidden', 'true'); document.body.appendChild(tipEl);
   const tipText = (tag, obj) => {
     if (tag === 'vinyl') return ['Fearjoy - The Game (12" vinyl)', 'Custom sleeve colors'];
-    if (tag === 'rec') return ['Fearjoy - The Game (12" vinyl)', ALBUM_COLORS[obj.userData.rec].name + ' sleeve, custom colors'];
+    if (tag === 'rec') return [ALBUM_COLORS[obj.userData.rec].name + ' sleeve'];
     if (tag === 'poster') return ['Camcorder poster'];
     if (tag === 'shirt') return ['Fearjoy shirt', SHIRT_COLORS[obj.userData.shirt].name + ', ' + SHIRT_COLORS[obj.userData.shirt].print];
-    if (tag === 'bill') return ['Two dollar bill', 'Tap to take $2 off'];
+    if (tag === 'bill') return ['Two dollar bill'];
     if (tag === 'floppy') return ['Digital goods', 'Coming soon'];
     if (tag === 'set') return ['Game pieces'];
     if (tag === 'radio') return ['Radio', 'Tap to play'];
@@ -2841,6 +2889,26 @@ function makeStore(el) {
     if (!tipOn) { tipOn = true; tipEl.classList.add('on'); }
   };
 
+  /* ---------- on load, the things on the table drop in (the sleeves, shirts, poster and banner are already there) ---------- */
+  const drops = [];
+  const wrapDrop = (objs, delay, H, shadows, amp) => {   /* each thing sits in its own group, which is what falls (so nothing else about it has to change) */
+    const g = new THREE.Group(); stage.add(g);
+    objs.forEach(o => g.add(o));
+    const d = { g, delay, H, sh: shadows || [], amp: amp == null ? 0.1 : amp, landed: false };
+    if (!REDUCE) { g.visible = false; d.sh.forEach(m => { m.visible = false; }); }
+    drops.push(d);
+    return d;
+  };
+  wrapDrop([board], 0.0, 7, [boardBlob], 0.12);
+  wrapDrop([vinylG], 0.15, 6, [], 0.05);
+  wrapDrop([radio], 0.35, 6, [radioBlob], 0.1);
+  wrapDrop([trayG], 0.55, 5, [trayBlob], 0.1);
+  wrapDrop([mailG], 0.7, 5, [mailBlob], 0.1);
+  wrapDrop([letterG], 0.85, 4, [letterBlob], 0.08);
+  wrapDrop([floppyG], 1.0, 3, [floppyBlob], 0.05);
+  wrapDrop([billG], 1.15, 2, [], 0.03);
+  let dropT0 = 0, dropDone = REDUCE;
+
   /* ---------- state, hover and the per-frame loop ---------- */
   let hovLetter = false;
   let hoverGroup = null, glowItems = null, knobDrag = null, knobMoved = 0, ledOn = false, vSlide = 0;
@@ -2859,6 +2927,9 @@ function makeStore(el) {
     ray.setFromCamera(ndc, v.camera);
     let h = null;
     for (const x of ray.intersectObjects(hits, false)) {
+      let shown = true;
+      for (let o = x.object; o; o = o.parent) if (!o.visible) { shown = false; break; }
+      if (!shown) continue;   /* (the ray does not look at "visible" by itself) */
       const tg = x.object.userData.tag;
       if (tg === 'block') break;
       if (tg !== 'vinyl') { h = x; break; }
@@ -2910,6 +2981,22 @@ function makeStore(el) {
   const ease = k => 1 - Math.pow(1 - k, 3);
   v.onFrame = function (t) {
     const now = performance.now();
+    if (!dropDone) {   /* the drop-in: starts half a second after the first drawn frame, each thing falls, bounces once and its shadow grows in */
+      if (!dropT0) dropT0 = now + 500;
+      if (now >= dropT0) {
+        const sec = (now - dropT0) / 1000; let all = true;
+        drops.forEach(d => {
+          const e = sec - d.delay;
+          if (e < 0) { all = false; return; }
+          d.g.visible = true;
+          const T = 0.34 + d.H * 0.045;
+          if (e < T) { d.g.position.y = d.H * (1 - (e / T) * (e / T)); all = false; }
+          else { d.g.position.y = bounceAt((e - T) * 1000, d.amp); d.landed = true; if ((e - T) * 1000 < BOUNCE_MS) all = false; }
+          d.sh.forEach(m => { m.visible = true; shade(m, d.g.position.y); });
+        });
+        if (all) { dropDone = true; drops.forEach(d => { d.g.position.y = 0; d.sh.forEach(m => shade(m, 0)); }); }
+      }
+    }
     /* things that sway or shake */
     shirts.forEach(g => {
       const ph = g.userData.ph, tt = REDUCE ? 0 : t;
@@ -2970,6 +3057,7 @@ function makeStore(el) {
     });
   };
 
+  v.billSrc = () => billCv.toDataURL('image/png');   /* the picture of the bill (the list view shows it too) */
   v.hideBill = () => { billG.visible = false; const i = hits.indexOf(billHit); if (i >= 0) hits.splice(i, 1); };   /* once taken, it is gone from the table */
   if ('IntersectionObserver' in window) {
     new IntersectionObserver(es => { v.visible = es[0].isIntersecting; if (v.visible) kickLoads(v); }, { threshold: 0.05 }).observe(el);
@@ -3197,7 +3285,7 @@ function frame(t) {
   if (FJ_PAUSED) { lastT = t; return; }
   const dt = Math.min((t - lastT) / 16.67, 3) || 1;
   lastT = t;
-  const popupOpen = !!document.querySelector('dialog.big[open]');   /* the desk holds still behind a popup, so the 3D views inside it run smoothly */
+  const popupOpen = !!document.querySelector('dialog.big[open]') || document.documentElement.classList.contains('list-view');   /* the desk holds still behind a popup, so the 3D views inside it run smoothly */
   for (const id in viewers) {
     const v = viewers[id];
     if (!v || !v.visible) continue;
@@ -3371,7 +3459,7 @@ function applyPromo() {
   const raw = $('#promoIn').value.trim();
   promo = promoParse(raw);
   if (cur) updateSheet();
-  $('#promoMsg').textContent = promo ? promo.code + ' applied: ' + promo.pct + '% off.' : (raw ? 'That code is not valid. Codes look like PLAYER20.' : '');
+  $('#promoMsg').textContent = promo ? promo.code + ' applied: ' + promo.pct + '% off.' : (raw ? 'That code is not valid.' : '');
   if (promo) $('#promoIn').value = promo.code;
 }
 $('#promoApply').addEventListener('click', applyPromo);
@@ -3503,9 +3591,10 @@ function updateSheet() {
   }
   $('#copyDM').style.display = p.type === 'deluxe' ? 'none' : '';
   $('#addCart').style.display = p.type === 'deluxe' ? 'none' : '';
+  $('#sheetPrice').innerHTML = p.type === 'deluxe' ? '' : (c.qty > 1 ? '<span>' + esc(c.qty + ' x ' + money(p.price)) + '</span>' : '<span>Price</span>') + '<b>' + symHTML(money(c.sub)) + '</b>';
 }
 
-function openSheet(pid) {
+function openSheet(pid, justThis) {
   cur = getP(pid);
   const st = S[pid];
   if (cur.type === 'single' && st.pick.size === 0) { st.pick.set(st.view, 1); piecesChanged(pid); }   /* an empty order starts with one piece */
@@ -3514,6 +3603,7 @@ function openSheet(pid) {
   renderShip();
   promoShow();
   refreshCards();
+  const jt = $('#justThis'); jt.classList.toggle('inq', cur.type === 'deluxe'); jt.open = !!justThis || cur.type === 'deluxe';
   if (dlg.showModal) dlg.showModal(); else dlg.setAttribute('open', '');
 }
 function closeSheet() { if (dlg.close) dlg.close(); else dlg.removeAttribute('open'); }
@@ -3561,6 +3651,8 @@ document.addEventListener('click', e => {
     S[pid][k] = k === 'size' ? val : Number(val);
     refreshCards();
   }
+  else if (b.dataset.add) { Sound.oneUp(); quickAdd(b.dataset.add); }
+  else if (b.dataset.just) { Sound.oneUp(); openSheet(b.dataset.just, true); }
   else if (b.dataset.order) { Sound.oneUp(); openSheet(b.dataset.order); }
 });
 
@@ -3704,10 +3796,10 @@ cartDlg.addEventListener('change', e => {
 function cartPromo() {
   const raw = $('#cPromoIn').value.trim();
   promo = promoParse(raw);
-  $('#cPromoMsg').textContent = promo ? promo.code + ' applied: ' + promo.pct + '% off.' : (raw ? 'That code is not valid. Codes look like PLAYER20.' : '');
+  $('#cPromoMsg').textContent = promo ? promo.code + ' applied: ' + promo.pct + '% off.' : (raw ? 'That code is not valid.' : '');
   if (promo) $('#cPromoIn').value = promo.code;
   cartRender();
-  $('#cPromoMsg').textContent = promo ? promo.code + ' applied: ' + promo.pct + '% off.' : (raw ? 'That code is not valid. Codes look like PLAYER20.' : '');
+  $('#cPromoMsg').textContent = promo ? promo.code + ' applied: ' + promo.pct + '% off.' : (raw ? 'That code is not valid.' : '');
 }
 $('#cPromoApply').addEventListener('click', cartPromo);
 $('#cPromoIn').addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); cartPromo(); } });
@@ -3806,6 +3898,138 @@ function startShirtArt() {
   }
 }
 startShirtArt();
+
+
+/* the game pieces cards: "Add to cart" puts what is picked straight in the cart; "or order just this" opens the order sheet with its dropdown open */
+function buyAct(p) {
+  if (p.type === 'deluxe') return `<button type="button" class="btn small" data-order="${p.id}">${esc(p.cta)}</button>`;
+  return `<div class="buyact"><button type="button" class="btn small" data-add="${p.id}">${esc(p.cta)}</button><button type="button" class="jtlink" data-just="${p.id}">or order just this</button></div>`;
+}
+function quickAdd(pid) {
+  const p = getP(pid), st = S[pid];
+  if (p.type === 'single' && st.pick.size === 0) { st.pick.set(st.view, 1); piecesChanged(pid); }   /* an empty pick starts with the piece being shown */
+  const l = lineFromProduct(p);
+  if (!l) { toast('Pick a piece first'); return; }
+  cartAdd(l);
+}
+/* =====================================================================
+   LIST VIEW: the same things as the table, as a simple gallery (record, game pieces, shirts, then the rest)
+   ===================================================================== */
+const LV = { on: false };
+function lvBust(g, cx, by, sc, tone) {   /* a little marble bust: shoulders and a head */
+  const gr = g.createLinearGradient(cx - 34 * sc, 0, cx + 34 * sc, 0);
+  gr.addColorStop(0, tone[0]); gr.addColorStop(0.55, tone[1]); gr.addColorStop(1, tone[2]);
+  g.fillStyle = gr; g.strokeStyle = 'rgba(0,0,0,0.35)'; g.lineWidth = 2;
+  g.beginPath(); g.moveTo(cx - 36 * sc, by); g.quadraticCurveTo(cx - 34 * sc, by - 26 * sc, cx - 10 * sc, by - 30 * sc); g.lineTo(cx + 10 * sc, by - 30 * sc); g.quadraticCurveTo(cx + 34 * sc, by - 26 * sc, cx + 36 * sc, by); g.closePath(); g.fill(); g.stroke();
+  g.beginPath(); g.ellipse(cx, by - 52 * sc, 20 * sc, 25 * sc, 0, 0, Math.PI * 2); g.fill(); g.stroke();
+}
+function drawPiecesPrev(g, W, H, kind) {
+  const marble = ['#f7f4ee', '#d9d4c8', '#a9a396'], gold = ['#f1d58a', '#d3a94c', '#8c6a22'];
+  g.clearRect(0, 0, W, H);
+  const lit = (x, y, r) => { const gl = g.createRadialGradient(x, y, 4, x, y, r); gl.addColorStop(0, 'rgba(255,255,255,0.12)'); gl.addColorStop(1, 'rgba(255,255,255,0)'); g.fillStyle = gl; g.fillRect(0, 0, W, H); };
+  lit(W / 2, H / 2, W * 0.6);
+  if (kind === 'single') lvBust(g, W / 2, H * 0.86, 1.25, marble);
+  else if (kind === 'full-band') { [0, 1, 2].forEach(i => { lvBust(g, W * (0.26 + i * 0.24), H * 0.5, 0.78, marble); lvBust(g, W * (0.26 + i * 0.24), H * 0.9, 0.78, marble); }); }
+  else { const tone = kind === 'deluxe' ? gold : marble; [0, 1, 2].forEach(i => lvBust(g, W * (0.26 + i * 0.24), H * (i === 1 ? 0.8 : 0.86), 0.95, tone)); }
+  if (kind === 'core-trio' || kind === 'full-band') {   /* the die and the coin */
+    g.save(); g.translate(W * 0.9, H * 0.84); g.rotate(0.2); g.fillStyle = '#e8641c'; g.fillRect(-13, -13, 26, 26); g.strokeStyle = 'rgba(0,0,0,0.4)'; g.strokeRect(-13, -13, 26, 26);
+    g.fillStyle = '#fff'; [[-6, -6], [0, 0], [6, 6]].forEach(q => { g.beginPath(); g.arc(q[0], q[1], 2.4, 0, Math.PI * 2); g.fill(); }); g.restore();
+    g.fillStyle = '#e0b878'; g.strokeStyle = '#6b4420'; g.lineWidth = 2; g.beginPath(); g.arc(W * 0.1, H * 0.86, 15, 0, Math.PI * 2); g.fill(); g.stroke();
+  }
+}
+function drawFloppyPrev(g, W, H) {
+  const s = 150, x = (W - s) / 2, y = (H - s) / 2;
+  g.clearRect(0, 0, W, H);
+  g.fillStyle = '#1f3a5c'; g.fillRect(x, y, s, s);
+  g.fillStyle = '#c9ced4'; g.fillRect(x + s * 0.26, y + 4, s * 0.48, s * 0.3);
+  g.fillStyle = '#2a2d31'; g.fillRect(x + s * 0.58, y + 9, s * 0.1, s * 0.2);
+  g.fillStyle = '#f2eee4'; g.fillRect(x + s * 0.14, y + s * 0.52, s * 0.72, s * 0.42);
+  g.fillStyle = '#c9261f'; g.fillRect(x + s * 0.14, y + s * 0.52, s * 0.72, s * 0.07);
+  g.fillStyle = '#2a1a14'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.font = "15px 'KCStrikerSans', 'Arial Black', sans-serif"; g.fillText('FEARJOY', W / 2, y + s * 0.72);
+}
+function drawMailPrev(g, W, H) {
+  g.clearRect(0, 0, W, H);
+  g.fillStyle = '#5b6770'; g.fillRect(W / 2 - 6, H * 0.62, 12, H * 0.34);
+  g.fillStyle = '#3d6fb5'; g.beginPath(); g.moveTo(W / 2 - 62, H * 0.62); g.lineTo(W / 2 - 62, H * 0.36); g.quadraticCurveTo(W / 2, H * 0.1, W / 2 + 62, H * 0.36); g.lineTo(W / 2 + 62, H * 0.62); g.closePath(); g.fill(); g.strokeStyle = 'rgba(0,0,0,0.4)'; g.lineWidth = 2; g.stroke();
+  g.fillStyle = '#c9261f'; g.fillRect(W / 2 + 62, H * 0.2, 6, H * 0.36); g.fillRect(W / 2 + 62, H * 0.2, 26, 14);
+  g.fillStyle = '#0c1a2e'; g.beginPath(); g.ellipse(W / 2 - 40, H * 0.5, 12, 18, 0, 0, Math.PI * 2); g.fill();
+}
+function drawLetterPrev(g, W, H) {
+  g.clearRect(0, 0, W, H);
+  const w = 170, h = 112, x = (W - w) / 2, y = (H - h) / 2;
+  g.save(); g.translate(W / 2, H / 2); g.rotate(-0.09); g.translate(-W / 2, -H / 2);
+  g.shadowColor = 'rgba(0,0,0,0.5)'; g.shadowBlur = 14; g.shadowOffsetY = 5; g.fillStyle = '#efe6d2'; g.fillRect(x, y, w, h); g.shadowColor = 'transparent';
+  g.strokeStyle = 'rgba(80,60,30,0.55)'; g.lineWidth = 2; g.beginPath(); g.moveTo(x, y); g.lineTo(W / 2, y + h * 0.58); g.lineTo(x + w, y); g.stroke(); g.strokeRect(x, y, w, h);
+  g.fillStyle = '#c9261f'; g.beginPath(); g.arc(W / 2, y + h * 0.58, 9, 0, Math.PI * 2); g.fill();
+  g.restore();
+}
+function lvRows() {
+  const pc = id => PRODUCTS.find(p => p.id === id);
+  const rows = [];
+  const money0 = n => money(n);
+  rows.push({ sec: 'Record', key: 'vinyl', name: 'Fearjoy - The Game', desc: '12" vinyl. Pick your sleeve color.', price: money0(CONFIG.prices.vinyl), btn: ['Choose sleeve', 'sheet:vinyl'], draw: (g, W, H) => drawVinylPrev(g, W, H, ALBUM_COLORS[S.vinyl.color]), size: [360, 250] });
+  ['core-trio', 'full-band', 'single'].forEach((id, i) => {
+    const p = pc(id);
+    rows.push({ sec: i === 0 ? 'Game pieces' : '', key: id, name: p.name, desc: p.blurb, price: money0(p.price) + (p.priceNote ? ' ' + p.priceNote : ''), btn: id === 'single' ? ['Pick pieces', 'kits:'] : ['Add to cart', 'add:' + id], just: id === 'single' ? '' : id, draw: (g, W, H) => drawPiecesPrev(g, W, H, id), size: [360, 250] });
+  });
+  const dx = pc('deluxe');
+  rows.push({ sec: '', key: 'deluxe', name: dx.name, desc: 'One of one. ' + dx.blurb.split('. ')[0] + '.', price: money0(dx.price), btn: ['Inquire', 'sheet:deluxe'], draw: (g, W, H) => drawPiecesPrev(g, W, H, 'deluxe'), size: [360, 250] });
+  SHIRT_COLORS.forEach((c, i) => rows.push({ sec: i === 0 ? 'Shirts' : '', key: 'shirt' + i, name: 'Fearjoy shirt: ' + c.name, desc: c.print.charAt(0).toUpperCase() + c.print.slice(1) + '.', price: money0(CONFIG.prices.shirt), btn: ['Choose size', 'shirt:' + i], draw: (g, W, H) => drawShirtPrev(g, W, H, c), size: [360, 250] }));
+  rows.push({ sec: 'More', key: 'poster', name: 'Camcorder poster', desc: 'Printed poster of the camcorder.', price: money0(CONFIG.prices.poster), btn: ['Add to cart', 'add:poster'], just: 'poster', img: encodeURI(CONFIG.loreFolder + CONFIG.posterImage) });
+  rows.push({ sec: '', key: 'floppy', name: 'Digital goods', desc: 'Song downloads, stems and more. Coming soon.', price: '', btn: ['Coming soon', 'floppy:'], draw: drawFloppyPrev, size: [360, 250] });
+  rows.push({ sec: '', key: 'mail', name: 'Email list', desc: 'News and new drops, straight to your inbox.', price: '', btn: ['Join', 'mail:'], draw: drawMailPrev, size: [360, 250] });
+  rows.push({ sec: '', key: 'contact', name: 'Contact us', desc: 'Questions, orders, hellos.', price: '', btn: ['Write us', 'contact:'], draw: drawLetterPrev, size: [360, 250] });
+  if (!CART.bill && viewers.desk && viewers.desk.billSrc) rows.push({ sec: '', key: 'bill', name: 'Two dollar bill', desc: 'Found lying on the table.', price: '', btn: ['Take it', 'bill:'], img: 'bill' });
+  return rows;
+}
+function listBuild() {
+  const box = $('#listView');
+  let html = '<div class="lv-in">', open = false;
+  lvRows().forEach(r => {
+    if (r.sec) html += '<h2 class="lv-sec">' + esc(r.sec) + '</h2>';
+    const vis = r.img ? '<img alt="" ' + (r.img === 'bill' ? 'data-lvbill' : 'src="' + r.img + '"') + '>' : '<canvas width="' + r.size[0] + '" height="' + r.size[1] + '" data-lvdraw="' + r.key + '"></canvas>';
+    html += '<article class="lrow" data-lvkey="' + r.key + '"><div class="lvis">' + vis + '</div><div class="linfo"><h3>' + esc(r.name) + '</h3><p>' + esc(r.desc) + '</p>'
+      + '<div class="lact">' + (r.price ? '<span class="lprice">' + symHTML(r.price) + '</span>' : '') + '<button type="button" class="btn small" data-lv="' + r.btn[1] + '">' + esc(r.btn[0]) + '</button>'
+      + (r.just ? '<button type="button" class="jtlink" data-lv="just:' + r.just + '">or order just this</button>' : '') + '</div></div></article>';
+  });
+  box.innerHTML = html + '</div>';
+  const bi = box.querySelector('[data-lvbill]'); if (bi && viewers.desk && viewers.desk.billSrc) bi.src = viewers.desk.billSrc();
+  listDraw();
+}
+function listDraw() {   /* (re)paint the little pictures; also runs once the fonts and pictures are ready */
+  if (!LV.on) return;
+  const rows = lvRows();
+  $$('#listView canvas[data-lvdraw]').forEach(cv => {
+    const r = rows.find(x => x.key === cv.dataset.lvdraw); if (!r || !r.draw) return;
+    const g = cv.getContext('2d'); g.clearRect(0, 0, cv.width, cv.height); r.draw(g, cv.width, cv.height);
+  });
+}
+function setListView(on) {
+  LV.on = !!on;
+  document.documentElement.classList.toggle('list-view', LV.on);
+  const b = $('#viewTog'); b.setAttribute('aria-checked', String(LV.on));
+  $('#viewTogTxt').textContent = LV.on ? 'Table view' : 'List view';
+  if (LV.on) { listBuild(); $('#listView').scrollTop = 0; }
+}
+$('#viewTog').addEventListener('click', () => { Sound.oneUp(); setListView(!LV.on); });
+$('#listView').addEventListener('click', e => {
+  const b = e.target.closest('button[data-lv]'); if (!b) return;
+  const i = b.dataset.lv.indexOf(':'), act = b.dataset.lv.slice(0, i), arg = b.dataset.lv.slice(i + 1);
+  Sound.oneUp();
+  if (act === 'sheet') openSheet(arg);
+  else if (act === 'just') openSheet(arg, true);
+  else if (act === 'add') quickAdd(arg);
+  else if (act === 'shirt') { S.shirt.color = Number(arg); openSheet('shirt'); }
+  else if (act === 'kits') openKits();
+  else if (act === 'floppy') showSoon('Digital goods', 'Song downloads, Bandcamp, stems and more will live on this disk. Coming soon.');
+  else if (act === 'mail') openMail();
+  else if (act === 'contact') openContact();
+  else if (act === 'bill' && viewers.desk && viewers.desk.billSrc) { const r = b.getBoundingClientRect(); takeBill(r.left + r.width / 2, r.top + r.height / 2, viewers.desk.billSrc()); const row = b.closest('.lrow'); if (row) row.remove(); }
+});
+dlg.addEventListener('close', () => { if (LV.on) listDraw(); });   /* the sleeve color may have changed */
+ART.listeners.push(() => listDraw());
+COVER.addEventListener('load', () => listDraw());
+if (document.fonts && document.fonts.load) Promise.all([document.fonts.load("38px 'KCStrikerSans'"), document.fonts.load("15px 'KCPelletierTyped'")]).then(() => listDraw()).catch(() => {});
 
 /* =====================================================================
    CREDITS + LYRICS
