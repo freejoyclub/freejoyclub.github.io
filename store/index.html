@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- STORE (v11) -->
+<!-- STORE (v12) -->
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
@@ -1193,7 +1193,7 @@ try { if (location.hash) history.replaceState(null, '', location.pathname + loca
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/STLLoader.js"></script>
 <script>
-// STORE (v11)
+// STORE (v12)
 const toTop = () => { try { window.scrollTo({ top: 0, left: 0, behavior: 'instant' }); } catch (e) { window.scrollTo(0, 0); } };
 toTop();
 window.addEventListener('load', toTop);
@@ -1229,6 +1229,9 @@ const CONFIG = {
   streamLogos: { spotify: ['/images/logo-spotify.svg', '/images/spotify.svg', '/images/logo-spotify.png'], apple: ['/images/logo-apple-music.svg', '/images/apple-music.svg', '/images/apple.svg', '/images/logo-apple-music.png'], youtube: ['/images/logo-youtube.svg', '/images/youtube.svg', '/images/logo-youtube.png'] },   // logo pictures for the TV buttons (any shape, transparent background is best). Missing = the name is written instead.
   howImage: '/images/rulebook.png',   // the how-to sheet lying under the table (tap it for the How to Play pictures)
   vinylUrl: '',                    // (not used on the store page)
+  tipImage: '/images/guitarmoney.png',   // the guitar case with money, lying under the table
+  tipGuitarFrac: 0.5,              // how much of that picture's width the guitar itself fills (the guitar is made 3/4 as long as the table)
+  cdImage: '/images/cd.png',        // the CD lying on the table
   tipUrl: '',                      // the Venmo tip jar link (the guitar case under the table): empty shows a coming soon popup
   coverImage: '/images/35-transp-board (1).PNG',   // the game art on the record covers (a small transparent copy of the board)
   posterImage: 'camcorder.jpg',    // the poster on the backdrop: a file in the bucket folder above
@@ -2396,17 +2399,17 @@ function makeStore(el) {
   }
   v.scene = new THREE.Scene();
   v.camera = new THREE.PerspectiveCamera(30, 16 / 10, 1, 80);
-  v.scene.add(new THREE.HemisphereLight(0xffffff, 0x6b4a42, 0.6));
-  const key = new THREE.DirectionalLight(0xffffff, 0.34); key.position.set(5, 8, 7); v.scene.add(key);
+  v.scene.add(new THREE.HemisphereLight(0xffffff, 0x6b4a42, 0.74));
+  const key = new THREE.DirectionalLight(0xffffff, 0.44); key.position.set(5, 8, 7); v.scene.add(key);
   const rim = new THREE.DirectionalLight(0xffd9b0, 0.26); rim.position.set(-4, 3, -3); v.scene.add(rim);
-  const wash = new THREE.PointLight(0xffe2b8, 0.36, 16); wash.position.set(0, 4.2, 1.2); v.scene.add(wash);   /* the show light on the backdrop */
+  const wash = new THREE.PointLight(0xffe2b8, 0.48, 16); wash.position.set(0, 4.2, 1.2); v.scene.add(wash);   /* the show light on the backdrop */
   v.stage = new THREE.Group();
   v.scene.add(v.stage);
   const stage = v.stage;
 
   /* camera: fixed, looking down at the table. The distance is worked out from a few key points so the banner and the table fit on any screen shape. */
   let EL = THREE.MathUtils.degToRad(27); const LOOK = new THREE.Vector3(0, 1.75, 0.3);
-  const FIT_PTS = [[4.0, 5.3, -2.6], [-4.0, 5.3, -2.6], [3.95, -1.7, 4.3], [-3.95, -1.7, 4.3]];
+  const FIT_PTS = [[4.0, 5.3, -2.6], [-4.0, 5.3, -2.6], [3.95, -2.2, 4.3], [-3.95, -2.2, 4.3]];
   v.fit = function () {
     const w = el.clientWidth || 640, h = el.clientHeight || 400;
     v.renderer.setPixelRatio(Math.max(0.75, Math.min(window.devicePixelRatio || 1, 1.75, Math.sqrt(2600000 / (w * h)))));
@@ -2469,7 +2472,7 @@ function makeStore(el) {
   }
   const mkTex = (w, h, draw) => { const c = document.createElement('canvas'); c.width = w; c.height = h; draw(c.getContext('2d'), w, h); return new THREE.CanvasTexture(c); };
   const fontsReady = [];   /* every canvas picture that uses the heading fonts gets redrawn once they are loaded */
-  if (document.fonts && document.fonts.load) Promise.all([document.fonts.load("120px 'KCStrikerSans'"), document.fonts.load("76px 'KCPelletierTyped'"), document.fonts.load("30px 'KCStrikerSans'")]).then(() => fontsReady.forEach(f => f())).catch(() => {});
+  const fontsP = (document.fonts && document.fonts.load) ? Promise.all([document.fonts.load("120px 'KCStrikerSans'"), document.fonts.load("76px 'KCPelletierTyped'"), document.fonts.load("30px 'KCStrikerSans'")]).then(() => fontsReady.forEach(f => f())).catch(() => {}) : Promise.resolve();
   const redrawTex = (tex, draw) => { fontsReady.push(() => { draw(tex.image.getContext('2d'), tex.image.width, tex.image.height); tex.needsUpdate = true; }); return tex; };
 
   /* ---------- the table ---------- */
@@ -2488,7 +2491,7 @@ function makeStore(el) {
     return new THREE.CanvasTexture(c);
   })();
   const woodSide = std(0x120a06, 0.8), legWood = std(0x1a100a, 0.75);
-  const TW = 7.8, TD = 4.4, TZ = 0.9, FLOOR = -1.7, VT = 0.04;   /* table top is at y = 0 (the legs are taller now, to fit the guitar case) */
+  const TW = 7.8, TD = 4.4, TZ = 0.9, FLOOR = -2.2, VT = 0.04;   /* table top is at y = 0 (tall legs, so the guitar case fits under it) */
   const tableGeo = roundedSlab(TW, TD, 0.16, 0.22, 0.035);
   { const P = tableGeo.attributes.position, uv = new Float32Array(P.count * 2);
     for (let i = 0; i < P.count; i++) { uv[i * 2] = P.getX(i) / TW + 0.5; uv[i * 2 + 1] = P.getY(i) / TD + 0.5; }
@@ -2872,6 +2875,7 @@ function makeStore(el) {
     noHit(sheet); vinylG.add(sheet); stackSheets.push(sheet);
   });
   coverImg.onload = () => { coverOk = true; stackSheets.forEach(m => { drawCover(m.userData.tex.image.getContext('2d'), 512, 512, m.userData.c); m.userData.tex.needsUpdate = true; }); };
+  const coverP = new Promise(res => { coverImg.addEventListener('load', () => res()); coverImg.addEventListener('error', () => res()); });
   coverImg.src = CONFIG.coverImage;
 
   /* ---------- a two dollar bill lying on the table: tap it to take $2 off (the cart code does the rest) ---------- */
@@ -2904,34 +2908,76 @@ function makeStore(el) {
   const billSide = std(0xb9c9ad, 0.9);
   billG.add(new THREE.Mesh(new THREE.BoxGeometry(1.2, 0.012, 0.51), [billSide, billSide, new THREE.MeshStandardMaterial({ map: billTex, color: 0xd2d2d2, roughness: 0.9 }), billSide, billSide, billSide]));
   const billHit = hitBox(1.3, 0.16, 0.62, 0, 0.04, 0, 'bill', billG);
-  let billFall = 0;
+  let billFall = 0, billGone = false;
+  if (!REDUCE) billG.visible = false;   /* it floats in on its own, a few seconds after everything else has landed */
 
-  /* ---------- a little joystick on the floor at the far left, its cord running off the screen (a hint of the game room) ---------- */
+  /* ---------- a joystick on the floor under the table (front left), its cord running off the screen to the left: "play online" (tap it to go to the game room) ---------- */
   const joyG = new THREE.Group();
-  joyG.position.set(-4.7, FLOOR, 3.3); joyG.rotation.y = 0.45; joyG.scale.setScalar(1.3);
+  joyG.position.set(-2.9, FLOOR, 2.1); joyG.rotation.y = 0.35; joyG.scale.setScalar(1.9);
   stage.add(joyG);
-  blob(1.7, 1.2, -4.7, 3.3, 0.6).position.y = FLOOR + 0.004;
-  const joyBase = new THREE.Mesh(roundedBoxWHD(0.72, 0.12, 0.5, 0.04, 36, 6, 25), std(0x2f3136, 0.55, 0.2)); joyBase.position.y = 0.06; joyG.add(joyBase);
-  const joyBtn = new THREE.Mesh(new THREE.CylinderGeometry(0.07, 0.08, 0.05, 20), std(0xe8c13a, 0.4)); joyBtn.position.set(0.24, 0.145, 0.08); joyG.add(joyBtn);
-  const joyStick = new THREE.Group(); joyStick.position.set(-0.12, 0.12, 0); joyG.add(joyStick);
+  blob(2.0, 1.5, -2.9, 2.1, 0.6).position.y = FLOOR + 0.004;
+  const joyBase = new THREE.Mesh(roundedBoxWHD(0.72, 0.24, 0.5, 0.04, 36, 6, 25), std(0x2f3136, 0.55, 0.2)); joyBase.position.y = 0.12; joyG.add(joyBase);
+  const joyTxCv = document.createElement('canvas'); joyTxCv.width = 512; joyTxCv.height = 128;
+  const joyTxTex = new THREE.CanvasTexture(joyTxCv); joyTxTex.anisotropy = 4;
+  const drawJoyTx = () => {   /* PLAY ONLINE in white Striker Sans on the front of the base */
+    const g = joyTxCv.getContext('2d'), F = "'KCStrikerSans', 'Arial Black', sans-serif"; g.clearRect(0, 0, 512, 128);
+    g.fillStyle = '#ffffff'; g.textAlign = 'center'; g.textBaseline = 'middle';
+    let px = 110; g.font = px + 'px ' + F;
+    while (px > 20 && g.measureText('PLAY ONLINE').width > 488) { px -= 2; g.font = px + 'px ' + F; }
+    g.fillText('PLAY ONLINE', 256, 66); joyTxTex.needsUpdate = true;
+  };
+  drawJoyTx();
+  if (document.fonts && document.fonts.load) document.fonts.load("40px 'KCStrikerSans'").then(drawJoyTx).catch(() => {});
+  const joyTxt = new THREE.Mesh(new THREE.PlaneGeometry(0.62, 0.155), new THREE.MeshBasicMaterial({ map: joyTxTex, transparent: true, depthWrite: false })); joyTxt.position.set(0, 0.12, 0.2535); noHit(joyTxt); joyG.add(joyTxt);
+  const joyBtn = new THREE.Mesh(new THREE.CylinderGeometry(0.07, 0.08, 0.05, 20), std(0xe8c13a, 0.4)); joyBtn.position.set(0.24, 0.265, 0.08); joyG.add(joyBtn);
+  const joyStick = new THREE.Group(); joyStick.position.set(-0.12, 0.24, 0); joyG.add(joyStick);
   joyStick.add(new THREE.Mesh(new THREE.SphereGeometry(0.1, 16, 8, 0, Math.PI * 2, 0, Math.PI / 2), std(0x151517, 0.7)));
   const joyShaft = new THREE.Mesh(new THREE.CylinderGeometry(0.03, 0.03, 0.3, 10), std(0xa8adb3, 0.3, 0.6)); joyShaft.position.y = 0.15; joyStick.add(joyShaft);
   const joyBall = new THREE.Mesh(new THREE.SphereGeometry(0.115, 20, 14), std(0xd8302a, 0.35)); joyBall.position.y = 0.34; joyStick.add(joyBall);
-  hitBox(0.9, 0.7, 0.7, 0, 0.3, 0, 'joystick', joyG);   /* tap it to go to the game room */
-  const joyCable = noHit(new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3([[-5.1, FLOOR + 0.06, 3.5], [-5.9, FLOOR + 0.03, 3.9], [-7.0, FLOOR + 0.03, 3.3], [-8.6, FLOOR + 0.03, 3.8], [-13, FLOOR + 0.03, 3.2]].map(q => new THREE.Vector3(q[0], q[1], q[2]))), 60, 0.035, 6, false), std(0x151517, 0.6)));
+  hitBox(1.0, 0.95, 0.7, 0, 0.4, 0, 'joystick', joyG);   /* tap it to go to the game room */
+  const joyCable = noHit(new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3([[-3.54, FLOOR + 0.12, 2.33], [-4.4, FLOOR + 0.03, 2.7], [-5.6, FLOOR + 0.03, 2.2], [-7.5, FLOOR + 0.03, 2.8], [-13, FLOOR + 0.03, 2.3]].map(q => new THREE.Vector3(q[0], q[1], q[2]))), 60, 0.04, 6, false), std(0x151517, 0.6)));
   stage.add(joyCable);
 
-  /* ---------- a guitar case with money in it, under the table at the front (the future tip jar) ---------- */
-  const tipG = new THREE.Group(); tipG.position.set(-0.4, FLOOR, TZ + TD / 2 - 0.95); stage.add(tipG);
-  const tipMat = new THREE.MeshStandardMaterial({ roughness: 0.9, transparent: true, alphaTest: 0.3, side: THREE.DoubleSide });
-  const tipMesh = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), tipMat); tipMesh.visible = false; tipMesh.userData.tag = 'tipjar'; tipG.add(tipMesh);
-  const tipBlob = blob(3.6, 1.4, -0.4, TZ + TD / 2 - 0.95, 0.5); tipBlob.position.y = FLOOR + 0.004; tipBlob.visible = false;
-  new THREE.TextureLoader().load('/images/guitarmoney.png', tex => {
-    tex.anisotropy = 4; tipMat.map = tex; tipMat.needsUpdate = true;
-    const a = tex.image && tex.image.width && tex.image.height ? tex.image.width / tex.image.height : 2;
-    const W = Math.min(3.2, 1.45 * a), H = W / a;   /* the picture keeps its own shape */
-    tipMesh.scale.set(W, H, 1); tipMesh.position.y = H / 2 + 0.02; tipMesh.visible = true; tipBlob.visible = true; hits.push(tipMesh);
+  /* ---------- a guitar case with money in it, lying on the floor under the table (the future tip jar). The guitar is the middle half of the picture (CONFIG.tipGuitarFrac) and is made 3/4 as long as the table. ---------- */
+  const tipG = new THREE.Group(); tipG.position.set(0, FLOOR + 0.012, TZ + 0.05); stage.add(tipG);
+  const tipMat = new THREE.MeshStandardMaterial({ roughness: 0.9, transparent: true, alphaTest: 0.02, depthWrite: false });
+  const tipMesh = noHit(new THREE.Mesh(new THREE.PlaneGeometry(1, 1), tipMat)); tipMesh.rotation.x = -Math.PI / 2; tipMesh.visible = false; tipG.add(tipMesh);
+  new THREE.TextureLoader().load(CONFIG.tipImage, tex => {
+    const im = tex.image, iw = im.width || 800, ih = im.height || 600;
+    const cv = document.createElement('canvas'); cv.width = iw; cv.height = ih;
+    const g = cv.getContext('2d');
+    g.shadowColor = 'rgba(0,0,0,0.5)'; g.shadowBlur = iw * 0.02; g.shadowOffsetX = iw * 0.006; g.shadowOffsetY = iw * 0.012;   /* a slight drop shadow baked into the picture */
+    g.drawImage(im, 0, 0, iw, ih);
+    const t2 = new THREE.CanvasTexture(cv); t2.anisotropy = 4;
+    tipMat.map = t2; tipMat.needsUpdate = true;
+    const GW = TW * 0.75, W = GW / CONFIG.tipGuitarFrac, H = W * ih / iw;
+    tipMesh.scale.set(W, H, 1); tipMesh.visible = true;
+    hitBox(GW, 0.2, GW * 0.75, 0, 0.1, 0, 'tipjar', tipG);   /* the guitar is 4 by 3 */
   }, undefined, () => {});
+
+  /* ---------- a CD (no case) lying at the back of the table next to the radio: the album on CD will be a product later ---------- */
+  const cdG = new THREE.Group(); cdG.position.set(1.7, 0.012, -0.55); cdG.rotation.y = 0.2; stage.add(cdG);
+  const cdCv = document.createElement('canvas'); cdCv.width = cdCv.height = 256;
+  const cdTex0 = new THREE.CanvasTexture(cdCv);
+  {  /* a drawn silver disc until the real picture (CONFIG.cdImage) loads */
+    const g = cdCv.getContext('2d'), c = 128, cg = g.createConicGradient ? g.createConicGradient(0.6, c, c) : g.createLinearGradient(0, 0, 256, 256);
+    ['#f2f3f6', '#cfd6ea', '#eadcf0', '#fafafc', '#d3ece3', '#f2f3f6'].forEach((col, i, a) => cg.addColorStop(i / (a.length - 1), col));
+    g.fillStyle = cg; g.beginPath(); g.arc(c, c, 126, 0, Math.PI * 2); g.fill();
+    g.strokeStyle = 'rgba(90,96,110,0.35)'; g.lineWidth = 2; [60, 80, 100, 118].forEach(r => { g.beginPath(); g.arc(c, c, r, 0, Math.PI * 2); g.stroke(); });
+    g.fillStyle = '#d8d8de'; g.beginPath(); g.arc(c, c, 24, 0, Math.PI * 2); g.fill();
+    g.globalCompositeOperation = 'destination-out'; g.beginPath(); g.arc(c, c, 9, 0, Math.PI * 2); g.fill();
+    cdTex0.needsUpdate = true;
+  }
+  const cdMat = new THREE.MeshStandardMaterial({ map: cdTex0, roughness: 0.3, metalness: 0.1, transparent: true, alphaTest: 0.5, side: THREE.DoubleSide });
+  const cdMesh = new THREE.Mesh(new THREE.PlaneGeometry(0.95, 0.95), cdMat); cdMesh.rotation.x = -Math.PI / 2; noHit(cdMesh); cdG.add(cdMesh);
+  const cdP = new Promise(res => new THREE.TextureLoader().load(CONFIG.cdImage, tex => {
+    tex.anisotropy = 4;
+    const a = tex.image && tex.image.height ? tex.image.width / tex.image.height : 1;
+    cdMesh.geometry = new THREE.PlaneGeometry(0.95 * Math.min(1, a), 0.95 / Math.max(1, a));
+    cdMat.map = tex; cdMat.needsUpdate = true; res();
+  }, undefined, () => res()));
+  hitBox(1.0, 0.12, 1.0, 0, 0.04, 0, 'cd', cdG);
+  const cdBlob = blob(1.25, 1.25, 1.7, -0.55, 0.5);
 
   /* ---------- a small tip with the item's name while the mouse is over it (not on touch screens) ---------- */
   const tipEl = document.createElement('div'); tipEl.className = 'scene-tip'; tipEl.setAttribute('aria-hidden', 'true'); document.body.appendChild(tipEl);
@@ -2948,6 +2994,7 @@ function makeStore(el) {
     if (tag === 'letter') return ['Contact us'];
     if (tag === 'tipjar') return ['Tip jar', 'Support the band'];
     if (tag === 'joystick') return ['Game room'];
+    if (tag === 'cd') return ['CD', 'Coming soon'];
     return null;
   };
   let tipOn = false;
@@ -2963,23 +3010,27 @@ function makeStore(el) {
 
   /* ---------- on load, the things on the table drop in (the sleeves, shirts, poster and banner are already there) ---------- */
   const drops = [];
-  const wrapDrop = (objs, delay, H, shadows, amp) => {   /* each thing sits in its own group, which is what falls (so nothing else about it has to change) */
+  const wrapDrop = (objs, delay, H, shadows, amp, waits) => {   /* each thing sits in its own group, which is what falls (so nothing else about it has to change) */
     const g = new THREE.Group(); stage.add(g);
     objs.forEach(o => g.add(o));
-    const d = { g, delay, H, sh: shadows || [], amp: amp == null ? 0.1 : amp, landed: false };
+    const d = { g, delay, H, sh: shadows || [], amp: amp == null ? 0.1 : amp, landed: false, t0: 0, ready: false };
+    Promise.race([Promise.all(waits || []), new Promise(r => setTimeout(r, 9000))]).catch(() => {}).then(() => { d.ready = true; });   /* it only drops once what it needs has loaded (or after 9 seconds) */
     if (!REDUCE) { g.visible = false; d.sh.forEach(m => { m.visible = false; }); }
     drops.push(d);
     return d;
   };
-  wrapDrop([vinylG], 0.0, 7, [stackBlob], 0.1);
+  const crewP = Promise.all(crew.map(h => { const f = h.userData && h.userData.load; if (f) { h.userData.load = null; return f().catch(() => {}); } return null; }));   /* the busts start downloading right away */
+  wrapDrop([vinylG], 0.0, 7, [stackBlob], 0.1, [tvImgP, coverP]);
   wrapDrop([radio], 0.35, 6, [radioBlob], 0.1);
-  wrapDrop([trayG], 0.55, 5, [trayBlob], 0.1);
-  wrapDrop([mailG], 0.7, 5, [mailBlob], 0.1);
-  wrapDrop([letterG], 0.85, 4, [letterBlob], 0.08);
-  wrapDrop([floppyG], 1.0, 3, [floppyBlob], 0.05);
-  wrapDrop([billG], 1.15, 2, [], 0.03);
-  let dropT0 = 0, dropDone = REDUCE;
-  v.finishDrop = () => { if (dropDone) return; dropDone = true; drops.forEach(d => { d.g.visible = true; d.g.position.y = 0; d.sh.forEach(m => { m.visible = true; shade(m, 0); }); }); };   /* (the list view needs everything in place) */
+  wrapDrop([cdG], 0.45, 5, [cdBlob], 0.05, [cdP]);
+  wrapDrop([trayG], 0.55, 5, [trayBlob], 0.1, [crewP]);
+  wrapDrop([mailG], 0.7, 5, [mailBlob], 0.1, [fontsP]);
+  wrapDrop([letterG], 0.85, 4, [letterBlob], 0.08, [fontsP]);
+  wrapDrop([floppyG], 1.0, 3, [floppyBlob], 0.05, [fontsP]);   /* (the $2 bill is not here: it floats in by itself later) */
+  let dropT0 = 0, dropDone = REDUCE, lastStart = 0;
+  v.finishDrop = () => {
+    if (!billGone) { billFall = 0; billG.visible = true; billG.position.set(0.95, 0.008, 2.55); billG.rotation.z = 0; }   /* the bill is in place too */
+    if (dropDone) return; dropDone = true; drops.forEach(d => { d.g.visible = true; d.g.position.y = 0; d.sh.forEach(m => { m.visible = true; shade(m, 0); }); }); };   /* (the list view needs everything in place) */
 
   /* ---------- little pictures of the table items for the list view: the real 3D objects, drawn one at a time (everything else hidden) into a small canvas ---------- */
   const snapCam = new THREE.PerspectiveCamera(30, 360 / 250, 0.1, 80);
@@ -3056,7 +3107,7 @@ function makeStore(el) {
     const tag = pick(e);
     showTip(tag, pickObj, e);
     el.style.cursor = tag ? 'var(--hand)' : 'default';
-    hoverGroup = tag === 'poster' ? posterG : tag === 'shirt' ? pickObj.parent.parent : tag === 'floppy' ? floppyG : tag === 'mailbox' ? mailG : tag === 'letter' ? letterG : tag === 'bill' ? billG : tag === 'set' ? setG : tag === 'vinyl' ? vinylG : tag === 'radio' ? radio : tag === 'knob' ? knob : tag === 'tipjar' ? tipG : tag === 'joystick' ? joyG : null;
+    hoverGroup = tag === 'poster' ? posterG : tag === 'shirt' ? pickObj.parent.parent : tag === 'floppy' ? floppyG : tag === 'mailbox' ? mailG : tag === 'letter' ? letterG : tag === 'bill' ? billG : tag === 'set' ? setG : tag === 'vinyl' ? vinylG : tag === 'radio' ? radio : tag === 'knob' ? knob : tag === 'tipjar' ? tipG : tag === 'joystick' ? joyG : tag === 'cd' ? cdG : null;
   });
   const endKnob = () => { knobDrag = null; };
   el.addEventListener('pointerup', endKnob);
@@ -3077,6 +3128,7 @@ function makeStore(el) {
     else if (tag === 'knob') { if (knobMoved < 5) { const cur = Sound.getVolume(); setKnob(Sound.setVolume(cur >= 0.99 ? 0 : Math.min(1, Math.round(cur * 4) / 4 + 0.25))); } }
     else if (tag === 'mailbox') { mailT = performance.now(); Sound.slide(); setTimeout(openMail, REDUCE ? 0 : 650); }
     else if (tag === 'bill') { wig(billG); takeBill(e.clientX, e.clientY, billCv.toDataURL('image/png')); }
+    else if (tag === 'cd') { wig(cdG); Sound.slide(); later(() => showSoon('CD', 'The album on CD is coming soon.')); }
     else if (tag === 'joystick') { Sound.oneUp(); setTimeout(() => { location.href = '/LP1/'; }, REDUCE ? 0 : 250); }   /* straight to the game room, like the side button */
     else if (tag === 'tipjar') { Sound.slide(); later(() => { if (CONFIG.tipUrl) askGo(CONFIG.tipUrl, 'Open the tip jar?'); else showSoon('Tip jar', 'A tip jar for the band is coming soon. Thank you!'); }); }
     else if (tag === 'letter') { letterT = performance.now(); Sound.slide(); setTimeout(openContact, REDUCE ? 0 : 450); }
@@ -3085,20 +3137,25 @@ function makeStore(el) {
   const ease = k => 1 - Math.pow(1 - k, 3);
   v.onFrame = function (t) {
     const now = performance.now();
-    if (!dropDone) {   /* the drop-in: starts half a second after the first drawn frame, each thing falls, bounces once and its shadow grows in */
-      if (!dropT0) dropT0 = now + 500;
+    if (!dropDone) {   /* the drop-in: the banner and table show first, then each thing falls only once it has loaded (one at a time), bounces once and its shadow grows in */
+      if (!dropT0) dropT0 = now + 2500;
       if (now >= dropT0) {
-        const sec = (now - dropT0) / 1000; let all = true;
-        drops.forEach(d => {
-          const e = sec - d.delay;
-          if (e < 0) { all = false; return; }
+        let all = true, started = false;
+        drops.forEach((d, di) => {
+          if (!d.t0) {
+            all = false;
+            if (started || !d.ready || now < lastStart + 450) return;
+            d.t0 = now; lastStart = now; started = true;
+            if (di % 2 === 0) Sound.slide();   /* just a few slide sounds as things drop */
+          }
+          const e = (now - d.t0) / 1000;
           d.g.visible = true;
           const T = 0.34 + d.H * 0.045;
           if (e < T) { d.g.position.y = d.H * (1 - (e / T) * (e / T)); all = false; }
           else { d.g.position.y = bounceAt((e - T) * 1000, d.amp); d.landed = true; if ((e - T) * 1000 < BOUNCE_MS) all = false; }
           d.sh.forEach(m => { m.visible = true; shade(m, d.g.position.y); });
         });
-        if (all) { dropDone = true; drops.forEach(d => { d.g.position.y = 0; d.sh.forEach(m => shade(m, 0)); }); }
+        if (all) { dropDone = true; drops.forEach(d => { d.g.position.y = 0; d.sh.forEach(m => shade(m, 0)); }); if (!billGone && !REDUCE && !billFall) billFall = now + 3000; }   /* 3 seconds after the last thing lands, the bill floats in */
       }
     }
     /* things that sway or shake */
@@ -3118,8 +3175,19 @@ function makeStore(el) {
       o[0] = w * (0.05 * Math.sin(a) + 0.02 * Math.sin(b)); o[1] = w * (0.085 * Math.cos(a) + 0.086 * Math.cos(b)); o[2] = (-0.7 / BN_H) * (0.05 * Math.sin(a) + 0.02 * Math.sin(b));
     }, REDUCE ? 0 : t);
     floppyG.rotation.y = 0.3 + wobble(floppyG, now, 520) * 0.18;
-    billG.rotation.y = -0.2 + wobble(billG, now, 500) * 0.15;
-    if (billFall) { const k = Math.min(1, (now - billFall) / 750); billG.position.y = 0.008 + (1 - k) * (1 - k) * 3 + (k < 1 ? Math.abs(Math.sin(k * 8)) * 0.07 * (1 - k) : 0); if (k >= 1) { billG.position.y = 0.008; billFall = 0; } }
+    cdG.rotation.y = 0.2 + wobble(cdG, now, 520) * 0.18;
+    let billYaw = 0;
+    if (billFall) {   /* the bill floats down slowly, swinging back and forth like a feather */
+      if (now < billFall) billG.visible = false;
+      else {
+        billG.visible = true;
+        const k = Math.min(1, (now - billFall) / 3800), sk = 1 - k;
+        billG.position.set(0.95 + Math.sin(k * 13.5) * 0.9 * sk, 0.008 + 3.4 * Math.pow(sk, 1.25), 2.55 + Math.cos(k * 9) * 0.3 * sk - 0.2 * sk);
+        billG.rotation.z = Math.cos(k * 13.5) * 0.32 * sk; billYaw = Math.sin(k * 13.5 + 1.2) * 0.6 * sk;
+        if (k >= 1) { billFall = 0; billG.position.set(0.95, 0.008, 2.55); billG.rotation.z = 0; }
+      }
+    }
+    billG.rotation.y = -0.2 + wobble(billG, now, 500) * 0.15 + billYaw;
     radio.rotation.y = -0.25 + wobble(radio, now, 520) * 0.1;
     mailG.rotation.y = 0.35 + wobble(mailG, now, 520) * 0.1;
     vSlide += ((hoverGroup === vinylG ? 1 : 0) - vSlide) * 0.14;
@@ -3136,7 +3204,7 @@ function makeStore(el) {
     letterG.rotation.y = -0.12 + (REDUCE ? 0 : Math.sin(llk * Math.PI * 3) * (1 - llk) * 0.16);   /* it wiggles around on the table (a turn, so no corner dips into the wood) */
     if (llk >= 1) letterT = 0;
     /* hover glow */
-    if (!glowItems) glowItems = [radio, knob, vinylG, posterG, floppyG, mailG, letterG, setG, billG, tipG, joyG].concat(shirts).map(g => ({ g, k: 0, s: g === knob ? 1.2 : 1 }));
+    if (!glowItems) glowItems = [radio, knob, vinylG, posterG, floppyG, mailG, letterG, setG, billG, tipG, joyG, cdG].concat(shirts).map(g => ({ g, k: 0, s: g === knob ? 1.2 : 1 }));
     const hg = knobDrag ? knob : hoverGroup;
     glowItems.forEach(it => {
       const tgt = it.g === hg ? 1 : 0;
@@ -3159,8 +3227,8 @@ function makeStore(el) {
   };
 
   v.billSrc = () => billCv.toDataURL('image/png');   /* the picture of the bill (the list view shows it too) */
-  v.showBill = () => { billG.visible = true; if (hits.indexOf(billHit) < 0) hits.push(billHit); billFall = REDUCE ? 0 : performance.now(); };   /* the bill goes back on the table: it drops in */
-  v.hideBill = () => { billG.visible = false; const i = hits.indexOf(billHit); if (i >= 0) hits.splice(i, 1); };   /* once taken, it is gone from the table */
+  v.showBill = () => { billGone = false; billG.visible = true; if (hits.indexOf(billHit) < 0) hits.push(billHit); billFall = REDUCE ? 0 : performance.now(); };   /* the bill goes back on the table: it floats down again */
+  v.hideBill = () => { billG.visible = false; billGone = true; billFall = 0; const i = hits.indexOf(billHit); if (i >= 0) hits.splice(i, 1); };   /* once taken, it is gone from the table */
   if ('IntersectionObserver' in window) {
     new IntersectionObserver(es => { v.visible = es[0].isIntersecting; if (v.visible) kickLoads(v); }, { threshold: 0.05 }).observe(el);
   } else v.visible = true;
