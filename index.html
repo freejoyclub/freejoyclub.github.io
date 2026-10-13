@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- HOME (v16) -->
+<!-- HOME (v17) -->
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
@@ -904,7 +904,7 @@ try { if (location.hash) history.replaceState(null, '', location.pathname + loca
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/STLLoader.js"></script>
 <script>
-// HOME (v16)
+// HOME (v17)
 const toTop = () => { try { window.scrollTo({ top: 0, left: 0, behavior: 'instant' }); } catch (e) { window.scrollTo(0, 0); } };
 toTop();
 window.addEventListener('load', toTop);
@@ -2531,19 +2531,31 @@ function makeDesk(el) {
 
   /* ---------- little joystick on the table at the front right, wired to the TV: tap it to open the game start screen (tapping the TV still works too) ---------- */
   const joyG = new THREE.Group();
-  joyG.position.set(2.3, 0, -0.55);   /* back right of the desk, where the radio used to be */
+  joyG.position.set(2.15, 0, -0.55);   /* back right of the desk, where the radio used to be */
   joyG.rotation.y = -0.35;
-  joyG.scale.setScalar(1.6);
+  joyG.scale.setScalar(1.9);   /* bigger (it was 1.6) */
   stage.add(joyG);
-  const joyBlob = blob(1.6, 1.28, 2.3, -0.55, 0.7);
-  const joyBase = new THREE.Mesh(roundedBoxWHD(0.72, 0.12, 0.5, 0.04, 36, 6, 25), std(0x2f3136, 0.55, 0.2)); joyBase.position.y = 0.06; joyG.add(joyBase);
-  const joyBtn = new THREE.Mesh(new THREE.CylinderGeometry(0.07, 0.08, 0.05, 20), std(0xe8c13a, 0.4)); joyBtn.position.set(0.24, 0.145, 0.08); joyG.add(joyBtn);
-  const joyStick = new THREE.Group(); joyStick.position.set(-0.12, 0.12, 0); joyG.add(joyStick);
+  const joyBlob = blob(1.9, 1.5, 2.15, -0.55, 0.7);
+  const joyBase = new THREE.Mesh(roundedBoxWHD(0.72, 0.24, 0.5, 0.04, 36, 6, 25), std(0x2f3136, 0.55, 0.2)); joyBase.position.y = 0.12; joyG.add(joyBase);   /* taller base (it was 0.12) */
+  const joyTxCv = document.createElement('canvas'); joyTxCv.width = 512; joyTxCv.height = 128;
+  const joyTxTex = new THREE.CanvasTexture(joyTxCv); joyTxTex.anisotropy = 4;
+  const drawJoyTx = () => {   /* PLAY ONLINE in white Striker Sans on the front of the base */
+    const g = joyTxCv.getContext('2d'), F = "'KCStrikerSans', 'Arial Black', sans-serif"; g.clearRect(0, 0, 512, 128);
+    g.fillStyle = '#ffffff'; g.textAlign = 'center'; g.textBaseline = 'middle';
+    let px = 110; g.font = px + 'px ' + F;
+    while (px > 20 && g.measureText('PLAY ONLINE').width > 488) { px -= 2; g.font = px + 'px ' + F; }
+    g.fillText('PLAY ONLINE', 256, 66); joyTxTex.needsUpdate = true;
+  };
+  drawJoyTx();
+  if (document.fonts && document.fonts.load) document.fonts.load("40px 'KCStrikerSans'").then(drawJoyTx).catch(() => {});
+  const joyTxt = new THREE.Mesh(new THREE.PlaneGeometry(0.62, 0.155), new THREE.MeshBasicMaterial({ map: joyTxTex, transparent: true, depthWrite: false })); joyTxt.position.set(0, 0.12, 0.2535); noHit(joyTxt); joyG.add(joyTxt);
+  const joyBtn = new THREE.Mesh(new THREE.CylinderGeometry(0.07, 0.08, 0.05, 20), std(0xe8c13a, 0.4)); joyBtn.position.set(0.24, 0.265, 0.08); joyG.add(joyBtn);
+  const joyStick = new THREE.Group(); joyStick.position.set(-0.12, 0.24, 0); joyG.add(joyStick);
   const joyBoot = new THREE.Mesh(new THREE.SphereGeometry(0.1, 16, 8, 0, Math.PI * 2, 0, Math.PI / 2), std(0x151517, 0.7)); joyStick.add(joyBoot);
   const joyShaft = new THREE.Mesh(new THREE.CylinderGeometry(0.03, 0.03, 0.3, 10), chrome); joyShaft.position.y = 0.15; joyStick.add(joyShaft);
   const joyBall = new THREE.Mesh(new THREE.SphereGeometry(0.115, 20, 14), std(0xd8302a, 0.35)); joyBall.position.y = 0.34; joyStick.add(joyBall);
-  hitBox(0.9, 0.7, 0.7, 0, 0.3, 0, 'joystick', joyG);
-  const joyCable = noHit(new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3([[2.85, 0.05, -0.62], [2.95, 0.03, -0.8], [2.93, 0.03, -0.98], [2.9, -0.3, -1.2]].map(q => new THREE.Vector3(q[0], q[1], q[2]))), 40, 0.028, 6, false), std(0x151517, 0.6)));   /* the wire runs along the right edge of the table and over the back toward the TV */
+  hitBox(1.0, 0.95, 0.7, 0, 0.4, 0, 'joystick', joyG);
+  const joyCable = noHit(new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3([[2.88, 0.12, -0.62], [2.98, 0.04, -0.8], [2.97, 0.03, -0.98], [2.95, -0.3, -1.2]].map(q => new THREE.Vector3(q[0], q[1], q[2]))), 40, 0.028, 6, false), std(0x151517, 0.6)));   /* the wire runs along the right edge of the table and over the back toward the TV */
   stage.add(joyCable);
   let joyT = 0;
 
@@ -2753,6 +2765,12 @@ function makeDesk(el) {
   const cdRim = new THREE.MeshStandardMaterial({ color: 0xe8f4f6, transparent: true, opacity: 0.6, roughness: 0.15, depthWrite: false });
   const cdTray = new THREE.Mesh(new THREE.BoxGeometry(cdW - 0.06, cdH - 0.04, 0.01), std(0x2b2d33, 0.6)); cdTray.position.z = -0.024; cdG.add(cdTray);   /* the black tray behind the disc */
   const cdDisc = new THREE.Mesh(new THREE.CircleGeometry(0.235, 48), bagCdMat); cdDisc.position.z = 0.002; cdG.add(cdDisc);
+  new THREE.TextureLoader().load('/images/cd.png', tex => {   /* the real CD picture replaces the drawn disc (the drawn one stays if the file is missing) */
+    tex.anisotropy = 4;
+    const a = tex.image && tex.image.height ? tex.image.width / tex.image.height : 1;
+    cdDisc.geometry = new THREE.PlaneGeometry(0.47 * Math.min(1, a), 0.47 / Math.max(1, a));
+    bagCdMat.map = tex; bagCdMat.emissiveMap = tex; bagCdMat.needsUpdate = true;
+  }, undefined, () => {});
   cdG.add(new THREE.Mesh(new THREE.BoxGeometry(cdW, cdH, 0.07), cdClear));   /* the clear case */
   [[cdW, 0.018, 0.076, 0, cdH / 2 - 0.009], [cdW, 0.018, 0.076, 0, -cdH / 2 + 0.009], [0.05, cdH, 0.078, -cdW / 2 + 0.025, 0], [0.014, cdH, 0.076, cdW / 2 - 0.007, 0]].forEach(q => {
     const r = new THREE.Mesh(new THREE.BoxGeometry(q[0], q[1], q[2]), cdRim); r.position.set(q[3], q[4], 0); cdG.add(r);   /* the frame and the hinge side */
@@ -3242,9 +3260,10 @@ function makeDesk(el) {
       if (sec > 0.46) { staticOn = false; staticM.visible = false; jesse.visible = !menuOn && !secret && !info && !lore; }
       else drawStatic();
     }
-    drops.forEach(d => {
+    drops.forEach((d, di) => {
       const e = sec - d.delay;
       if (e < 0) return;
+      if (!d.started) { d.started = true; if (di === 1 || di === 4 || di === 8 || di === 12) Sound.slide(); }   /* just a few slide sounds as things drop from the sky */
       d.g.visible = true;
       const T = 0.34 + d.H * 0.045;
       if (e < T) d.g.position.y = d.H * (1 - (e / T) * (e / T));   /* falls, speeding up */
@@ -3345,7 +3364,7 @@ function makeDesk(el) {
     else if (tag === 'insert') { Sound.slide(); askGo('/LP1/', 'Go to the Fearjoy: The Game album page?'); }
     else if (tag === 'mailbox') { mailT = performance.now(); Sound.slide(); setTimeout(openMail, REDUCE ? 0 : 650); }
     else if (tag === 'letter') { letterT = performance.now(); Sound.slide(); setTimeout(openContact, REDUCE ? 0 : 450); }
-    else if (tag === 'bag') { Sound.slide(); askGo('/store/', 'Go to the Fearjoy store?'); }
+    else if (tag === 'bag') { Sound.slide(); setTimeout(() => { location.href = '/store/'; }, REDUCE ? 0 : 220); }   /* straight to the store, no question */
     else if (tag === 'egg') { Sound.slide(); askGo('/clemmy-g', 'Go to the Clemmy G page?'); }
     else if (tag === 'tv') openTvMenu();
     else if (tag === 'joystick') { joyT = performance.now(); openTvMenu(); }
@@ -3372,7 +3391,7 @@ function makeDesk(el) {
     if (wk >= 1) vinylG.userData.wig = 0;
     const jk = joyT ? Math.min(1, (now - joyT) / 480) : 1;   /* joystick: a quick wiggle and the button presses in */
     joyStick.rotation.z = REDUCE ? 0 : Math.sin(jk * Math.PI * 3) * (1 - jk) * 0.55;
-    joyBtn.position.y = jk < 0.25 ? 0.12 : 0.145;
+    joyBtn.position.y = jk < 0.25 ? 0.24 : 0.265;
     if (jk >= 1) joyT = 0;
     const mlk = mailT ? Math.min(1, (now - mailT) / 1700) : 1;   /* mailbox: the red flag swings up when tapped, then back down */
     mailFlag.rotation.z = REDUCE ? 1.9 : 1.9 - 1.9 * Math.min(1, Math.sin(Math.min(1, mlk * 1.15) * Math.PI) * 1.6);
