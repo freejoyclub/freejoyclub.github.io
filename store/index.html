@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- STORE (v12) -->
+<!-- STORE (v13) -->
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
@@ -1193,7 +1193,7 @@ try { if (location.hash) history.replaceState(null, '', location.pathname + loca
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/STLLoader.js"></script>
 <script>
-// STORE (v12)
+// STORE (v13)
 const toTop = () => { try { window.scrollTo({ top: 0, left: 0, behavior: 'instant' }); } catch (e) { window.scrollTo(0, 0); } };
 toTop();
 window.addEventListener('load', toTop);
@@ -2399,10 +2399,10 @@ function makeStore(el) {
   }
   v.scene = new THREE.Scene();
   v.camera = new THREE.PerspectiveCamera(30, 16 / 10, 1, 80);
-  v.scene.add(new THREE.HemisphereLight(0xffffff, 0x6b4a42, 0.74));
-  const key = new THREE.DirectionalLight(0xffffff, 0.44); key.position.set(5, 8, 7); v.scene.add(key);
+  v.scene.add(new THREE.HemisphereLight(0xffffff, 0x6b4a42, 0.80));
+  const key = new THREE.DirectionalLight(0xffffff, 0.48); key.position.set(5, 8, 7); v.scene.add(key);
   const rim = new THREE.DirectionalLight(0xffd9b0, 0.26); rim.position.set(-4, 3, -3); v.scene.add(rim);
-  const wash = new THREE.PointLight(0xffe2b8, 0.48, 16); wash.position.set(0, 4.2, 1.2); v.scene.add(wash);   /* the show light on the backdrop */
+  const wash = new THREE.PointLight(0xffe2b8, 0.52, 16); wash.position.set(0, 4.2, 1.2); v.scene.add(wash);   /* the show light on the backdrop */
   v.stage = new THREE.Group();
   v.scene.add(v.stage);
   const stage = v.stage;
@@ -2426,6 +2426,7 @@ function makeStore(el) {
     v.base = new THREE.Vector3(0, LOOK.y + d * sn, LOOK.z + d * cs);
     v.camera.position.copy(v.base);
     v.camera.lookAt(LOOK);
+    if (v.fitHook) v.fitHook();
   };
 
   /* ---------- small helpers ---------- */
@@ -2504,8 +2505,12 @@ function makeStore(el) {
   [[-1, -1], [1, -1], [-1, 1], [1, 1]].forEach(s => box(0.22, -0.16 - FLOOR, 0.22, legWood, s[0] * (TW / 2 - 0.22), (FLOOR - 0.16) / 2, TZ + s[1] * (TD / 2 - 0.22)));
   blob(TW + 1.6, TD + 1.3, 0, TZ, 0.75).position.y = FLOOR + 0.004;
 
-  const floorM = noHit(new THREE.Mesh(new THREE.PlaneGeometry(26, 8.8), new THREE.MeshStandardMaterial({ color: 0x2a1815, roughness: 0.95, transparent: true, alphaMap: mkTex(256, 4, (g, w, h) => { const gr = g.createLinearGradient(0, 0, w, 0); gr.addColorStop(0, '#000'); gr.addColorStop(0.46, '#000'); gr.addColorStop(0.58, '#fff'); gr.addColorStop(1, '#fff'); g.fillStyle = gr; g.fillRect(0, 0, w, h); }) })));   /* the venue floor (long to the left, so the joystick cord can run off the screen) */
-  floorM.rotation.x = -Math.PI / 2; floorM.position.set(-7.3, FLOOR - 0.002, 0.9); stage.add(floorM);
+  const floorM = noHit(new THREE.Mesh(new THREE.PlaneGeometry(28, 9.4), new THREE.MeshStandardMaterial({ color: 0x2a1815, roughness: 0.95, transparent: true, alphaMap: mkTex(512, 128, (g, w, h) => {
+    const gr = g.createLinearGradient(0, 0, w, 0); gr.addColorStop(0, '#000'); gr.addColorStop(0.43, '#000'); gr.addColorStop(0.54, '#fff'); gr.addColorStop(0.875, '#fff'); gr.addColorStop(1, '#000'); g.fillStyle = gr; g.fillRect(0, 0, w, h);   /* fades out to the left and to the right */
+    g.globalCompositeOperation = 'multiply';
+    const gv = g.createLinearGradient(0, 0, 0, h); gv.addColorStop(0, '#fff'); gv.addColorStop(0.787, '#fff'); gv.addColorStop(1, '#000'); g.fillStyle = gv; g.fillRect(0, 0, w, h);   /* and out to the front; the back edge stays hard against the wall */
+  }) })));   /* the venue floor (long to the left, so the joystick cord can run off the screen) */
+  floorM.rotation.x = -Math.PI / 2; floorM.position.set(-6.3, FLOOR - 0.002, 1.2); floorM.renderOrder = -5; floorM.material.depthWrite = false; stage.add(floorM);   /* drawn first, so the shadows and the guitar case always sit on top of it */
 
   /* ---------- the backdrop: pipe and drape, with a banner on top ---------- */
   const BDZ = -2.6;   /* the drape is a flat wall of cloth here, behind the table */
@@ -2940,7 +2945,7 @@ function makeStore(el) {
 
   /* ---------- a guitar case with money in it, lying on the floor under the table (the future tip jar). The guitar is the middle half of the picture (CONFIG.tipGuitarFrac) and is made 3/4 as long as the table. ---------- */
   const tipG = new THREE.Group(); tipG.position.set(0, FLOOR + 0.012, TZ + 0.05); stage.add(tipG);
-  const tipMat = new THREE.MeshStandardMaterial({ roughness: 0.9, transparent: true, alphaTest: 0.02, depthWrite: false });
+  const tipMat = new THREE.MeshStandardMaterial({ color: 0xa6a6a6, roughness: 0.9, transparent: true, alphaTest: 0.02, depthWrite: false });   /* dimmer than the rest (about 30%) */
   const tipMesh = noHit(new THREE.Mesh(new THREE.PlaneGeometry(1, 1), tipMat)); tipMesh.rotation.x = -Math.PI / 2; tipMesh.visible = false; tipG.add(tipMesh);
   new THREE.TextureLoader().load(CONFIG.tipImage, tex => {
     const im = tex.image, iw = im.width || 800, ih = im.height || 600;
@@ -2951,8 +2956,9 @@ function makeStore(el) {
     const t2 = new THREE.CanvasTexture(cv); t2.anisotropy = 4;
     tipMat.map = t2; tipMat.needsUpdate = true;
     const GW = TW * 0.75, W = GW / CONFIG.tipGuitarFrac, H = W * ih / iw;
-    tipMesh.scale.set(W, H, 1); tipMesh.visible = true;
-    hitBox(GW, 0.2, GW * 0.75, 0, 0.1, 0, 'tipjar', tipG);   /* the guitar is 4 by 3 */
+    v.fitHook = () => { tipMesh.scale.set(W, H * Math.pow(1 / Math.sin(EL), 0.75), 1); };   /* lying flat, a picture looks squashed from the camera: stretch it to make up for the angle */
+    v.fitHook(); tipMesh.visible = true;
+    hitBox(GW, 0.2, GW * 0.9, 0, 0.1, 0.2, 'tipjar', tipG);
   }, undefined, () => {});
 
   /* ---------- a CD (no case) lying at the back of the table next to the radio: the album on CD will be a product later ---------- */
@@ -3129,7 +3135,7 @@ function makeStore(el) {
     else if (tag === 'mailbox') { mailT = performance.now(); Sound.slide(); setTimeout(openMail, REDUCE ? 0 : 650); }
     else if (tag === 'bill') { wig(billG); takeBill(e.clientX, e.clientY, billCv.toDataURL('image/png')); }
     else if (tag === 'cd') { wig(cdG); Sound.slide(); later(() => showSoon('CD', 'The album on CD is coming soon.')); }
-    else if (tag === 'joystick') { Sound.oneUp(); setTimeout(() => { location.href = '/LP1/'; }, REDUCE ? 0 : 250); }   /* straight to the game room, like the side button */
+    else if (tag === 'joystick') { Sound.slide(); setTimeout(() => { location.href = '/LP1/'; }, REDUCE ? 0 : 250); }   /* straight to the game room, like the side button */
     else if (tag === 'tipjar') { Sound.slide(); later(() => { if (CONFIG.tipUrl) askGo(CONFIG.tipUrl, 'Open the tip jar?'); else showSoon('Tip jar', 'A tip jar for the band is coming soon. Thank you!'); }); }
     else if (tag === 'letter') { letterT = performance.now(); Sound.slide(); setTimeout(openContact, REDUCE ? 0 : 450); }
   });
@@ -3146,7 +3152,6 @@ function makeStore(el) {
             all = false;
             if (started || !d.ready || now < lastStart + 450) return;
             d.t0 = now; lastStart = now; started = true;
-            if (di % 2 === 0) Sound.slide();   /* just a few slide sounds as things drop */
           }
           const e = (now - d.t0) / 1000;
           d.g.visible = true;
@@ -3823,9 +3828,9 @@ document.addEventListener('click', e => {
     S[pid][k] = k === 'size' ? val : Number(val);
     refreshCards();
   }
-  else if (b.dataset.add) { Sound.oneUp(); quickAdd(b.dataset.add); }
-  else if (b.dataset.just) { Sound.oneUp(); openSheet(b.dataset.just, true); }
-  else if (b.dataset.order) { Sound.oneUp(); openSheet(b.dataset.order); }
+  else if (b.dataset.add) quickAdd(b.dataset.add);
+  else if (b.dataset.just) openSheet(b.dataset.just, true);
+  else if (b.dataset.order) openSheet(b.dataset.order);
 });
 
 /* =====================================================================
@@ -3870,6 +3875,7 @@ function lineFromProduct(p) {   /* the current choices on an order sheet, as a c
   return null;
 }
 function cartAdd(l, quiet) {
+  Sound.oneUp();   /* the 1up is only for the big moments: adding to the cart and opening it */
   const old = CART.lines.find(x => x.key === l.key);
   if (old) old.qty = Math.min(99, old.qty + l.qty); else CART.lines.push(Object.assign({}, l));
   cartSave(); cartRefresh(true);
@@ -4258,7 +4264,6 @@ function setListView(on) {
 }
 $('#viewTog').addEventListener('click', e => {
   const o = e.target.closest('[data-view]');
-  Sound.oneUp();
   setListView(o ? o.dataset.view === 'list' : !LV.on);
 });
 function lvAct(act, arg, srcEl) {
@@ -4276,7 +4281,6 @@ $('#listView').addEventListener('click', e => {
   const b = e.target.closest('button[data-lv]'), o = e.target.closest('[data-lvopen]');
   const t = b ? b.dataset.lv : o ? o.dataset.lvopen : null; if (!t) return;
   const i = t.indexOf(':');
-  Sound.oneUp();
   lvAct(t.slice(0, i), t.slice(i + 1), b || o);
 });
 $('#listView').addEventListener('keydown', e => {   /* Enter or Space on a picture or title opens it */
@@ -4390,7 +4394,7 @@ window.addEventListener('keydown', e => { if (e.key === 'Escape' && !gameOv.hidd
 window.addEventListener('message', e => { if (e.origin === location.origin && e.data && e.data.fearjoy === 'close-game') closeGame(); });   /* the game can ask to close itself */
 $$('[data-open]').forEach(b => b.addEventListener('click', () => {
   const w = b.dataset.open;
-  if (w === 'vinyl' || w === 'poster' || w === 'shirt') { Sound.oneUp(); openSheet(w); setRackMenu(false); }
+  if (w === 'vinyl' || w === 'poster' || w === 'shirt') { openSheet(w); setRackMenu(false); }
   else if (w === 'floppy') { showSoon('Digital goods', 'Song downloads, Bandcamp, stems and more will live on the floppy disk. Coming soon.'); setRackMenu(false); }
   else if (w === 'kits') openKits(); else if (w === 'credits') openCredits(); else if (w === 'game') openGame(); else if (w === 'mail') openMail(); else if (w === 'contact') openContact();
 }));
