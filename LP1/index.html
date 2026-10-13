@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- LP1 (v47) -->
+<!-- LP1 (v50) -->
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
@@ -1047,7 +1047,7 @@ try { if (location.hash) history.replaceState(null, '', location.pathname + loca
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/STLLoader.js"></script>
 <script>
-// LP1 (v47)
+// LP1 (v50)
 const toTop = () => { try { window.scrollTo({ top: 0, left: 0, behavior: 'instant' }); } catch (e) { window.scrollTo(0, 0); } };
 toTop();
 window.addEventListener('load', toTop);
@@ -3031,7 +3031,7 @@ function makeDesk(el) {
   const micG = new THREE.Group();
   micG.position.set(-1.35, 4.9, -2.15);   /* lies on the top of the TV (its roof is at height 4.9) */
   micG.rotation.y = 0.12;
-  micG.scale.setScalar(2.6);   /* twice the size (it was 1.3) */
+  micG.scale.setScalar(1.95);   /* halfway between the old size (1.3) and the double size (2.6) */
   stage.add(micG);
   const micGrilleTex = mkTex(128, 64, (g, w, h) => {
     g.fillStyle = '#b9bec6'; g.fillRect(0, 0, w, h);
@@ -3040,20 +3040,20 @@ function makeDesk(el) {
     for (let y = 0; y <= h; y += 8) { g.beginPath(); g.moveTo(0, y); g.lineTo(w, y); g.stroke(); }
   });
   const micBall = new THREE.Mesh(new THREE.SphereGeometry(0.13, 20, 14), new THREE.MeshStandardMaterial({ map: micGrilleTex, roughness: 0.45, metalness: 0.5 }));
-  micBall.position.set(0.5, 0.13, 0); micG.add(micBall);
+  micBall.position.set(0.5, 0.13, 0); micBall.rotation.z = Math.PI / 2; micG.add(micBall);   /* the grille turned a quarter turn */
   const micBodyG = new THREE.Group(); micBodyG.position.set(0.5, 0.13, 0); micBodyG.rotation.z = 0.075; micG.add(micBodyG);   /* tilted a little so the ball and the handle both rest on the floor */
   const micBody = new THREE.Mesh(new THREE.CylinderGeometry(0.045, 0.075, 0.6, 14), std(0x2b2e33, 0.4, 0.5));
   micBody.rotation.z = Math.PI / 2; micBody.position.x = -0.42; micBodyG.add(micBody);
-  const micNeck = new THREE.Mesh(new THREE.CylinderGeometry(0.1, 0.085, 0.06, 16), std(0x9aa0a8, 0.3, 0.7));
-  micNeck.rotation.z = Math.PI / 2; micNeck.position.x = -0.1; micBodyG.add(micNeck);
+  const micNeck = new THREE.Mesh(new THREE.CylinderGeometry(0.076, 0.098, 0.09, 16), std(0x9aa0a8, 0.3, 0.7));   /* the cone widens toward the capsule */
+  micNeck.rotation.z = Math.PI / 2; micNeck.position.x = -0.13;   /* its wide end sits inside the capsule, so there is no gap */ micBodyG.add(micNeck);
   const micBand = new THREE.Mesh(new THREE.CylinderGeometry(0.056, 0.056, 0.05, 14), std(0x3a6fc4, 0.4, 0.2));
   micBand.rotation.z = Math.PI / 2; micBand.position.x = -0.62; micBodyG.add(micBand);
   const micPlug = new THREE.Mesh(new THREE.CylinderGeometry(0.04, 0.04, 0.1, 12), std(0x9aa0a8, 0.3, 0.7));   /* the XLR plug on the handle end */
   micPlug.rotation.z = Math.PI / 2; micPlug.position.x = -0.77; micBodyG.add(micPlug);
   micG.updateMatrix();
   const micInv = micG.matrix.clone().invert();   /* the cable is laid out on the floor (x, height, z), then turned into the mic's own space */
-  const micCablePts = [new THREE.Vector3(-0.3, 0.07, 0)].concat([[-1.8, 4.915, -2.45], [-1.9, 4.915, -2.85], [-1.94, 4.84, -2.94], [-1.96, 4.5, -2.96], [-1.96, 4.25, -3.0], [-1.96, 4.25, -3.5], [-1.96, 4.1, -3.74], [-1.94, 3.5, -3.76]].map(q => new THREE.Vector3(q[0], q[1], q[2]).applyMatrix4(micInv)));   /* over the back edge of the roof, then down behind the TV */
-  const micCable = new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(micCablePts), 80, 0.014, 6, false), std(0x151517, 0.6));
+  const micCablePts = [new THREE.Vector3(-0.33, 0.045, 0), new THREE.Vector3(-0.41, 0.016, 0.02)].concat([[-2.2, 4.915, -2.2], [-2.3, 4.915, -2.6], [-2.12, 4.915, -2.9], [-1.97, 4.84, -2.96], [-1.96, 4.5, -2.96], [-1.96, 4.25, -3.0], [-1.96, 4.25, -3.5], [-1.96, 4.1, -3.74], [-1.94, 3.5, -3.76]].map(q => new THREE.Vector3(q[0], q[1], q[2]).applyMatrix4(micInv)));   /* over the back edge of the roof, then down behind the TV */
+  const micCable = new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(micCablePts), 80, 0.021, 6, false), std(0x151517, 0.6));   /* a cord 50% thicker (was 0.014) */
   noHit(micCable); micG.add(micCable);   /* a black cable that goes over the back of the TV */
   hitBox(1.75, 0.32, 0.9, -0.15, 0.14, 0.25, 'mic', micG);
   let micT = 0;
