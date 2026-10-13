@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- STORE (v9) -->
+<!-- STORE (v11) -->
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
@@ -775,6 +775,19 @@ dialog.big { width: 100vw; max-height: 86vh; max-height: 86dvh; margin: auto 0 0
 .sheet .cline { display: block; font-family: 'KCStrikerSans', sans-serif; font-size: 1.7rem; letter-spacing: 0.6px; opacity: 1; margin-bottom: 4px; }
 .sheet .cfound { display: block; }
 .sheet .totals .row.ok { color: #b6ffb0; }
+.sheet .cl { grid-template-columns: 76px 1fr auto auto auto; }
+.sheet .cl-img { width: 76px; height: 52px; object-fit: contain; background: rgba(0,0,0,0.28); border-radius: 8px; display: block; }
+.sheet .cl.bill .cl-ret { font-size: 0.8rem; padding: 6px 12px; white-space: nowrap; width: auto; margin: 0; }
+.sheet .cl.bill .cl-price { color: #b6ffb0; }
+@media (max-width: 480px) { .sheet .cl { grid-template-columns: 64px 1fr auto; } .sheet .cl-img { width: 64px; height: 46px; } .sheet .cl .stepper { grid-column: 2; } .sheet .cl-price { grid-column: 3; grid-row: 1; } .sheet .cl-x { grid-column: 3; grid-row: 2; } .sheet .cl.bill .cl-ret { grid-column: 2; } .sheet .cl.bill .cl-price { grid-column: 3; grid-row: 1; } }
+.sheet .gp { flex: 1 1 100%; border: 1px solid rgba(255,255,255,0.22); border-radius: 12px; padding: 8px 10px; display: flex; flex-direction: column; gap: 8px; }
+.sheet .gp-top { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.sheet .gp-name { font-family: 'KCStrikerSans', sans-serif; font-size: 1.05rem; letter-spacing: 0.5px; }
+.sheet .gp-die { width: 46px; height: 46px; padding: 0; border-radius: 10px; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.3); cursor: var(--hand); }
+.sheet .gp-die img { width: 100%; height: 100%; display: block; }
+.sheet .gp-btns { display: flex; flex-wrap: wrap; gap: 8px; }
+.sheet .gp .sw.on { outline: 2px solid #ffd36b; outline-offset: 2px; }
+.sheet .gp-name small { display: block; font-family: 'KCPelletierTyped', 'Courier New', monospace; font-size: 0.72rem; letter-spacing: 0; opacity: 0.7; margin-top: 2px; }
 .topbar { position: fixed; top: 14px; right: 14px; z-index: 90; display: flex; align-items: center; gap: 10px; }
 html.game-open .topbar { display: none; }
 .viewtog { display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 6px 12px 8px; border-radius: 12px; background: linear-gradient(#2c2c31, #151517); border: 1px solid #4a4a50; color: #f3e6c8; box-shadow: 0 4px 12px rgba(0,0,0,0.5); font-family: 'KCPelletierTyped', 'Courier New', monospace; text-transform: uppercase; white-space: nowrap; }
@@ -1180,7 +1193,7 @@ try { if (location.hash) history.replaceState(null, '', location.pathname + loca
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/STLLoader.js"></script>
 <script>
-// STORE (v9)
+// STORE (v11)
 const toTop = () => { try { window.scrollTo({ top: 0, left: 0, behavior: 'instant' }); } catch (e) { window.scrollTo(0, 0); } };
 toTop();
 window.addEventListener('load', toTop);
@@ -1216,6 +1229,7 @@ const CONFIG = {
   streamLogos: { spotify: ['/images/logo-spotify.svg', '/images/spotify.svg', '/images/logo-spotify.png'], apple: ['/images/logo-apple-music.svg', '/images/apple-music.svg', '/images/apple.svg', '/images/logo-apple-music.png'], youtube: ['/images/logo-youtube.svg', '/images/youtube.svg', '/images/logo-youtube.png'] },   // logo pictures for the TV buttons (any shape, transparent background is best). Missing = the name is written instead.
   howImage: '/images/rulebook.png',   // the how-to sheet lying under the table (tap it for the How to Play pictures)
   vinylUrl: '',                    // (not used on the store page)
+  tipUrl: '',                      // the Venmo tip jar link (the guitar case under the table): empty shows a coming soon popup
   coverImage: '/images/35-transp-board (1).PNG',   // the game art on the record covers (a small transparent copy of the board)
   posterImage: 'camcorder.jpg',    // the poster on the backdrop: a file in the bucket folder above
   prices: { vinyl: 33, poster: 9, shirt: 30 },   // PLACEHOLDER prices in dollars: set the real ones here
@@ -2382,17 +2396,17 @@ function makeStore(el) {
   }
   v.scene = new THREE.Scene();
   v.camera = new THREE.PerspectiveCamera(30, 16 / 10, 1, 80);
-  v.scene.add(new THREE.HemisphereLight(0xffffff, 0x6b4a42, 0.74));
-  const key = new THREE.DirectionalLight(0xffffff, 0.5); key.position.set(5, 8, 7); v.scene.add(key);
+  v.scene.add(new THREE.HemisphereLight(0xffffff, 0x6b4a42, 0.6));
+  const key = new THREE.DirectionalLight(0xffffff, 0.34); key.position.set(5, 8, 7); v.scene.add(key);
   const rim = new THREE.DirectionalLight(0xffd9b0, 0.26); rim.position.set(-4, 3, -3); v.scene.add(rim);
-  const wash = new THREE.PointLight(0xffe2b8, 0.55, 16); wash.position.set(0, 4.2, 1.2); v.scene.add(wash);   /* the show light on the backdrop */
+  const wash = new THREE.PointLight(0xffe2b8, 0.36, 16); wash.position.set(0, 4.2, 1.2); v.scene.add(wash);   /* the show light on the backdrop */
   v.stage = new THREE.Group();
   v.scene.add(v.stage);
   const stage = v.stage;
 
   /* camera: fixed, looking down at the table. The distance is worked out from a few key points so the banner and the table fit on any screen shape. */
   let EL = THREE.MathUtils.degToRad(27); const LOOK = new THREE.Vector3(0, 1.75, 0.3);
-  const FIT_PTS = [[4.0, 5.3, -2.6], [-4.0, 5.3, -2.6], [3.95, -1.0, 4.3], [-3.95, -1.0, 4.3]];
+  const FIT_PTS = [[4.0, 5.3, -2.6], [-4.0, 5.3, -2.6], [3.95, -1.7, 4.3], [-3.95, -1.7, 4.3]];
   v.fit = function () {
     const w = el.clientWidth || 640, h = el.clientHeight || 400;
     v.renderer.setPixelRatio(Math.max(0.75, Math.min(window.devicePixelRatio || 1, 1.75, Math.sqrt(2600000 / (w * h)))));
@@ -2474,7 +2488,7 @@ function makeStore(el) {
     return new THREE.CanvasTexture(c);
   })();
   const woodSide = std(0x120a06, 0.8), legWood = std(0x1a100a, 0.75);
-  const TW = 7.8, TD = 4.4, TZ = 0.9, FLOOR = -1.0, VT = 0.04;   /* table top is at y = 0 */
+  const TW = 7.8, TD = 4.4, TZ = 0.9, FLOOR = -1.7, VT = 0.04;   /* table top is at y = 0 (the legs are taller now, to fit the guitar case) */
   const tableGeo = roundedSlab(TW, TD, 0.16, 0.22, 0.035);
   { const P = tableGeo.attributes.position, uv = new Float32Array(P.count * 2);
     for (let i = 0; i < P.count; i++) { uv[i * 2] = P.getX(i) / TW + 0.5; uv[i * 2 + 1] = P.getY(i) / TD + 0.5; }
@@ -2487,8 +2501,8 @@ function makeStore(el) {
   [[-1, -1], [1, -1], [-1, 1], [1, 1]].forEach(s => box(0.22, -0.16 - FLOOR, 0.22, legWood, s[0] * (TW / 2 - 0.22), (FLOOR - 0.16) / 2, TZ + s[1] * (TD / 2 - 0.22)));
   blob(TW + 1.6, TD + 1.3, 0, TZ, 0.75).position.y = FLOOR + 0.004;
 
-  const floorM = noHit(new THREE.Mesh(new THREE.PlaneGeometry(11.4, 8.8), new THREE.MeshStandardMaterial({ color: 0x2a1815, roughness: 0.95 })));   /* the venue floor */
-  floorM.rotation.x = -Math.PI / 2; floorM.position.set(0, FLOOR - 0.002, 0.9); stage.add(floorM);
+  const floorM = noHit(new THREE.Mesh(new THREE.PlaneGeometry(26, 8.8), new THREE.MeshStandardMaterial({ color: 0x2a1815, roughness: 0.95, transparent: true, alphaMap: mkTex(256, 4, (g, w, h) => { const gr = g.createLinearGradient(0, 0, w, 0); gr.addColorStop(0, '#000'); gr.addColorStop(0.46, '#000'); gr.addColorStop(0.58, '#fff'); gr.addColorStop(1, '#fff'); g.fillStyle = gr; g.fillRect(0, 0, w, h); }) })));   /* the venue floor (long to the left, so the joystick cord can run off the screen) */
+  floorM.rotation.x = -Math.PI / 2; floorM.position.set(-7.3, FLOOR - 0.002, 0.9); stage.add(floorM);
 
   /* ---------- the backdrop: pipe and drape, with a banner on top ---------- */
   const BDZ = -2.6;   /* the drape is a flat wall of cloth here, behind the table */
@@ -2888,8 +2902,36 @@ function makeStore(el) {
   if (document.fonts && document.fonts.load) document.fonts.load("34px 'KCStrikerSans'").then(() => { if (!billPhoto.ok) { drawBill(); billTex.needsUpdate = true; } }).catch(() => {});
   const billG = new THREE.Group(); billG.position.set(0.95, 0.008, 2.55); billG.rotation.y = -0.2; stage.add(billG);
   const billSide = std(0xb9c9ad, 0.9);
-  billG.add(new THREE.Mesh(new THREE.BoxGeometry(1.2, 0.012, 0.51), [billSide, billSide, new THREE.MeshStandardMaterial({ map: billTex, roughness: 0.85 }), billSide, billSide, billSide]));
+  billG.add(new THREE.Mesh(new THREE.BoxGeometry(1.2, 0.012, 0.51), [billSide, billSide, new THREE.MeshStandardMaterial({ map: billTex, color: 0xd2d2d2, roughness: 0.9 }), billSide, billSide, billSide]));
   const billHit = hitBox(1.3, 0.16, 0.62, 0, 0.04, 0, 'bill', billG);
+  let billFall = 0;
+
+  /* ---------- a little joystick on the floor at the far left, its cord running off the screen (a hint of the game room) ---------- */
+  const joyG = new THREE.Group();
+  joyG.position.set(-4.7, FLOOR, 3.3); joyG.rotation.y = 0.45; joyG.scale.setScalar(1.3);
+  stage.add(joyG);
+  blob(1.7, 1.2, -4.7, 3.3, 0.6).position.y = FLOOR + 0.004;
+  const joyBase = new THREE.Mesh(roundedBoxWHD(0.72, 0.12, 0.5, 0.04, 36, 6, 25), std(0x2f3136, 0.55, 0.2)); joyBase.position.y = 0.06; joyG.add(joyBase);
+  const joyBtn = new THREE.Mesh(new THREE.CylinderGeometry(0.07, 0.08, 0.05, 20), std(0xe8c13a, 0.4)); joyBtn.position.set(0.24, 0.145, 0.08); joyG.add(joyBtn);
+  const joyStick = new THREE.Group(); joyStick.position.set(-0.12, 0.12, 0); joyG.add(joyStick);
+  joyStick.add(new THREE.Mesh(new THREE.SphereGeometry(0.1, 16, 8, 0, Math.PI * 2, 0, Math.PI / 2), std(0x151517, 0.7)));
+  const joyShaft = new THREE.Mesh(new THREE.CylinderGeometry(0.03, 0.03, 0.3, 10), std(0xa8adb3, 0.3, 0.6)); joyShaft.position.y = 0.15; joyStick.add(joyShaft);
+  const joyBall = new THREE.Mesh(new THREE.SphereGeometry(0.115, 20, 14), std(0xd8302a, 0.35)); joyBall.position.y = 0.34; joyStick.add(joyBall);
+  hitBox(0.9, 0.7, 0.7, 0, 0.3, 0, 'joystick', joyG);   /* tap it to go to the game room */
+  const joyCable = noHit(new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3([[-5.1, FLOOR + 0.06, 3.5], [-5.9, FLOOR + 0.03, 3.9], [-7.0, FLOOR + 0.03, 3.3], [-8.6, FLOOR + 0.03, 3.8], [-13, FLOOR + 0.03, 3.2]].map(q => new THREE.Vector3(q[0], q[1], q[2]))), 60, 0.035, 6, false), std(0x151517, 0.6)));
+  stage.add(joyCable);
+
+  /* ---------- a guitar case with money in it, under the table at the front (the future tip jar) ---------- */
+  const tipG = new THREE.Group(); tipG.position.set(-0.4, FLOOR, TZ + TD / 2 - 0.95); stage.add(tipG);
+  const tipMat = new THREE.MeshStandardMaterial({ roughness: 0.9, transparent: true, alphaTest: 0.3, side: THREE.DoubleSide });
+  const tipMesh = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), tipMat); tipMesh.visible = false; tipMesh.userData.tag = 'tipjar'; tipG.add(tipMesh);
+  const tipBlob = blob(3.6, 1.4, -0.4, TZ + TD / 2 - 0.95, 0.5); tipBlob.position.y = FLOOR + 0.004; tipBlob.visible = false;
+  new THREE.TextureLoader().load('/images/guitarmoney.png', tex => {
+    tex.anisotropy = 4; tipMat.map = tex; tipMat.needsUpdate = true;
+    const a = tex.image && tex.image.width && tex.image.height ? tex.image.width / tex.image.height : 2;
+    const W = Math.min(3.2, 1.45 * a), H = W / a;   /* the picture keeps its own shape */
+    tipMesh.scale.set(W, H, 1); tipMesh.position.y = H / 2 + 0.02; tipMesh.visible = true; tipBlob.visible = true; hits.push(tipMesh);
+  }, undefined, () => {});
 
   /* ---------- a small tip with the item's name while the mouse is over it (not on touch screens) ---------- */
   const tipEl = document.createElement('div'); tipEl.className = 'scene-tip'; tipEl.setAttribute('aria-hidden', 'true'); document.body.appendChild(tipEl);
@@ -2904,6 +2946,8 @@ function makeStore(el) {
     if (tag === 'knob') return ['Volume'];
     if (tag === 'mailbox') return ['Email list'];
     if (tag === 'letter') return ['Contact us'];
+    if (tag === 'tipjar') return ['Tip jar', 'Support the band'];
+    if (tag === 'joystick') return ['Game room'];
     return null;
   };
   let tipOn = false;
@@ -3012,7 +3056,7 @@ function makeStore(el) {
     const tag = pick(e);
     showTip(tag, pickObj, e);
     el.style.cursor = tag ? 'var(--hand)' : 'default';
-    hoverGroup = tag === 'poster' ? posterG : tag === 'shirt' ? pickObj.parent.parent : tag === 'floppy' ? floppyG : tag === 'mailbox' ? mailG : tag === 'letter' ? letterG : tag === 'bill' ? billG : tag === 'set' ? setG : tag === 'vinyl' ? vinylG : tag === 'radio' ? radio : tag === 'knob' ? knob : null;
+    hoverGroup = tag === 'poster' ? posterG : tag === 'shirt' ? pickObj.parent.parent : tag === 'floppy' ? floppyG : tag === 'mailbox' ? mailG : tag === 'letter' ? letterG : tag === 'bill' ? billG : tag === 'set' ? setG : tag === 'vinyl' ? vinylG : tag === 'radio' ? radio : tag === 'knob' ? knob : tag === 'tipjar' ? tipG : tag === 'joystick' ? joyG : null;
   });
   const endKnob = () => { knobDrag = null; };
   el.addEventListener('pointerup', endKnob);
@@ -3033,6 +3077,8 @@ function makeStore(el) {
     else if (tag === 'knob') { if (knobMoved < 5) { const cur = Sound.getVolume(); setKnob(Sound.setVolume(cur >= 0.99 ? 0 : Math.min(1, Math.round(cur * 4) / 4 + 0.25))); } }
     else if (tag === 'mailbox') { mailT = performance.now(); Sound.slide(); setTimeout(openMail, REDUCE ? 0 : 650); }
     else if (tag === 'bill') { wig(billG); takeBill(e.clientX, e.clientY, billCv.toDataURL('image/png')); }
+    else if (tag === 'joystick') { Sound.oneUp(); setTimeout(() => { location.href = '/LP1/'; }, REDUCE ? 0 : 250); }   /* straight to the game room, like the side button */
+    else if (tag === 'tipjar') { Sound.slide(); later(() => { if (CONFIG.tipUrl) askGo(CONFIG.tipUrl, 'Open the tip jar?'); else showSoon('Tip jar', 'A tip jar for the band is coming soon. Thank you!'); }); }
     else if (tag === 'letter') { letterT = performance.now(); Sound.slide(); setTimeout(openContact, REDUCE ? 0 : 450); }
   });
 
@@ -3073,6 +3119,7 @@ function makeStore(el) {
     }, REDUCE ? 0 : t);
     floppyG.rotation.y = 0.3 + wobble(floppyG, now, 520) * 0.18;
     billG.rotation.y = -0.2 + wobble(billG, now, 500) * 0.15;
+    if (billFall) { const k = Math.min(1, (now - billFall) / 750); billG.position.y = 0.008 + (1 - k) * (1 - k) * 3 + (k < 1 ? Math.abs(Math.sin(k * 8)) * 0.07 * (1 - k) : 0); if (k >= 1) { billG.position.y = 0.008; billFall = 0; } }
     radio.rotation.y = -0.25 + wobble(radio, now, 520) * 0.1;
     mailG.rotation.y = 0.35 + wobble(mailG, now, 520) * 0.1;
     vSlide += ((hoverGroup === vinylG ? 1 : 0) - vSlide) * 0.14;
@@ -3089,7 +3136,7 @@ function makeStore(el) {
     letterG.rotation.y = -0.12 + (REDUCE ? 0 : Math.sin(llk * Math.PI * 3) * (1 - llk) * 0.16);   /* it wiggles around on the table (a turn, so no corner dips into the wood) */
     if (llk >= 1) letterT = 0;
     /* hover glow */
-    if (!glowItems) glowItems = [radio, knob, vinylG, posterG, floppyG, mailG, letterG, setG, billG].concat(shirts).map(g => ({ g, k: 0, s: g === knob ? 1.2 : 1 }));
+    if (!glowItems) glowItems = [radio, knob, vinylG, posterG, floppyG, mailG, letterG, setG, billG, tipG, joyG].concat(shirts).map(g => ({ g, k: 0, s: g === knob ? 1.2 : 1 }));
     const hg = knobDrag ? knob : hoverGroup;
     glowItems.forEach(it => {
       const tgt = it.g === hg ? 1 : 0;
@@ -3112,6 +3159,7 @@ function makeStore(el) {
   };
 
   v.billSrc = () => billCv.toDataURL('image/png');   /* the picture of the bill (the list view shows it too) */
+  v.showBill = () => { billG.visible = true; if (hits.indexOf(billHit) < 0) hits.push(billHit); billFall = REDUCE ? 0 : performance.now(); };   /* the bill goes back on the table: it drops in */
   v.hideBill = () => { billG.visible = false; const i = hits.indexOf(billHit); if (i >= 0) hits.splice(i, 1); };   /* once taken, it is gone from the table */
   if ('IntersectionObserver' in window) {
     new IntersectionObserver(es => { v.visible = es[0].isIntersecting; if (v.visible) kickLoads(v); }, { threshold: 0.05 }).observe(el);
@@ -3497,8 +3545,8 @@ const shipUS = p => {
   return CONFIG.shipSingle + CONFIG.shipSingleMore * Math.ceil(Math.max(0, qtyOf(p) - 6) / 6);   /* singles: up to 6 pieces, then more for every extra 6 */
 };
 const SHIP = [
-  { id: 'us', label: p => 'Continental US shipping (' + money(shipUS(p)) + ')', short: 'Continental US', cost: p => shipUS(p) },
-  { id: 'pickup', label: () => 'Local Milwaukee pickup ($0)', short: 'Milwaukee pickup', cost: () => 0 },
+  { id: 'us', label: p => 'Continental US: ' + money(shipUS(p)), short: 'Continental US', cost: p => shipUS(p) },
+  { id: 'pickup', label: () => 'Local Milwaukee pickup: $0', short: 'Milwaukee pickup', cost: () => 0 },
   { id: 'other', label: () => 'Other (please inquire)', short: 'Other', cost: () => null }
 ];
 let shipId = 'us';
@@ -3525,7 +3573,6 @@ function renderShip() {
   const box = $('#shipOpts');
   box.innerHTML = cur && cur.type !== 'deluxe'
     ? '<div class="optlabel">Shipping</div><div class="shipopts">' + SHIP.map(x => `<label><input type="checkbox" data-ship="${x.id}"${x.id === shipId ? ' checked' : ''}>${x.label(cur)}</label>`).join('') + '</div>'
-      + `<p class="shipnote">${cur.item ? esc(money(CONFIG.shipItems[cur.kind][0]) + ' shipping for the first, then ' + money(CONFIG.shipItems[cur.kind][1]) + ' for each more.') : cur.type === 'kit' ? esc(money(CONFIG.shipKit) + ' shipping per kit.') : esc(money(CONFIG.shipSingle) + ' shipping for up to 6 pieces, then ' + money(CONFIG.shipSingleMore) + ' more for every additional 6.')}</p>`
     : '';
 }
 $('#shipOpts').addEventListener('click', e => {
@@ -3767,8 +3814,38 @@ function defaultLine(id) {   /* the simple add-ons offered in the cart */
   const p = getP(id);
   return { key: 'kit:' + id + ':' + S[id].die, label: p.name, detail: 'Die color: ' + ((DIE_COLORS.find(x => x.id === S[id].die) || {}).name || ''), price: p.price, qty: 1 };
 }
-const ADDONS = [['poster', 'Camcorder poster'], ['shirt', 'Fearjoy shirt'], ['core-trio', 'Trio Kit'], ['vinyl', 'The Game on vinyl']];
-const lineHas = id => CART.lines.some(l => l.key.indexOf(id === 'core-trio' ? 'kit:core-trio' : id) === 0);
+const ADDONS = [['poster', 'Camcorder poster'], ['shirt', 'Fearjoy shirt'], ['gp', 'Game pieces'], ['vinyl', 'The Game on vinyl']];
+const lineHas = id => CART.lines.some(l => l.key.indexOf(id === 'gp' ? 'kit:' : id) === 0);   /* 'gp' = either game pieces kit */
+
+/* the game pieces add-on: one die that keeps changing color (tap it to pick a color), then Trio or Full band with their prices */
+const GP = { open: false, die: null, i: 0, ids: ['red', 'ltyellow', 'green', 'dkblue', 'orange'] };   /* the five colors both kits come in */
+const gpShown = () => GP.die || GP.ids[GP.i % GP.ids.length];
+const gpColor = id => DIE_COLORS.find(x => x.id === id) || DIE_COLORS[0];
+setInterval(() => {   /* the die changes color by itself until one is picked */
+  if (GP.die || GP.open || !cartDlg.open) return;
+  GP.i++; const im = $('#gpDieImg'); if (im) im.src = dieSwatchURL(gpColor(gpShown()));
+}, 1100);
+function gpHTML() {
+  const c = gpColor(gpShown());
+  return `<div class="gp"><div class="gp-top"><span class="gp-name">Game pieces<small>Tap the die to pick a color</small></span><button type="button" class="gp-die" data-cl-gpdie="1" aria-expanded="${GP.open}" aria-label="Die color: ${esc(c.name)}. Tap to choose"><img id="gpDieImg" alt="" src="${dieSwatchURL(c)}"></button></div>`
+    + (GP.open ? '<div class="swatches" role="group" aria-label="Die color">' + GP.ids.map(id => { const k = gpColor(id); return `<button type="button" class="sw dice${id === GP.die ? ' on' : ''}" data-cl-gpc="${id}" style="background-image:url(${dieSwatchURL(k)})" aria-label="${esc(k.name)}" title="${esc(k.name)}"></button>`; }).join('') + '</div>' : '')
+    + `<div class="gp-btns"><button type="button" class="chip" data-cl-gp="core-trio">+ Trio ${money(getP('core-trio').price)}</button><button type="button" class="chip" data-cl-gp="full-band">+ Full band ${money(getP('full-band').price)}</button></div></div>`;
+}
+function gpAdd(kit) {
+  const id = gpShown();
+  ['core-trio', 'full-band'].forEach(k => setDie(k, id));
+  cartAdd(defaultLine(kit), true); toast('Added to cart');
+}
+
+/* a small picture for each cart line (placeholders for now, drawn the same way as the list view) */
+function cartThumb(cv, l) {
+  const g = cv.getContext('2d'), W = cv.width, H = cv.height;
+  g.clearRect(0, 0, W, H);
+  if (l.key.indexOf('vinyl') === 0) drawVinylPrev(g, W, H, ALBUM_COLORS[Number(l.key.split(':')[1])] || ALBUM_COLORS[0]);
+  else if (l.shirt != null) drawShirtPrev(g, W, H, SHIRT_COLORS[l.shirt] || SHIRT_COLORS[0]);
+  else if (l.key.indexOf('kit:') === 0) drawPiecesPrev(g, W, H, l.key.split(':')[1]);
+  else if (l.key.indexOf('single') === 0) drawPiecesPrev(g, W, H, 'single');
+}
 
 /* ---------- the cart button (top right) ---------- */
 const cartBtn = $('#cartBtn'), cartNum = $('#cartNum');
@@ -3787,20 +3864,26 @@ const cartDlg = $('#cartDlg');
 const SIZE_OPTS = SHIRT_SIZES.map(z => `<option value="${z}">${z}</option>`).join('');
 function cartRender() {
   const box = $('#cartLines'), has = CART.lines.length > 0;
-  box.innerHTML = has ? CART.lines.map((l, i) => `<div class="cl">
+  const billRow = CART.bill ? `<div class="cl bill"><img class="cl-img" data-clbill="1" alt="">
+      <div class="cl-main"><span class="cl-name">Two dollar bill</span><span class="cl-detail">Found on the table</span></div>
+      <button type="button" class="btn small cl-ret" data-cl-bill="return">Return the $2 bill</button>
+      <span class="cl-price">-$2</span><span></span></div>` : '';
+  box.innerHTML = (has || CART.bill) ? CART.lines.map((l, i) => `<div class="cl">
+      ${l.key.indexOf('poster') === 0 ? `<img class="cl-img" alt="" src="${esc(encodeURI(CONFIG.loreFolder + CONFIG.posterImage))}">` : `<canvas class="cl-img" width="360" height="250" data-clth="${i}"></canvas>`}
       <div class="cl-main"><span class="cl-name">${esc(l.label)}</span><span class="cl-detail">${esc(l.detail || '')}${l.shirt != null ? `<select data-cl-size="${i}" aria-label="Shirt size">${SIZE_OPTS.replace('value="' + l.size + '"', 'value="' + l.size + '" selected')}</select>` : ''}</span></div>
       <div class="stepper"><button type="button" data-cl-q="${i}:-1" aria-label="Fewer">-</button><span>${l.qty}</span><button type="button" data-cl-q="${i}:1" aria-label="More">+</button></div>
       <span class="cl-price">${money(l.price * l.qty)}</span>
-      <button type="button" class="cl-x" data-cl-rm="${i}" aria-label="Remove">&times;</button></div>`).join('') : '<p class="note">Your cart is empty. Tap anything on the table to order it, then choose Add to cart.</p>';
+      <button type="button" class="cl-x" data-cl-rm="${i}" aria-label="Remove">&times;</button></div>`).join('') + billRow + (has ? '' : '<p class="note">Add something and the $2 comes off.</p>') : '<p class="note">Your cart is empty. Tap anything on the table to order it, then choose Add to cart.</p>';
+  $$('#cartLines canvas[data-clth]').forEach(cv => { const l = CART.lines[Number(cv.dataset.clth)]; if (l) cartThumb(cv, l); });
+  const bi = $('#cartLines img[data-clbill]'); if (bi && viewers.desk && viewers.desk.billSrc) bi.src = viewers.desk.billSrc();
   const adds = ADDONS.filter(a => !lineHas(a[0]));
   $('#cartAddsBox').style.display = has && adds.length ? '' : 'none';
-  $('#cartAdds').innerHTML = adds.slice(0, 3).map(a => { const l = defaultLine(a[0]); return `<button type="button" class="chip" data-cl-add="${a[0]}">+ ${esc(a[1])} ${money(l.price)}</button>`; }).join('');
+  $('#cartAdds').innerHTML = adds.slice(0, 3).map(a => { if (a[0] === 'gp') return gpHTML(); const l = defaultLine(a[0]); return `<button type="button" class="chip" data-cl-add="${a[0]}">+ ${esc(a[1])} ${money(l.price)}</button>`; }).join('');
   $('#cartForm').style.display = has ? '' : 'none';
   if (!has) { $('#cartTotals').innerHTML = ''; return; }
   const t = cartTotals();
-  $('#cartShipOpts').innerHTML = [['us', 'Continental US shipping (' + money(CONFIG.cartShip[0] + CONFIG.cartShip[1] * Math.max(0, t.units - 1)) + ' for everything)'], ['pickup', 'Local Milwaukee pickup ($0)'], ['other', 'Other (please inquire)']]
+  $('#cartShipOpts').innerHTML = [['us', 'Continental US: ' + money(CONFIG.cartShip[0] + CONFIG.cartShip[1] * Math.max(0, t.units - 1))], ['pickup', 'Local Milwaukee pickup: $0'], ['other', 'Other (please inquire)']]
     .map(x => `<label><input type="checkbox" data-cl-ship="${x[0]}"${CART.ship === x[0] ? ' checked' : ''}>${x[1]}</label>`).join('');
-  $('#cartShipNote').textContent = money(CONFIG.cartShip[0]) + ' shipping for the first item, then ' + money(CONFIG.cartShip[1]) + ' for each more. It is one shipment, so it does not stack.';
   $('#cPromoIn').value = promo ? promo.code : $('#cPromoIn').value;
   let rows = `<div class="row"><span>${cartCount()} item${cartCount() === 1 ? '' : 's'}</span><span>${money(t.sub)}</span></div>`;
   if (t.disc) rows += `<div class="row"><span>Discount (${promo.code}, ${promo.pct}% off)</span><span>-${money(t.disc)}</span></div>`;
@@ -3838,6 +3921,10 @@ cartDlg.addEventListener('click', e => {
   if (d.clQ) { const [i, k] = d.clQ.split(':'), l = CART.lines[Number(i)]; if (l) l.qty = Math.max(1, Math.min(99, l.qty + Number(k))); cartSave(); cartRefresh(); }
   else if (d.clRm) { CART.lines.splice(Number(d.clRm), 1); cartSave(); cartRefresh(); }
   else if (d.clAdd) { cartAdd(defaultLine(d.clAdd), true); toast('Added to cart'); }
+  else if (d.clGp) gpAdd(d.clGp);
+  else if (d.clGpdie) { GP.open = !GP.open; cartRender(); }
+  else if (d.clGpc) { GP.die = d.clGpc; GP.open = false; cartRender(); }
+  else if (d.clBill) { CART.bill = false; cartSave(); if (viewers.desk && viewers.desk.showBill) viewers.desk.showBill(); cartRefresh(); if (LV.on) listBuild(); toast('The $2 bill is back on the table'); }
   else if (d.clShip) { CART.ship = d.clShip; cartRender(); }
 });
 cartDlg.addEventListener('change', e => {
