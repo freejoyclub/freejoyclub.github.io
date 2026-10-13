@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- HOME (v17) -->
+<!-- HOME (v18) -->
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
@@ -904,7 +904,7 @@ try { if (location.hash) history.replaceState(null, '', location.pathname + loca
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/STLLoader.js"></script>
 <script>
-// HOME (v17)
+// HOME (v18)
 const toTop = () => { try { window.scrollTo({ top: 0, left: 0, behavior: 'instant' }); } catch (e) { window.scrollTo(0, 0); } };
 toTop();
 window.addEventListener('load', toTop);
@@ -3263,7 +3263,7 @@ function makeDesk(el) {
     drops.forEach((d, di) => {
       const e = sec - d.delay;
       if (e < 0) return;
-      if (!d.started) { d.started = true; if (di === 1 || di === 4 || di === 8 || di === 12) Sound.slide(); }   /* just a few slide sounds as things drop from the sky */
+      if (!d.started) d.started = true;
       d.g.visible = true;
       const T = 0.34 + d.H * 0.045;
       if (e < T) d.g.position.y = d.H * (1 - (e / T) * (e / T));   /* falls, speeding up */
