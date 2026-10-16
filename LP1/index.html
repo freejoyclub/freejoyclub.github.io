@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- LP1 (v50) -->
+<!-- LP1 (v54) -->
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
@@ -746,7 +746,7 @@ dialog.big { width: 100vw; max-height: 86vh; max-height: 86dvh; margin: auto 0 0
 .rack-nav .rk { font-size: 0.8rem; letter-spacing: 1px; padding: 9px 16px 9px 12px; justify-content: flex-start; min-width: 150px; }
 .rack-nav .rk-bg-nav { display: inline-flex; }
 @media (max-width: 520px) { .rack-nav { grid-template-columns: 1fr; } .rack-nav .rk { min-width: 190px; } }
-.c-pieces { --c: #ffd36b; } .c-credits { --c: #ff9ec7; } .c-how { --c: #8fd0ff; } .c-stream { --c: #6dff9a; } .c-ig { --c: #ff7ac6; } .c-mail { --c: #6fb4ff; } .c-contact { --c: #ffecd2; }
+.c-album { --c: #ffa86b; } .c-pieces { --c: #ffd36b; } .c-credits { --c: #ff9ec7; } .c-how { --c: #8fd0ff; } .c-stream { --c: #6dff9a; } .c-ig { --c: #ff7ac6; } .c-mail { --c: #6fb4ff; } .c-contact { --c: #ffecd2; }
 .rk[aria-disabled="true"] { opacity: 0.7; }
 /* grouped menu: a short list; the sub menus pop out beside it (over it on narrow screens) */
 .c-bg { --c: #ffd36b; }
@@ -759,6 +759,8 @@ dialog.big { width: 100vw; max-height: 86vh; max-height: 86dvh; margin: auto 0 0
 .rack-nav.sub-open > .rk:not(.lit) { opacity: 0.3; filter: saturate(0.3); }   /* the main list fades back while a sub menu is open */
 .rack-nav.sub-open > .rk.lit { box-shadow: 0 0 12px rgba(255,194,122,0.55); }
 .rack-sub { border-color: #7a7a82; box-shadow: 0 10px 28px rgba(0,0,0,0.85), 0 0 0 1px rgba(255,194,122,0.25); }
+.rack-nav { align-items: stretch; }
+.rack-nav > .rk, .rack-nav .rack-sub .rk { min-width: 230px; width: auto; height: 36px; box-sizing: border-box; line-height: 1; justify-content: flex-start; text-align: left; }   /* every menu button the same size, words on the left */
 .rk-slide { display: flex; align-items: center; gap: 10px; padding: 6px 12px; font-family: 'KCStrikerSans', sans-serif; font-size: 0.8rem; letter-spacing: 1px; text-transform: uppercase; color: #d8d8de; }
 .rk-slide input { flex: 1; min-width: 110px; accent-color: #ffc27a; cursor: var(--hand); }
 @media (max-width: 700px) { .rack-sub { left: 0; right: 0; bottom: 0 !important; } }
@@ -834,6 +836,24 @@ html.game-open .edge { display: none; }
 .edge { opacity: 0; pointer-events: none; }
 html.edge-on .edge { opacity: 0.7; pointer-events: auto; }
 html.edge-on .edge:hover, html.edge-on .edge:focus-visible { opacity: 1; }
+.edge .neon-arrow { display: none; }
+/* wide screens: the side buttons become neon signs (words stacked, a curved arrow down and over toward the room that way, all inside a thin glowing tube frame); thin, tall and phone screens keep the small vertical tabs above */
+@media (min-width: 900px) and (min-aspect-ratio: 5/4) {
+.edge { --neon: #ff4fd2; --neon-rgb: 255, 79, 210; width: auto; height: auto; top: 42%; padding: 12px 18px 8px; gap: 2px; background: rgba(12, 6, 14, 0.38); border: 2px solid rgba(var(--neon-rgb), 0.55); border-radius: 18px; box-shadow: 0 0 7px rgba(var(--neon-rgb), 0.35), 0 0 22px rgba(var(--neon-rgb), 0.18), inset 0 0 10px rgba(var(--neon-rgb), 0.2); -webkit-backdrop-filter: none; backdrop-filter: none; color: #fff0fb; opacity: 0.9; flex-direction: column; justify-content: flex-start; text-shadow: 0 0 3px #fff, 0 0 8px var(--neon), 0 0 18px var(--neon), 0 0 34px var(--neon); }
+.edge-r { --neon: #3fe8ff; --neon-rgb: 63, 232, 255; color: #eaffff; }
+.edge-l { left: 14px; }
+.edge-r { right: 14px; }
+.edge .arr { display: none; }
+.edge .txt { writing-mode: horizontal-tb; transform: none; white-space: normal; text-align: center; width: min-content; font-family: 'KCStrikerSans', 'Arial Black', sans-serif; font-size: clamp(1.2rem, 2.1vw, 1.7rem); line-height: 1.05; letter-spacing: 3px; }
+.edge-l .txt { transform: none; }
+.edge .neon-arrow { display: block; width: 88px; height: 78px; fill: none; stroke: #fff0fb; stroke-width: 5; stroke-linecap: round; stroke-linejoin: round; filter: drop-shadow(0 0 3px var(--neon)) drop-shadow(0 0 9px var(--neon)) drop-shadow(0 0 18px var(--neon)); }
+.edge-r .neon-arrow { stroke: #eaffff; align-self: flex-start; }
+.edge-l .neon-arrow { align-self: flex-end; }
+.edge:hover, .edge:focus-visible { width: auto; background: rgba(12, 6, 14, 0.55); opacity: 1; border-color: rgba(var(--neon-rgb), 0.85); box-shadow: 0 0 10px rgba(var(--neon-rgb), 0.55), 0 0 30px rgba(var(--neon-rgb), 0.3), inset 0 0 14px rgba(var(--neon-rgb), 0.3); text-shadow: 0 0 3px #fff, 0 0 10px var(--neon), 0 0 24px var(--neon), 0 0 48px var(--neon), 0 0 70px var(--neon); }
+html.edge-on .edge { opacity: 0.92; }
+@media (prefers-reduced-motion: no-preference) { .edge .txt, .edge .neon-arrow { animation: neonFlick 7s infinite; } .edge-r .txt, .edge-r .neon-arrow { animation-delay: -3.3s; } }
+@keyframes neonFlick { 0%, 17%, 19%, 55%, 57%, 100% { opacity: 1; } 18% { opacity: 0.55; } 56% { opacity: 0.7; } }
+}
 </style>
 <script>
 /* v10: every load, refresh or return starts at the very top (no remembered scroll spot, no #section jump) */
@@ -988,7 +1008,8 @@ try { if (location.hash) history.replaceState(null, '', location.pathname + loca
 </dialog>
 
 <div class="toast" id="toast" role="status"></div>
-<a class="edge edge-r" href="/store/" aria-label="Go to the merch table"><span class="txt">merch table</span><span class="arr" aria-hidden="true">&#8250;</span></a>
+<a class="edge edge-l" href="/" aria-label="Go home"><span class="arr" aria-hidden="true">&#8249;</span><span class="txt">home</span><svg class="neon-arrow" viewBox="0 0 90 80" aria-hidden="true"><path d="M74 4 C74 38 54 58 14 62"/><path d="M30 46 L12 62 L32 76"/></svg></a>
+<a class="edge edge-r" href="/store/" aria-label="Go to the merch table"><span class="txt">merch table</span><span class="arr" aria-hidden="true">&#8250;</span><svg class="neon-arrow" viewBox="0 0 90 80" aria-hidden="true"><path d="M16 4 C16 38 36 58 76 62"/><path d="M60 46 L78 62 L58 76"/></svg></a>
 <div class="rack" role="toolbar" aria-label="Site menu and music">
 <div class="rack-in">
 <button type="button" class="rk c-menu" id="rackMenu" aria-label="Open the menu" aria-expanded="false" aria-controls="rackNav"><span class="burger"></span><span class="rk-menu-txt">Menu</span></button>
@@ -997,12 +1018,17 @@ try { if (location.hash) history.replaceState(null, '', location.pathname + loca
 <a class="rk c-store" href="/store/" data-go="Go to the Fearjoy store?">Store</a>
 <button type="button" class="rk c-credits" data-open="credits">Credits &amp; Lyrics</button>
 <button type="button" class="rk c-game" data-open="game">Play Online</button>
-<a href="#" class="rk c-stream" data-stream data-soon="Stream the Album (soon)" data-live="Stream the Album">Stream the Album (soon)</a>
+<button type="button" class="rk rk-grp rk-keep c-album" data-sub="album" aria-haspopup="true" aria-expanded="false">The Album<span class="rk-arrow">&#9656;</span></button>
 <button type="button" class="rk rk-grp rk-keep c-breathe" data-sub="bm" aria-haspopup="true" aria-expanded="false">Breathe / Move<span class="rk-arrow">&#9656;</span></button>
 <button type="button" class="rk rk-grp rk-keep c-contact" data-sub="touch" aria-haspopup="true" aria-expanded="false">Get in touch<span class="rk-arrow">&#9656;</span></button>
 <button type="button" class="rk rk-grp rk-keep c-bg" data-sub="audio" aria-haspopup="true" aria-expanded="false">Audio<span class="rk-arrow">&#9656;</span></button>
 <a class="rk c-home" href="https://freejoy.club" data-go="Go to Fearjoy's home page?">Home</a>
 <button type="button" id="howBtn" hidden aria-hidden="true"></button>
+<div class="rack-sub" id="sub-album" role="menu">
+<button type="button" class="rk rk-back rk-keep">&#9666; Menu</button>
+<a class="rk c-store" href="/store/">Buy the Album</a>
+<a href="#" class="rk c-stream" data-stream data-soon="Stream the Album (soon)" data-live="Stream the Album">Stream the Album (soon)</a>
+</div>
 <div class="rack-sub" id="sub-bm" role="menu">
 <button type="button" class="rk rk-back rk-keep">&#9666; Menu</button>
 <a class="rk c-breathe" href="/breathe" data-go="Go to a page full of free, easy breathing exercises to feel your best?">Breathe</a>
@@ -1047,7 +1073,7 @@ try { if (location.hash) history.replaceState(null, '', location.pathname + loca
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/STLLoader.js"></script>
 <script>
-// LP1 (v50)
+// LP1 (v54)
 const toTop = () => { try { window.scrollTo({ top: 0, left: 0, behavior: 'instant' }); } catch (e) { window.scrollTo(0, 0); } };
 toTop();
 window.addEventListener('load', toTop);
@@ -1072,6 +1098,8 @@ const CONFIG = {
   tvImage: '/images/35-board.png?v=9',  // game board picture on the desk TV. The ?v=9 makes browsers fetch the newest copy: bump the number whenever you swap the file
   sfxFolder: '/sfx/',              // sound effects (coinflip, dice1, dice2, dice5, 1up, slide1) and the radio song (endless-jam-jgg-1.mp3)
   loreFolder: '/game/bucket/',     // the lore bucket: pictures that flash on the desk TV
+  patreonUrl: '',                  // the Patreon link once it exists (the framed painting on the wall goes there). Empty = a "coming soon" popup.
+  paintingImage: '/images/patronage.jpg',   // the framed painting on the back wall
   loreSeconds: 3,                  // how long a lore picture stays on the TV
   loreVideos: ['game sfx story.mp4', 'j-drum-tracking.mp4', 'js-mistake.mp4', 'sploinky-garret.mp4', 'story harmony hunting tunnel.mp4', 'story mu nightdrive 3.mp4'],                  // lore videos (.mp4) in the same folder. Add file names here. They download quietly in the background after the page loads (thin bar along the bottom of the TV) and join the channel changes once ready
   loreVideoMax: 25,                // a lore video stops after this many seconds even if it is longer
@@ -2223,7 +2251,7 @@ function makeDesk(el) {
 
   /* camera: fixed, looking down at the table. The distance is worked out from a few key points so the TV fills the width on any screen shape. */
   const EL = THREE.MathUtils.degToRad(36), LOOK = new THREE.Vector3(0, 1.85, 0);
-  const FIT_PTS = [[3.15, 4.0, -1.5], [1.05, 5.1, -2.1], [2.2, 6.3, -2.1], [2.95, 0, 2.6], [2.9, -1.0, 3.05], [-2.9, -1.0, 3.05]];
+  const FIT_PTS = [[3.15, 4.0, -1.5], [1.05, 5.1, -2.1], [2.2, 6.3, -2.1], [2.95, 0, 2.6, 1], [2.9, -1.0, 3.05, 1], [-2.9, -1.0, 3.05, 1], [-3.8, 3.6, -3.45, 0.45]];   /* the 4th number: how much the point moves outward when the screen is wide (see v.layout); the last point is the middle of the painting on the back wall (phones zoom out a little to show it) */
   v.fit = function () {
     const w = el.clientWidth || 640, h = el.clientHeight || 400;
     v.renderer.setPixelRatio(Math.max(0.75, Math.min(window.devicePixelRatio || 1, 1.75, Math.sqrt(2600000 / (w * h)))));   /* the desk fills the screen now, so cap the total pixels on very big windows */
@@ -2231,11 +2259,20 @@ function makeDesk(el) {
     v.camera.aspect = w / h;
     v.camera.updateProjectionMatrix();
     const t = Math.tan(THREE.MathUtils.degToRad(15)) * 0.97, sn = Math.sin(EL), cs = Math.cos(EL);
-    let d = 0;
-    FIT_PTS.forEach(p => {
-      const dy = p[1] - LOOK.y, dz = p[2] - LOOK.z;
-      d = Math.max(d, dy * sn + dz * cs + Math.abs(p[0]) / (t * v.camera.aspect), dy * sn + dz * cs + Math.abs(dy * cs - dz * sn) / t);
-    });
+    const need = spr => {
+      let d = 0;
+      FIT_PTS.forEach(p => {
+        const dy = p[1] - LOOK.y, dz = p[2] - LOOK.z, px = Math.abs(p[0]) + (p[3] || 0) * spr;
+        d = Math.max(d, dy * sn + dz * cs + px / (t * v.camera.aspect), dy * sn + dz * cs + Math.abs(dy * cs - dz * sn) / t);
+      });
+      return d;
+    };
+    const d0 = need(0);   /* wide screens spread the table and the things around it outward (as far as the picture still fits at the same size), phones keep it tight */
+    let spr = 1.1 * Math.max(0, Math.min(1, (v.camera.aspect - 0.8) / 1.0));
+    while (spr > 0.01 && need(spr) > d0 * 1.02) spr -= 0.05;
+    spr = Math.max(0, spr);
+    v.spread = spr; if (v.layout) v.layout(spr);
+    const d = need(spr);
     v.base = new THREE.Vector3(0, LOOK.y + d * sn, LOOK.z + d * cs);
     v.camera.position.copy(v.base);
     v.camera.lookAt(LOOK);
@@ -2310,8 +2347,8 @@ function makeDesk(el) {
   tableTop.position.set(0, -0.08, TZ);
   tableTop.userData.tag = 'block';   /* blocks clicks to the TV behind it */
   stage.add(tableTop); hits.push(tableTop);
-  [[-2.8, TZ - 1.5], [2.8, TZ - 1.5], [-2.8, TZ + 1.5], [2.8, TZ + 1.5]].forEach(p => box(0.22, -0.16 - FLOOR, 0.22, legWood, p[0], (FLOOR - 0.16) / 2, p[1]));
-  blob(7.6, 4.9, 0, TZ, 0.75).position.y = FLOOR + 0.004;   /* shadow on the floor under the table */
+  const legMeshes = [[-2.8, TZ - 1.5], [2.8, TZ - 1.5], [-2.8, TZ + 1.5], [2.8, TZ + 1.5]].map(p => box(0.22, -0.16 - FLOOR, 0.22, legWood, p[0], (FLOOR - 0.16) / 2, p[1]));
+  const tableBlob = blob(7.6, 4.9, 0, TZ, 0.75); tableBlob.position.y = FLOOR + 0.004;   /* shadow on the floor under the table */
 
   /* the board game: a white square, half an inch thick, with the TV picture on top. Everything else sits on `deck`, the board's top surface. */
   const BS = 3.1, BT = 0.09, BX = -0.9, VT = 0.04, BROT = 0.09;   /* VT = thickness of the record under the board; BROT = board is a little askew */
@@ -2926,12 +2963,13 @@ function makeDesk(el) {
 
   /* ---------- little joystick on the table at the front right, wired to the TV: tap it to open the game start screen (tapping the TV still works too) ---------- */
   const joyG = new THREE.Group();
-  joyG.position.set(2.15, 0, -0.55);   /* back right of the desk, where the radio used to be */
+  joyG.position.set(2.15, 0, 0.35);   /* right side of the desk, a bit forward so its cord shows */
   joyG.rotation.y = -0.35;
   joyG.scale.setScalar(1.9);   /* bigger (it was 1.6) */
   stage.add(joyG);
-  const joyBlob = blob(1.9, 1.5, 2.15, -0.55, 0.7);
-  const joyBase = new THREE.Mesh(roundedBoxWHD(0.72, 0.24, 0.5, 0.04, 36, 6, 25), std(0x2f3136, 0.55, 0.2)); joyBase.position.y = 0.12; joyG.add(joyBase);   /* taller base (it was 0.12) */
+  const joyBlob = blob(1.9, 1.5, 2.15, 0.35, 0.7);
+  const gritTex = (() => { const c = document.createElement('canvas'); c.width = c.height = 128; const g = c.getContext('2d'); g.fillStyle = '#c9c9ce'; g.fillRect(0, 0, 128, 128); for (let i = 0; i < 500; i++) { const v = 150 + Math.floor(Math.random() * 100); g.fillStyle = 'rgba(' + v + ',' + v + ',' + (v + 4) + ',0.28)'; g.fillRect(Math.random() * 128, Math.random() * 128, 1.7, 1.7); } for (let i = 0; i < 200; i++) { g.fillStyle = 'rgba(40,42,48,0.18)'; g.fillRect(Math.random() * 128, Math.random() * 128, 1.5, 1.5); } const t = new THREE.CanvasTexture(c); t.wrapS = t.wrapT = THREE.RepeatWrapping; t.repeat.set(2, 2); return t; })();   /* a fine grit, so the plastic is not flat */
+  const joyBase = new THREE.Mesh(roundedBoxWHD(0.72, 0.24, 0.5, 0.04, 36, 6, 25), new THREE.MeshStandardMaterial({ color: 0x50545b, roughness: 0.62, metalness: 0.12, map: gritTex, bumpMap: gritTex, bumpScale: 0.25 })); joyBase.position.y = 0.12; joyG.add(joyBase);   /* taller base (it was 0.12) */
   const joyTxCv = document.createElement('canvas'); joyTxCv.width = 512; joyTxCv.height = 128;
   const joyTxTex = new THREE.CanvasTexture(joyTxCv); joyTxTex.anisotropy = 4;
   const drawJoyTx = () => {   /* PLAY ONLINE in white Striker Sans on the front of the base */
@@ -2946,11 +2984,11 @@ function makeDesk(el) {
   const joyTxt = new THREE.Mesh(new THREE.PlaneGeometry(0.62, 0.155), new THREE.MeshBasicMaterial({ map: joyTxTex, transparent: true, depthWrite: false })); joyTxt.position.set(0, 0.12, 0.2535); noHit(joyTxt); joyG.add(joyTxt);
   const joyBtn = new THREE.Mesh(new THREE.CylinderGeometry(0.07, 0.08, 0.05, 20), std(0xe8c13a, 0.4)); joyBtn.position.set(0.24, 0.265, 0.08); joyG.add(joyBtn);
   const joyStick = new THREE.Group(); joyStick.position.set(-0.12, 0.24, 0); joyG.add(joyStick);
-  const joyBoot = new THREE.Mesh(new THREE.SphereGeometry(0.1, 16, 8, 0, Math.PI * 2, 0, Math.PI / 2), std(0x151517, 0.7)); joyStick.add(joyBoot);
+  const joyBoot = new THREE.Mesh(new THREE.SphereGeometry(0.1, 16, 8, 0, Math.PI * 2, 0, Math.PI / 2), std(0x3d4046, 0.7));   /* the flange around the stick: dark gray, not black */ joyStick.add(joyBoot);
   const joyShaft = new THREE.Mesh(new THREE.CylinderGeometry(0.03, 0.03, 0.3, 10), chrome); joyShaft.position.y = 0.15; joyStick.add(joyShaft);
   const joyBall = new THREE.Mesh(new THREE.SphereGeometry(0.115, 20, 14), std(0xd8302a, 0.35)); joyBall.position.y = 0.34; joyStick.add(joyBall);
   hitBox(1.0, 0.95, 0.7, 0, 0.4, 0, 'joystick', joyG);
-  const joyCable = noHit(new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3([[2.88, 0.12, -0.62], [2.98, 0.04, -0.8], [2.97, 0.03, -0.98], [2.95, -0.3, -1.2]].map(q => new THREE.Vector3(q[0], q[1], q[2]))), 40, 0.028, 6, false), std(0x151517, 0.6)));   /* the wire runs along the right edge of the table and over the back toward the TV */
+  const joyCable = noHit(new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3([[2.77, 0.12, 0.55], [2.9, 0.05, 0.4], [2.97, 0.03, 0.1], [2.97, 0.03, -0.45], [2.95, 0.02, -0.85], [2.93, -0.02, -1.0], [2.9, -0.3, -1.2]].map(q => new THREE.Vector3(q[0], q[1], q[2]))), 40, 0.028, 6, false), std(0x151517, 0.6)));   /* the wire leaves the right side of the joystick and runs along the right edge of the table, over the back toward the TV */
   stage.add(joyCable);
   let joyT = 0;
 
@@ -3009,7 +3047,7 @@ function makeDesk(el) {
   const photoG = new THREE.Group();
   photoG.rotation.order = 'YXZ';
   photoG.rotation.set(0, -0.45, 0);
-  photoG.position.set(2.5, 0, 0.55);   /* on the desk, right side in front of the joystick (which moved to the back right) */
+  photoG.position.set(2.45, 0, 1.55);   /* on the desk, right side in front of the joystick */
   stage.add(photoG);
   const photoP = new Promise(res => new THREE.TextureLoader().load(loreUrl(CONFIG.floorPhoto), tex => {
     const img = tex.image, a = img && img.width && img.height ? img.width / img.height : 1;
@@ -3033,16 +3071,16 @@ function makeDesk(el) {
   micG.rotation.y = 0.12;
   micG.scale.setScalar(1.95);   /* halfway between the old size (1.3) and the double size (2.6) */
   stage.add(micG);
-  const micGrilleTex = mkTex(128, 64, (g, w, h) => {
+  const micGrilleTex = mkTex(256, 128, (g, w, h) => {   /* twice the canvas size with the lines still 8 px apart = twice as many lines */
     g.fillStyle = '#b9bec6'; g.fillRect(0, 0, w, h);
-    g.strokeStyle = 'rgba(30,34,40,0.55)'; g.lineWidth = 2;
+    g.strokeStyle = 'rgba(30,34,40,0.6)'; g.lineWidth = 2;
     for (let x = 0; x <= w; x += 8) { g.beginPath(); g.moveTo(x, 0); g.lineTo(x, h); g.stroke(); }
     for (let y = 0; y <= h; y += 8) { g.beginPath(); g.moveTo(0, y); g.lineTo(w, y); g.stroke(); }
   });
   const micBall = new THREE.Mesh(new THREE.SphereGeometry(0.13, 20, 14), new THREE.MeshStandardMaterial({ map: micGrilleTex, roughness: 0.45, metalness: 0.5 }));
   micBall.position.set(0.5, 0.13, 0); micBall.rotation.z = Math.PI / 2; micG.add(micBall);   /* the grille turned a quarter turn */
   const micBodyG = new THREE.Group(); micBodyG.position.set(0.5, 0.13, 0); micBodyG.rotation.z = 0.075; micG.add(micBodyG);   /* tilted a little so the ball and the handle both rest on the floor */
-  const micBody = new THREE.Mesh(new THREE.CylinderGeometry(0.045, 0.075, 0.6, 14), std(0x2b2e33, 0.4, 0.5));
+  const micBody = new THREE.Mesh(new THREE.CylinderGeometry(0.045, 0.075, 0.6, 14), std(0x3a3d42, 0.45, 0.2));
   micBody.rotation.z = Math.PI / 2; micBody.position.x = -0.42; micBodyG.add(micBody);
   const micNeck = new THREE.Mesh(new THREE.CylinderGeometry(0.076, 0.098, 0.09, 16), std(0x9aa0a8, 0.3, 0.7));   /* the cone widens toward the capsule */
   micNeck.rotation.z = Math.PI / 2; micNeck.position.x = -0.13;   /* its wide end sits inside the capsule, so there is no gap */ micBodyG.add(micNeck);
@@ -3052,7 +3090,7 @@ function makeDesk(el) {
   micPlug.rotation.z = Math.PI / 2; micPlug.position.x = -0.77; micBodyG.add(micPlug);
   micG.updateMatrix();
   const micInv = micG.matrix.clone().invert();   /* the cable is laid out on the floor (x, height, z), then turned into the mic's own space */
-  const micCablePts = [new THREE.Vector3(-0.33, 0.045, 0), new THREE.Vector3(-0.41, 0.016, 0.02)].concat([[-2.2, 4.915, -2.2], [-2.3, 4.915, -2.6], [-2.12, 4.915, -2.9], [-1.97, 4.84, -2.96], [-1.96, 4.5, -2.96], [-1.96, 4.25, -3.0], [-1.96, 4.25, -3.5], [-1.96, 4.1, -3.74], [-1.94, 3.5, -3.76]].map(q => new THREE.Vector3(q[0], q[1], q[2]).applyMatrix4(micInv)));   /* over the back edge of the roof, then down behind the TV */
+  const micCablePts = [new THREE.Vector3(-0.3, 0.069, 0), new THREE.Vector3(-0.35, 0.05, 0.004), new THREE.Vector3(-0.41, 0.018, 0.02)].concat([[-2.2, 4.915, -2.2], [-2.3, 4.915, -2.6], [-2.12, 4.915, -2.9], [-1.97, 4.84, -2.96], [-1.96, 4.5, -2.96], [-1.96, 4.25, -3.0], [-1.96, 4.25, -3.5], [-1.96, 4.1, -3.74], [-1.94, 3.5, -3.76]].map(q => new THREE.Vector3(q[0], q[1], q[2]).applyMatrix4(micInv)));   /* over the back edge of the roof, then down behind the TV */
   const micCable = new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(micCablePts), 80, 0.021, 6, false), std(0x151517, 0.6));   /* a cord 50% thicker (was 0.014) */
   noHit(micCable); micG.add(micCable);   /* a black cable that goes over the back of the TV */
   hitBox(1.75, 0.32, 0.9, -0.15, 0.14, 0.25, 'mic', micG);
@@ -3258,8 +3296,50 @@ function makeDesk(el) {
   [[cdW, 0.018, 0.076, 0, cdH / 2 - 0.009], [cdW, 0.018, 0.076, 0, -cdH / 2 + 0.009], [0.05, cdH, 0.078, -cdW / 2 + 0.025, 0], [0.014, cdH, 0.076, cdW / 2 - 0.007, 0]].forEach(q => {
     const r = new THREE.Mesh(new THREE.BoxGeometry(q[0], q[1], q[2]), cdRim); r.position.set(q[3], q[4], 0); cdG.add(r);   /* the frame and the hinge side */
   });
+  /* the camcorder print stands in the bag a little in front of the CD: its top pokes out over the CD, the rest is hidden by the bag's front */
+  const bagPhoto = new THREE.Group(); bagPhoto.position.set(0.12, BGH, 0.08); bagPhoto.rotation.set(0, -0.08, 0.08); bagG.add(bagPhoto);
+  new THREE.TextureLoader().load(loreUrl(CONFIG.floorPhoto), tex => {
+    const a = tex.image && tex.image.height ? tex.image.width / tex.image.height : 1;
+    let pw = 0.62 * a, ph = 0.62; if (pw > 0.62) { pw = 0.62; ph = 0.62 / a; }
+    const bd = 0.035;
+    const paper = noHit(new THREE.Mesh(new THREE.BoxGeometry(pw + bd * 2, ph + bd * 2, 0.012), std(0xe9e5da, 0.85))); bagPhoto.add(paper);
+    const face = noHit(new THREE.Mesh(new THREE.PlaneGeometry(pw, ph), new THREE.MeshStandardMaterial({ map: tex, roughness: 0.6, emissive: 0xffffff, emissiveMap: tex, emissiveIntensity: 0.3 }))); face.position.z = 0.0066; bagPhoto.add(face);
+    bagPhoto.position.y = BGH + 0.26 - (ph + bd * 2) / 2;   /* its top edge sits 0.26 above the bag's rim */
+  }, undefined, () => {});
   hitBox(1.35, 2.0, 0.8, 0, 0.95, 0, 'bag', bagG);
   const bagBlob = blob(2.2, 1.2, 2.4, 3.15, 0.5); bagBlob.position.y = FLOOR + 0.004;
+
+  /* ---------- the back wall, and a framed painting hanging on it: it goes to the Patreon (CONFIG.patreonUrl, empty until it exists) ---------- */
+  const wallTex = mkTex(256, 256, (g, w, h) => { const gr = g.createRadialGradient(w / 2, h / 2, 0, w / 2, h / 2, w / 2); gr.addColorStop(0, '#fff'); gr.addColorStop(0.5, '#fff'); gr.addColorStop(1, '#000'); g.fillStyle = gr; g.fillRect(0, 0, w, h); });
+  const wallM = noHit(new THREE.Mesh(new THREE.PlaneGeometry(20, 11), new THREE.MeshStandardMaterial({ color: 0x3b1d19, roughness: 0.95, transparent: true, opacity: 0.9, alphaMap: wallTex, depthWrite: false })));
+  wallM.position.set(0, 3.4, -3.7); wallM.renderOrder = -6; stage.add(wallM);   /* a soft wall that fades out toward its edges, so there are no hard lines */
+  const paintG = new THREE.Group(); paintG.position.set(-3.8, 3.6, -3.45); paintG.rotation.z = 0.02; paintG.visible = false; stage.add(paintG);
+  let paintT = 0;
+  new THREE.TextureLoader().load(CONFIG.paintingImage, tex => {
+    const im = tex.image, asp = (im.width || 3) / (im.height || 4);
+    let ph = 2.4, pw = ph * asp; if (pw > 2.6) { pw = 2.6; ph = pw / asp; }
+    const bd = 0.14, wood2 = std(0x5e3a20, 0.6, 0.1);
+    const pic = noHit(new THREE.Mesh(new THREE.PlaneGeometry(pw, ph), new THREE.MeshStandardMaterial({ map: tex, roughness: 0.7, emissive: 0xffffff, emissiveMap: tex, emissiveIntensity: 0.3 }))); pic.position.z = 0.02; paintG.add(pic);
+    [[pw + bd * 2, bd, 0, (ph + bd) / 2], [pw + bd * 2, bd, 0, -(ph + bd) / 2], [bd, ph, -(pw + bd) / 2, 0], [bd, ph, (pw + bd) / 2, 0]].forEach(q => { const m = noHit(new THREE.Mesh(new THREE.BoxGeometry(q[0], q[1], 0.12), wood2)); m.position.set(q[2], q[3], 0.05); paintG.add(m); });
+    const sh = noHit(new THREE.Mesh(new THREE.PlaneGeometry(pw + bd * 2 + 0.3, ph + bd * 2 + 0.3), new THREE.MeshBasicMaterial({ map: blobTex, transparent: true, opacity: 0.8, depthWrite: false }))); sh.position.set(0.1, -0.1, -0.03); paintG.add(sh);   /* a soft shadow on the wall behind it */
+    hitBox(pw + bd * 2 + 0.2, ph + bd * 2 + 0.2, 0.3, 0, 0, 0.05, 'painting', paintG);
+    paintG.visible = true;
+  }, undefined, () => {});
+
+  /* ---------- layout: wide screens spread the table and the things around it outward (v.layout is called from v.fit); phones keep it tight ---------- */
+  const LAY = [];
+  const lay = (o, k) => { LAY.push({ o, x0: o.position.x, k }); return o; };
+  [poleG, mailG, poleBlob, letterG, letterBlob].forEach(o => lay(o, -1));
+  [howG, howBlob].forEach(o => lay(o, -0.8));
+  [noteG, noteBlob].forEach(o => lay(o, 0.5));
+  lay(photoG, 0.7);
+  [joyG, joyBlob, joyCable, bagG, bagBlob].forEach(o => lay(o, 1));
+  lay(paintG, -0.45);
+  legMeshes.forEach(m => lay(m, m.position.x > 0 ? 1 : -1));
+  v.layout = spr => {
+    LAY.forEach(l => { l.o.position.x = l.x0 + l.k * spr; });
+    tableTop.scale.x = 1 + 2 * spr / TW; tableBlob.scale.x = 1 + 2 * spr / 7.6;
+  };
 
   /* ---------- coin: lies flat on the desk, real 50/50 ---------- */
   const COIN_ROT_TOP = Math.PI / 2, COIN_ROT_BOT = Math.PI / 2;   /* keeps the text upright on both faces: JOY is turned the other way so it reads upright while the coin spins on its edge and after a sideways flip */
@@ -3365,8 +3445,8 @@ function makeDesk(el) {
     const bx = 76, by = 394, bw = 360, bh = 66;   /* blinking order button */
     g.fillStyle = infoBlink ? '#2bd45c' : '#ffe14a'; g.strokeStyle = '#1a0a05'; g.lineWidth = 5;
     g.beginPath(); g.moveTo(bx + 34, by); g.lineTo(bx + bw - 34, by); g.arc(bx + bw - 34, by + 34, 34, -Math.PI / 2, Math.PI / 2); g.lineTo(bx + 34, by + bh); g.arc(bx + 34, by + 34, 34, Math.PI / 2, Math.PI * 1.5); g.closePath(); g.fill(); g.stroke();
-    fitText(g, 'ORDER NOW!', 300, 46, INFO_FONT); g.fillStyle = '#1a0a05'; g.fillText('ORDER NOW!', W / 2, by + bh / 2 + 3);
-    g.fillStyle = '#1a0a05'; g.font = "18px 'KCPelletierTyped', 'Courier New', monospace"; g.fillText('while supplies last - tap to shop', W / 2, 474);
+    g.fillStyle = '#1a0a05'; g.textAlign = 'center'; g.font = '44px ' + INFO_FONT; g.fillText('ORDER NOW!', W / 2, by + bh / 2 + 3);   /* the button reads: ORDER NOW! */
+    g.save(); g.translate(bx + 8, by - 14); g.rotate(-0.1); g.textAlign = 'left'; g.font = 'italic 30px ' + INFO_FONT; g.lineWidth = 7; g.lineJoin = 'round'; g.strokeStyle = '#1a0a05'; g.strokeText('click to', 0, 0); g.fillStyle = '#ffffff'; g.fillText('click to', 0, 0); g.restore(); g.textAlign = 'center';   /* "click to" is a little note above the upper left of the button */
     infoTex.needsUpdate = true;
   }
   if (document.fonts && document.fonts.load) Promise.all([document.fonts.load("46px 'KCStrikerSans'"), document.fonts.load("60px 'KCOraleSans'"), document.fonts.load("18px 'KCPelletierTyped'")]).then(() => { if (info) drawInfo(); }).catch(() => {});
@@ -3622,7 +3702,7 @@ function makeDesk(el) {
     return d;
   }
   let staticOn = false, introTasks = [], ldDraw = 0;
-  const edgeOn = () => document.documentElement.classList.add('edge-on');   /* the side button to the merch table shows up once the intro is over */
+  const edgeOn = () => document.documentElement.classList.add('edge-on');   /* the side buttons (home, merch table) show up once the intro is over */
   if (REDUCE) edgeOn();
   if (!REDUCE) {
     intro.phase = 'load'; intro.busy = true;
@@ -3638,6 +3718,8 @@ function makeDesk(el) {
     wrapDrop([noteG], 0.95, 0.7, [noteBlob], 0.04);
     wrapDrop([photoG], 1.0, 0.7, [], 0.04);
     wrapDrop([micG], 1.05, 0.7, [], 0.04);
+    wrapDrop([wallM], 0, 0, [], 0);
+    wrapDrop([paintG], 1.6, 3, [], 0.05);
     wrapDrop([poleG, mailG], 1.4, 4, [poleBlob], 0.1);
     wrapDrop([letterG], 1.5, 4, [letterBlob], 0.1);
     drops.forEach(d => { d.g.visible = false; d.sh.forEach(s => { s.visible = false; }); });
@@ -3754,7 +3836,7 @@ function makeDesk(el) {
     if (loreAt(e)) { el.style.cursor = 'var(--hand)'; hoverGroup = null; return; }   /* a lore picture is on the TV: click it to save it */
     const tag = pick(e);
     el.style.cursor = tag && !(menuOn && tag === 'tv') ? 'var(--hand)' : 'default';
-    hoverGroup = tag === 'chan' ? pickObj.userData.btn : tag === 'howto' ? howG : tag === 'notebook' ? noteG : tag === 'photo' ? photoG : tag === 'mic' ? micG : tag === 'mailbox' ? mailG : tag === 'letter' ? letterG : tag === 'tv' ? (menuOn ? null : tv) : tag === 'bust' ? pickObj.userData.bust : tag === 'coin' ? coinRoot : tag === 'die' ? dieRoot : tag === 'vinyl' ? vinylG : tag === 'joystick' ? joyG : tag === 'radio' ? radio : tag === 'knob' ? knob : tag === 'bag' ? bagG : null;
+    hoverGroup = tag === 'chan' ? pickObj.userData.btn : tag === 'howto' ? howG : tag === 'notebook' ? noteG : tag === 'photo' ? photoG : tag === 'mic' ? micG : tag === 'painting' ? paintG : tag === 'mailbox' ? mailG : tag === 'letter' ? letterG : tag === 'tv' ? (menuOn ? null : tv) : tag === 'bust' ? pickObj.userData.bust : tag === 'coin' ? coinRoot : tag === 'die' ? dieRoot : tag === 'vinyl' ? vinylG : tag === 'joystick' ? joyG : tag === 'radio' ? radio : tag === 'knob' ? knob : tag === 'bag' ? bagG : null;
   });
   const endKnob = () => { knobDrag = null; };
   el.addEventListener('pointerup', endKnob);
@@ -3807,6 +3889,7 @@ function makeDesk(el) {
     else if (tag === 'mailbox') { mailT = performance.now(); Sound.slide(); setTimeout(openMail, REDUCE ? 0 : 650); }
     else if (tag === 'letter') { letterT = performance.now(); Sound.slide(); setTimeout(openContact, REDUCE ? 0 : 450); }
     else if (tag === 'mic') { micT = performance.now(); Sound.slide(); if (menuClosing) setTimeout(() => startLore('video'), 800); else startLore('video'); }
+    else if (tag === 'painting') { paintT = performance.now(); Sound.slide(); setTimeout(() => { if (CONFIG.patreonUrl) window.open(CONFIG.patreonUrl, '_blank', 'noopener'); else showSoon('Patreon', 'Our Patreon is coming soon. Thank you for wanting to support the band!'); }, REDUCE ? 0 : 450); }
     else if (tag === 'bag') { Sound.slide(); setTimeout(() => { location.href = '/store/'; }, REDUCE ? 0 : 220); }   /* straight to the store, no question */
     else if (tag === 'tv') openTvMenu();
     else if (tag === 'joystick') { if (v.tvT || v.navigated) return; joyT = performance.now(); hideSecretTV(); hideInfoTV(); endLore(); Sound.oneUp(); startGame(); }   /* straight into a new game (the TV itself still shows the NEW GAME screen) */
@@ -3838,6 +3921,9 @@ function makeDesk(el) {
     const mk = micT ? Math.min(1, (now - micT) / 520) : 1;   /* mic: a little roll back and forth when tapped */
     micG.rotation.y = 0.12 + (REDUCE ? 0 : Math.sin(mk * Math.PI * 4) * (1 - mk) * 0.18);
     if (mk >= 1) micT = 0;
+    const pk = paintT ? Math.min(1, (now - paintT) / 600) : 1;   /* painting: it swings a little when tapped */
+    paintG.rotation.z = 0.02 + (REDUCE ? 0 : Math.sin(pk * Math.PI * 4) * (1 - pk) * 0.07);
+    if (pk >= 1) paintT = 0;
     const mlk = mailT ? Math.min(1, (now - mailT) / 1700) : 1;   /* mailbox: the red flag swings up when tapped, then back down */
     mailFlag.rotation.z = REDUCE ? 1.9 : 1.9 - 1.9 * Math.min(1, Math.sin(Math.min(1, mlk * 1.15) * Math.PI) * 1.6);
     if (mlk >= 1) mailT = 0;
@@ -3851,7 +3937,7 @@ function makeDesk(el) {
     barTex.offset.y = REDUCE ? 0 : -((t / 7000) % 1);
     tvLight.intensity = 0.55 * fl;
     /* hover glow: whatever is under the pointer warms up slightly (the radio knob too, while it is turned) */
-    if (!glowItems) glowItems = [tv, radio, knob, coinRoot, dieRoot, vinylG, joyG, howG, noteG, photoG, micG, mailG, letterG, bagG].concat(crew, chBtns).map(g => ({ g, k: 0, s: g === knob || chBtns.indexOf(g) >= 0 ? 1.2 : 1 }));
+    if (!glowItems) glowItems = [tv, radio, knob, coinRoot, dieRoot, vinylG, joyG, howG, noteG, photoG, micG, mailG, letterG, bagG, paintG].concat(crew, chBtns).map(g => ({ g, k: 0, s: g === knob || chBtns.indexOf(g) >= 0 ? 1.2 : 1 }));
     const hg = knobDrag ? knob : hoverGroup;
     glowItems.forEach(it => {
       const tgt = it.g === hg ? 1 : 0;
@@ -4624,17 +4710,12 @@ $('#rackNav').addEventListener('click', e => { if (e.target.closest('.rk') && !e
 /* every rack link asks first ("Go to ...?") before leaving the page */
 const goDlg = $('#goDlg');
 let goHref = '', goBtn = null, goGoing = false;
-$$('.rack a.rk[data-go]').forEach(a => a.addEventListener('click', e => {
-  e.preventDefault(); setRackMenu(false);
-  goHref = a.href; goBtn = a; goGoing = false; a.classList.add('lit');
-  $('#goMsg').textContent = a.dataset.go || 'Leave this page?';
-  try { goDlg.showModal(); } catch (x) { goDlg.setAttribute('open', ''); }
-}));
+$$('.rack a.rk[data-go]').forEach(a => a.addEventListener('click', () => { setRackMenu(false); a.classList.add('lit'); }));   /* no "are you sure": a tap on a link just goes (the link does the navigating) */
 $('#goYes').addEventListener('click', () => { goGoing = true; location.href = goHref; goDlg.close(); });
 $('#goNo').addEventListener('click', () => goDlg.close());
 goDlg.addEventListener('click', e => { if (e.target === goDlg) goDlg.close(); });
 goDlg.addEventListener('close', () => { if (goBtn && !goGoing) goBtn.classList.remove('lit'); });
-function askGo(href, msg) { goHref = href; goBtn = null; goGoing = false; $('#goMsg').textContent = msg; try { goDlg.showModal(); } catch (x) { goDlg.setAttribute('open', ''); } }   /* the desk objects use the same "Go to ...?" question */
+function askGo(href, msg, sure) { if (!sure) { location.href = href; return; } goHref = href; goBtn = null; goGoing = false; $('#goMsg').textContent = msg; try { goDlg.showModal(); } catch (x) { goDlg.setAttribute('open', ''); } }   /* the desk objects use the same "Go to ...?" question */
 const rackPlay = $('#rackPlay'), rackLcd = $('#rackLcd'), rackKnob = $('#rackKnob');
 const lcdSay = (txt, still) => { rackLcd.querySelectorAll('.lcd-track span').forEach(sp => { sp.textContent = txt; }); rackLcd.classList.toggle('still', !!still); };   /* WELCOME until the song has been played, then the title while it plays and PAUSED when it is paused */
 let lcdPlayed = false;
