@@ -1,6 +1,6 @@
 <!DOCTYPE html>
-<!-- STORE (v15) -->
-<html lang="en">
+<!-- STORE (v17) -->
+<html lang="en" class="edge-on">
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
@@ -833,15 +833,6 @@ html.list-view .scene-tip { display: none; }
 .sheet .justthis[open] > summary { opacity: 0.7; }
 .sheet .justthis.inq > summary { display: none; }
 .sheet .jt-body { display: flex; flex-direction: column; gap: 12px; padding-top: 6px; border-top: 1px solid rgba(255,255,255,0.18); }
-.edge { position: fixed; top: 50%; transform: translateY(-50%); z-index: 70; width: 32px; height: 150px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; text-decoration: none; color: #f3e6c8; background: rgba(20,14,12,0.34); border: 1px solid rgba(255,236,210,0.2); -webkit-backdrop-filter: blur(2px); backdrop-filter: blur(2px); font-family: 'KCPelletierTyped', 'Courier New', monospace; font-size: 0.72rem; letter-spacing: 2px; text-transform: uppercase; opacity: 0.7; transition: opacity 0.2s, background 0.2s, width 0.2s; cursor: var(--hand); -webkit-tap-highlight-color: transparent; }
-.edge .arr { font-size: 1.15rem; line-height: 1; letter-spacing: 0; }
-.edge .txt { writing-mode: vertical-rl; white-space: nowrap; }
-.edge-l { left: 0; border-left: 0; border-radius: 0 12px 12px 0; }
-.edge-l .txt { transform: rotate(180deg); }
-.edge-r { right: 0; border-right: 0; border-radius: 12px 0 0 12px; }
-.edge:hover, .edge:focus-visible { opacity: 1; background: rgba(20,14,12,0.72); width: 38px; }
-@media (max-width: 520px) { .edge { width: 26px; height: 124px; font-size: 0.62rem; letter-spacing: 1.5px; } .edge:hover { width: 30px; } }
-html.game-open .edge { display: none; }
 html.list-view .edge { z-index: 70; }
 .scene-tip { position: fixed; left: 0; top: 0; z-index: 80; pointer-events: none; padding: 5px 9px; border-radius: 7px; background: rgba(20,14,12,0.82); border: 1px solid rgba(255,236,210,0.18); color: #f3e6c8; font-family: 'KCPelletierTyped', 'Courier New', monospace; font-size: 12px; line-height: 1.35; letter-spacing: 0.3px; white-space: nowrap; opacity: 0; transition: opacity 0.14s; }
 .scene-tip.on { opacity: 1; }
@@ -924,6 +915,36 @@ html.game-open .lcd-track { animation-play-state: paused; }
 @media (prefers-reduced-motion: reduce) {
 html { scroll-behavior: auto; }
 body, h1, .floating-text, .btn, .floating-logo, .section h2, .product.deluxe { animation: none !important; }
+}
+.edge { position: fixed; top: 50%; transform: translateY(-50%); z-index: 70; width: 32px; height: 150px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; text-decoration: none; color: #f3e6c8; background: rgba(20,14,12,0.34); border: 1px solid rgba(255,236,210,0.2); -webkit-backdrop-filter: blur(2px); backdrop-filter: blur(2px); font-family: 'KCPelletierTyped', 'Courier New', monospace; font-size: 0.72rem; letter-spacing: 2px; text-transform: uppercase; opacity: 0.7; transition: opacity 0.2s, background 0.2s, width 0.2s; cursor: var(--hand); -webkit-tap-highlight-color: transparent; }
+.edge .arr { font-size: 1.15rem; line-height: 1; letter-spacing: 0; }
+.edge .txt { writing-mode: vertical-rl; white-space: nowrap; }
+.edge-l { left: 0; border-left: 0; border-radius: 0 12px 12px 0; }
+.edge-l .txt { transform: rotate(180deg); }
+.edge-r { right: 0; border-right: 0; border-radius: 12px 0 0 12px; }
+.edge:hover, .edge:focus-visible { opacity: 1; background: rgba(20,14,12,0.72); width: 38px; }
+@media (max-width: 520px) { .edge { width: 26px; height: 124px; font-size: 0.62rem; letter-spacing: 1.5px; } .edge:hover { width: 30px; } }
+html.game-open .edge { display: none; }
+.edge { opacity: 0; pointer-events: none; }
+html.edge-on .edge { opacity: 0.7; pointer-events: auto; }
+html.edge-on .edge:hover, html.edge-on .edge:focus-visible { opacity: 1; }
+.edge .neon-arrow { display: none; }
+/* wide screens: the side buttons become neon signs (words stacked, a curved arrow down and over toward the room that way, all inside a thin glowing tube frame); thin, tall and phone screens keep the small vertical tabs above */
+@media (min-width: 900px) and (min-aspect-ratio: 5/4) {
+.edge { --neon: #ff4fd2; --neon-rgb: 255, 79, 210; width: auto; height: auto; top: 42%; padding: 12px 18px 8px; gap: 2px; background: rgba(12, 6, 14, 0.38); border: 2px solid rgba(var(--neon-rgb), 0.55); border-radius: 18px; box-shadow: 0 0 7px rgba(var(--neon-rgb), 0.35), 0 0 22px rgba(var(--neon-rgb), 0.18), inset 0 0 10px rgba(var(--neon-rgb), 0.2); -webkit-backdrop-filter: none; backdrop-filter: none; color: #fff0fb; opacity: 0.9; flex-direction: column; justify-content: flex-start; text-shadow: 0 0 3px #fff, 0 0 8px var(--neon), 0 0 18px var(--neon), 0 0 34px var(--neon); }
+.edge-r { --neon: #3fe8ff; --neon-rgb: 63, 232, 255; color: #eaffff; }
+.edge-l { left: 14px; }
+.edge-r { right: 14px; }
+.edge .arr { display: none; }
+.edge .txt { writing-mode: horizontal-tb; transform: none; white-space: normal; text-align: center; width: min-content; font-family: 'KCStrikerSans', 'Arial Black', sans-serif; font-size: clamp(1.2rem, 2.1vw, 1.7rem); line-height: 1.05; letter-spacing: 3px; }
+.edge-l .txt { transform: none; }
+.edge .neon-arrow { display: block; width: 88px; height: 78px; fill: none; stroke: #fff0fb; stroke-width: 5; stroke-linecap: round; stroke-linejoin: round; filter: drop-shadow(0 0 3px var(--neon)) drop-shadow(0 0 9px var(--neon)) drop-shadow(0 0 18px var(--neon)); }
+.edge-r .neon-arrow { stroke: #eaffff; align-self: flex-start; }
+.edge-l .neon-arrow { align-self: flex-end; }
+.edge:hover, .edge:focus-visible { width: auto; background: rgba(12, 6, 14, 0.55); opacity: 1; border-color: rgba(var(--neon-rgb), 0.85); box-shadow: 0 0 10px rgba(var(--neon-rgb), 0.55), 0 0 30px rgba(var(--neon-rgb), 0.3), inset 0 0 14px rgba(var(--neon-rgb), 0.3); text-shadow: 0 0 3px #fff, 0 0 10px var(--neon), 0 0 24px var(--neon), 0 0 48px var(--neon), 0 0 70px var(--neon); }
+html.edge-on .edge { opacity: 0.92; }
+@media (prefers-reduced-motion: no-preference) { .edge .txt, .edge .neon-arrow { animation: neonFlick 7s infinite; } .edge-r .txt, .edge-r .neon-arrow { animation-delay: -3.3s; } }
+@keyframes neonFlick { 0%, 17%, 19%, 55%, 57%, 100% { opacity: 1; } 18% { opacity: 0.55; } 56% { opacity: 0.7; } }
 }
 .sheet .prev { display: flex; justify-content: center; margin: 4px 0 10px; }
 .sheet .prev canvas { width: 100%; max-width: 360px; height: auto; }
@@ -1026,7 +1047,8 @@ try { if (location.hash) history.replaceState(null, '', location.pathname + loca
 </div>
 <button type="button" class="cartbtn" id="cartBtn" aria-label="Open the cart, 0 items"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.5 3.5h3l2.2 11.2a1.6 1.6 0 0 0 1.6 1.3h8.1a1.6 1.6 0 0 0 1.6-1.2L20.5 7.5H6.2"/><circle cx="9.6" cy="19.8" r="1.4"/><circle cx="17" cy="19.8" r="1.4"/></svg><span class="cartnum" id="cartNum">0</span></button>
 </div>
-<a class="edge edge-l" href="/LP1/" aria-label="Go to the game room"><span class="arr" aria-hidden="true">&#8249;</span><span class="txt">game room</span></a>
+<a class="edge edge-l" href="/game/" aria-label="Go to the game room"><span class="arr" aria-hidden="true">&#8249;</span><span class="txt">game room</span><svg class="neon-arrow" viewBox="0 0 90 80" aria-hidden="true"><path d="M74 4 C74 38 54 58 14 62"/><path d="M30 46 L12 62 L32 76"/></svg></a>
+<a class="edge edge-r" href="/" aria-label="Go home"><span class="txt">home</span><span class="arr" aria-hidden="true">&#8250;</span><svg class="neon-arrow" viewBox="0 0 90 80" aria-hidden="true"><path d="M16 4 C16 38 36 58 76 62"/><path d="M60 46 L78 62 L58 76"/></svg></a>
 <section class="listview" id="listView" aria-label="Everything in the shop"></section>
 <div class="billpop" id="billPop" aria-hidden="true"><img id="billImg" alt=""><p>Take 2 dollars off your order!</p></div>
 <dialog id="cartDlg">
@@ -1200,7 +1222,7 @@ try { if (location.hash) history.replaceState(null, '', location.pathname + loca
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/STLLoader.js"></script>
 <script>
-// STORE (v15)
+// STORE (v17)
 const toTop = () => { try { window.scrollTo({ top: 0, left: 0, behavior: 'instant' }); } catch (e) { window.scrollTo(0, 0); } };
 toTop();
 window.addEventListener('load', toTop);
@@ -3145,7 +3167,7 @@ function makeStore(el) {
     else if (tag === 'mailbox') { mailT = performance.now(); Sound.slide(); setTimeout(openMail, REDUCE ? 0 : 650); }
     else if (tag === 'bill') { wig(billG); takeBill(e.clientX, e.clientY, billCv.toDataURL('image/png')); }
     else if (tag === 'cd') { wig(cdG); Sound.slide(); later(() => showSoon('CD', 'The album on CD is coming soon.')); }
-    else if (tag === 'joystick') { Sound.slide(); setTimeout(() => { location.href = '/LP1/'; }, REDUCE ? 0 : 250); }   /* straight to the game room, like the side button */
+    else if (tag === 'joystick') { Sound.slide(); setTimeout(() => { location.href = '/game/'; }, REDUCE ? 0 : 250); }   /* straight to the game room, like the side button */
     else if (tag === 'tipjar') { Sound.slide(); later(() => { if (CONFIG.tipUrl) window.open(CONFIG.tipUrl, '_blank', 'noopener'); else showSoon('Tip jar', 'A tip jar for the band is coming soon. Thank you!'); }); }
     else if (tag === 'letter') { letterT = performance.now(); Sound.slide(); setTimeout(openContact, REDUCE ? 0 : 450); }
   });
@@ -3637,6 +3659,7 @@ let shipId = 'us';
 /* discount codes: PLAYER and a number is that many percent off (checked here in the page only) */
 let promo = null;
 const promoParse = str => { const m = /^PLAYER0*(\d{1,2})$/i.exec(String(str).trim()); const n = m ? Number(m[1]) : 0; return n >= 1 && n <= 30 ? { code: 'PLAYER' + n, pct: n } : null; };
+try { const _q = new URLSearchParams(location.search).get('code'); if (_q) promo = promoParse(_q); } catch (e) {}
 function promoShow() {   /* fill the little dropdown from what was applied before */
   $('#promoIn').value = promo ? promo.code : '';
   $('#promoMsg').textContent = promo ? promo.code + ' applied: ' + promo.pct + '% off.' : '';
