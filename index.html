@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- HOME (v22) -->
+<!-- HOME (v24) -->
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
@@ -423,6 +423,15 @@ color: #fff;
 box-shadow: 0 20px 60px rgba(0,0,0,0.7);
 }
 dialog::backdrop { background: rgba(0,0,0,0.6); backdrop-filter: blur(4px); }
+/* the Patreon popup (tap the framed painting): PATREON, the framed picture, a header and a line about what you get */
+.pat { align-items: center; text-align: center; gap: 14px; padding-top: 22px; }
+.pat-kicker { margin: 0; font-family: 'KCPelletierTyped', 'Courier New', monospace; font-size: 1rem; letter-spacing: 6px; text-transform: uppercase; color: #ffd9a0; }
+.pat-frame { max-width: 100%; padding: 9px; background: #5e3a20; border-radius: 3px; box-shadow: inset 0 0 0 2px #8a5a32, inset 0 0 0 5px #3f2512, 0 10px 28px rgba(0,0,0,0.6); }
+.pat-frame img { display: block; max-width: 100%; max-height: 38vh; width: auto; height: auto; box-shadow: 0 0 0 2px rgba(0,0,0,0.55); }
+.pat h3 { padding-right: 0; font-size: 1.55rem; line-height: 1.15; text-align: center; letter-spacing: 1.5px; text-wrap: balance; }
+.pat-sub { margin: 0; font-size: 1.02rem; line-height: 1.45; opacity: 0.93; }
+.pat .lore-actions { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+.pat .btn:disabled { opacity: 0.55; cursor: default; }
 .sheet { padding: 24px 22px 26px; text-align: left; font-family: 'KCPelletierLight', 'Courier New', monospace; display: flex; flex-direction: column; gap: 12px; }
 .sheet h3 { font-family: 'KCOraleSans', sans-serif; font-size: 2rem; letter-spacing: 2px; text-transform: uppercase; margin: 0; padding-right: 36px; }
 .sheet .x {
@@ -697,8 +706,8 @@ transition: transform 0.06s, box-shadow 0.06s, filter 0.15s; -webkit-tap-highlig
 .go-crt { position: absolute; inset: 0; pointer-events: none; border-radius: inherit; background: repeating-linear-gradient(0deg, rgba(0,0,0,0.075) 0 1px, transparent 1px 3px), radial-gradient(ellipse at center, transparent 66%, rgba(0,0,0,0.25) 100%); box-shadow: inset 0 0 20px rgba(130,210,170,0.12); }
 #gameOverlay.on .go-screen { animation: crtOn 0.55s ease-out; }
 @keyframes crtOn { 0% { transform: scaleY(0.02); filter: brightness(3); } 55% { transform: scaleY(1.02); filter: brightness(1.8); } 100% { transform: none; filter: none; } }
-.go-x { position: absolute; top: 12px; right: 12px; z-index: 5; width: 34px; height: 34px; padding: 0; border-radius: 50%; border: 1px solid rgba(255,255,255,0.4); background: rgba(0,0,0,0.55); color: #fff; font-size: 0.95rem; opacity: 0.7; cursor: var(--hand); }
-.go-x:hover { opacity: 1; }
+.go-x { position: absolute; top: 12px; right: 12px; z-index: 5; width: 34px; height: 34px; padding: 0; border-radius: 50%; border: 2px solid #fff; background: rgba(12, 6, 8, 0.88); color: #fff; font-size: 1rem; font-weight: 700; line-height: 1; opacity: 1; cursor: var(--hand); box-shadow: 0 0 0 2px rgba(0,0,0,0.65), 0 3px 12px rgba(0,0,0,0.7); transition: background 0.15s, transform 0.15s; }   /* clear to see on any picture: solid dark button, white ring and X (same size as before) */
+.go-x:hover, .go-x:focus-visible { background: #d4181f; transform: scale(1.06); outline: none; }
 .go-ask { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); z-index: 6; width: min(86vw, 340px); padding: 18px; border-radius: 22px; background: linear-gradient(160deg, #6a3328, #3a1a16); border: 1px solid rgba(255,255,255,0.25); box-shadow: 0 16px 50px rgba(0,0,0,0.8); font-family: 'KCPelletierLight', 'Courier New', monospace; }
 .go-ask[hidden] { display: none; }
 .go-ask p { margin: 0 0 14px; font-size: 1.05rem; line-height: 1.4; }
@@ -718,36 +727,47 @@ html.game-open .lcd-track { animation-play-state: paused; }
 html { scroll-behavior: auto; }
 body, h1, .floating-text, .btn, .section h2, .product.deluxe { animation: none !important; }
 }
-.edge { position: fixed; top: 50%; transform: translateY(-50%); z-index: 70; width: 32px; height: 150px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; text-decoration: none; color: #f3e6c8; background: rgba(20,14,12,0.34); border: 1px solid rgba(255,236,210,0.2); -webkit-backdrop-filter: blur(2px); backdrop-filter: blur(2px); font-family: 'KCPelletierTyped', 'Courier New', monospace; font-size: 0.72rem; letter-spacing: 2px; text-transform: uppercase; opacity: 0.7; transition: opacity 0.2s, background 0.2s, width 0.2s; cursor: var(--hand); -webkit-tap-highlight-color: transparent; }
-.edge .arr { font-size: 1.15rem; line-height: 1; letter-spacing: 0; }
-.edge .txt { writing-mode: vertical-rl; white-space: nowrap; }
-.edge-l { left: 0; border-left: 0; border-radius: 0 12px 12px 0; }
-.edge-l .txt { transform: rotate(180deg); }
-.edge-r { right: 0; border-right: 0; border-radius: 12px 0 0 12px; }
-.edge:hover, .edge:focus-visible { opacity: 1; background: rgba(20,14,12,0.72); width: 38px; }
-@media (max-width: 520px) { .edge { width: 26px; height: 124px; font-size: 0.62rem; letter-spacing: 1.5px; } .edge:hover { width: 30px; } }
+/* the side buttons are little neon signs bolted to the edges of the window. Wide screens: a bigger sign (words stacked, a curved arrow down and over toward that room) on two mounting bars. Thin, tall and phone screens: a small vertical neon tab (one short word, one tube outline) on two tiny bars. */
+.edge { --neon: #d98ac4; --neon-rgb: 217, 138, 196; position: fixed; top: 50%; transform: translateY(-50%); z-index: 70; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; width: 30px; padding: 12px 0 10px; text-decoration: none; color: #f2dcee; background: rgba(12, 6, 14, 0.72); border: 1.5px solid rgba(var(--neon-rgb), 0.55); border-radius: 10px; box-shadow: 0 0 5px rgba(var(--neon-rgb), 0.35), 0 0 14px rgba(var(--neon-rgb), 0.18), inset 0 0 7px rgba(var(--neon-rgb), 0.16); text-shadow: 0 0 2px rgba(255, 255, 255, 0.6), 0 0 7px rgba(var(--neon-rgb), 0.8), 0 0 14px rgba(var(--neon-rgb), 0.45); font-family: 'KCPelletierTyped', 'Courier New', monospace; font-size: 0.7rem; letter-spacing: 2px; text-transform: uppercase; opacity: 0.75; transition: opacity 0.2s, background 0.2s, box-shadow 0.2s, text-shadow 0.2s; cursor: var(--hand); -webkit-tap-highlight-color: transparent; }
+.edge-r { --neon: #7fc9d6; --neon-rgb: 127, 201, 214; color: #dcf4f8; }
+.edge-l { left: 5px; }
+.edge-r { right: 5px; }
+.edge .arr { font-size: 1rem; line-height: 1; letter-spacing: 0; }
+.edge .txt { writing-mode: vertical-rl; text-orientation: upright; white-space: nowrap; letter-spacing: 0; }   /* mini tabs: letters stacked upright, all facing the same way */
+.edge .w-full, .edge .neon-arrow { display: none; }
+.edge::before, .edge::after { content: ''; position: absolute; pointer-events: none; display: none; }   /* no mounting bars on the mini tabs; the big signs turn them on below */   /* the mounting bars: two short metal bars from the sign to a little plate on the window edge */
+.edge::before { top: 0; bottom: 0; width: 7px; background: linear-gradient(#9a9aa2, #5a5a62) 0 22% / 100% 3px no-repeat, linear-gradient(#9a9aa2, #5a5a62) 0 78% / 100% 3px no-repeat; }
+.edge::after { top: 12%; bottom: 12%; width: 3px; border-radius: 2px; background: linear-gradient(90deg, #4c4c52, #8c8c94); }
+.edge-l::before { left: -8.5px; }
+.edge-l::after { left: -11.5px; }
+.edge-r::before { right: -8.5px; }
+.edge-r::after { right: -11.5px; }
+.edge:hover, .edge:focus-visible { opacity: 1; background: rgba(12, 6, 14, 0.82); border-color: rgba(var(--neon-rgb), 0.85); box-shadow: 0 0 8px rgba(var(--neon-rgb), 0.55), 0 0 24px rgba(var(--neon-rgb), 0.3), inset 0 0 10px rgba(var(--neon-rgb), 0.28); text-shadow: 0 0 2px #fff, 0 0 9px rgba(var(--neon-rgb), 0.95), 0 0 20px rgba(var(--neon-rgb), 0.6); outline: none; }
 html.game-open .edge { display: none; }
 .edge { opacity: 0; pointer-events: none; }
-html.edge-on .edge { opacity: 0.7; pointer-events: auto; }
+html.edge-on .edge { opacity: 0.8; pointer-events: auto; }
 html.edge-on .edge:hover, html.edge-on .edge:focus-visible { opacity: 1; }
-
-.edge .neon-arrow { display: none; }
-/* wide screens: the side buttons become neon signs (words stacked, a curved arrow down and over toward the room that way, all inside a thin glowing tube frame); thin, tall and phone screens keep the small vertical tabs above */
-@media (min-width: 900px) and (min-aspect-ratio: 5/4) {
-.edge { --neon: #ff4fd2; --neon-rgb: 255, 79, 210; width: auto; height: auto; top: 42%; padding: 12px 18px 8px; gap: 2px; background: rgba(12, 6, 14, 0.38); border: 2px solid rgba(var(--neon-rgb), 0.55); border-radius: 18px; box-shadow: 0 0 7px rgba(var(--neon-rgb), 0.35), 0 0 22px rgba(var(--neon-rgb), 0.18), inset 0 0 10px rgba(var(--neon-rgb), 0.2); -webkit-backdrop-filter: none; backdrop-filter: none; color: #fff0fb; opacity: 0.9; flex-direction: column; justify-content: flex-start; text-shadow: 0 0 3px #fff, 0 0 8px var(--neon), 0 0 18px var(--neon), 0 0 34px var(--neon); }
-.edge-r { --neon: #3fe8ff; --neon-rgb: 63, 232, 255; color: #eaffff; }
-.edge-l { left: 14px; }
-.edge-r { right: 14px; }
-.edge .arr { display: none; }
-.edge .txt { writing-mode: horizontal-tb; transform: none; white-space: normal; text-align: center; width: min-content; font-family: 'KCStrikerSans', 'Arial Black', sans-serif; font-size: clamp(1.2rem, 2.1vw, 1.7rem); line-height: 1.05; letter-spacing: 3px; }
-.edge-l .txt { transform: none; }
-.edge .neon-arrow { display: block; width: 88px; height: 78px; fill: none; stroke: #fff0fb; stroke-width: 5; stroke-linecap: round; stroke-linejoin: round; filter: drop-shadow(0 0 3px var(--neon)) drop-shadow(0 0 9px var(--neon)) drop-shadow(0 0 18px var(--neon)); }
-.edge-r .neon-arrow { stroke: #eaffff; align-self: flex-start; }
-.edge-l .neon-arrow { align-self: flex-end; }
-.edge:hover, .edge:focus-visible { width: auto; background: rgba(12, 6, 14, 0.55); opacity: 1; border-color: rgba(var(--neon-rgb), 0.85); box-shadow: 0 0 10px rgba(var(--neon-rgb), 0.55), 0 0 30px rgba(var(--neon-rgb), 0.3), inset 0 0 14px rgba(var(--neon-rgb), 0.3); text-shadow: 0 0 3px #fff, 0 0 10px var(--neon), 0 0 24px var(--neon), 0 0 48px var(--neon), 0 0 70px var(--neon); }
-html.edge-on .edge { opacity: 0.92; }
-@media (prefers-reduced-motion: no-preference) { .edge .txt, .edge .neon-arrow { animation: neonFlick 7s infinite; } .edge-r .txt, .edge-r .neon-arrow { animation-delay: -3.3s; } }
+@media (prefers-reduced-motion: no-preference) { .edge .txt { animation: neonFlick 7s infinite; } .edge-r .txt { animation-delay: -3.3s; } }
 @keyframes neonFlick { 0%, 17%, 19%, 55%, 57%, 100% { opacity: 1; } 18% { opacity: 0.55; } 56% { opacity: 0.7; } }
+@media (min-width: 900px) and (min-aspect-ratio: 5/4) {
+.edge { width: auto; top: 42%; padding: 9px 14px 6px; gap: 1px; border-radius: 14px; background: rgba(12, 6, 14, 0.42); justify-content: flex-start; font-family: 'KCStrikerSans', 'Arial Black', sans-serif; }
+.edge-l { left: 34px; }
+.edge-r { right: 34px; }
+.edge::before, .edge::after { display: block; }
+.edge::before { width: 30px; }
+.edge-l::before { left: -31.5px; }
+.edge-l::after { left: -34.5px; }
+.edge-r::before { right: -31.5px; }
+.edge-r::after { right: -34.5px; }
+.edge .arr { display: none; }
+.edge .w-full { display: inline; }
+.edge .w-short { display: none; }
+.edge .txt { writing-mode: horizontal-tb; text-orientation: mixed; transform: none; white-space: normal; text-align: center; width: min-content; font-size: clamp(0.95rem, 1.55vw, 1.3rem); line-height: 1.05; letter-spacing: 2.5px; }
+.edge-l .txt { transform: none; }
+.edge .neon-arrow { display: block; width: 64px; height: 57px; fill: none; stroke: #f6e4f1; stroke-width: 5; stroke-linecap: round; stroke-linejoin: round; filter: drop-shadow(0 0 2px rgba(var(--neon-rgb), 0.9)) drop-shadow(0 0 7px rgba(var(--neon-rgb), 0.7)) drop-shadow(0 0 14px rgba(var(--neon-rgb), 0.4)); }
+.edge-r .neon-arrow { stroke: #e4f6fa; align-self: flex-start; }
+.edge-l .neon-arrow { align-self: flex-end; }
+@media (prefers-reduced-motion: no-preference) { .edge .neon-arrow { animation: neonFlick 7s infinite; } .edge-r .neon-arrow { animation-delay: -3.3s; } }
 }
 </style>
 <script>
@@ -768,11 +788,11 @@ try { if (location.hash) history.replaceState(null, '', location.pathname + loca
 <section class="section" id="play">
 <div class="desk-scene">
 <div class="viewer desk-viewer" data-viewer="desk"></div>
-<a class="sr-only" href="/game">Play the game online</a>
+<a class="sr-only" href="/game/?from=home">Play the game online</a>
 </div>
 </section>
 
-<noscript><p class="floating-text" style="font-size:1.1rem">This page needs JavaScript for the table. The game is at <a href="/game">/game</a>.</p></noscript>
+<noscript><p class="floating-text" style="font-size:1.1rem">This page needs JavaScript for the table. The game is at <a href="/game/?from=home">/game</a>.</p></noscript>
 </div>
 
 <!-- ============ POPUP: GAME PIECES (opens from the crew, the TV ad or the menu). Tap outside, the X, the button or Esc to get back to the desk. ============ -->
@@ -859,6 +879,18 @@ try { if (location.hash) history.replaceState(null, '', location.pathname + loca
 </div>
 </div>
 </dialog>
+<dialog id="patDlg">
+<div class="sheet pat">
+<p class="pat-kicker">Patreon</p>
+<div class="pat-frame"><img id="patImg" alt="A framed painting for our patrons"></div>
+<h3>Become a patron of the arts</h3>
+<p class="pat-sub">Join our Patreon community for exclusive access to demos, behind the scenes &amp; studio footage, live hangouts, custom songs and goods.</p>
+<div class="lore-actions">
+<button class="btn" id="patGo" type="button">Coming soon</button>
+<button class="btn" id="patClose" type="button">Close</button>
+</div>
+</div>
+</dialog>
 
 <dialog id="goDlg">
 <div class="sheet">
@@ -872,8 +904,8 @@ try { if (location.hash) history.replaceState(null, '', location.pathname + loca
 </dialog>
 
 <div class="toast" id="toast" role="status"></div>
-<a class="edge edge-l" href="/game/" aria-label="Go to the game room"><span class="arr" aria-hidden="true">&#8249;</span><span class="txt">game room</span><svg class="neon-arrow" viewBox="0 0 90 80" aria-hidden="true"><path d="M74 4 C74 38 54 58 14 62"/><path d="M30 46 L12 62 L32 76"/></svg></a>
-<a class="edge edge-r" href="/store/" aria-label="Go to the merch table"><span class="txt">merch table</span><span class="arr" aria-hidden="true">&#8250;</span><svg class="neon-arrow" viewBox="0 0 90 80" aria-hidden="true"><path d="M16 4 C16 38 36 58 76 62"/><path d="M60 46 L78 62 L58 76"/></svg></a>
+<a class="edge edge-l" href="/game/?from=home" aria-label="Go to the game room"><span class="arr" aria-hidden="true">&#8249;</span><span class="txt"><span class="w-full">game room</span><span class="w-short">game</span></span><svg class="neon-arrow" viewBox="0 0 90 80" aria-hidden="true"><path d="M74 4 C74 38 54 58 14 62"/><path d="M30 46 L12 62 L32 76"/></svg></a>
+<a class="edge edge-r" href="/store/" aria-label="Go to the merch table"><span class="txt"><span class="w-full">merch table</span><span class="w-short">merch</span></span><span class="arr" aria-hidden="true">&#8250;</span><svg class="neon-arrow" viewBox="0 0 90 80" aria-hidden="true"><path d="M16 4 C16 38 36 58 76 62"/><path d="M60 46 L78 62 L58 76"/></svg></a>
 <div class="rack" role="toolbar" aria-label="Site menu and music">
 <div class="rack-in">
 <button type="button" class="rk c-menu" id="rackMenu" aria-label="Open the menu" aria-expanded="false" aria-controls="rackNav"><span class="burger"></span><span class="rk-menu-txt">Menu</span></button>
@@ -934,7 +966,7 @@ try { if (location.hash) history.replaceState(null, '', location.pathname + loca
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/STLLoader.js"></script>
 <script>
-// HOME (v22)
+// HOME (v24)
 const toTop = () => { try { window.scrollTo({ top: 0, left: 0, behavior: 'instant' }); } catch (e) { window.scrollTo(0, 0); } };
 toTop();
 window.addEventListener('load', toTop);
@@ -1082,6 +1114,18 @@ function openMail(comp) { $('#mailComp').hidden = !comp; $('#successMessage').st
 function openContact() { openPopup(contactDlg); }
 soonDlg.addEventListener('click', e => { if (e.target === soonDlg) soonDlg.close(); });
 $('#streamOk').addEventListener('click', () => soonDlg.close());
+
+/* the Patreon popup: the framed painting, a header and what you get. The button opens CONFIG.patreonUrl (until it exists it says "Coming soon"). */
+const patDlg = document.getElementById('patDlg');
+patDlg.addEventListener('click', e => { if (e.target === patDlg) patDlg.close(); });
+document.getElementById('patClose').addEventListener('click', () => patDlg.close());
+document.getElementById('patGo').addEventListener('click', () => { if (CONFIG.patreonUrl) window.open(CONFIG.patreonUrl, '_blank', 'noopener'); });
+function openPatreon() {
+  const im = document.getElementById('patImg'), go = document.getElementById('patGo');
+  if (!im.getAttribute('src')) { im.onerror = () => { im.parentNode.hidden = true; }; im.src = CONFIG.paintingImage; }
+  go.textContent = CONFIG.patreonUrl ? 'Join on Patreon' : 'Coming soon'; go.disabled = !CONFIG.patreonUrl;
+  openPopup(patDlg);
+}
 mailDlg.addEventListener('click', e => { if (e.target === mailDlg) mailDlg.close(); });
 $('#mailClose').addEventListener('click', () => mailDlg.close());
 contactDlg.addEventListener('click', e => { if (e.target === contactDlg) contactDlg.close(); });
@@ -1585,6 +1629,15 @@ function bronzeMatcap() {
   });
   return bronzeMatcapTex;
 }
+let polishMatcapTex = null;
+function polishMatcap() {   /* very shiny metal: bright, warm, with a hard white highlight and a second small one */
+  if (!polishMatcapTex) polishMatcapTex = matcapTexture((nx, ny, nz) => {
+    const d = Math.max(0, nx * MATCAP_LIGHT.x + ny * MATCAP_LIGHT.y + nz * MATCAP_LIGHT.z);
+    const v = 135 + 90 * d + 24 * nz + 340 * specAt(nx, ny, nz, 70) + 90 * Math.max(0, -nx * 0.5 - ny * 0.6 + nz * 0.62) ** 18 * 8;
+    return [v, v * 0.96, v * 0.88];
+  });
+  return polishMatcapTex;
+}
 function rainbowMatcap() {   /* dichroic glass: hue changes with the angle you look at the face, so it shimmers as the die turns */
   if (!rainbowMatcapTex) rainbowMatcapTex = matcapTexture((nx, ny, nz) => {
     const hue = (((Math.atan2(ny, nx) / (Math.PI * 2)) + 0.5 + nz * 0.35) % 1 + 1) % 1;
@@ -1594,7 +1647,7 @@ function rainbowMatcap() {   /* dichroic glass: hue changes with the angle you l
   });
   return rainbowMatcapTex;
 }
-function coinFaceShiny(text, base, ink) {
+function coinFaceShiny(text, base, ink, fancy) {   /* fancy: a beaded border, fine rings, little stars and a glint (the table coin) */
   const c = document.createElement('canvas');
   c.width = c.height = 256;
   const g = c.getContext('2d');
@@ -1607,11 +1660,27 @@ function coinFaceShiny(text, base, ink) {
   g.fillStyle = st; g.fillRect(0, 0, 256, 256);
   g.lineWidth = 7; g.strokeStyle = shadeHex(base, 0.45); g.beginPath(); g.arc(128, 128, 114, 0, Math.PI * 2); g.stroke();   /* raised rim */
   g.lineWidth = 3; g.strokeStyle = shadeHex(base, -0.45); g.beginPath(); g.arc(128, 128, 106, 0, Math.PI * 2); g.stroke();
+  if (fancy) {
+    for (let i = 0; i < 56; i++) {   /* a ring of little beads inside the rim, each with a dark edge and a bright dot */
+      const a = i / 56 * Math.PI * 2, bx = 128 + Math.cos(a) * 97, by = 128 + Math.sin(a) * 97;
+      g.fillStyle = shadeHex(base, -0.35); g.beginPath(); g.arc(bx + 0.8, by + 1, 3.4, 0, Math.PI * 2); g.fill();
+      g.fillStyle = shadeHex(base, 0.5); g.beginPath(); g.arc(bx, by, 2.8, 0, Math.PI * 2); g.fill();
+    }
+    g.lineWidth = 2; g.strokeStyle = shadeHex(base, -0.4); g.beginPath(); g.arc(128, 128, 88, 0, Math.PI * 2); g.stroke();
+    g.lineWidth = 2; g.strokeStyle = shadeHex(base, 0.55); g.beginPath(); g.arc(128, 128, 85, 0, Math.PI * 2); g.stroke();
+    const star = (cx, cy, r) => { g.beginPath(); for (let k = 0; k < 10; k++) { const rr = k % 2 ? r * 0.42 : r, aa = -Math.PI / 2 + k * Math.PI / 5; g.lineTo(cx + Math.cos(aa) * rr, cy + Math.sin(aa) * rr); } g.closePath(); g.fillStyle = shadeHex(base, -0.4); g.fill(); g.fillStyle = shadeHex(base, 0.5); g.save(); g.translate(-1, -1); g.beginPath(); for (let k = 0; k < 10; k++) { const rr = k % 2 ? r * 0.42 : r, aa = -Math.PI / 2 + k * Math.PI / 5; g.lineTo(cx + Math.cos(aa) * rr, cy + Math.sin(aa) * rr); } g.closePath(); g.fill(); g.restore(); };
+    star(128, 56, 9); star(128, 202, 9); star(54, 128, 7); star(202, 128, 7);   /* four stars */
+    g.save(); g.strokeStyle = shadeHex(base, -0.3); g.lineWidth = 1.5; for (let i = 0; i < 24; i++) { const a = i / 24 * Math.PI * 2; g.beginPath(); g.moveTo(128 + Math.cos(a) * 70, 128 + Math.sin(a) * 70); g.lineTo(128 + Math.cos(a) * 80, 128 + Math.sin(a) * 80); g.stroke(); } g.restore();   /* fine rays around the middle */
+  }
   setCoinFont(g, text);
   g.textAlign = 'center';
   g.textBaseline = 'middle';
   g.fillStyle = 'rgba(255,245,220,0.55)'; g.fillText(text, 130, 135);   /* lettering: highlight, then ink */
   g.fillStyle = ink; g.fillText(text, 128, 132);
+  if (fancy) {   /* a bright glint, like a polished highlight */
+    g.save(); g.translate(78, 74); g.globalCompositeOperation = 'lighter'; const gl = g.createRadialGradient(0, 0, 0, 0, 0, 30); gl.addColorStop(0, 'rgba(255,255,240,0.8)'); gl.addColorStop(1, 'rgba(255,255,240,0)'); g.fillStyle = gl; g.beginPath(); g.arc(0, 0, 30, 0, Math.PI * 2); g.fill();
+    g.fillStyle = 'rgba(255,255,245,0.85)'; g.beginPath(); g.moveTo(0, -26); g.lineTo(3, -3); g.lineTo(26, 0); g.lineTo(3, 3); g.lineTo(0, 26); g.lineTo(-3, 3); g.lineTo(-26, 0); g.lineTo(-3, -3); g.closePath(); g.fill(); g.restore();
+  }
   };
   draw();
   const tex = new THREE.CanvasTexture(c);
@@ -1628,9 +1697,21 @@ function makeCoin(bronze, tone) {
     const mk = (map, col) => new THREE.MeshMatcapMaterial({ matcap: mc, map: map, color: col || new THREE.Color(1.3, 1.3, 1.3) });
     mats = [
       mk(null, new THREE.Color(tone.color || 0xc98b4a).multiplyScalar(1.45)),
-      mk(coinFaceShiny('FEAR', base, ink)),
-      mk(coinFaceShiny('JOY', base, ink))
+      mk(coinFaceShiny('FEAR', base, ink, tone.fancy)),
+      mk(coinFaceShiny('JOY', base, ink, tone.fancy))
     ];
+    if (tone.fancy) {   /* polished: a brighter matcap with a sharper highlight, a reeded (grooved) edge, and a raised rim on each face */
+      const fm = polishMatcap();
+      mats.forEach(m => { m.matcap = fm; m.needsUpdate = true; });
+      const rc = document.createElement('canvas'); rc.width = 256; rc.height = 8; const rg = rc.getContext('2d');
+      for (let i = 0; i < 128; i++) { rg.fillStyle = i % 2 ? '#ffffff' : '#6e6e6e'; rg.fillRect(i * 2, 0, 2, 8); }
+      const rt = new THREE.CanvasTexture(rc); rt.wrapS = THREE.RepeatWrapping; rt.wrapT = THREE.RepeatWrapping;
+      mats[0].map = rt; mats[0].needsUpdate = true;
+      const mesh = new THREE.Mesh(geo, mats);
+      const rimMat = new THREE.MeshMatcapMaterial({ matcap: fm, color: new THREE.Color(tone.color || 0xc98b4a).multiplyScalar(1.6) });
+      [-1, 1].forEach(sd => { const rim = new THREE.Mesh(new THREE.TorusGeometry(0.283, 0.016, 8, 64), rimMat); rim.rotation.x = Math.PI / 2; rim.position.y = sd * 0.03; mesh.add(rim); });
+      return mesh;
+    }
   } else {
     marble();
     mats = [
@@ -2598,9 +2679,9 @@ function makeDesk(el) {
   const joyG = new THREE.Group();
   joyG.position.set(2.15, 0, 0.35);   /* right side of the desk, a bit forward so its cord shows */
   joyG.rotation.y = -0.35;
-  joyG.scale.setScalar(1.9);   /* bigger (it was 1.6) */
+  joyG.scale.setScalar(2.25);   /* bigger (it was 1.6) */
   stage.add(joyG);
-  const joyBlob = blob(1.9, 1.5, 2.15, 0.35, 0.7);
+  const joyBlob = blob(2.3, 1.8, 2.15, 0.35, 0.7);
   const gritTex = (() => { const c = document.createElement('canvas'); c.width = c.height = 128; const g = c.getContext('2d'); g.fillStyle = '#c9c9ce'; g.fillRect(0, 0, 128, 128); for (let i = 0; i < 500; i++) { const v = 150 + Math.floor(Math.random() * 100); g.fillStyle = 'rgba(' + v + ',' + v + ',' + (v + 4) + ',0.28)'; g.fillRect(Math.random() * 128, Math.random() * 128, 1.7, 1.7); } for (let i = 0; i < 200; i++) { g.fillStyle = 'rgba(40,42,48,0.18)'; g.fillRect(Math.random() * 128, Math.random() * 128, 1.5, 1.5); } const t = new THREE.CanvasTexture(c); t.wrapS = t.wrapT = THREE.RepeatWrapping; t.repeat.set(2, 2); return t; })();   /* a fine grit, so the plastic is not flat */
   const joyBase = new THREE.Mesh(roundedBoxWHD(0.72, 0.24, 0.5, 0.04, 36, 6, 25), new THREE.MeshStandardMaterial({ color: 0x50545b, roughness: 0.62, metalness: 0.12, map: gritTex, bumpMap: gritTex, bumpScale: 0.25 })); joyBase.position.y = 0.12; joyG.add(joyBase);   /* taller base (it was 0.12) */
   const joyTxCv = document.createElement('canvas'); joyTxCv.width = 512; joyTxCv.height = 128;
@@ -2621,7 +2702,7 @@ function makeDesk(el) {
   const joyShaft = new THREE.Mesh(new THREE.CylinderGeometry(0.03, 0.03, 0.3, 10), chrome); joyShaft.position.y = 0.15; joyStick.add(joyShaft);
   const joyBall = new THREE.Mesh(new THREE.SphereGeometry(0.115, 20, 14), std(0xd8302a, 0.35)); joyBall.position.y = 0.34; joyStick.add(joyBall);
   hitBox(1.0, 0.95, 0.7, 0, 0.4, 0, 'joystick', joyG);
-  const joyCable = noHit(new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3([[2.77, 0.12, 0.55], [2.9, 0.05, 0.4], [2.97, 0.03, 0.1], [2.97, 0.03, -0.45], [2.95, 0.02, -0.85], [2.93, -0.02, -1.0], [2.9, -0.3, -1.2]].map(q => new THREE.Vector3(q[0], q[1], q[2]))), 40, 0.028, 6, false), std(0x151517, 0.6)));   /* the wire leaves the right side of the joystick and runs along the right edge of the table, over the back toward the TV */
+  const joyCable = noHit(new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3([[2.94, 0.13, 0.55], [3.0, 0.05, 0.4], [2.97, 0.03, 0.1], [2.97, 0.03, -0.45], [2.95, 0.02, -0.85], [2.93, -0.02, -1.0], [2.9, -0.3, -1.2]].map(q => new THREE.Vector3(q[0], q[1], q[2]))), 40, 0.028, 6, false), std(0x151517, 0.6)));   /* the wire leaves the right side of the joystick and runs along the right edge of the table, over the back toward the TV */
   stage.add(joyCable);
   let joyT = 0;
 
@@ -2887,7 +2968,7 @@ function makeDesk(el) {
   hitBox(0.55, 0.85, 0.55, 0, 0.35, 0, 'egg', eggG);
 
   /* ---------- a brass singing bowl on a little round pillow on top of the TV, its wooden striker leaning inside (tap it to go to /breathe) ---------- */
-  const BOWL_X = -0.6, TV_TOP = 4.9, BOWL_Z = -2.15;   /* TV_TOP = the top of the TV cabinet (the TV is 3 times its drawn size, standing at y -0.8) */
+  const BOWL_X = -1.0, TV_TOP = 4.9, BOWL_Z = -2.15;   /* TV_TOP = the top of the TV cabinet (the TV is 3 times its drawn size, standing at y -0.8) */
   const bowlG = new THREE.Group(); bowlG.position.set(BOWL_X, TV_TOP, BOWL_Z); stage.add(bowlG);
   const bowlGold = std(0xd8b04a, 0.35, 0.5);
   const pilCv = document.createElement('canvas'); pilCv.width = 1024; pilCv.height = 512;
@@ -2897,8 +2978,8 @@ function makeDesk(el) {
     g.fillStyle = '#8a1f3c'; g.fillRect(0, 0, 1024, 512);
     for (let i = 0; i < 2500; i++) { g.fillStyle = Math.random() < 0.5 ? 'rgba(255,200,210,0.06)' : 'rgba(40,0,10,0.1)'; g.fillRect(Math.random() * 1024, Math.random() * 512, 3, 1.5); }   /* velvet grain */
     g.save(); g.translate(256, 196); g.scale(1, 1.5); g.textAlign = 'center'; g.textBaseline = 'middle'; g.lineJoin = 'round';
-    let px = 60; g.font = px + 'px ' + F;
-    while (px > 20 && g.measureText('BREATHE').width > 310) { px -= 2; g.font = px + 'px ' + F; }
+    let px = 72; g.font = px + 'px ' + F;
+    while (px > 20 && g.measureText('BREATHE').width > 350) { px -= 2; g.font = px + 'px ' + F; }
     g.lineWidth = 8; g.strokeStyle = '#4a0f1f'; g.strokeText('BREATHE', 0, 0);   /* the dark edge of the thread */
     g.fillStyle = '#ecd9a4'; g.fillText('BREATHE', 0, 0);   /* the thread */
     g.setLineDash([4, 3]); g.lineWidth = 1.6; g.strokeStyle = 'rgba(110,60,40,0.85)'; g.strokeText('BREATHE', 0, 0);   /* little stitches */
@@ -2955,23 +3036,23 @@ function makeDesk(el) {
 
   /* ---------- coin: lies flat on the desk, real 50/50 ---------- */
   const COIN_ROT_TOP = Math.PI / 2, COIN_ROT_BOT = Math.PI / 2;   /* keeps the text upright on both faces: JOY is turned the other way so it reads upright while the coin spins on its edge and after a sideways flip */
-  const COIN_SCALE = 1.3, COIN_H = 0.03 * COIN_SCALE, COIN_R = 0.3 * COIN_SCALE;
+  const COIN_SCALE = 1.05, COIN_H = 0.03 * COIN_SCALE, COIN_R = 0.3 * COIN_SCALE, CX = 1.45, CZ = 1.7;
   const coinRoot = new THREE.Group();
-  coinRoot.position.set(0.72, COIN_H, 0.72);
-  deck.add(coinRoot);
+  coinRoot.position.set(CX, COIN_H, CZ);   /* on the table in front of the joystick (not on the game board) */
+  stage.add(coinRoot);
   const rollG = new THREE.Group();   /* the sideways flip: turns the coin over around the front-to-back axis, so it flips left over right every time */
   coinRoot.add(rollG);
   const spinG = new THREE.Group();   /* spins the coin on its edge until it is flipped */
   rollG.add(spinG);
   const flipper = new THREE.Group();
   spinG.add(flipper);
-  const coin = makeCoin(true, { base: '#e0b878', ink: '#6b4420', color: 0xe0b878, metalness: 0.25, roughness: 0.5 });   /* light bronze */
+  const coin = makeCoin(true, { base: '#e0b878', ink: '#6b4420', color: 0xe0b878, metalness: 0.25, roughness: 0.5, fancy: true });   /* light bronze */
   coin.scale.setScalar(COIN_SCALE);
   coin.material[1].map.center.set(0.5, 0.5); coin.material[1].map.rotation = COIN_ROT_TOP;
   coin.material[2].map.center.set(0.5, 0.5); coin.material[2].map.rotation = COIN_ROT_BOT;
   flipper.add(coin);
-  hitBox(1.0, 1.0, 1.0, 0, 0, 0, 'coin', coinRoot);   /* tall enough for the coin standing on its edge */
-  const coinShadow = blob(1.2, 1.2, 0.72, 0.72, 0.6, deck);
+  hitBox(0.85, 0.85, 0.85, 0, 0, 0, 'coin', coinRoot);   /* tall enough for the coin standing on its edge */
+  const coinShadow = blob(1.0, 1.0, CX, CZ, 0.6);   lay(coinRoot, 1); lay(coinShadow, 1);   /* (moves outward with the joystick on wide screens) */
   let flip = null, idle = true;   /* idle = the coin stands on its edge and spins slowly until you click it */
   flipper.rotation.x = Math.PI / 2;
   coinRoot.position.y = COIN_R + 0.012;
@@ -3268,7 +3349,7 @@ function makeDesk(el) {
   const iRoot = new THREE.Group(); iRoot.position.copy(icHome); iRoot.visible = false; stage.add(iRoot);
   const iSpin = new THREE.Group(); iRoot.add(iSpin);
   const iFlip = new THREE.Group(); iFlip.rotation.x = Math.PI / 2; iSpin.add(iFlip);
-  const iCoin = makeCoin(true, { base: '#e0b878', ink: '#6b4420', color: 0xe0b878, metalness: 0.25, roughness: 0.5 });
+  const iCoin = makeCoin(true, { base: '#e0b878', ink: '#6b4420', color: 0xe0b878, metalness: 0.25, roughness: 0.5, fancy: true });
   iCoin.scale.setScalar(COIN_SCALE);
   iCoin.material[1].map.center.set(0.5, 0.5); iCoin.material[1].map.rotation = COIN_ROT_TOP;
   iCoin.material[2].map.center.set(0.5, 0.5); iCoin.material[2].map.rotation = COIN_ROT_BOT;
@@ -3325,7 +3406,7 @@ function makeDesk(el) {
   function slotGlowStep(now) {   /* the slit glows yellow while a coin is wanted (brighter when the coin is close), then flashes green */
     const m = slotGlow.material;
     if (intro.cs === 'fly') { const k = Math.min(1, (now - intro.coinT) / 1600); m.color.setHex(0x64ff8f); m.opacity = 0.85 * (1 - 0.5 * k); }
-    else if (icDrag) { m.color.setHex(0xffd36b); m.opacity = icDrag.base.distanceTo(slotFront) < 1.3 ? 0.95 : 0.3 + 0.3 * Math.sin(now / 260); }
+    else if (icDrag) { m.color.setHex(0xffd36b); m.opacity = (icDrag.base.distanceTo(slotFront) < 1.3 || icDrag.rd < 1.0) ? 0.95 : 0.3 + 0.3 * Math.sin(now / 260); }
     else if (info && infoKind === 'coin') { m.color.setHex(0xffd36b); m.opacity = 0.3 + 0.3 * Math.sin(now / 260); }
     else if (m.opacity > 0) { m.opacity *= 0.9; if (m.opacity < 0.01) m.opacity = 0; }
   }
@@ -3370,7 +3451,7 @@ function makeDesk(el) {
     icPlane.setFromNormalAndCoplanarPoint(icDir, iRoot.position);
     icRay(e);
     if (!ray.ray.intersectPlane(icPlane, icPt)) icPt.copy(iRoot.position);
-    icDrag = { x0: e.clientX, y0: e.clientY, off: iRoot.position.clone().sub(icPt), moved: 9, base: iRoot.position.clone() };
+    icDrag = { x0: e.clientX, y0: e.clientY, off: iRoot.position.clone().sub(icPt), moved: 9, rd: 99, base: iRoot.position.clone() };
     intro.cs = 'drag'; slotPoints();
     try { el.setPointerCapture(e.pointerId); } catch (x) {}
     el.style.cursor = 'grabbing';
@@ -3378,17 +3459,19 @@ function makeDesk(el) {
   function icMove(e) {
     if (!icDrag) return;
     icDrag.moved = Math.max(icDrag.moved, Math.hypot(e.clientX - icDrag.x0, e.clientY - icDrag.y0));
-    icRay(e);
+    icRay(e); icDrag.rd = ray.ray.distanceToPoint(slotFront);
     if (ray.ray.intersectPlane(icPlane, icPt)) { iRoot.position.copy(icPt).add(icDrag.off); iRoot.position.y = Math.max(iRoot.position.y, COIN_R * 0.6); icDrag.base.copy(iRoot.position); iRoot.position.addScaledVector(ray.ray.direction, -IC_LIFT); }
   }
-  function icUp() {   /* dropped near the slot: in it goes. Dropped anywhere else: it rolls back to the table. */
+  function icUp(e) {   /* dropped near the slot: in it goes. Dropped anywhere else: it rolls back to the table. */
     icArm = null;
     if (!icDrag) return;
     const d = icDrag; icDrag = null;
     el.style.cursor = 'default';
     if (intro.cs !== 'drag') return;
     slotPoints();
-    if (d.base.distanceTo(slotFront) < 1.3 && insertCoin()) return;
+    let nearSlot = d.base.distanceTo(slotFront) < 1.3;
+    if (!nearSlot && e && e.clientX != null) { icRay(e); nearSlot = ray.ray.distanceToPoint(slotFront) < 1.0; }   /* also counts when the pointer is on the slot in the picture (the held coin floats in a different depth than the slot) */
+    if (nearSlot && insertCoin()) return;
     intro.cs = 'back'; intro.bt = performance.now(); intro.bp = iRoot.position.clone();
   }
   function wrapDrop(objs, delay, H, shadows, amp, dep) {   /* each thing sits in its own group, which is what falls (so nothing else about it has to change). dep = a download it waits for before it drops. */
@@ -3594,7 +3677,7 @@ function makeDesk(el) {
     }
     else if (tag === 'kettle') { kettleT = performance.now(); Sound.slide(); setTimeout(() => askGo('/move', ''), REDUCE ? 0 : 450); }
     else if (tag === 'bowl') { bowlT = performance.now(); Sound.slide(); setTimeout(() => askGo('/breathe', ''), REDUCE ? 0 : 700); }
-    else if (tag === 'painting') { paintT = performance.now(); Sound.slide(); setTimeout(() => { if (CONFIG.patreonUrl) window.open(CONFIG.patreonUrl, '_blank', 'noopener'); else showSoon('Patreon', 'Our Patreon is coming soon. Thank you for wanting to support the band!'); }, REDUCE ? 0 : 450); }
+    else if (tag === 'painting') { paintT = performance.now(); Sound.slide(); setTimeout(openPatreon, REDUCE ? 0 : 450);   /* the popup with the framed picture and the pitch */ }
     else if (tag === 'mailbox') { mailT = performance.now(); Sound.slide(); setTimeout(openMail, REDUCE ? 0 : 650); }
     else if (tag === 'letter') { letterT = performance.now(); Sound.slide(); setTimeout(openContact, REDUCE ? 0 : 450); }
     else if (tag === 'bag') { Sound.slide(); setTimeout(() => { location.href = '/store/'; }, REDUCE ? 0 : 220); }   /* straight to the store, no question */
