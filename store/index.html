@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- STORE (v19) try 2 -->
+<!-- STORE (v20) -->
 <html lang="en" class="edge-on">
 <head>
 <meta charset="UTF-8" />
@@ -1257,7 +1257,7 @@ try { if (location.hash) history.replaceState(null, '', location.pathname + loca
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/STLLoader.js"></script>
 <script>
-// STORE (v19)
+// STORE (v20)
 const toTop = () => { try { window.scrollTo({ top: 0, left: 0, behavior: 'instant' }); } catch (e) { window.scrollTo(0, 0); } };
 toTop();
 window.addEventListener('load', toTop);
@@ -2707,7 +2707,7 @@ function makeStore(el) {
 
   /* ---------- the framed patronage painting on the backdrop (far right); tap it for the Patreon popup, like the painting in the game room ---------- */
   const paintG = new THREE.Group(); paintG.position.set(4.85, 2.45, BDZ + 0.1); paintG.rotation.z = 0.02; paintG.visible = false; stage.add(paintG);
-  new THREE.TextureLoader().load(CONFIG.paintingImage, tex => {
+  const onPaintTex = tex => {
     const im = tex.image, asp = (im.width || 3) / (im.height || 4);
     let ph = 1.6, pw = ph * asp; if (pw > 1.4) { pw = 1.4; ph = pw / asp; }
     const bd = 0.11, wood2 = std(0x5e3a20, 0.6, 0.1);
@@ -2715,7 +2715,8 @@ function makeStore(el) {
     [[pw + bd * 2, bd, 0, (ph + bd) / 2], [pw + bd * 2, bd, 0, -(ph + bd) / 2], [bd, ph, -(pw + bd) / 2, 0], [bd, ph, (pw + bd) / 2, 0]].forEach(q => { const m = noHit(new THREE.Mesh(new THREE.BoxGeometry(q[0], q[1], 0.1), wood2)); m.position.set(q[2], q[3], 0.05); paintG.add(m); });
     hitBox(pw + bd * 2 + 0.1, ph + bd * 2 + 0.1, 0.3, 0, 0, 0.05, 'painting', paintG);
     paintG.visible = true;
-  }, undefined, () => {});
+  };
+  new THREE.TextureLoader().load(CONFIG.paintingImage, onPaintTex, undefined, () => onPaintTex(new THREE.CanvasTexture(paintingFallback())));   /* the real file, or the stand-in if it is missing */
   hitBox(1.9, 0.8, 0.3, -1.45, 0, 0.1, 'fjhome', bannerG);   /* the word FEARJOY on the banner goes home */
 
   /* ---------- a clothes rail with two shirts hanging on the backdrop ---------- */
@@ -2808,7 +2809,7 @@ function makeStore(el) {
   radio.rotation.y = -0.25;
   radio.scale.setScalar(1.0);
   stage.add(radio);
-  const cream = std(0xb09a72, 0.55), brown = std(0x5a3a26, 0.75), chrome = std(0xa8adb3, 0.3, 0.6);
+  const cream = std(0xd5b38e, 0.55), brown = std(0x5a3a26, 0.75), chrome = std(0xa8adb3, 0.3, 0.6);
   const rBody = new THREE.Mesh(roundedSlab(1.3, 0.78, 0.5, 0.12, 0.05), cream);
   rBody.position.y = 0.45; radio.add(rBody);
   [-0.5, 0.5].forEach(x => { const f = new THREE.Mesh(roundedSlab(0.2, 0.06, 0.34, 0.02, 0.015), brown); f.position.set(x, 0.03, 0); radio.add(f); });
@@ -2850,14 +2851,14 @@ function makeStore(el) {
   mailG.rotation.y = 0.35;
   mailG.scale.setScalar(1.45);
   stage.add(mailG);
-  const mailBlue = std(0x3d6db5, 0.45, 0.15), mailDark = std(0x2b5192, 0.5, 0.15), mailRed = std(0xc9382c, 0.45), mailMetal = std(0xb9bec6, 0.35, 0.6);
+  const mailBlue = std(0x13737a, 0.45, 0.15), mailDark = std(0x0d5459, 0.5, 0.15), mailRed = std(0xc9382c, 0.45), mailMetal = std(0xb9bec6, 0.35, 0.6);
   const MB_W = 0.62, MB_H = 0.26, MB_D = 0.78;   /* width, height of the square lower part, depth (front to back) */
   const mbBase = new THREE.Mesh(new THREE.BoxGeometry(MB_W + 0.1, 0.04, MB_D + 0.1), std(0x5a4a3a, 0.8)); mbBase.position.y = 0.02; mailG.add(mbBase);
   const mbLow = new THREE.Mesh(new THREE.BoxGeometry(MB_W, MB_H, MB_D), mailBlue); mbLow.position.y = 0.04 + MB_H / 2; mailG.add(mbLow);
   const mbArch = new THREE.Mesh(new THREE.CylinderGeometry(MB_W / 2, MB_W / 2, MB_D, 28, 1, false, -Math.PI / 2, Math.PI), mailBlue);   /* half a cylinder lying along the box = the arched top */
   mbArch.rotation.x = -Math.PI / 2; mbArch.position.y = 0.04 + MB_H; mailG.add(mbArch);
   const drawDoor = (g, w, h) => {
-    g.fillStyle = '#2b5192'; g.fillRect(0, 0, w, h);
+    g.fillStyle = '#0d5459'; g.fillRect(0, 0, w, h);
     g.strokeStyle = 'rgba(255,255,255,0.35)'; g.lineWidth = 4; g.strokeRect(10, 10, w - 20, h - 20);
     g.fillStyle = '#f4ecd4'; g.textAlign = 'center'; g.textBaseline = 'middle';
     g.font = "bold 62px 'KCPelletierTyped', 'Courier New', monospace"; g.fillText('EMAIL', 128, 98);
@@ -3052,7 +3053,7 @@ function makeStore(el) {
   drawJoyTx();
   if (document.fonts && document.fonts.load) document.fonts.load("40px 'KCStrikerSans'").then(drawJoyTx).catch(() => {});
   const joyTxt = new THREE.Mesh(new THREE.PlaneGeometry(0.62, 0.155), new THREE.MeshBasicMaterial({ map: joyTxTex, transparent: true, depthWrite: false })); joyTxt.position.set(0, 0.12, 0.2535); noHit(joyTxt); joyG.add(joyTxt);
-  const joyBtn = new THREE.Mesh(new THREE.CylinderGeometry(0.07, 0.08, 0.05, 20), std(0xe8c13a, 0.4)); joyBtn.position.set(0.24, 0.265, 0.08); joyG.add(joyBtn);
+  const joyBtn = new THREE.Mesh(new THREE.CylinderGeometry(0.07, 0.08, 0.05, 20), std(0xe8c13a, 0.4)); joyBtn.position.set(0.19, 0.265, 0.05); joyG.add(joyBtn);
   const joyStick = new THREE.Group(); joyStick.position.set(-0.12, 0.24, 0); joyG.add(joyStick);
   joyStick.add(new THREE.Mesh(new THREE.SphereGeometry(0.1, 16, 8, 0, Math.PI * 2, 0, Math.PI / 2), std(0x3d4046, 0.7)));   /* the flange: dark gray, not black */
   const joyShaft = new THREE.Mesh(new THREE.CylinderGeometry(0.03, 0.03, 0.3, 10), std(0xa8adb3, 0.3, 0.6)); joyShaft.position.y = 0.15; joyStick.add(joyShaft);
@@ -3265,15 +3266,15 @@ function makeStore(el) {
   const ease = k => 1 - Math.pow(1 - k, 3);
   v.onFrame = function (t) {
     const now = performance.now();
-    {   /* wide screens: poster, shirts and painting spread out along the backdrop. Phones (tall screens): the poster is a bit smaller, the shirts hang closer together, and the painting fits in the same row at the right. The joystick also comes out a little from under the table. */
-      const wide = v.camera.aspect > 1.15;
-      paintG.position.set(wide ? 4.85 : 3.0, 2.45, BDZ + 0.1); paintG.scale.setScalar(wide ? 1 : 0.8);
-      posterG.position.set(wide ? -2.6 : -3.1, wide ? 2.35 : 2.4, BDZ + 0.1); posterG.scale.setScalar(wide ? 1 : 0.74);
-      const rc = wide ? 1.9 : -0.1, rl = wide ? 3.9 : 3.5;
+    {   /* the backdrop is only about 10 units wide on every screen, so poster, shirts and the painting all share one row inside it: the poster is smaller, the shirts hang close together, and the painting sits at the right. On tall (phone shaped) screens the joystick also comes out from under the table. */
+      const cam = v.camera;
+      paintG.position.set(3.0, 2.45, BDZ + 0.1); paintG.scale.setScalar(0.8);
+      posterG.position.set(-3.1, 2.4, BDZ + 0.1); posterG.scale.setScalar(0.74);
+      const rc = -0.1, rl = 3.5;
       rail.position.x = rc; rail.scale.y = rl / 3.9;
       railBr.forEach((br, i) => { br.position.x = rc + (i ? 1 : -1) * (rl / 2 - 0.1); });
-      shirts.forEach((g, i) => { g.position.x = wide ? 0.95 + i * 1.9 : -0.85 + i * 1.5; });
-      const jx = wide ? 0 : 0.15, jz = wide ? 0 : 1.0;
+      shirts.forEach((g, i) => { g.position.x = -0.85 + i * 1.5; });
+      const tall = cam.aspect <= 1.15, jx = tall ? 0.15 : 0, jz = tall ? 1.0 : 0;
       joyG.position.set(-2.9 + jx, FLOOR, 2.1 + jz); joyBlob.position.x = -2.9 + jx; joyBlob.position.z = 2.1 + jz; joyCable.position.set(jx, 0, jz);
     }
     if (!dropDone) {   /* the drop-in: the banner and table show first, then each thing falls only once it has loaded (one at a time), bounces once and its shadow grows in */
@@ -4546,9 +4547,18 @@ const patDlg = document.getElementById('patDlg');
 patDlg.addEventListener('click', e => { if (e.target === patDlg) patDlg.close(); });
 document.getElementById('patClose').addEventListener('click', () => patDlg.close());
 document.getElementById('patGo').addEventListener('click', () => { if (CONFIG.patreonUrl) window.open(CONFIG.patreonUrl, '_blank', 'noopener'); });
+/* a stand-in painting (soft colored circles on cream) that hangs on the wall and shows in the Patreon popup whenever /images/patronage.jpg is missing; the real file replaces it automatically */
+function paintingFallback() {
+  const c = document.createElement('canvas'); c.width = 600; c.height = 800;
+  const g = c.getContext('2d'); g.fillStyle = '#efe4c6'; g.fillRect(0, 0, 600, 800);
+  let sd = 7; const rnd = () => (sd = (sd * 16807) % 2147483647) / 2147483647;
+  const cols = ['#c9382c', '#13737a', '#e8c13a', '#43061f', '#d5b38e', '#3d6db5', '#d98ac4', '#004437'];
+  for (let i = 0; i < 46; i++) { g.globalAlpha = 0.5 + rnd() * 0.35; g.fillStyle = cols[i % cols.length]; g.beginPath(); g.arc(rnd() * 600, rnd() * 800, 30 + rnd() * 90, 0, Math.PI * 2); g.fill(); }
+  g.globalAlpha = 1; return c;
+}
 function openPatreon() {
   const im = document.getElementById('patImg'), go = document.getElementById('patGo');
-  if (!im.getAttribute('src')) { im.onerror = () => { im.parentNode.hidden = true; }; im.src = CONFIG.paintingImage; }
+  if (!im.getAttribute('src')) { im.onerror = () => { im.onerror = null; im.src = paintingFallback().toDataURL('image/jpeg', 0.85); }; im.src = CONFIG.paintingImage; }
   go.textContent = CONFIG.patreonUrl ? 'Join on Patreon' : 'Coming soon'; go.disabled = !CONFIG.patreonUrl;
   openPopup(patDlg);
 }
