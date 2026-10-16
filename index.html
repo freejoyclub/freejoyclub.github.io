@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- HOME (v24) -->
+<!-- HOME (v25) -->
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
@@ -966,7 +966,7 @@ try { if (location.hash) history.replaceState(null, '', location.pathname + loca
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/STLLoader.js"></script>
 <script>
-// HOME (v24)
+// HOME (v25)
 const toTop = () => { try { window.scrollTo({ top: 0, left: 0, behavior: 'instant' }); } catch (e) { window.scrollTo(0, 0); } };
 toTop();
 window.addEventListener('load', toTop);
@@ -1120,9 +1120,18 @@ const patDlg = document.getElementById('patDlg');
 patDlg.addEventListener('click', e => { if (e.target === patDlg) patDlg.close(); });
 document.getElementById('patClose').addEventListener('click', () => patDlg.close());
 document.getElementById('patGo').addEventListener('click', () => { if (CONFIG.patreonUrl) window.open(CONFIG.patreonUrl, '_blank', 'noopener'); });
+/* a stand-in painting (soft colored circles on cream) that hangs on the wall and shows in the Patreon popup whenever /images/patronage.jpg is missing; the real file replaces it automatically */
+function paintingFallback() {
+  const c = document.createElement('canvas'); c.width = 600; c.height = 800;
+  const g = c.getContext('2d'); g.fillStyle = '#efe4c6'; g.fillRect(0, 0, 600, 800);
+  let sd = 7; const rnd = () => (sd = (sd * 16807) % 2147483647) / 2147483647;
+  const cols = ['#c9382c', '#13737a', '#e8c13a', '#43061f', '#d5b38e', '#3d6db5', '#d98ac4', '#004437'];
+  for (let i = 0; i < 46; i++) { g.globalAlpha = 0.5 + rnd() * 0.35; g.fillStyle = cols[i % cols.length]; g.beginPath(); g.arc(rnd() * 600, rnd() * 800, 30 + rnd() * 90, 0, Math.PI * 2); g.fill(); }
+  g.globalAlpha = 1; return c;
+}
 function openPatreon() {
   const im = document.getElementById('patImg'), go = document.getElementById('patGo');
-  if (!im.getAttribute('src')) { im.onerror = () => { im.parentNode.hidden = true; }; im.src = CONFIG.paintingImage; }
+  if (!im.getAttribute('src')) { im.onerror = () => { im.onerror = null; im.src = paintingFallback().toDataURL('image/jpeg', 0.85); }; im.src = CONFIG.paintingImage; }
   go.textContent = CONFIG.patreonUrl ? 'Join on Patreon' : 'Coming soon'; go.disabled = !CONFIG.patreonUrl;
   openPopup(patDlg);
 }
@@ -2640,7 +2649,7 @@ function makeDesk(el) {
   radio.rotation.y = -0.15;
   radio.scale.setScalar(0.85);
   stage.add(radio);
-  const cream = std(0xb09a72, 0.55), brown = std(0x5a3a26, 0.75), chrome = std(0xa8adb3, 0.3, 0.6);
+  const cream = std(0xd5b38e, 0.55), brown = std(0x5a3a26, 0.75), chrome = std(0xa8adb3, 0.3, 0.6);
   const rBody = new THREE.Mesh(roundedSlab(1.3, 0.78, 0.5, 0.12, 0.05), cream);
   rBody.position.y = 0.45; radio.add(rBody);
   [-0.5, 0.5].forEach(x => { const f = new THREE.Mesh(roundedSlab(0.2, 0.06, 0.34, 0.02, 0.015), brown); f.position.set(x, 0.03, 0); radio.add(f); });
@@ -2696,7 +2705,7 @@ function makeDesk(el) {
   drawJoyTx();
   if (document.fonts && document.fonts.load) document.fonts.load("40px 'KCStrikerSans'").then(drawJoyTx).catch(() => {});
   const joyTxt = new THREE.Mesh(new THREE.PlaneGeometry(0.62, 0.155), new THREE.MeshBasicMaterial({ map: joyTxTex, transparent: true, depthWrite: false })); joyTxt.position.set(0, 0.12, 0.2535); noHit(joyTxt); joyG.add(joyTxt);
-  const joyBtn = new THREE.Mesh(new THREE.CylinderGeometry(0.07, 0.08, 0.05, 20), std(0xe8c13a, 0.4)); joyBtn.position.set(0.24, 0.265, 0.08); joyG.add(joyBtn);
+  const joyBtn = new THREE.Mesh(new THREE.CylinderGeometry(0.07, 0.08, 0.05, 20), std(0xe8c13a, 0.4)); joyBtn.position.set(0.19, 0.265, 0.05); joyG.add(joyBtn);
   const joyStick = new THREE.Group(); joyStick.position.set(-0.12, 0.24, 0); joyG.add(joyStick);
   const joyBoot = new THREE.Mesh(new THREE.SphereGeometry(0.1, 16, 8, 0, Math.PI * 2, 0, Math.PI / 2), std(0x3d4046, 0.7));   /* the flange around the stick: dark gray, not black */ joyStick.add(joyBoot);
   const joyShaft = new THREE.Mesh(new THREE.CylinderGeometry(0.03, 0.03, 0.3, 10), chrome); joyShaft.position.y = 0.15; joyStick.add(joyShaft);
@@ -2740,14 +2749,14 @@ function makeDesk(el) {
   mailG.rotation.y = 0.3;
   mailG.scale.setScalar(1.3);
   stage.add(mailG);
-  const mailBlue = std(0x3d6db5, 0.45, 0.15), mailDark = std(0x2b5192, 0.5, 0.15), mailRed = std(0xc9382c, 0.45), mailMetal = std(0xb9bec6, 0.35, 0.6);
+  const mailBlue = std(0x13737a, 0.45, 0.15), mailDark = std(0x0d5459, 0.5, 0.15), mailRed = std(0xc9382c, 0.45), mailMetal = std(0xb9bec6, 0.35, 0.6);
   const MB_W = 0.62, MB_H = 0.26, MB_D = 0.78;   /* width, height of the square lower part, depth (front to back) */
   const mbBase = new THREE.Mesh(new THREE.BoxGeometry(MB_W + 0.1, 0.04, MB_D + 0.1), std(0x5a4a3a, 0.8)); mbBase.position.y = 0.02; mailG.add(mbBase);
   const mbLow = new THREE.Mesh(new THREE.BoxGeometry(MB_W, MB_H, MB_D), mailBlue); mbLow.position.y = 0.04 + MB_H / 2; mailG.add(mbLow);
   const mbArch = new THREE.Mesh(new THREE.CylinderGeometry(MB_W / 2, MB_W / 2, MB_D, 28, 1, false, -Math.PI / 2, Math.PI), mailBlue);   /* half a cylinder lying along the box = the arched top */
   mbArch.rotation.x = -Math.PI / 2; mbArch.position.y = 0.04 + MB_H; mailG.add(mbArch);
   const drawDoor = (g, w, h) => {
-    g.fillStyle = '#2b5192'; g.fillRect(0, 0, w, h);
+    g.fillStyle = '#0d5459'; g.fillRect(0, 0, w, h);
     g.strokeStyle = 'rgba(255,255,255,0.35)'; g.lineWidth = 4; g.strokeRect(10, 10, w - 20, h - 20);
     g.fillStyle = '#f4ecd4'; g.textAlign = 'center'; g.textBaseline = 'middle';
     g.font = "bold 62px 'KCPelletierTyped', 'Courier New', monospace"; g.fillText('EMAIL', 128, 98);
@@ -2899,7 +2908,7 @@ function makeDesk(el) {
     const h = new THREE.Mesh(new THREE.TorusGeometry(0.22, 0.02, 8, 24, Math.PI), bagRope); h.rotation.set(0, Math.PI / 2, Math.PI); hg.add(h);
   });
   const bagHead = headFor(jIdx, marble().clone());   /* Jesse, looking out of the bag */
-  bagHead.scale.setScalar(0.65); bagHead.position.set(-0.3, BGH - 0.4, -0.1);   /* set back so its shoulders stay inside the bag */ bagHead.rotation.y = -0.1;
+  bagHead.scale.setScalar(0.57); bagHead.position.set(-0.3, BGH - 0.4, -0.1);   /* set back so its shoulders stay inside the bag */ bagHead.rotation.y = -0.1;
   bagG.add(bagHead);
   /* a CD in a clear jewel case, standing in the bag next to Jesse (all of it fits inside the bag) */
   const bagCdTex = mkTex(256, 256, (g, w, h) => {
@@ -2931,11 +2940,11 @@ function makeDesk(el) {
   const bagPhoto = new THREE.Group(); bagPhoto.position.set(0.12, BGH, 0.08); bagPhoto.rotation.set(0, -0.08, 0.08); bagG.add(bagPhoto);
   new THREE.TextureLoader().load(CONFIG.loreFolder + encodeURIComponent('camcorder.jpg'), tex => {
     const a = tex.image && tex.image.height ? tex.image.width / tex.image.height : 1;
-    let pw = 0.62 * a, ph = 0.62; if (pw > 0.62) { pw = 0.62; ph = 0.62 / a; }
+    let pw = 0.52 * a, ph = 0.52; if (pw > 0.52) { pw = 0.52; ph = 0.52 / a; }
     const bd = 0.035;
     const paper = noHit(new THREE.Mesh(new THREE.BoxGeometry(pw + bd * 2, ph + bd * 2, 0.012), std(0xe9e5da, 0.85))); bagPhoto.add(paper);
     const face = noHit(new THREE.Mesh(new THREE.PlaneGeometry(pw, ph), new THREE.MeshStandardMaterial({ map: tex, roughness: 0.6, emissive: 0xffffff, emissiveMap: tex, emissiveIntensity: 0.3 }))); face.position.z = 0.0066; bagPhoto.add(face);
-    bagPhoto.position.y = BGH + 0.26 - (ph + bd * 2) / 2;   /* its top edge sits 0.26 above the bag's rim */
+    bagPhoto.position.y = BGH + 0.22 - (ph + bd * 2) / 2;   /* its top edge sits 0.26 above the bag's rim */
   }, undefined, () => {});
   hitBox(1.35, 2.0, 0.8, 0, 0.95, 0, 'bag', bagG);
   const bagBlob = blob(2.2, 1.2, 2.05, 3.15, 0.5); bagBlob.position.y = FLOOR + 0.004;
@@ -3010,7 +3019,7 @@ function makeDesk(el) {
   wallM.position.set(0, 3.4, -3.7); wallM.renderOrder = -6; stage.add(wallM);   /* a soft wall that fades out toward its edges, so there are no hard lines */
   const paintG = new THREE.Group(); paintG.position.set(-3.8, 3.6, -3.45); paintG.rotation.z = 0.02; paintG.visible = false; stage.add(paintG);
   let paintT = 0;
-  new THREE.TextureLoader().load(CONFIG.paintingImage, tex => {
+  const onPaintTex = tex => {
     const im = tex.image, asp = (im.width || 3) / (im.height || 4);
     let ph = 2.4, pw = ph * asp; if (pw > 2.6) { pw = 2.6; ph = pw / asp; }
     const bd = 0.14, wood2 = std(0x5e3a20, 0.6, 0.1);
@@ -3019,7 +3028,8 @@ function makeDesk(el) {
     const sh = noHit(new THREE.Mesh(new THREE.PlaneGeometry(pw + bd * 2 + 0.3, ph + bd * 2 + 0.3), new THREE.MeshBasicMaterial({ map: blobTex, transparent: true, opacity: 0.8, depthWrite: false }))); sh.position.set(0.1, -0.1, -0.03); paintG.add(sh);   /* a soft shadow on the wall behind it */
     hitBox(pw + bd * 2 + 0.2, ph + bd * 2 + 0.2, 0.3, 0, 0, 0.05, 'painting', paintG);
     paintG.visible = true;
-  }, undefined, () => {});
+  };
+  new THREE.TextureLoader().load(CONFIG.paintingImage, onPaintTex, undefined, () => onPaintTex(new THREE.CanvasTexture(paintingFallback())));   /* the real file, or the stand-in if it is missing */
 
   /* ---------- layout: wide screens spread the table and the things around it outward (v.layout is called from v.fit); phones keep it tight ---------- */
   const LAY = [];
