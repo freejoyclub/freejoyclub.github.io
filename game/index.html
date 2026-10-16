@@ -1,7 +1,7 @@
 <!DOCTYPE html><html lang="en"><head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Fearjoy - Game (v100.39)</title>
+    <title>Fearjoy - Game (v100.41)</title>
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
@@ -1560,7 +1560,7 @@
                WebKit quirk tying it to the hardware volume buttons instead), which is why
                the LA-2A dials/mute previously had zero effect on the bg jam specifically on
                iPhone. AudioParam.gain is real audio-graph routing and IS respected there. */
-            ambientBus=audioCtx.createGain();ambientBus.gain.value=0;ambientBus.connect(masterGain);
+            ambientBus=audioCtx.createGain();ambientBus.gain.value=0.5;ambientBus.connect(masterGain); /* 0.5 x masterGain 2.0 = unity, same loudness as the old direct .volume path */
         }
         return audioCtx;
     }
@@ -2792,7 +2792,7 @@
         body.appendChild(codeEl);
         if(item.url){
             const storeBtn=document.createElement('a');
-            storeBtn.href=(item.url||'https://freejoy.club/store').replace('freejoy.club','freejoy.club/store').replace('/store/store','/store');
+            storeBtn.href=(item.url||'https://freejoy.club/store').replace('freejoy.club','freejoy.club/store').replace('/store/store','/store')+(item.code?'?code='+encodeURIComponent(item.code):'');
             storeBtn.target=IS_EMBED?'_top':'_blank';
             storeBtn.className='bucket-btn';
             storeBtn.style.cssText='display:inline-block;margin:0 auto 14px;';
@@ -4946,7 +4946,7 @@ function showStatusPopup(t,d,b1,c1,b2,c2,playerNameHtml=''){
             <div style="display:flex;flex-direction:column;gap:10px;align-items:center;margin-top:20px;">
                 <a href="https://freejoy.club/game/swimmin.mp3" download="swimmin.mp3" class="win-link-btn win-cta" style="--btn-color:var(--blue-glow);background:var(--blue-glow);color:black;font-size:1.1rem;padding:14px 28px;border-color:var(--blue-glow);animation:rollPulse 2s ease-in-out infinite;">🌊 Download: Swimmin' — Secret Track</a>
                 <a href="https://freejoy.club" target="${IS_EMBED?'_top':'_blank'}" class="win-link-btn win-cta" style="--btn-color:var(--joy-glow);color:var(--joy-glow);font-size:1.1rem;padding:14px 28px;">▶ PLAY THE ALBUM</a>
-                <a href="https://freejoy.club/store" target="${IS_EMBED?'_top':'_blank'}" class="win-link-btn" style="--btn-color:#ff00ff;color:#ff00ff;">${storeLbl}</a>
+                <a href="https://freejoy.club/store${highestDiscountPct>0?'?code=PLAYER'+highestDiscountPct:''}" target="${IS_EMBED?'_top':'_blank'}" class="win-link-btn" style="--btn-color:#ff00ff;color:#ff00ff;">${storeLbl}</a>
                 <a href="https://freejoy.club" target="${IS_EMBED?'_top':'_blank'}" class="win-link-btn" style="--btn-color:#ffffff;color:#ffffff;">Fearjoy - Home</a>
         <div style="display:flex;gap:10px;width:min(400px,90%);margin-top:5px;">
                     <button id="hard-reset-win" class="win-link-btn" style="--btn-color:var(--fear-glow);color:var(--fear-glow);flex:1;cursor:pointer;">NEW BAND</button>
