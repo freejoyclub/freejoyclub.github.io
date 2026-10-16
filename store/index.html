@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- STORE (v13) -->
+<!-- STORE (v15) -->
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
@@ -746,7 +746,7 @@ dialog.big { width: 100vw; max-height: 86vh; max-height: 86dvh; margin: auto 0 0
 .rack-nav .rk { font-size: 0.8rem; letter-spacing: 1px; padding: 9px 16px 9px 12px; justify-content: flex-start; min-width: 150px; }
 .rack-nav .rk-bg-nav { display: inline-flex; }
 @media (max-width: 520px) { .rack-nav { grid-template-columns: 1fr; } .rack-nav .rk { min-width: 190px; } }
-.cartbtn { display: inline-flex; align-items: center; gap: 8px; padding: 9px 13px; border-radius: 12px; background: linear-gradient(#2c2c31, #151517); border: 1px solid #4a4a50; color: #f3e6c8; cursor: var(--hand); box-shadow: 0 4px 12px rgba(0,0,0,0.5); -webkit-tap-highlight-color: transparent; transition: box-shadow 0.4s, border-color 0.4s, color 0.4s; }
+.c-album { --c: #ffa86b; } .cartbtn { display: inline-flex; align-items: center; gap: 8px; padding: 9px 13px; border-radius: 12px; background: linear-gradient(#2c2c31, #151517); border: 1px solid #4a4a50; color: #f3e6c8; cursor: var(--hand); box-shadow: 0 4px 12px rgba(0,0,0,0.5); -webkit-tap-highlight-color: transparent; transition: box-shadow 0.4s, border-color 0.4s, color 0.4s; }
 .cartbtn svg { width: 24px; height: 24px; }
 .cartbtn:hover { border-color: #8a8a92; }
 .cartnum { display: none; font-family: 'KCStrikerSans', sans-serif; font-size: 1.15rem; line-height: 1; color: #fff1c8; text-shadow: 0 0 5px #ffb347, 0 0 12px #ff9a1f, 0 0 22px #ff8a00; animation: cartglow 1.8s ease-in-out infinite; }
@@ -860,6 +860,8 @@ html.list-view .edge { z-index: 70; }
 .rack-nav.sub-open > .rk:not(.lit) { opacity: 0.3; filter: saturate(0.3); }   /* the main list fades back while a sub menu is open */
 .rack-nav.sub-open > .rk.lit { box-shadow: 0 0 12px rgba(255,194,122,0.55); }
 .rack-sub { border-color: #7a7a82; box-shadow: 0 10px 28px rgba(0,0,0,0.85), 0 0 0 1px rgba(255,194,122,0.25); }
+.rack-nav { align-items: stretch; }
+.rack-nav > .rk, .rack-nav .rack-sub .rk { min-width: 230px; width: auto; height: 36px; box-sizing: border-box; line-height: 1; justify-content: flex-start; text-align: left; }   /* every menu button the same size, words on the left */
 .rk-slide { display: flex; align-items: center; gap: 10px; padding: 6px 12px; font-family: 'KCStrikerSans', sans-serif; font-size: 0.8rem; letter-spacing: 1px; text-transform: uppercase; color: #d8d8de; }
 .rk-slide input { flex: 1; min-width: 110px; accent-color: #ffc27a; cursor: var(--hand); }
 @media (max-width: 700px) { .rack-sub { left: 0; right: 0; bottom: 0 !important; } }
@@ -1133,15 +1135,20 @@ try { if (location.hash) history.replaceState(null, '', location.pathname + loca
 <div class="cd-streams" id="cdStreams" role="group" aria-label="Listen on"></div>
 <nav class="rack-nav" id="rackNav" aria-label="Menu">
 <button type="button" class="rk rk-grp rk-keep c-store" data-sub="shop" aria-haspopup="true" aria-expanded="false">Shop<span class="rk-arrow">&#9656;</span></button>
-<a class="rk c-album" href="/LP1/" data-go="Go to the Fearjoy: The Game album page?">The Album</a>
 <button type="button" class="rk c-credits" data-open="credits">Credits &amp; Lyrics</button>
 <button type="button" class="rk c-game" data-open="game">Play Online</button>
-<a href="#" class="rk c-stream" data-stream data-soon="Stream the Album (soon)" data-live="Stream the Album">Stream the Album (soon)</a>
+<button type="button" class="rk rk-grp rk-keep c-album" data-sub="album" aria-haspopup="true" aria-expanded="false">The Album<span class="rk-arrow">&#9656;</span></button>
 <button type="button" class="rk rk-grp rk-keep c-breathe" data-sub="bm" aria-haspopup="true" aria-expanded="false">Breathe / Move<span class="rk-arrow">&#9656;</span></button>
 <button type="button" class="rk rk-grp rk-keep c-contact" data-sub="touch" aria-haspopup="true" aria-expanded="false">Get in touch<span class="rk-arrow">&#9656;</span></button>
 <button type="button" class="rk rk-grp rk-keep c-bg" data-sub="audio" aria-haspopup="true" aria-expanded="false">Audio<span class="rk-arrow">&#9656;</span></button>
 <a class="rk c-home" href="https://freejoy.club" data-go="Go to Fearjoy's home page?">Home</a>
 <button type="button" id="howBtn" hidden aria-hidden="true"></button>
+<div class="rack-sub" id="sub-album" role="menu">
+<button type="button" class="rk rk-back rk-keep">&#9666; Menu</button>
+<button type="button" class="rk c-store" data-open="vinyl">Buy the Album</button>
+<a href="#" class="rk c-stream" data-stream data-soon="Stream the Album (soon)" data-live="Stream the Album">Stream the Album (soon)</a>
+<a class="rk c-album" href="/LP1/">Album Companion</a>
+</div>
 <div class="rack-sub" id="sub-shop" role="menu">
 <button type="button" class="rk rk-back rk-keep">&#9666; Menu</button>
 <button type="button" class="rk c-vinyl" data-open="vinyl">Vinyl</button>
@@ -1193,7 +1200,7 @@ try { if (location.hash) history.replaceState(null, '', location.pathname + loca
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/STLLoader.js"></script>
 <script>
-// STORE (v13)
+// STORE (v15)
 const toTop = () => { try { window.scrollTo({ top: 0, left: 0, behavior: 'instant' }); } catch (e) { window.scrollTo(0, 0); } };
 toTop();
 window.addEventListener('load', toTop);
@@ -1218,6 +1225,8 @@ const CONFIG = {
   tvImage: '/images/35-board.png?v=9',  // game board picture on the desk TV. The ?v=9 makes browsers fetch the newest copy: bump the number whenever you swap the file
   sfxFolder: '/sfx/',              // sound effects (coinflip, dice1, dice2, dice5, 1up, slide1) and the radio song (endless-jam-jgg-1.mp3)
   loreFolder: '/game/bucket/',     // the lore bucket: pictures that flash on the desk TV
+  patreonUrl: '',                  // the Patreon link once it exists (the framed painting on the wall goes there). Empty = a "coming soon" popup.
+  paintingImage: '/images/patronage.jpg',   // the framed painting on the back wall
   loreSeconds: 3,                  // how long a lore picture stays on the TV
   loreVideos: ['game sfx story.mp4', 'j-drum-tracking.mp4', 'js-mistake.mp4', 'sploinky-garret.mp4', 'story harmony hunting tunnel.mp4', 'story mu nightdrive 3.mp4'],                  // lore videos (.mp4) in the same folder. Add file names here. They download quietly in the background after the page loads (thin bar along the bottom of the TV) and join the channel changes once ready
   loreVideoMax: 25,                // a lore video stops after this many seconds even if it is longer
@@ -2921,7 +2930,8 @@ function makeStore(el) {
   joyG.position.set(-2.9, FLOOR, 2.1); joyG.rotation.y = 0.35; joyG.scale.setScalar(1.9);
   stage.add(joyG);
   blob(2.0, 1.5, -2.9, 2.1, 0.6).position.y = FLOOR + 0.004;
-  const joyBase = new THREE.Mesh(roundedBoxWHD(0.72, 0.24, 0.5, 0.04, 36, 6, 25), std(0x2f3136, 0.55, 0.2)); joyBase.position.y = 0.12; joyG.add(joyBase);
+  const gritTex = (() => { const c = document.createElement('canvas'); c.width = c.height = 128; const g = c.getContext('2d'); g.fillStyle = '#c9c9ce'; g.fillRect(0, 0, 128, 128); for (let i = 0; i < 500; i++) { const v = 150 + Math.floor(Math.random() * 100); g.fillStyle = 'rgba(' + v + ',' + v + ',' + (v + 4) + ',0.28)'; g.fillRect(Math.random() * 128, Math.random() * 128, 1.7, 1.7); } for (let i = 0; i < 200; i++) { g.fillStyle = 'rgba(40,42,48,0.18)'; g.fillRect(Math.random() * 128, Math.random() * 128, 1.5, 1.5); } const t = new THREE.CanvasTexture(c); t.wrapS = t.wrapT = THREE.RepeatWrapping; t.repeat.set(2, 2); return t; })();   /* a fine grit, so the plastic is not flat */
+  const joyBase = new THREE.Mesh(roundedBoxWHD(0.72, 0.24, 0.5, 0.04, 36, 6, 25), new THREE.MeshStandardMaterial({ color: 0x50545b, roughness: 0.62, metalness: 0.12, map: gritTex, bumpMap: gritTex, bumpScale: 0.25 })); joyBase.position.y = 0.12; joyG.add(joyBase);
   const joyTxCv = document.createElement('canvas'); joyTxCv.width = 512; joyTxCv.height = 128;
   const joyTxTex = new THREE.CanvasTexture(joyTxCv); joyTxTex.anisotropy = 4;
   const drawJoyTx = () => {   /* PLAY ONLINE in white Striker Sans on the front of the base */
@@ -2936,7 +2946,7 @@ function makeStore(el) {
   const joyTxt = new THREE.Mesh(new THREE.PlaneGeometry(0.62, 0.155), new THREE.MeshBasicMaterial({ map: joyTxTex, transparent: true, depthWrite: false })); joyTxt.position.set(0, 0.12, 0.2535); noHit(joyTxt); joyG.add(joyTxt);
   const joyBtn = new THREE.Mesh(new THREE.CylinderGeometry(0.07, 0.08, 0.05, 20), std(0xe8c13a, 0.4)); joyBtn.position.set(0.24, 0.265, 0.08); joyG.add(joyBtn);
   const joyStick = new THREE.Group(); joyStick.position.set(-0.12, 0.24, 0); joyG.add(joyStick);
-  joyStick.add(new THREE.Mesh(new THREE.SphereGeometry(0.1, 16, 8, 0, Math.PI * 2, 0, Math.PI / 2), std(0x151517, 0.7)));
+  joyStick.add(new THREE.Mesh(new THREE.SphereGeometry(0.1, 16, 8, 0, Math.PI * 2, 0, Math.PI / 2), std(0x3d4046, 0.7)));   /* the flange: dark gray, not black */
   const joyShaft = new THREE.Mesh(new THREE.CylinderGeometry(0.03, 0.03, 0.3, 10), std(0xa8adb3, 0.3, 0.6)); joyShaft.position.y = 0.15; joyStick.add(joyShaft);
   const joyBall = new THREE.Mesh(new THREE.SphereGeometry(0.115, 20, 14), std(0xd8302a, 0.35)); joyBall.position.y = 0.34; joyStick.add(joyBall);
   hitBox(1.0, 0.95, 0.7, 0, 0.4, 0, 'joystick', joyG);   /* tap it to go to the game room */
@@ -2945,7 +2955,7 @@ function makeStore(el) {
 
   /* ---------- a guitar case with money in it, lying on the floor under the table (the future tip jar). The guitar is the middle half of the picture (CONFIG.tipGuitarFrac) and is made 3/4 as long as the table. ---------- */
   const tipG = new THREE.Group(); tipG.position.set(0, FLOOR + 0.012, TZ + 0.05); stage.add(tipG);
-  const tipMat = new THREE.MeshStandardMaterial({ color: 0xa6a6a6, roughness: 0.9, transparent: true, alphaTest: 0.02, depthWrite: false });   /* dimmer than the rest (about 30%) */
+  const tipMat = new THREE.MeshStandardMaterial({ color: 0x848484, roughness: 0.9, transparent: true, alphaTest: 0.02, depthWrite: false });   /* dimmer than the rest (about 50%) */
   const tipMesh = noHit(new THREE.Mesh(new THREE.PlaneGeometry(1, 1), tipMat)); tipMesh.rotation.x = -Math.PI / 2; tipMesh.visible = false; tipG.add(tipMesh);
   new THREE.TextureLoader().load(CONFIG.tipImage, tex => {
     const im = tex.image, iw = im.width || 800, ih = im.height || 600;
@@ -2955,7 +2965,7 @@ function makeStore(el) {
     g.drawImage(im, 0, 0, iw, ih);
     const t2 = new THREE.CanvasTexture(cv); t2.anisotropy = 4;
     tipMat.map = t2; tipMat.needsUpdate = true;
-    const GW = TW * 0.75, W = GW / CONFIG.tipGuitarFrac, H = W * ih / iw;
+    const GW = TW * 0.75 * 0.85, W = GW / CONFIG.tipGuitarFrac, H = W * ih / iw;
     v.fitHook = () => { tipMesh.scale.set(W, H * Math.pow(1 / Math.sin(EL), 0.75), 1); };   /* lying flat, a picture looks squashed from the camera: stretch it to make up for the angle */
     v.fitHook(); tipMesh.visible = true;
     hitBox(GW, 0.2, GW * 0.9, 0, 0.1, 0.2, 'tipjar', tipG);
@@ -3136,7 +3146,7 @@ function makeStore(el) {
     else if (tag === 'bill') { wig(billG); takeBill(e.clientX, e.clientY, billCv.toDataURL('image/png')); }
     else if (tag === 'cd') { wig(cdG); Sound.slide(); later(() => showSoon('CD', 'The album on CD is coming soon.')); }
     else if (tag === 'joystick') { Sound.slide(); setTimeout(() => { location.href = '/LP1/'; }, REDUCE ? 0 : 250); }   /* straight to the game room, like the side button */
-    else if (tag === 'tipjar') { Sound.slide(); later(() => { if (CONFIG.tipUrl) askGo(CONFIG.tipUrl, 'Open the tip jar?'); else showSoon('Tip jar', 'A tip jar for the band is coming soon. Thank you!'); }); }
+    else if (tag === 'tipjar') { Sound.slide(); later(() => { if (CONFIG.tipUrl) window.open(CONFIG.tipUrl, '_blank', 'noopener'); else showSoon('Tip jar', 'A tip jar for the band is coming soon. Thank you!'); }); }
     else if (tag === 'letter') { letterT = performance.now(); Sound.slide(); setTimeout(openContact, REDUCE ? 0 : 450); }
   });
 
@@ -4458,17 +4468,12 @@ $('#rackNav').addEventListener('click', e => { if (e.target.closest('.rk') && !e
 /* every rack link asks first ("Go to ...?") before leaving the page */
 const goDlg = $('#goDlg');
 let goHref = '', goBtn = null, goGoing = false;
-$$('.rack a.rk[data-go]').forEach(a => a.addEventListener('click', e => {
-  e.preventDefault(); setRackMenu(false);
-  goHref = a.href; goBtn = a; goGoing = false; a.classList.add('lit');
-  $('#goMsg').textContent = a.dataset.go || 'Leave this page?';
-  try { goDlg.showModal(); } catch (x) { goDlg.setAttribute('open', ''); }
-}));
+$$('.rack a.rk[data-go]').forEach(a => a.addEventListener('click', () => { setRackMenu(false); a.classList.add('lit'); }));   /* no "are you sure": a tap on a link just goes (the link does the navigating) */
 $('#goYes').addEventListener('click', () => { goGoing = true; location.href = goHref; goDlg.close(); });
 $('#goNo').addEventListener('click', () => goDlg.close());
 goDlg.addEventListener('click', e => { if (e.target === goDlg) goDlg.close(); });
 goDlg.addEventListener('close', () => { if (goBtn && !goGoing) goBtn.classList.remove('lit'); });
-function askGo(href, msg) { goHref = href; goBtn = null; goGoing = false; $('#goMsg').textContent = msg; try { goDlg.showModal(); } catch (x) { goDlg.setAttribute('open', ''); } }   /* the desk objects use the same "Go to ...?" question */
+function askGo(href, msg, sure) { if (!sure) { location.href = href; return; } goHref = href; goBtn = null; goGoing = false; $('#goMsg').textContent = msg; try { goDlg.showModal(); } catch (x) { goDlg.setAttribute('open', ''); } }   /* the desk objects use the same "Go to ...?" question */
 const rackPlay = $('#rackPlay'), rackLcd = $('#rackLcd'), rackKnob = $('#rackKnob');
 const lcdSay = (txt, still) => { rackLcd.querySelectorAll('.lcd-track span').forEach(sp => { sp.textContent = txt; }); rackLcd.classList.toggle('still', !!still); };   /* WELCOME until the song has been played, then the title while it plays and PAUSED when it is paused */
 let lcdPlayed = false;
