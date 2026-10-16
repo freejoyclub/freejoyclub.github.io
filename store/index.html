@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- STORE (v18) -->
+<!-- STORE (v19) -->
 <html lang="en" class="edge-on">
 <head>
 <meta charset="UTF-8" />
@@ -930,13 +930,12 @@ body, h1, .floating-text, .btn, .floating-logo, .section h2, .product.deluxe { a
 /* the side buttons are little neon signs bolted to the edges of the window. Wide screens: a bigger sign (words stacked, a curved arrow down and over toward that room) on two mounting bars. Thin, tall and phone screens: a small vertical neon tab (one short word, one tube outline) on two tiny bars. */
 .edge { --neon: #d98ac4; --neon-rgb: 217, 138, 196; position: fixed; top: 50%; transform: translateY(-50%); z-index: 70; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; width: 30px; padding: 12px 0 10px; text-decoration: none; color: #f2dcee; background: rgba(12, 6, 14, 0.72); border: 1.5px solid rgba(var(--neon-rgb), 0.55); border-radius: 10px; box-shadow: 0 0 5px rgba(var(--neon-rgb), 0.35), 0 0 14px rgba(var(--neon-rgb), 0.18), inset 0 0 7px rgba(var(--neon-rgb), 0.16); text-shadow: 0 0 2px rgba(255, 255, 255, 0.6), 0 0 7px rgba(var(--neon-rgb), 0.8), 0 0 14px rgba(var(--neon-rgb), 0.45); font-family: 'KCPelletierTyped', 'Courier New', monospace; font-size: 0.7rem; letter-spacing: 2px; text-transform: uppercase; opacity: 0.75; transition: opacity 0.2s, background 0.2s, box-shadow 0.2s, text-shadow 0.2s; cursor: var(--hand); -webkit-tap-highlight-color: transparent; }
 .edge-r { --neon: #7fc9d6; --neon-rgb: 127, 201, 214; color: #dcf4f8; }
-.edge-l { left: 12px; }
-.edge-r { right: 12px; }
+.edge-l { left: 5px; }
+.edge-r { right: 5px; }
 .edge .arr { font-size: 1rem; line-height: 1; letter-spacing: 0; }
-.edge .txt { writing-mode: vertical-rl; white-space: nowrap; }
-.edge-l .txt { transform: rotate(180deg); }
+.edge .txt { writing-mode: vertical-rl; text-orientation: upright; white-space: nowrap; letter-spacing: 0; }   /* mini tabs: letters stacked upright, all facing the same way */
 .edge .w-full, .edge .neon-arrow { display: none; }
-.edge::before, .edge::after { content: ''; position: absolute; pointer-events: none; }   /* the mounting bars: two short metal bars from the sign to a little plate on the window edge */
+.edge::before, .edge::after { content: ''; position: absolute; pointer-events: none; display: none; }   /* no mounting bars on the mini tabs; the big signs turn them on below */   /* the mounting bars: two short metal bars from the sign to a little plate on the window edge */
 .edge::before { top: 0; bottom: 0; width: 7px; background: linear-gradient(#9a9aa2, #5a5a62) 0 22% / 100% 3px no-repeat, linear-gradient(#9a9aa2, #5a5a62) 0 78% / 100% 3px no-repeat; }
 .edge::after { top: 12%; bottom: 12%; width: 3px; border-radius: 2px; background: linear-gradient(90deg, #4c4c52, #8c8c94); }
 .edge-l::before { left: -8.5px; }
@@ -954,6 +953,7 @@ html.edge-on .edge:hover, html.edge-on .edge:focus-visible { opacity: 1; }
 .edge { width: auto; top: 42%; padding: 9px 14px 6px; gap: 1px; border-radius: 14px; background: rgba(12, 6, 14, 0.42); justify-content: flex-start; font-family: 'KCStrikerSans', 'Arial Black', sans-serif; }
 .edge-l { left: 34px; }
 .edge-r { right: 34px; }
+.edge::before, .edge::after { display: block; }
 .edge::before { width: 30px; }
 .edge-l::before { left: -31.5px; }
 .edge-l::after { left: -34.5px; }
@@ -962,7 +962,7 @@ html.edge-on .edge:hover, html.edge-on .edge:focus-visible { opacity: 1; }
 .edge .arr { display: none; }
 .edge .w-full { display: inline; }
 .edge .w-short { display: none; }
-.edge .txt { writing-mode: horizontal-tb; transform: none; white-space: normal; text-align: center; width: min-content; font-size: clamp(0.95rem, 1.55vw, 1.3rem); line-height: 1.05; letter-spacing: 2.5px; }
+.edge .txt { writing-mode: horizontal-tb; text-orientation: mixed; transform: none; white-space: normal; text-align: center; width: min-content; font-size: clamp(0.95rem, 1.55vw, 1.3rem); line-height: 1.05; letter-spacing: 2.5px; }
 .edge-l .txt { transform: none; }
 .edge .neon-arrow { display: block; width: 64px; height: 57px; fill: none; stroke: #f6e4f1; stroke-width: 5; stroke-linecap: round; stroke-linejoin: round; filter: drop-shadow(0 0 2px rgba(var(--neon-rgb), 0.9)) drop-shadow(0 0 7px rgba(var(--neon-rgb), 0.7)) drop-shadow(0 0 14px rgba(var(--neon-rgb), 0.4)); }
 .edge-r .neon-arrow { stroke: #e4f6fa; align-self: flex-start; }
@@ -1257,7 +1257,7 @@ try { if (location.hash) history.replaceState(null, '', location.pathname + loca
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/STLLoader.js"></script>
 <script>
-// STORE (v18)
+// STORE (v19)
 const toTop = () => { try { window.scrollTo({ top: 0, left: 0, behavior: 'instant' }); } catch (e) { window.scrollTo(0, 0); } };
 toTop();
 window.addEventListener('load', toTop);
@@ -1278,7 +1278,7 @@ const CONFIG = {
   preferLite: true,                // try Jesse_Bust_lite.stl etc. first (about 1 MB each), then fall back to the full files
   stlFolders: ['./', '/LP1/', '/images/'],  // where to look for the STL files, in order. './' = the same folder as this page
   bgImage: '/images/35-board-bg.webp',   // page background: the game board, blurred and half see-through (a small copy of the board; the full-size png is far too heavy for a background)
-  floorPhoto: 'camcorder.jpg',   // the small printed photo on the floor (a file in the bucket folder below); tap it to see it on the TV, where a tap saves it
+  floorPhoto: 'camcorder.jpg',   // the camcorder picture shown from the gift bag (a file in the bucket folder below)
   tvImage: '/images/35-board.png?v=9',  // game board picture on the desk TV. The ?v=9 makes browsers fetch the newest copy: bump the number whenever you swap the file
   sfxFolder: '/sfx/',              // sound effects (coinflip, dice1, dice2, dice5, 1up, slide1) and the radio song (endless-jam-jgg-1.mp3)
   loreFolder: '/game/bucket/',     // the lore bucket: pictures that flash on the desk TV
@@ -2721,7 +2721,8 @@ function makeStore(el) {
   /* ---------- a clothes rail with two shirts hanging on the backdrop ---------- */
   const RAIL_Y = 3.3;
   const rail = new THREE.Mesh(new THREE.CylinderGeometry(0.04, 0.04, 3.9, 14), pipeMat); rail.rotation.z = Math.PI / 2; rail.position.set(1.9, RAIL_Y, BDZ + 0.55); noHit(rail); stage.add(rail);
-  [-1, 1].forEach(s => { const br = noHit(new THREE.Mesh(new THREE.CylinderGeometry(0.025, 0.025, 0.55, 8), pipeMat)); br.rotation.x = Math.PI / 2; br.position.set(1.9 + s * 1.85, RAIL_Y, BDZ + 0.28); stage.add(br); });
+  const railBr = [];
+  [-1, 1].forEach(s => { const br = noHit(new THREE.Mesh(new THREE.CylinderGeometry(0.025, 0.025, 0.55, 8), pipeMat)); br.rotation.x = Math.PI / 2; br.position.set(1.9 + s * 1.85, RAIL_Y, BDZ + 0.28); stage.add(br); railBr.push(br); });
   const teeShape = (() => {
     const s = new THREE.Shape();
     s.moveTo(-0.24, -0.1); s.quadraticCurveTo(0, -0.34, 0.24, -0.1); s.lineTo(0.6, -0.2); s.lineTo(0.9, -0.58); s.lineTo(0.68, -0.76); s.lineTo(0.52, -0.6);
@@ -3036,7 +3037,7 @@ function makeStore(el) {
   const joyG = new THREE.Group();
   joyG.position.set(-2.9, FLOOR, 2.1); joyG.rotation.y = 0.35; joyG.scale.setScalar(1.9);
   stage.add(joyG);
-  blob(2.0, 1.5, -2.9, 2.1, 0.6).position.y = FLOOR + 0.004;
+  const joyBlob = blob(2.0, 1.5, -2.9, 2.1, 0.6); joyBlob.position.y = FLOOR + 0.004;
   const gritTex = (() => { const c = document.createElement('canvas'); c.width = c.height = 128; const g = c.getContext('2d'); g.fillStyle = '#c9c9ce'; g.fillRect(0, 0, 128, 128); for (let i = 0; i < 500; i++) { const v = 150 + Math.floor(Math.random() * 100); g.fillStyle = 'rgba(' + v + ',' + v + ',' + (v + 4) + ',0.28)'; g.fillRect(Math.random() * 128, Math.random() * 128, 1.7, 1.7); } for (let i = 0; i < 200; i++) { g.fillStyle = 'rgba(40,42,48,0.18)'; g.fillRect(Math.random() * 128, Math.random() * 128, 1.5, 1.5); } const t = new THREE.CanvasTexture(c); t.wrapS = t.wrapT = THREE.RepeatWrapping; t.repeat.set(2, 2); return t; })();   /* a fine grit, so the plastic is not flat */
   const joyBase = new THREE.Mesh(roundedBoxWHD(0.72, 0.24, 0.5, 0.04, 36, 6, 25), new THREE.MeshStandardMaterial({ color: 0x50545b, roughness: 0.62, metalness: 0.12, map: gritTex, bumpMap: gritTex, bumpScale: 0.25 })); joyBase.position.y = 0.12; joyG.add(joyBase);
   const joyTxCv = document.createElement('canvas'); joyTxCv.width = 512; joyTxCv.height = 128;
@@ -3264,7 +3265,17 @@ function makeStore(el) {
   const ease = k => 1 - Math.pow(1 - k, 3);
   v.onFrame = function (t) {
     const now = performance.now();
-    { const wide = v.camera.aspect > 1.15; paintG.position.set(wide ? 4.85 : 3.45, wide ? 2.45 : 4.15, BDZ + 0.1); paintG.scale.setScalar(wide ? 1 : 0.62); }   /* wide screens: far right of the backdrop; phones: small, beside the banner (the sides are cut off there) */
+    {   /* wide screens: poster, shirts and painting spread out along the backdrop. Phones (tall screens): the poster is a bit smaller, the shirts hang closer together, and the painting fits in the same row at the right. The joystick also comes out a little from under the table. */
+      const wide = v.camera.aspect > 1.15;
+      paintG.position.set(wide ? 4.85 : 3.0, 2.45, BDZ + 0.1); paintG.scale.setScalar(wide ? 1 : 0.8);
+      posterG.position.set(wide ? -2.6 : -3.1, wide ? 2.35 : 2.4, BDZ + 0.1); posterG.scale.setScalar(wide ? 1 : 0.74);
+      const rc = wide ? 1.9 : -0.1, rl = wide ? 3.9 : 3.5;
+      rail.position.x = rc; rail.scale.y = rl / 3.9;
+      railBr.forEach((br, i) => { br.position.x = rc + (i ? 1 : -1) * (rl / 2 - 0.1); });
+      shirts.forEach((g, i) => { g.position.x = wide ? 0.95 + i * 1.9 : -0.85 + i * 1.5; });
+      const jx = wide ? 0 : 0.15, jz = wide ? 0 : 1.0;
+      joyG.position.set(-2.9 + jx, FLOOR, 2.1 + jz); joyBlob.position.x = -2.9 + jx; joyBlob.position.z = 2.1 + jz; joyCable.position.set(jx, 0, jz);
+    }
     if (!dropDone) {   /* the drop-in: the banner and table show first, then each thing falls only once it has loaded (one at a time), bounces once and its shadow grows in */
       if (!dropT0) dropT0 = now + 2500;
       if (now >= dropT0) {
