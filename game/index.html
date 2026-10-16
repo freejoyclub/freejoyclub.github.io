@@ -1,7 +1,7 @@
 <!DOCTYPE html><html lang="en"><head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Fearjoy - Game (v100.41)</title>
+    <title>Fearjoy - Game (v100.42)</title>
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
@@ -1036,6 +1036,9 @@
             padding:0 15px; cursor:pointer; transition:all 0.15s ease; box-sizing:border-box;
         }
         .setup-mini-btn:hover { border-color:rgba(255,255,255,0.4); color:white; }
+        #intro-back-btn { display:flex; margin:4px 0 -4px 0; height:40px; min-width:40px; padding:0 11px; } /* first thing in the card, top left, so it never sits on the title */
+        #overlay-setup:has(#setup-step-1[style*="none"]) #intro-back-btn { display:none; } /* only on the first screen */
+        html.embed #intro-back-btn { display:none !important; }
         #setup-quickgame-btn.active {
             background:#0e5c0e; border-color:#2ecc2e; color:#fff;
             box-shadow:inset 0 2px 4px rgba(0,0,0,0.6),0 0 14px rgba(0,220,0,0.45);
@@ -1280,6 +1283,7 @@
     <!-- ══ SETUP OVERLAY ══ -->
     <div id="overlay-setup" class="overlay" style="display:flex">
         <div class="popup" style="max-width:500px;width:92vw;position:relative;">
+                <button id="intro-back-btn" class="setup-mini-btn" type="button" aria-label="Back to the studio" onclick="introBack()">&lsaquo; back</button>
             <h1 class="intro-header">Fearjoy: The Game</h1>
             <div id="setup-step-1">
                 <h2 style="font-family:'KCStrikerSans','Courier New',monospace;letter-spacing:3px;font-weight:normal;">HOW MANY ARTISTS?</h2>
@@ -1368,6 +1372,14 @@
     const IS_EMBED=(()=>{try{return new URLSearchParams(location.search).has('embed')||window.self!==window.top;}catch(e){return true;}})();
     if(IS_EMBED)document.documentElement.classList.add('embed');
     function goOut(url){if(IS_EMBED){try{window.open(url,'_top');}catch(e){location.href=url;}}else{window.open(url,'_blank');}}
+    /* Intro-card back button: ?from=home / store / lp1 go to those pages; add more here later */
+    const BACK_FROM={home:'/',store:'/store/',lp1:'/LP1/'};
+    function introBack(){
+        let f=null;try{f=new URLSearchParams(location.search).get('from');}catch(e){}
+        if(f&&Object.prototype.hasOwnProperty.call(BACK_FROM,f)){location.href=BACK_FROM[f];return;}
+        try{if(document.referrer&&new URL(document.referrer).origin===location.origin&&history.length>1){history.back();return;}}catch(e){}
+        location.href='/';
+    }
     function backToDesk(){try{if(IS_EMBED&&window.parent&&window.parent!==window)window.parent.postMessage({fearjoy:'close-game'},location.origin);}catch(e){}closeNavMenu();closeSetupMenu();}
     const BUCKET_BASE = [
         {type:'image',file:'bucket/CP-30.jpg'},
