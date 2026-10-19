@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- DOJO (v4) -->
+<!-- DOJO (v5) -->
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -55,7 +55,7 @@ html.night #content { opacity: 0; visibility: hidden; pointer-events: none; }
 }
 .sec-caret { display: none; font-family: Arial, sans-serif; font-size: 1.1rem; color: var(--gold); transition: transform 0.25s; }
 #secs:not(.picked) .sec-head { cursor: var(--hand); }
-#secs.picked .sec:not(.sel) .sec-head { cursor: var(--hand); border: 1px solid rgba(255,213,128,0.3); border-radius: 18px; background: rgba(0,0,0,0.3); padding: 8px 16px; font-size: clamp(1.1rem, 5.4vw, 1.35rem); }
+#secs.picked .sec:not(.sel) .sec-head { cursor: var(--hand); border: 1px solid rgba(255,213,128,0.3); border-radius: 18px; background: rgba(0,0,0,0.3); padding: 12px 22px; font-size: clamp(1.4rem, 7vw, 1.9rem); }
 #secs.picked .sec:not(.sel) .sec-caret { display: block; }
 #secs.picked .sec:not(.sel) .sec-head:hover { border-color: var(--gold); }
 .sec.open .sec-caret { transform: rotate(180deg); }
@@ -72,7 +72,7 @@ html.night #content { opacity: 0; visibility: hidden; pointer-events: none; }
 
 /* ---------- the lists ---------- */
 .cat { margin: 20px auto 4px; width: 100%; }
-.cat-title { font-size: 0.9rem; letter-spacing: 3px; text-transform: uppercase; color: rgba(255,213,128,0.75); margin: 0 0 16px; padding-bottom: 8px; border-bottom: 1px solid rgba(255,213,128,0.2); }
+.cat-title { font-size: 1.35rem; letter-spacing: 3px; text-transform: uppercase; color: #ffd580; text-shadow: 0 0 12px rgba(255,213,128,0.55), 0 2px 6px rgba(0,0,0,0.8); margin: 0 0 16px; padding-bottom: 8px; border-bottom: 1px solid rgba(255,213,128,0.45); }
 .vid {
   display: flex; align-items: center; gap: 14px; width: 100%; margin: 0 auto 11px; padding: 12px 18px;
   background: rgba(14, 10, 12, 0.5); -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px);
@@ -131,9 +131,14 @@ html.night #nightStage { opacity: 1; visibility: visible; pointer-events: auto; 
 .rack { position: fixed; left: 0; right: 0; bottom: 0; z-index: 100; transform: translateZ(0); padding: 8px 10px calc(8px + env(safe-area-inset-bottom)); background: linear-gradient(#3b3b40, #202023 16%, #151517 84%, #0a0a0b); border-top: 2px solid #5a5a60; box-shadow: 0 -6px 24px rgba(0,0,0,0.55), inset 0 1px 0 rgba(255,255,255,0.2); text-shadow: none; transition: filter 0.8s; }
 html.night .rack { background: linear-gradient(#25252a, #141416 16%, #0d0d0e 84%, #060607); }
 html.night .rack .row > :not(#swNight), html.night .rack-menu { filter: brightness(0.62); }
+/* rack ears: a screw at each end */
+.rack::before, .rack::after { content: ""; position: absolute; top: 50%; width: 13px; height: 13px; margin-top: -6px; border-radius: 50%; background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 10'%3E%3Cpath d='M2.7 3.1 7.3 7.7M7.3 3.1 2.7 7.7' stroke='%23ffffff' stroke-opacity='.3' stroke-width='1.5' stroke-linecap='round'/%3E%3Cpath d='M2.7 2.6 7.3 7.2M7.3 2.6 2.7 7.2' stroke='%23141416' stroke-width='1.6' stroke-linecap='round'/%3E%3C/svg%3E") center / 74% no-repeat, radial-gradient(circle at 35% 30%, #d6d6db, #5a5a60 60%, #222); box-shadow: 0 1px 2px rgba(0,0,0,0.8); }
+.rack::before { left: 10px; }
+.rack::after { right: 10px; transform: rotate(35deg); }   /* turned a bit, like a real screw */
+@media (max-width: 600px) { .rack { padding-left: 22px; padding-right: 22px; } .rack::before { left: 5px; } .rack::after { right: 5px; } }
 .rack-in { position: relative; display: flex; flex-direction: column; gap: 8px; max-width: 1240px; margin: 0 auto; }
 .row { display: flex; align-items: center; justify-content: center; gap: 8px; }
-.row-a .lcd { display: none; }
+.row-a .lcd { display: none; cursor: var(--hand); }
 .rk { --c: #9ad1ff; font-family: 'KCStrikerSans', sans-serif; font-size: 0.66rem; letter-spacing: 1px; text-transform: uppercase; text-decoration: none; white-space: nowrap; color: #e9e9ee; background: linear-gradient(#70707a, #4a4a52 55%, #3a3a41); border: 1px solid #141416; border-radius: 10px; padding: 7px 10px; display: inline-flex; align-items: center; justify-content: center; gap: 6px; position: relative; box-shadow: 0 3px 0 #131315, 0 5px 7px rgba(0,0,0,0.55), inset 0 1px 0 rgba(255,255,255,0.3); transition: transform 0.06s, box-shadow 0.06s, background 0.15s, color 0.15s; -webkit-tap-highlight-color: transparent; }
 .rk:hover { filter: brightness(1.14); }
 .rk:active, .rk.lit, .rk[aria-pressed="true"] { transform: translateY(3px); color: var(--c); text-shadow: 0 0 8px var(--c); background: linear-gradient(#2a2a2f, #3a3a40); border-color: var(--c); box-shadow: 0 0 0 #131315, inset 0 3px 8px rgba(0,0,0,0.8), 0 0 12px var(--c); }
@@ -163,6 +168,7 @@ html.night .rack .row > :not(#swNight), html.night .rack-menu { filter: brightne
 @keyframes lcdScroll { to { transform: translateX(-33.3333%); } }
 .rack-menu { position: absolute; left: 0; bottom: calc(100% + 14px); display: flex; flex-direction: column; gap: 8px; padding: 10px; border-radius: 14px; background: linear-gradient(#2c2c31, #151517); border: 1px solid #4a4a50; box-shadow: 0 8px 22px rgba(0,0,0,0.6); opacity: 0; transform: translateY(14px); pointer-events: none; visibility: hidden; transition: opacity 0.18s, transform 0.18s, visibility 0.18s; }
 .rack.open .rack-menu { opacity: 1; transform: none; pointer-events: auto; visibility: visible; }
+.rack-menu .sw { align-self: flex-start; margin: 0 0 2px; }
 .rack-menu .rk { font-size: 0.8rem; letter-spacing: 1px; padding: 9px 18px; justify-content: flex-start; min-width: 150px; }
 .c-home { --c: #6fb4ff; } .c-game { --c: #6dff9a; } .c-store { --c: #d28bff; }
 
@@ -172,7 +178,7 @@ html.night .rack .row > :not(#swNight), html.night .rack-menu { filter: brightne
 @media (max-width: 600px) and (max-height: 740px) {
   .vid { padding: 9px 14px; gap: 10px; margin-bottom: 8px; font-size: 1rem; border-radius: 15px; }
   .chip { font-size: 0.85rem; padding: 2px 9px; min-width: 3em; }
-  .cat { margin-top: 14px; } .cat-title { margin-bottom: 10px; padding-bottom: 5px; font-size: 0.8rem; }
+  .cat { margin-top: 14px; } .cat-title { margin-bottom: 10px; padding-bottom: 5px; font-size: 1.15rem; }
   .toggle-wrap { margin-bottom: 10px; } .toggle-label { font-size: 0.85rem; } .pill { width: 50px; height: 28px; } .pill::after { width: 20px; height: 20px; } .pill.on::after { transform: translateX(22px); }
   .sleep-h { margin-top: 22px; margin-bottom: 8px; }
   .rack { padding-top: 5px; padding-bottom: calc(5px + env(safe-area-inset-bottom)); } .rack-in { gap: 5px; } .rk { padding: 5px 8px; }
@@ -261,6 +267,7 @@ html.night .rack .row > :not(#swNight), html.night .rack-menu { filter: brightne
 <div class="rack" id="rack" role="toolbar" aria-label="Player">
 <div class="rack-in">
   <nav class="rack-menu" id="rackMenu" aria-label="Menu">
+    <button type="button" class="sw" id="swMode" role="switch" aria-checked="false" aria-label="Breathe or Move"><i></i><span class="l">Breathe</span><span class="r">Move</span></button>
     <a class="rk c-home" href="https://freejoy.club">Home</a>
     <a class="rk c-game" href="/game/">Game room</a>
     <a class="rk c-store" href="/store/">Store</a>
@@ -270,14 +277,13 @@ html.night .rack .row > :not(#swNight), html.night .rack-menu { filter: brightne
     <button type="button" class="rk c-tr" id="rwd" aria-label="Previous video">&#9198;</button>
     <button type="button" class="rk c-play" id="play" aria-label="Play or pause" aria-pressed="false">&#9654;</button>
     <button type="button" class="rk c-tr" id="ff" aria-label="Next video">&#9197;</button>
-    <div class="lcd still" id="lcd"><div class="lcd-track" id="lcdTrack"><span>DOJO</span></div></div>
+    <div class="lcd still" id="lcd" role="button" tabindex="0" aria-label="Show the video that is playing"><div class="lcd-track" id="lcdTrack"><span>DOJO</span></div></div>
     <span class="rk-vol"><span class="rk-knob" id="knob" role="slider" tabindex="0" aria-label="Volume" aria-valuemin="0" aria-valuemax="100" aria-valuenow="70"></span></span>
     <button type="button" class="rk c-mute" id="mute" aria-pressed="false" aria-label="Mute">Mute</button>
+    <button type="button" class="rk c-bg" id="bgBtn" aria-pressed="false" aria-label="Keep playing in the background">BG play</button>
   </div>
   <div class="row row-b">
-    <button type="button" class="sw" id="swMode" role="switch" aria-checked="false" aria-label="Breathe or Move"><i></i><span class="l">Breathe</span><span class="r">Move</span></button>
-    <button type="button" class="sw" id="swAv" role="switch" aria-checked="true" aria-label="Audio only or Video"><i></i><span class="l">Audio</span><span class="r">Video</span></button>
-    <button type="button" class="rk c-bg" id="bgBtn" aria-pressed="false" aria-label="Keep playing in the background">BG play</button>
+    <button type="button" class="sw" id="swAv" role="switch" aria-checked="false" aria-label="Video or Audio only"><i></i><span class="l">Video</span><span class="r">Audio</span></button>
     <button type="button" class="sw sm" id="swNight" role="switch" aria-checked="false" aria-label="Day or night mode"><i></i><span class="l">&#9728;&#65039;</span><span class="r">&#127769;</span></button>
   </div>
 </div>
@@ -387,7 +393,7 @@ function syncSwitches() {
     el.querySelector('[data-v=time]').classList.toggle('active', !cat); el.querySelector('[data-v=cat]').classList.toggle('active', cat);
   });
   $('#swMode').classList.toggle('on', mv); $('#swMode').setAttribute('aria-checked', mv);
-  $('#swAv').classList.toggle('on', S.av === 'video'); $('#swAv').setAttribute('aria-checked', S.av === 'video');
+  $('#swAv').classList.toggle('on', S.av === 'audio'); $('#swAv').setAttribute('aria-checked', S.av === 'audio');
   $('#swNight').classList.toggle('on', S.night); $('#swNight').setAttribute('aria-checked', S.night);
   $('#bgBtn').setAttribute('aria-pressed', S.bg); $('#mute').setAttribute('aria-pressed', S.muted);
   document.title = 'Dojo - FJ';
@@ -587,6 +593,10 @@ $('#rwd').onclick = () => step(-1);
 $('#mute').onclick = () => { S.muted = !S.muted; syncSwitches(); applyVol(); };
 $('#bgBtn').onclick = () => setBg(!S.bg);
 $('#swNight').onclick = () => setNight(!S.night);
+/* tap the now-playing screen: bring up the video, even if Audio is on (and even from night mode) */
+function showVideo() { if (!P.id) return; S.av = 'video'; if (S.night) setNight(false); syncSwitches(); setPopup(); }
+$('#lcd').onclick = showVideo;
+$('#lcd').onkeydown = e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); showVideo(); } };
 $('#swMode').onclick = () => setSel(activeMode() === 'move' ? 'breathe' : 'move', true);
 $('#swAv').onclick = () => { S.av = S.av === 'video' ? 'audio' : 'video'; syncSwitches(); setPopup(); if (S.av === 'video' && S.night) toast('Video is on, but it stays hidden while night mode is on.'); };
 document.querySelectorAll('.sec').forEach(sec => {

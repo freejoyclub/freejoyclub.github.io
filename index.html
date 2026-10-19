@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- HOME (v25) -->
+<!-- HOME (v27) -->
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
@@ -904,8 +904,8 @@ try { if (location.hash) history.replaceState(null, '', location.pathname + loca
 </dialog>
 
 <div class="toast" id="toast" role="status"></div>
-<a class="edge edge-l" href="/game/?from=home" aria-label="Go to the game room"><span class="arr" aria-hidden="true">&#8249;</span><span class="txt"><span class="w-full">game room</span><span class="w-short">game</span></span><svg class="neon-arrow" viewBox="0 0 90 80" aria-hidden="true"><path d="M74 4 C74 38 54 58 14 62"/><path d="M30 46 L12 62 L32 76"/></svg></a>
-<a class="edge edge-r" href="/store/" aria-label="Go to the merch table"><span class="txt"><span class="w-full">merch table</span><span class="w-short">merch</span></span><span class="arr" aria-hidden="true">&#8250;</span><svg class="neon-arrow" viewBox="0 0 90 80" aria-hidden="true"><path d="M16 4 C16 38 36 58 76 62"/><path d="M60 46 L78 62 L58 76"/></svg></a>
+<a class="edge edge-l" href="/dojo/" aria-label="Go to the dojo"><span class="arr" aria-hidden="true">&#8249;</span><span class="txt"><span class="w-full">dojo</span><span class="w-short">dojo</span></span><svg class="neon-arrow" viewBox="0 0 90 80" aria-hidden="true"><path d="M74 4 C74 38 54 58 14 62"/><path d="M30 46 L12 62 L32 76"/></svg></a>
+<a class="edge edge-r" href="/store/" aria-label="Go to the store"><span class="txt"><span class="w-full">store</span><span class="w-short">store</span></span><span class="arr" aria-hidden="true">&#8250;</span><svg class="neon-arrow" viewBox="0 0 90 80" aria-hidden="true"><path d="M16 4 C16 38 36 58 76 62"/><path d="M60 46 L78 62 L58 76"/></svg></a>
 <div class="rack" role="toolbar" aria-label="Site menu and music">
 <div class="rack-in">
 <button type="button" class="rk c-menu" id="rackMenu" aria-label="Open the menu" aria-expanded="false" aria-controls="rackNav"><span class="burger"></span><span class="rk-menu-txt">Menu</span></button>
@@ -966,7 +966,7 @@ try { if (location.hash) history.replaceState(null, '', location.pathname + loca
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/STLLoader.js"></script>
 <script>
-// HOME (v25)
+// HOME (v27)
 const toTop = () => { try { window.scrollTo({ top: 0, left: 0, behavior: 'instant' }); } catch (e) { window.scrollTo(0, 0); } };
 toTop();
 window.addEventListener('load', toTop);
@@ -2715,27 +2715,6 @@ function makeDesk(el) {
   stage.add(joyCable);
   let joyT = 0;
 
-  /* ---------- under the table (left to right): a kettlebell (tap it to go to /move), a little mailbox (the email list) and a letter with a pen (contact us) ---------- */
-  const kettleG = new THREE.Group();
-  kettleG.position.set(0.15, FLOOR, 3.1);
-  kettleG.rotation.y = -0.3;
-  kettleG.scale.setScalar(1.15);   /* a little bigger than before */
-  stage.add(kettleG);
-  const kIron = new THREE.MeshStandardMaterial({ color: 0x3d4048, roughness: 0.48, metalness: 0.3, emissive: 0x14161a });   /* cast iron, kept a little lit so it does not go black in the shade under the table */
-  const kbBody = new THREE.Mesh(new THREE.SphereGeometry(0.4, 32, 20), kIron); kbBody.scale.y = 0.9; kbBody.position.y = 0.37; kettleG.add(kbBody);
-  const kbFoot = new THREE.Mesh(new THREE.CylinderGeometry(0.27, 0.3, 0.05, 28), kIron); kbFoot.position.y = 0.025; kettleG.add(kbFoot);   /* the flat bottom */
-  const kbHandle = new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3([[-0.2, 1.2], [0, 1.22], [0.2, 1.2], [0.29, 0.98], [0.31, 0.72], [0, 0.62], [-0.31, 0.72], [-0.29, 0.98]].map(q => new THREE.Vector3(q[0], q[1], 0)), true, 'centripetal'), 64, 0.065, 12, true), kIron); kettleG.add(kbHandle);   /* a curved triangle with a flat top (about 50% bigger than the old round handle); its bottom sits inside the ball */
-  const kbCv = document.createElement('canvas'); kbCv.width = 512; kbCv.height = 200;
-  const kbTex = new THREE.CanvasTexture(kbCv); kbTex.anisotropy = 4;
-  const drawKb = () => { const g = kbCv.getContext('2d'), F = "'KCStrikerSans', 'Arial Black', sans-serif"; g.clearRect(0, 0, 512, 200); g.fillStyle = '#f3e6c8'; g.textAlign = 'center'; g.textBaseline = 'middle';
-    let px = 190; g.font = px + 'px ' + F; while (px > 40 && g.measureText('MOVE').width > 490) { px -= 4; g.font = px + 'px ' + F; }   /* as big as fits the patch */
-    g.fillText('MOVE', 256, 104); kbTex.needsUpdate = true; };
-  drawKb();
-  if (document.fonts && document.fonts.load) document.fonts.load("40px 'KCStrikerSans'").then(drawKb).catch(() => {});
-  /* MOVE is printed on a patch of a sphere that matches the ball (same squash), so the word curves around the bell; it is turned 0.3 rad to face the camera (the kettlebell itself is turned -0.3). About twice as big as before. */
-  const kbLabel = noHit(new THREE.Mesh(new THREE.SphereGeometry(0.404, 48, 20, Math.PI / 2 + 0.3 - 0.9, 1.8, 0.8, 0.78), new THREE.MeshBasicMaterial({ map: kbTex, transparent: true, depthWrite: false, polygonOffset: true, polygonOffsetFactor: -2, polygonOffsetUnits: -2 }))); kbLabel.scale.y = 0.9; kbLabel.position.y = 0.37; kettleG.add(kbLabel);
-  const kettleBlob = blob(1.4, 1.4, 0.15, 3.1, 0.55); kettleBlob.position.y = FLOOR + 0.004;
-  hitBox(0.95, 1.5, 0.95, 0, 0.72, 0, 'kettle', kettleG);
 
   /* ---------- the mailbox pole: a wooden post on the floor just left of the table. The mailbox on top sits up over the desk a little. ---------- */
   const PLX = -2.45, PLZ = 2.7, PLTOP = 0.72;   /* where the post stands, and the height of its top */
@@ -2747,7 +2726,7 @@ function makeDesk(el) {
   const mailG = new THREE.Group();
   mailG.position.set(PLX, PLTOP, PLZ);
   mailG.rotation.y = 0.3;
-  mailG.scale.setScalar(1.3);
+  mailG.scale.setScalar(1.7);
   stage.add(mailG);
   const mailBlue = std(0x13737a, 0.45, 0.15), mailDark = std(0x0d5459, 0.5, 0.15), mailRed = std(0xc9382c, 0.45), mailMetal = std(0xb9bec6, 0.35, 0.6);
   const MB_W = 0.62, MB_H = 0.26, MB_D = 0.78;   /* width, height of the square lower part, depth (front to back) */
@@ -2976,22 +2955,22 @@ function makeDesk(el) {
   const eggFoot = new THREE.Mesh(new THREE.CylinderGeometry(0.11, 0.11, 0.012, 28), std(0xD5B38E, 0.7)); eggFoot.position.y = 0.006; eggG.add(eggFoot);
   hitBox(0.55, 0.85, 0.55, 0, 0.35, 0, 'egg', eggG);
 
-  /* ---------- a brass singing bowl on a little round pillow on top of the TV, its wooden striker leaning inside (tap it to go to /breathe) ---------- */
+  /* ---------- a brass singing bowl on a little round pillow on top of the TV, its wooden striker leaning inside (tap it to go to /dojo) ---------- */
   const BOWL_X = -1.0, TV_TOP = 4.9, BOWL_Z = -2.15;   /* TV_TOP = the top of the TV cabinet (the TV is 3 times its drawn size, standing at y -0.8) */
   const bowlG = new THREE.Group(); bowlG.position.set(BOWL_X, TV_TOP, BOWL_Z); stage.add(bowlG);
   const bowlGold = std(0xd8b04a, 0.35, 0.5);
   const pilCv = document.createElement('canvas'); pilCv.width = 1024; pilCv.height = 512;
   const pilTex = new THREE.CanvasTexture(pilCv); pilTex.anisotropy = 4;
-  const drawPillow = () => {   /* the pillow's cover: velvet with BREATHE embroidered on its front edge (the picture wraps around the sphere, so the word curves with the pillow) */
+  const drawPillow = () => {   /* the pillow's cover: velvet with DOJO embroidered on its front edge (the picture wraps around the sphere, so the word curves with the pillow) */
     const g = pilCv.getContext('2d'), F = "'KCStrikerSans', 'Arial Black', sans-serif";
     g.fillStyle = '#8a1f3c'; g.fillRect(0, 0, 1024, 512);
     for (let i = 0; i < 2500; i++) { g.fillStyle = Math.random() < 0.5 ? 'rgba(255,200,210,0.06)' : 'rgba(40,0,10,0.1)'; g.fillRect(Math.random() * 1024, Math.random() * 512, 3, 1.5); }   /* velvet grain */
-    g.save(); g.translate(256, 196); g.scale(1, 1.5); g.textAlign = 'center'; g.textBaseline = 'middle'; g.lineJoin = 'round';
-    let px = 72; g.font = px + 'px ' + F;
-    while (px > 20 && g.measureText('BREATHE').width > 350) { px -= 2; g.font = px + 'px ' + F; }
-    g.lineWidth = 8; g.strokeStyle = '#4a0f1f'; g.strokeText('BREATHE', 0, 0);   /* the dark edge of the thread */
-    g.fillStyle = '#ecd9a4'; g.fillText('BREATHE', 0, 0);   /* the thread */
-    g.setLineDash([4, 3]); g.lineWidth = 1.6; g.strokeStyle = 'rgba(110,60,40,0.85)'; g.strokeText('BREATHE', 0, 0);   /* little stitches */
+    g.save(); g.translate(256, 200); g.scale(1.2, 1.4); g.textAlign = 'center'; g.textBaseline = 'middle'; g.lineJoin = 'round';
+    let px = 92; g.font = px + 'px ' + F;
+    while (px > 20 && g.measureText('DOJO').width > 350) { px -= 2; g.font = px + 'px ' + F; }
+    g.lineWidth = 8; g.strokeStyle = '#4a0f1f'; g.strokeText('DOJO', 0, 0);   /* the dark edge of the thread */
+    g.fillStyle = '#ecd9a4'; g.fillText('DOJO', 0, 0);   /* the thread */
+    g.setLineDash([4, 3]); g.lineWidth = 1.6; g.strokeStyle = 'rgba(110,60,40,0.85)'; g.strokeText('DOJO', 0, 0);   /* little stitches */
     g.restore(); pilTex.needsUpdate = true;
   };
   drawPillow();
@@ -3011,7 +2990,7 @@ function makeDesk(el) {
     const tip = new THREE.Mesh(new THREE.SphereGeometry(0.085, 14, 12), std(0x5b4636, 0.9)); stick.add(tip); }
   const bowlBlob = blob(1.6, 1.6, BOWL_X, BOWL_Z, 0.5); bowlBlob.position.y = TV_TOP + 0.006;
   hitBox(1.2, 1.05, 1.2, 0, 0.5, 0, 'bowl', bowlG);
-  let bowlT = 0, kettleT = 0;
+  let bowlT = 0;
 
   /* ---------- the back wall, and a framed painting hanging on it: it goes to the Patreon (CONFIG.patreonUrl, empty until it exists) ---------- */
   const wallTex = mkTex(256, 256, (g, w, h) => { const gr = g.createRadialGradient(w / 2, h / 2, 0, w / 2, h / 2, w / 2); gr.addColorStop(0, '#fff'); gr.addColorStop(0.5, '#fff'); gr.addColorStop(1, '#000'); g.fillStyle = gr; g.fillRect(0, 0, w, h); });
@@ -3046,7 +3025,7 @@ function makeDesk(el) {
 
   /* ---------- coin: lies flat on the desk, real 50/50 ---------- */
   const COIN_ROT_TOP = Math.PI / 2, COIN_ROT_BOT = Math.PI / 2;   /* keeps the text upright on both faces: JOY is turned the other way so it reads upright while the coin spins on its edge and after a sideways flip */
-  const COIN_SCALE = 1.05, COIN_H = 0.03 * COIN_SCALE, COIN_R = 0.3 * COIN_SCALE, CX = 1.45, CZ = 1.7;
+  const COIN_SCALE = 1.35, COIN_H = 0.03 * COIN_SCALE, COIN_R = 0.3 * COIN_SCALE, CX = 1.45, CZ = 1.7;
   const coinRoot = new THREE.Group();
   coinRoot.position.set(CX, COIN_H, CZ);   /* on the table in front of the joystick (not on the game board) */
   stage.add(coinRoot);
@@ -3061,8 +3040,8 @@ function makeDesk(el) {
   coin.material[1].map.center.set(0.5, 0.5); coin.material[1].map.rotation = COIN_ROT_TOP;
   coin.material[2].map.center.set(0.5, 0.5); coin.material[2].map.rotation = COIN_ROT_BOT;
   flipper.add(coin);
-  hitBox(0.85, 0.85, 0.85, 0, 0, 0, 'coin', coinRoot);   /* tall enough for the coin standing on its edge */
-  const coinShadow = blob(1.0, 1.0, CX, CZ, 0.6);   lay(coinRoot, 1); lay(coinShadow, 1);   /* (moves outward with the joystick on wide screens) */
+  hitBox(1.0, 1.0, 1.0, 0, 0, 0, 'coin', coinRoot);   /* tall enough for the coin standing on its edge */
+  const coinShadow = blob(1.25, 1.25, CX, CZ, 0.6);   lay(coinRoot, 1); lay(coinShadow, 1);   /* (moves outward with the joystick on wide screens) */
   let flip = null, idle = true;   /* idle = the coin stands on its edge and spins slowly until you click it */
   flipper.rotation.x = Math.PI / 2;
   coinRoot.position.y = COIN_R + 0.012;
@@ -3525,7 +3504,7 @@ function makeDesk(el) {
     ldTex.needsUpdate = true;
   }
   let introTasks = [], ldDraw = 0;
-  const edgeOn = () => document.documentElement.classList.add('edge-on');   /* the side buttons (game room, merch table) show up once the intro is over */
+  const edgeOn = () => document.documentElement.classList.add('edge-on');   /* the side buttons (dojo, store) show up once the intro is over */
   if (REDUCE) edgeOn();
   const trackDep = (p, ms) => {   /* every download counts for the bar, but none can hold the intro for more than 8 seconds */
     const o = { ok: false };
@@ -3548,7 +3527,6 @@ function makeDesk(el) {
     wrapDrop([dieRoot], 1.2, 5, [dieShadow], 0.14);
     wrapDrop([coinRoot], 1.3, 4, [coinShadow], 0.12);
     wrapDrop([bagG], 1.1, 5, [bagBlob], 0.12);
-    wrapDrop([kettleG], 0.85, 5, [kettleBlob], 0.08);
     wrapDrop([poleG, mailG], 1.4, 4, [poleBlob], 0.1);
     wrapDrop([letterG], 1.5, 4, [letterBlob], 0.1);
     wrapDrop([eggG], 1.55, 4, [eggBlob], 0.1);
@@ -3641,7 +3619,7 @@ function makeDesk(el) {
     }
     const tag = pick(e);
     el.style.cursor = tag && !(menuOn && tag === 'tv') ? 'var(--hand)' : 'default';
-    hoverGroup = tag === 'chan' ? pickObj.userData.btn : tag === 'kettle' ? kettleG : tag === 'bowl' ? bowlG : tag === 'painting' ? paintG : tag === 'mailbox' ? mailG : tag === 'letter' ? letterG : tag === 'tv' ? (menuOn ? null : tv) : tag === 'bust' ? pickObj.userData.bust : tag === 'coin' ? coinRoot : tag === 'die' ? dieRoot : tag === 'vinyl' ? vinylG : tag === 'joystick' ? joyG : tag === 'radio' ? radio : tag === 'knob' ? knob : tag === 'bag' ? bagG : tag === 'egg' ? eggG : null;
+    hoverGroup = tag === 'chan' ? pickObj.userData.btn : tag === 'bowl' ? bowlG : tag === 'painting' ? paintG : tag === 'mailbox' ? mailG : tag === 'letter' ? letterG : tag === 'tv' ? (menuOn ? null : tv) : tag === 'bust' ? pickObj.userData.bust : tag === 'coin' ? coinRoot : tag === 'die' ? dieRoot : tag === 'vinyl' ? vinylG : tag === 'joystick' ? joyG : tag === 'radio' ? radio : tag === 'knob' ? knob : tag === 'bag' ? bagG : tag === 'egg' ? eggG : null;
   });
   const endKnob = () => { knobDrag = null; };
   el.addEventListener('pointerup', endKnob);
@@ -3685,8 +3663,7 @@ function makeDesk(el) {
       const go = () => { hideInfoTV(); cancelBlip(); changeChannel(d); };
       if (menuClosing) setTimeout(go, 800); else go();
     }
-    else if (tag === 'kettle') { kettleT = performance.now(); Sound.slide(); setTimeout(() => askGo('/move', ''), REDUCE ? 0 : 450); }
-    else if (tag === 'bowl') { bowlT = performance.now(); Sound.slide(); setTimeout(() => askGo('/breathe', ''), REDUCE ? 0 : 700); }
+    else if (tag === 'bowl') { bowlT = performance.now(); Sound.slide(); setTimeout(() => askGo('/dojo/', ''), REDUCE ? 0 : 700); }
     else if (tag === 'painting') { paintT = performance.now(); Sound.slide(); setTimeout(openPatreon, REDUCE ? 0 : 450);   /* the popup with the framed picture and the pitch */ }
     else if (tag === 'mailbox') { mailT = performance.now(); Sound.slide(); setTimeout(openMail, REDUCE ? 0 : 650); }
     else if (tag === 'letter') { letterT = performance.now(); Sound.slide(); setTimeout(openContact, REDUCE ? 0 : 450); }
@@ -3726,9 +3703,6 @@ function makeDesk(el) {
     const bk = bowlT ? Math.min(1, (now - bowlT) / 700) : 1;   /* singing bowl: it rocks a little when tapped */
     bowlG.rotation.z = REDUCE ? 0 : Math.sin(bk * Math.PI * 6) * (1 - bk) * 0.06;
     if (bk >= 1) bowlT = 0;
-    const kk = kettleT ? Math.min(1, (now - kettleT) / 600) : 1;   /* kettlebell: it rocks a little when tapped */
-    kettleG.rotation.z = REDUCE ? 0 : Math.sin(kk * Math.PI * 4) * (1 - kk) * 0.05;
-    if (kk >= 1) kettleT = 0;
     coinTick(now);
     const mlk = mailT ? Math.min(1, (now - mailT) / 1700) : 1;   /* mailbox: the red flag swings up when tapped, then back down */
     mailFlag.rotation.z = REDUCE ? 1.9 : 1.9 - 1.9 * Math.min(1, Math.sin(Math.min(1, mlk * 1.15) * Math.PI) * 1.6);
@@ -3743,7 +3717,7 @@ function makeDesk(el) {
     barTex.offset.y = REDUCE ? 0 : -((t / 7000) % 1);
     tvLight.intensity = 0.55 * fl;
     /* hover glow: whatever is under the pointer warms up slightly (the radio knob too, while it is turned) */
-    if (!glowItems) glowItems = [tv, radio, knob, coinRoot, dieRoot, vinylG, joyG, kettleG, mailG, letterG, bagG, eggG, bowlG, paintG].concat(crew, chBtns).map(g => ({ g, k: 0, s: g === knob || chBtns.indexOf(g) >= 0 ? 1.2 : 1 }));
+    if (!glowItems) glowItems = [tv, radio, knob, coinRoot, dieRoot, vinylG, joyG, mailG, letterG, bagG, eggG, bowlG, paintG].concat(crew, chBtns).map(g => ({ g, k: 0, s: g === knob || chBtns.indexOf(g) >= 0 ? 1.2 : 1 }));
     const hg = knobDrag ? knob : hoverGroup;
     glowItems.forEach(it => {
       const tgt = it.g === hg ? 1 : 0;
