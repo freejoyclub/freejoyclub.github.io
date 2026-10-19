@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- DOJO (v9) -->
+<!-- DOJO (v10) -->
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -107,8 +107,8 @@ html.night #content { opacity: 0; visibility: hidden; pointer-events: none; }
 .prompt b { display: block; margin-bottom: 10px; font-weight: normal; }
 .prompt button { margin: 0 5px; padding: 8px 18px; border-radius: 999px; border: 1px solid rgba(185,198,255,0.6); background: rgba(185,198,255,0.12); color: #fff; font-size: 0.95rem; letter-spacing: 1px; }
 .prompt button.yes { background: #b9c6ff; color: #10142e; text-shadow: none; }
-#floatPrompt { position: fixed; left: 50%; transform: translateX(-50%); bottom: calc(var(--bar-h) + 14px); width: min(92vw, 440px); z-index: 95; }
-#toast { position: fixed; left: 50%; bottom: calc(var(--bar-h) + 16px); transform: translate(-50%, 12px); max-width: min(92vw, 460px); z-index: 96; padding: 11px 18px; border-radius: 14px; background: rgba(10,10,14,0.92); border: 1px solid rgba(255,213,128,0.4); font-size: 0.95rem; opacity: 0; pointer-events: none; transition: opacity 0.3s, transform 0.3s; }
+#floatPrompt { position: fixed; left: 50%; transform: translateX(-50%); bottom: var(--hint-b, calc(var(--bar-h) + 14px)); width: min(92vw, 440px); z-index: 110; }
+#toast { position: fixed; left: 50%; bottom: var(--hint-b, calc(var(--bar-h) + 16px)); transform: translate(-50%, 12px); max-width: min(92vw, 460px); z-index: 110; padding: 11px 18px; border-radius: 14px; background: rgba(10,10,14,0.92); border: 1px solid rgba(255,213,128,0.4); font-size: 0.95rem; opacity: 0; pointer-events: none; transition: opacity 0.3s, transform 0.3s; }
 #toast.show { opacity: 1; transform: translate(-50%, 0); }
 html.night #toast { opacity: 0; }
 html.night #toast.show { opacity: 0.8; }
@@ -139,6 +139,7 @@ html.night .rack .row > :not(#swNight), html.night .rack-menu { filter: brightne
 @media (max-width: 600px) { .row-a { gap: 5px; } .row-a .rk { padding-left: 8px; padding-right: 8px; } .rack { padding-left: 22px; padding-right: 22px; } .rack::before { left: 5px; } .rack::after { right: 5px; } }
 .rack-in { position: relative; display: flex; flex-direction: column; gap: 8px; max-width: 1240px; margin: 0 auto; }
 .row { display: flex; align-items: center; justify-content: center; gap: 8px; }
+.row-a { justify-content: space-evenly; }   /* spread the bar buttons out evenly */
 .row-a .lcd { display: none; cursor: var(--hand); }
 .rk { --c: #9ad1ff; font-family: 'KCStrikerSans', sans-serif; font-size: 0.66rem; letter-spacing: 1px; text-transform: uppercase; text-decoration: none; white-space: nowrap; color: #e9e9ee; background: linear-gradient(#70707a, #4a4a52 55%, #3a3a41); border: 1px solid #141416; border-radius: 10px; padding: 7px 10px; display: inline-flex; align-items: center; justify-content: center; gap: 6px; position: relative; box-shadow: 0 3px 0 #131315, 0 5px 7px rgba(0,0,0,0.55), inset 0 1px 0 rgba(255,255,255,0.3); transition: transform 0.06s, box-shadow 0.06s, background 0.15s, color 0.15s; -webkit-tap-highlight-color: transparent; }
 .rk:hover { filter: brightness(1.14); }
@@ -175,6 +176,7 @@ html.night .rack .row > :not(#swNight), html.night .rack-menu { filter: brightne
 .rack-menu .rk.c-repeat { justify-content: center; }
 .rack-menu .sw { align-self: flex-start; margin: 0 0 2px; }
 .rack-menu .rk { font-size: 0.8rem; letter-spacing: 1px; padding: 9px 18px; justify-content: flex-start; min-width: 150px; }
+.rack-menu .rk.c-bg { font-size: 0.66rem; letter-spacing: 0.6px; }
 .c-home { --c: #6fb4ff; } .c-game { --c: #6dff9a; } .c-store { --c: #d28bff; }
 
 @media (min-width: 900px) { .row-a .lcd { height: 40px; max-width: 480px; flex-basis: 260px; } .row-a .lcd-track span { line-height: 40px; font-size: 1.05rem; } }
@@ -280,6 +282,7 @@ html.night .rack .row > :not(#swNight), html.night .rack-menu { filter: brightne
       <button type="button" class="rk c-tr" id="ff" aria-label="Next video">&#9197;</button>
     </div>
     <button type="button" class="rk c-repeat" id="repeat" aria-pressed="false" aria-label="Repeat: play the video again when it ends">&#128257; Repeat</button>
+    <button type="button" class="rk c-bg" id="bgBtn" aria-pressed="false" aria-label="Background play (desktop): keep playing when you leave this tab">Background play (desktop)</button>
     <button type="button" class="sw" id="swMode" role="switch" aria-checked="false" aria-label="Breathe or Move"><i></i><span class="l">Breathe</span><span class="r">Move</span></button>
     <button type="button" class="sw swAv" role="switch" aria-checked="false" aria-label="Video or Audio only"><i></i><span class="l">Video</span><span class="r">Audio</span></button>
     <a class="rk c-home" href="https://freejoy.club">Home</a>
@@ -292,7 +295,6 @@ html.night .rack .row > :not(#swNight), html.night .rack-menu { filter: brightne
     <div class="lcd still" id="lcd" role="button" tabindex="0" aria-label="Show the video that is playing"><div class="lcd-track" id="lcdTrack"><span>DOJO</span></div></div>
     <span class="rk-vol"><span class="rk-knob" id="knob" role="slider" tabindex="0" aria-label="Volume" aria-valuemin="0" aria-valuemax="100" aria-valuenow="70"></span></span>
     <button type="button" class="rk c-mute" id="mute" aria-pressed="false" aria-label="Mute">Mute</button>
-    <button type="button" class="rk c-bg" id="bgBtn" aria-pressed="false" aria-label="Keep playing in the background">BG play</button>
     <button type="button" class="sw sm" id="swNight" role="switch" aria-checked="false" aria-label="Day or night mode"><i></i><span class="l">&#9728;&#65039;</span><span class="r">&#127769;</span></button>
   </div>
 </div>
@@ -656,7 +658,14 @@ knob.addEventListener('keydown', e => { if (/Arrow(Up|Right)/.test(e.key)) { e.p
 
 /* the bar's height is shared with the page (video window, prompts, bottom padding) */
 const rack = $('#rack');
-function barH() { document.documentElement.style.setProperty('--bar-h', rack.offsetHeight + 'px'); }
+/* hints (toasts) sit just above the bar; when the menu is open they sit above the menu instead */
+function placeHints() {
+  const r = $('#rack'), m = $('#rackMenu');
+  const b = r.offsetHeight + 16 + (r.classList.contains('open') ? m.offsetHeight + 14 : 0);
+  document.documentElement.style.setProperty('--hint-b', b + 'px');
+}
+new MutationObserver(placeHints).observe($('#rack'), { attributes: true, attributeFilter: ['class'] });
+function barH() { document.documentElement.style.setProperty('--bar-h', rack.offsetHeight + 'px'); placeHints(); }
 if (window.ResizeObserver) new ResizeObserver(barH).observe(rack); window.addEventListener('resize', barH);
 
 /* ============ THE PICTURE BEHIND: slides slowly while you scroll, always covering the whole screen ============ */
