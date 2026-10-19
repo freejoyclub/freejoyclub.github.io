@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- DOJO (v8) -->
+<!-- DOJO (v9) -->
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -554,22 +554,8 @@ $('#cordHit').addEventListener('click', () => {
 });
 
 /* ============ BACKGROUND PLAY (lock screen / notification controls + keeping the audio going) ============ */
-let ka = null;
-function silentUrl() {   /* two minutes of silence as a small wav: a real audio element lets phones treat the page as "playing audio" */
-  const n = 8000 * 120, buf = new ArrayBuffer(44 + n), v = new DataView(buf), w = (o, s) => { for (let i = 0; i < s.length; i++) v.setUint8(o + i, s.charCodeAt(i)); };
-  w(0, 'RIFF'); v.setUint32(4, 36 + n, true); w(8, 'WAVE'); w(12, 'fmt '); v.setUint32(16, 16, true); v.setUint16(20, 1, true); v.setUint16(22, 1, true); v.setUint32(24, 8000, true); v.setUint32(28, 8000, true); v.setUint16(32, 1, true); v.setUint16(34, 8, true); w(36, 'data'); v.setUint32(40, n, true);
-  new Uint8Array(buf, 44).fill(128);
-  return URL.createObjectURL(new Blob([buf], { type: 'audio/wav' }));
-}
-function keepAlive() {
-  const on = S.bg && !!P.id && P.wantPlay && !P.bgFailed;
-  try {
-    if (on) {
-      if (!ka) { ka = new Audio(silentUrl()); ka.loop = true; ka.setAttribute('playsinline', ''); }
-      const p = ka.play(); if (p && p.catch) p.catch(() => {});
-      if (navigator.audioSession) navigator.audioSession.type = 'playback';
-    } else if (ka) ka.pause();
-  } catch (e) {}
+function keepAlive() {   /* tells the phone this page plays audio (where the browser supports it). No fake audio is played. */
+  try { if (navigator.audioSession) navigator.audioSession.type = (S.bg && P.wantPlay) ? 'playback' : 'auto'; } catch (e) {}
 }
 function updateSession() {
   if (!('mediaSession' in navigator)) return;
@@ -579,13 +565,7 @@ function updateSession() {
     }
     navigator.mediaSession.playbackState = !P.id ? 'none' : (isPlaying() ? 'playing' : 'paused');
   } catch (e) {}
-  updatePosition();
 }
-function updatePosition() {   /* the phone's media card shows the real video's time and length */
-  if (!('mediaSession' in navigator) || !navigator.mediaSession.setPositionState || !P.api || !P.id) return;
-  try { const d = P.api.getDuration(), t = P.api.getCurrentTime(); if (d > 0 && isFinite(d)) navigator.mediaSession.setPositionState({ duration: d, position: Math.min(Math.max(t || 0, 0), d), playbackRate: 1 }); } catch (e) {}
-}
-setInterval(updatePosition, 2000);
 function initSession() {
   if (!('mediaSession' in navigator)) return;
   const h = (n, f) => { try { navigator.mediaSession.setActionHandler(n, f); } catch (e) {} };
@@ -594,7 +574,7 @@ function initSession() {
 }
 function setBg(on, quiet) {
   S.bg = !!on; syncSwitches(); keepAlive(); updateSession();
-  if (!quiet) toast(S.bg ? 'Background play on: audio keeps going when you leave this tab or lock your phone.' : 'Background play off: audio pauses when you leave this tab.');
+  if (!quiet) toast(S.bg ? 'Background play on: the video is not paused when you leave this tab. Some phones still stop it.' : 'Background play off: the video pauses when you leave this tab.');
 }
 document.addEventListener('visibilitychange', () => {
   if (!P.api || !P.id) return;
@@ -605,7 +585,7 @@ document.addEventListener('visibilitychange', () => {
   }
   if (!S.bg) { if (isPlaying()) { try { P.api.pauseVideo(); } catch (e) {} P.hiddenPaused = true; } return; }
   /* background play on: only keep going what was already playing (a paused video stays paused). If the browser stops it, try to start it again a few times, then give up
-     (and stop the silent keep-alive audio, so the phone does not show a fake player that is not playing anything). */
+     (and say so when you come back). */
   if (!P.wantPlay) return;
   [400, 1200, 2600, 5000].forEach((ms, k, arr) => setTimeout(() => {
     if (!document.hidden || !P.id || !P.wantPlay || isPlaying()) return;
