@@ -1,10 +1,11 @@
 <!DOCTYPE html>
-<!-- DOJO (v5) -->
+<!-- DOJO (v6) -->
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Dojo - FJ</title>
+<link rel="icon" type="image/png" href="/favicon.png">
 <meta name="theme-color" content="#1a120d">
 <style>
 @font-face { font-family: 'KCOraleSans'; src: url('/KCOraleSans.otf') format('opentype'); }
@@ -50,8 +51,8 @@ html.night #content { opacity: 0; visibility: hidden; pointer-events: none; }
 #secs.picked .sec.sel { order: 1; } #secs.picked .sec:not(.sel) { order: 2; }
 .sec-head {
   display: flex; align-items: center; justify-content: center; gap: 12px; width: 100%; background: none; border: 0; padding: 6px 0;
-  font-family: 'KCOraleSans', 'Arial Black', sans-serif; font-weight: normal; letter-spacing: 3px; text-align: center;
-  font-size: clamp(1.25rem, 7vw, 2.6rem); white-space: nowrap; text-shadow: 0 2px 10px rgba(0,0,0,0.7); color: var(--ink);
+  font-family: 'KCOraleSans', 'Arial Black', sans-serif; font-weight: normal; letter-spacing: 0.06em; text-align: center;
+  font-size: clamp(1.25rem, 8.5vw, 3.6rem); white-space: nowrap; text-shadow: 0 3px 5px rgba(0,0,0,0.95), 0 0 16px rgba(0,0,0,0.85); color: var(--ink);
 }
 .sec-caret { display: none; font-family: Arial, sans-serif; font-size: 1.1rem; color: var(--gold); transition: transform 0.25s; }
 #secs:not(.picked) .sec-head { cursor: var(--hand); }
@@ -64,9 +65,9 @@ html.night #content { opacity: 0; visibility: hidden; pointer-events: none; }
 
 /* ---------- the two switches under the title ---------- */
 .toggle-wrap { display: flex; justify-content: center; align-items: center; gap: 14px; margin: 4px auto 14px; }
-.toggle-label { font-size: 0.95rem; letter-spacing: 2px; text-transform: uppercase; opacity: 0.6; transition: opacity 0.3s, color 0.3s; background: none; border: 0; padding: 6px 2px; }
-.toggle-label.active { opacity: 1; color: var(--gold); text-shadow: 0 0 10px rgba(255,213,128,0.6); }
-.pill { position: relative; width: 58px; height: 32px; flex: none; background: rgba(0,0,0,0.45); border-radius: 16px; border: 1px solid rgba(255,213,128,0.45); padding: 0; }
+.toggle-label { text-shadow: 0 2px 5px rgba(0,0,0,0.9), 0 0 10px rgba(0,0,0,0.55); font-size: 0.95rem; letter-spacing: 2px; text-transform: uppercase; opacity: 0.6; transition: opacity 0.3s, color 0.3s; background: none; border: 0; padding: 6px 2px; }
+.toggle-label.active { opacity: 1; color: var(--gold); text-shadow: 0 2px 5px rgba(0,0,0,0.9), 0 0 10px rgba(255,213,128,0.6); }
+.pill { box-shadow: 0 3px 8px rgba(0,0,0,0.6); position: relative; width: 58px; height: 32px; flex: none; background: rgba(0,0,0,0.45); border-radius: 16px; border: 1px solid rgba(255,213,128,0.45); padding: 0; }
 .pill::after { content: ''; position: absolute; top: 3px; left: 3px; width: 24px; height: 24px; border-radius: 50%; background: var(--gold); box-shadow: 0 0 10px rgba(255,213,128,0.6); transition: transform 0.3s cubic-bezier(0.175,0.885,0.32,1.275); }
 .pill.on::after { transform: translateX(26px); }
 
@@ -135,7 +136,7 @@ html.night .rack .row > :not(#swNight), html.night .rack-menu { filter: brightne
 .rack::before, .rack::after { content: ""; position: absolute; top: 50%; width: 13px; height: 13px; margin-top: -6px; border-radius: 50%; background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 10'%3E%3Cpath d='M2.7 3.1 7.3 7.7M7.3 3.1 2.7 7.7' stroke='%23ffffff' stroke-opacity='.3' stroke-width='1.5' stroke-linecap='round'/%3E%3Cpath d='M2.7 2.6 7.3 7.2M7.3 2.6 2.7 7.2' stroke='%23141416' stroke-width='1.6' stroke-linecap='round'/%3E%3C/svg%3E") center / 74% no-repeat, radial-gradient(circle at 35% 30%, #d6d6db, #5a5a60 60%, #222); box-shadow: 0 1px 2px rgba(0,0,0,0.8); }
 .rack::before { left: 10px; }
 .rack::after { right: 10px; transform: rotate(35deg); }   /* turned a bit, like a real screw */
-@media (max-width: 600px) { .rack { padding-left: 22px; padding-right: 22px; } .rack::before { left: 5px; } .rack::after { right: 5px; } }
+@media (max-width: 600px) { .row-a { gap: 5px; } .row-a .rk { padding-left: 8px; padding-right: 8px; } .rack { padding-left: 22px; padding-right: 22px; } .rack::before { left: 5px; } .rack::after { right: 5px; } }
 .rack-in { position: relative; display: flex; flex-direction: column; gap: 8px; max-width: 1240px; margin: 0 auto; }
 .row { display: flex; align-items: center; justify-content: center; gap: 8px; }
 .row-a .lcd { display: none; cursor: var(--hand); }
@@ -169,12 +170,14 @@ html.night .rack .row > :not(#swNight), html.night .rack-menu { filter: brightne
 .rack-menu { position: absolute; left: 0; bottom: calc(100% + 14px); display: flex; flex-direction: column; gap: 8px; padding: 10px; border-radius: 14px; background: linear-gradient(#2c2c31, #151517); border: 1px solid #4a4a50; box-shadow: 0 8px 22px rgba(0,0,0,0.6); opacity: 0; transform: translateY(14px); pointer-events: none; visibility: hidden; transition: opacity 0.18s, transform 0.18s, visibility 0.18s; }
 .rack.open .rack-menu { opacity: 1; transform: none; pointer-events: auto; visibility: visible; }
 .rack-menu .sw { align-self: flex-start; margin: 0 0 2px; }
+.swAv-lcd { display: none; }
+.sw.swAv-lcd span { padding: 0 9px; }
 .rack-menu .rk { font-size: 0.8rem; letter-spacing: 1px; padding: 9px 18px; justify-content: flex-start; min-width: 150px; }
 .c-home { --c: #6fb4ff; } .c-game { --c: #6dff9a; } .c-store { --c: #d28bff; }
 
-@media (min-width: 560px) { .row-a .lcd { display: block; } .rk { font-size: 0.7rem; } .sw { font-size: 0.62rem; } }
+@media (min-width: 560px) { .row-a .lcd { display: block; } .swAv-lcd { display: inline-grid; } .rk { font-size: 0.7rem; } .sw { font-size: 0.62rem; } }
 @media (min-width: 1180px) { .rack-in { flex-direction: row; justify-content: center; align-items: center; gap: 12px; } .rack-in .row { flex: none; } .row-a { flex: 1 1 auto; } .rk-knob { width: 36px; height: 36px; } }
-@media (max-width: 380px) { .rk { padding: 6px 7px; font-size: 0.6rem; } .sw span { padding: 0 5px; min-width: 2.2em; } .row { gap: 6px; } }
+@media (max-width: 400px) { .rk { padding: 6px 7px; font-size: 0.6rem; } .sw span { padding: 0 5px; min-width: 2.2em; } .sw.sm span { padding: 0 3px; min-width: 1.7em; } .row { gap: 5px; } .rack { padding-left: 20px; padding-right: 20px; } .c-play { min-width: 40px; } .row-a .rk { padding-left: 6px; padding-right: 6px; } }
 @media (max-width: 600px) and (max-height: 740px) {
   .vid { padding: 9px 14px; gap: 10px; margin-bottom: 8px; font-size: 1rem; border-radius: 15px; }
   .chip { font-size: 0.85rem; padding: 2px 9px; min-width: 3em; }
@@ -268,22 +271,19 @@ html.night .rack .row > :not(#swNight), html.night .rack-menu { filter: brightne
 <div class="rack-in">
   <nav class="rack-menu" id="rackMenu" aria-label="Menu">
     <button type="button" class="sw" id="swMode" role="switch" aria-checked="false" aria-label="Breathe or Move"><i></i><span class="l">Breathe</span><span class="r">Move</span></button>
+    <button type="button" class="sw swAv" role="switch" aria-checked="false" aria-label="Video or Audio only"><i></i><span class="l">Video</span><span class="r">Audio</span></button>
     <a class="rk c-home" href="https://freejoy.club">Home</a>
     <a class="rk c-game" href="/game/">Game room</a>
     <a class="rk c-store" href="/store/">Store</a>
   </nav>
   <div class="row row-a">
     <button type="button" class="rk c-menu" id="menuBtn" aria-label="Open the menu" aria-expanded="false"><span class="burger"></span></button>
-    <button type="button" class="rk c-tr" id="rwd" aria-label="Previous video">&#9198;</button>
     <button type="button" class="rk c-play" id="play" aria-label="Play or pause" aria-pressed="false">&#9654;</button>
-    <button type="button" class="rk c-tr" id="ff" aria-label="Next video">&#9197;</button>
     <div class="lcd still" id="lcd" role="button" tabindex="0" aria-label="Show the video that is playing"><div class="lcd-track" id="lcdTrack"><span>DOJO</span></div></div>
+    <button type="button" class="sw swAv swAv-lcd" role="switch" aria-checked="false" aria-label="Video or Audio only"><i></i><span class="l">Video</span><span class="r">Audio</span></button>
     <span class="rk-vol"><span class="rk-knob" id="knob" role="slider" tabindex="0" aria-label="Volume" aria-valuemin="0" aria-valuemax="100" aria-valuenow="70"></span></span>
     <button type="button" class="rk c-mute" id="mute" aria-pressed="false" aria-label="Mute">Mute</button>
     <button type="button" class="rk c-bg" id="bgBtn" aria-pressed="false" aria-label="Keep playing in the background">BG play</button>
-  </div>
-  <div class="row row-b">
-    <button type="button" class="sw" id="swAv" role="switch" aria-checked="false" aria-label="Video or Audio only"><i></i><span class="l">Video</span><span class="r">Audio</span></button>
     <button type="button" class="sw sm" id="swNight" role="switch" aria-checked="false" aria-label="Day or night mode"><i></i><span class="l">&#9728;&#65039;</span><span class="r">&#127769;</span></button>
   </div>
 </div>
@@ -342,7 +342,7 @@ const S = {
   open: { breathe: false, move: false },   /* the dropdown of the NOT picked one */
   view: { breathe: store.get('breathe-view') === 'cat' ? 'cat' : 'time', move: store.get('move-view') === 'cat' ? 'cat' : 'time' },
   av: 'video',   /* always starts in video mode */
-  night: false, bg: false, muted: false,
+  night: false, bg: true, muted: false,   /* background play is on from the start */
   vol: Math.min(1, Math.max(0, parseFloat(store.get('dojo-vol')) || 0.7))
 };
 if (/move/i.test(location.hash)) S.sel = 'move'; else if (/breathe/i.test(location.hash)) S.sel = 'breathe';
@@ -376,6 +376,18 @@ function fillList(mode) {
 }
 function renderList() { fillList('breathe'); fillList('move'); layout(); markPlaying(); }
 /* nothing picked: both open. One picked: it is open and first, the other is a closed dropdown under it (tap its header to open) */
+/* make each section title as big as fits on one line (never wraps) */
+function fitTitles() {
+  document.querySelectorAll('.sec-head').forEach(hd => {
+    const t = hd.querySelector('.sec-t'), caret = hd.querySelector('.sec-caret'), cs = getComputedStyle(hd);
+    if (!hd.clientWidth) return;
+    const drop = getComputedStyle(caret).display !== 'none';
+    const avail = hd.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight) - (drop ? caret.offsetWidth + 14 : 0) - 6;
+    t.style.fontSize = '100px';
+    const w = t.getBoundingClientRect().width;
+    t.style.fontSize = Math.max(16, Math.min(drop ? 38 : 66, 97 * avail / w)).toFixed(1) + 'px';
+  });
+}
 function layout() {
   $('#secs').classList.toggle('picked', !!S.sel);
   ['breathe', 'move'].forEach(m => {
@@ -383,6 +395,7 @@ function layout() {
     el.classList.toggle('sel', S.sel === m); el.classList.toggle('open', open);
     el.querySelector('.sec-head').setAttribute('aria-expanded', String(open));
   });
+  fitTitles();
 }
 function markPlaying() { document.querySelectorAll('.vid').forEach(b => b.classList.toggle('playing', !!P.id && b.dataset.id === P.id)); }
 function syncSwitches() {
@@ -393,7 +406,7 @@ function syncSwitches() {
     el.querySelector('[data-v=time]').classList.toggle('active', !cat); el.querySelector('[data-v=cat]').classList.toggle('active', cat);
   });
   $('#swMode').classList.toggle('on', mv); $('#swMode').setAttribute('aria-checked', mv);
-  $('#swAv').classList.toggle('on', S.av === 'audio'); $('#swAv').setAttribute('aria-checked', S.av === 'audio');
+  document.querySelectorAll('.swAv').forEach(s => { s.classList.toggle('on', S.av === 'audio'); s.setAttribute('aria-checked', S.av === 'audio'); });
   $('#swNight').classList.toggle('on', S.night); $('#swNight').setAttribute('aria-checked', S.night);
   $('#bgBtn').setAttribute('aria-pressed', S.bg); $('#mute').setAttribute('aria-pressed', S.muted);
   document.title = 'Dojo - FJ';
@@ -588,8 +601,6 @@ function updateUI() {
 }
 /* ============ THE BAR'S BUTTONS ============ */
 $('#play').onclick = togglePlay;
-$('#ff').onclick = () => step(1);
-$('#rwd').onclick = () => step(-1);
 $('#mute').onclick = () => { S.muted = !S.muted; syncSwitches(); applyVol(); };
 $('#bgBtn').onclick = () => setBg(!S.bg);
 $('#swNight').onclick = () => setNight(!S.night);
@@ -598,7 +609,7 @@ function showVideo() { if (!P.id) return; S.av = 'video'; if (S.night) setNight(
 $('#lcd').onclick = showVideo;
 $('#lcd').onkeydown = e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); showVideo(); } };
 $('#swMode').onclick = () => setSel(activeMode() === 'move' ? 'breathe' : 'move', true);
-$('#swAv').onclick = () => { S.av = S.av === 'video' ? 'audio' : 'video'; syncSwitches(); setPopup(); if (S.av === 'video' && S.night) toast('Video is on, but it stays hidden while night mode is on.'); };
+document.querySelectorAll('.swAv').forEach(s => s.onclick = () => { S.av = S.av === 'video' ? 'audio' : 'video'; syncSwitches(); setPopup(); if (S.av === 'video' && S.night) toast('Video is on, but it stays hidden while night mode is on.'); });
 document.querySelectorAll('.sec').forEach(sec => {
   const m = sec.dataset.mode;
   sec.querySelector('.pill').onclick = () => setView(m, S.view[m] === 'cat' ? 'time' : 'cat');
@@ -776,7 +787,9 @@ function initScene() {
 $('#sleepBtn').dataset.id = SLEEP_ID;
 barH(); layout(); syncSwitches(); renderList(); setVol(S.vol); updateUI(); initSession(); parallax();
 scene = initScene(); if (scene) scene.setSel(S.sel);
-window.addEventListener('load', () => { barH(); parallax(); });
+window.addEventListener('load', () => { barH(); parallax(); fitTitles(); });
+window.addEventListener('resize', fitTitles);
+if (document.fonts && document.fonts.ready) document.fonts.ready.then(fitTitles);
 })();
 </script>
 </body>

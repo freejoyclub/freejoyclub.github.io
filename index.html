@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- HOME (v27) -->
+<!-- HOME (v28) -->
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
@@ -966,7 +966,7 @@ try { if (location.hash) history.replaceState(null, '', location.pathname + loca
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/STLLoader.js"></script>
 <script>
-// HOME (v27)
+// HOME (v28)
 const toTop = () => { try { window.scrollTo({ top: 0, left: 0, behavior: 'instant' }); } catch (e) { window.scrollTo(0, 0); } };
 toTop();
 window.addEventListener('load', toTop);
@@ -2965,8 +2965,8 @@ function makeDesk(el) {
     const g = pilCv.getContext('2d'), F = "'KCStrikerSans', 'Arial Black', sans-serif";
     g.fillStyle = '#8a1f3c'; g.fillRect(0, 0, 1024, 512);
     for (let i = 0; i < 2500; i++) { g.fillStyle = Math.random() < 0.5 ? 'rgba(255,200,210,0.06)' : 'rgba(40,0,10,0.1)'; g.fillRect(Math.random() * 1024, Math.random() * 512, 3, 1.5); }   /* velvet grain */
-    g.save(); g.translate(256, 200); g.scale(1.2, 1.4); g.textAlign = 'center'; g.textBaseline = 'middle'; g.lineJoin = 'round';
-    let px = 92; g.font = px + 'px ' + F;
+    g.save(); g.translate(256, 178); g.scale(1.2, 1.4); g.textAlign = 'center'; g.textBaseline = 'middle'; g.lineJoin = 'round';
+    let px = 84; g.font = px + 'px ' + F;
     while (px > 20 && g.measureText('DOJO').width > 350) { px -= 2; g.font = px + 'px ' + F; }
     g.lineWidth = 8; g.strokeStyle = '#4a0f1f'; g.strokeText('DOJO', 0, 0);   /* the dark edge of the thread */
     g.fillStyle = '#ecd9a4'; g.fillText('DOJO', 0, 0);   /* the thread */
