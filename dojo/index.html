@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- DOJO (v6) -->
+<!-- DOJO (v7) -->
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -169,13 +169,14 @@ html.night .rack .row > :not(#swNight), html.night .rack-menu { filter: brightne
 @keyframes lcdScroll { to { transform: translateX(-33.3333%); } }
 .rack-menu { position: absolute; left: 0; bottom: calc(100% + 14px); display: flex; flex-direction: column; gap: 8px; padding: 10px; border-radius: 14px; background: linear-gradient(#2c2c31, #151517); border: 1px solid #4a4a50; box-shadow: 0 8px 22px rgba(0,0,0,0.6); opacity: 0; transform: translateY(14px); pointer-events: none; visibility: hidden; transition: opacity 0.18s, transform 0.18s, visibility 0.18s; }
 .rack.open .rack-menu { opacity: 1; transform: none; pointer-events: auto; visibility: visible; }
+.rack-menu .lcd { flex: none; width: 100%; min-width: 230px; max-width: none; display: block; cursor: var(--hand); }
+.rack-menu .menu-tr { display: flex; gap: 8px; } .rack-menu .menu-tr .rk { flex: 1; min-width: 0; justify-content: center; padding: 8px 10px; }
 .rack-menu .sw { align-self: flex-start; margin: 0 0 2px; }
-.swAv-lcd { display: none; }
-.sw.swAv-lcd span { padding: 0 9px; }
 .rack-menu .rk { font-size: 0.8rem; letter-spacing: 1px; padding: 9px 18px; justify-content: flex-start; min-width: 150px; }
 .c-home { --c: #6fb4ff; } .c-game { --c: #6dff9a; } .c-store { --c: #d28bff; }
 
-@media (min-width: 560px) { .row-a .lcd { display: block; } .swAv-lcd { display: inline-grid; } .rk { font-size: 0.7rem; } .sw { font-size: 0.62rem; } }
+@media (min-width: 900px) { .row-a .lcd { height: 40px; max-width: 480px; flex-basis: 260px; } .row-a .lcd-track span { line-height: 40px; font-size: 1.05rem; } }
+@media (min-width: 560px) { .row-a .lcd { display: block; } .rk { font-size: 0.7rem; } .sw { font-size: 0.62rem; } }
 @media (min-width: 1180px) { .rack-in { flex-direction: row; justify-content: center; align-items: center; gap: 12px; } .rack-in .row { flex: none; } .row-a { flex: 1 1 auto; } .rk-knob { width: 36px; height: 36px; } }
 @media (max-width: 400px) { .rk { padding: 6px 7px; font-size: 0.6rem; } .sw span { padding: 0 5px; min-width: 2.2em; } .sw.sm span { padding: 0 3px; min-width: 1.7em; } .row { gap: 5px; } .rack { padding-left: 20px; padding-right: 20px; } .c-play { min-width: 40px; } .row-a .rk { padding-left: 6px; padding-right: 6px; } }
 @media (max-width: 600px) and (max-height: 740px) {
@@ -270,6 +271,11 @@ html.night .rack .row > :not(#swNight), html.night .rack-menu { filter: brightne
 <div class="rack" id="rack" role="toolbar" aria-label="Player">
 <div class="rack-in">
   <nav class="rack-menu" id="rackMenu" aria-label="Menu">
+    <div class="lcd lcd-mini still" id="lcdMini" role="button" tabindex="0" aria-label="Show the video that is playing"><div class="lcd-track"><span>DOJO</span></div></div>
+    <div class="menu-tr">
+      <button type="button" class="rk c-tr" id="rwd" aria-label="Previous video">&#9198;</button>
+      <button type="button" class="rk c-tr" id="ff" aria-label="Next video">&#9197;</button>
+    </div>
     <button type="button" class="sw" id="swMode" role="switch" aria-checked="false" aria-label="Breathe or Move"><i></i><span class="l">Breathe</span><span class="r">Move</span></button>
     <button type="button" class="sw swAv" role="switch" aria-checked="false" aria-label="Video or Audio only"><i></i><span class="l">Video</span><span class="r">Audio</span></button>
     <a class="rk c-home" href="https://freejoy.club">Home</a>
@@ -280,7 +286,6 @@ html.night .rack .row > :not(#swNight), html.night .rack-menu { filter: brightne
     <button type="button" class="rk c-menu" id="menuBtn" aria-label="Open the menu" aria-expanded="false"><span class="burger"></span></button>
     <button type="button" class="rk c-play" id="play" aria-label="Play or pause" aria-pressed="false">&#9654;</button>
     <div class="lcd still" id="lcd" role="button" tabindex="0" aria-label="Show the video that is playing"><div class="lcd-track" id="lcdTrack"><span>DOJO</span></div></div>
-    <button type="button" class="sw swAv swAv-lcd" role="switch" aria-checked="false" aria-label="Video or Audio only"><i></i><span class="l">Video</span><span class="r">Audio</span></button>
     <span class="rk-vol"><span class="rk-knob" id="knob" role="slider" tabindex="0" aria-label="Volume" aria-valuemin="0" aria-valuemax="100" aria-valuenow="70"></span></span>
     <button type="button" class="rk c-mute" id="mute" aria-pressed="false" aria-label="Mute">Mute</button>
     <button type="button" class="rk c-bg" id="bgBtn" aria-pressed="false" aria-label="Keep playing in the background">BG play</button>
@@ -346,7 +351,7 @@ const S = {
   vol: Math.min(1, Math.max(0, parseFloat(store.get('dojo-vol')) || 0.7))
 };
 if (/move/i.test(location.hash)) S.sel = 'move'; else if (/breathe/i.test(location.hash)) S.sel = 'breathe';
-const P = { id: null, api: null, fb: null, state: 'idle', fade: 1, starting: false, t0: 0, promptOn: false, hiddenPaused: false };
+const P = { id: null, api: null, fb: null, state: 'idle', fade: 1, starting: false, t0: 0, promptOn: false, hiddenPaused: false, wantPlay: false };   /* wantPlay: true while it is playing or about to (false once you pause or close it) */
 
 let toastT = 0;
 function toast(msg, ms) { const t = $('#toast'); t.textContent = msg; t.classList.add('show'); clearTimeout(toastT); toastT = setTimeout(() => t.classList.remove('show'), ms || 3200); }
@@ -433,7 +438,7 @@ function loadApi(cb) {
 function embedUrl(id) { return 'https://www.youtube-nocookie.com/embed/' + id + '?autoplay=1&playsinline=1&rel=0&modestbranding=1'; }
 function playId(id) {
   if (!id) return;
-  P.id = id; P.fade = 1; P.state = 'loading'; P.t0 = performance.now();
+  P.id = id; P.fade = 1; P.state = 'loading'; P.wantPlay = true; P.t0 = performance.now();
   setPopup(); updateUI();
   if (id === SLEEP_ID) sleepFlow(); else hidePrompts();
   if (P.api) { try { P.api.loadVideoById(id); } catch (e) {} applyVol(); return; }
@@ -456,7 +461,7 @@ function playId(id) {
 }
 function onState(e) {
   const s = e.data;   /* 1 playing, 2 paused, 3 buffering, 0 ended */
-  if (s === 1 || s === 3) P.state = 'playing'; else if (s === 2) P.state = 'paused';
+  if (s === 1 || s === 3) { P.state = 'playing'; P.wantPlay = true; } else if (s === 2) { P.state = 'paused'; if (!document.hidden) P.wantPlay = false; }   /* a pause the browser forces while the tab is hidden does not count as you pausing */
   else if (s === 0) { const wasSleep = P.id === SLEEP_ID; stopAll(); if (wasSleep) toast('Sleep timer finished. Sweet dreams.'); return; }
   if (s === 1) applyVol();
   updateUI();
@@ -465,7 +470,7 @@ function onErr() { toast('That video cannot be played here.'); stopAll(); }
 function stopAll() {
   if (P.api) { try { P.api.stopVideo(); } catch (e) {} }
   if (P.fb) P.fb.src = 'about:blank';
-  P.id = null; P.state = 'idle'; P.fade = 1;
+  P.id = null; P.state = 'idle'; P.fade = 1; P.wantPlay = false;
   setPopup(); hidePrompts(); updateUI();
 }
 function isPlaying() { return P.state === 'playing'; }
@@ -551,7 +556,7 @@ function silentUrl() {   /* one second of silence as a tiny wav: a real audio el
   return URL.createObjectURL(new Blob([buf], { type: 'audio/wav' }));
 }
 function keepAlive() {
-  const on = S.bg && !!P.id && P.state !== 'idle';
+  const on = S.bg && !!P.id && P.wantPlay;
   try {
     if (on) {
       if (!ka) { ka = new Audio(silentUrl()); ka.loop = true; ka.setAttribute('playsinline', ''); }
@@ -572,7 +577,7 @@ function updateSession() {
 function initSession() {
   if (!('mediaSession' in navigator)) return;
   const h = (n, f) => { try { navigator.mediaSession.setActionHandler(n, f); } catch (e) {} };
-  h('play', () => { if (P.api) P.api.playVideo(); }); h('pause', () => { if (P.api) P.api.pauseVideo(); });
+  h('play', () => { P.wantPlay = true; if (P.api) P.api.playVideo(); }); h('pause', () => { P.wantPlay = false; if (P.api) P.api.pauseVideo(); });
   h('previoustrack', () => step(-1)); h('nexttrack', () => step(1)); h('stop', () => stopAll());
 }
 function setBg(on, quiet) {
@@ -581,33 +586,38 @@ function setBg(on, quiet) {
 }
 document.addEventListener('visibilitychange', () => {
   if (!P.api || !P.id) return;
-  if (document.hidden) {
-    if (!S.bg && isPlaying()) { try { P.api.pauseVideo(); } catch (e) {} P.hiddenPaused = true; }
-    else if (S.bg) setTimeout(() => { if (document.hidden && P.id && !isPlaying() && !P.hiddenPaused) { try { P.api.playVideo(); } catch (e) {} } }, 500);
-  }
+  if (!document.hidden) { P.hiddenPaused = false; return; }
+  if (!S.bg) { if (isPlaying()) { try { P.api.pauseVideo(); } catch (e) {} P.hiddenPaused = true; } return; }
+  /* background play on: only keep going what was already playing. If it was paused, it stays paused. */
+  if (P.wantPlay) setTimeout(() => { if (document.hidden && P.id && P.wantPlay && !isPlaying()) { try { P.api.playVideo(); } catch (e) {} } }, 500);
 });
 
 /* ============ UPDATING THE BAR ============ */
 function updateUI() {
   markPlaying(); syncSwitches();
   const pb = $('#play'); pb.innerHTML = isPlaying() ? '&#9208;' : '&#9654;'; pb.setAttribute('aria-pressed', String(isPlaying()));
-  const lcd = $('#lcd'), tr = $('#lcdTrack');
   const txt = P.id && INFO[P.id] ? (INFO[P.id][0] + ' ') + INFO[P.id][1] : 'DOJO';
-  tr.textContent = '';
   const long = txt.length > 26;
-  for (let i = 0; i < (long ? 3 : 1); i++) { const s = document.createElement('span'); s.textContent = txt.toUpperCase(); tr.appendChild(s); }
-  lcd.classList.toggle('still', !long);
+  document.querySelectorAll('.lcd').forEach(lcd => {
+    const tr = lcd.querySelector('.lcd-track'); tr.textContent = '';
+    for (let k = 0; k < (long ? 3 : 1); k++) { const s = document.createElement('span'); s.textContent = txt.toUpperCase(); tr.appendChild(s); }
+    lcd.classList.toggle('still', !long);
+  });
   keepAlive(); updateSession();
 }
 /* ============ THE BAR'S BUTTONS ============ */
 $('#play').onclick = togglePlay;
+$('#ff').onclick = () => step(1);
+$('#rwd').onclick = () => step(-1);
 $('#mute').onclick = () => { S.muted = !S.muted; syncSwitches(); applyVol(); };
 $('#bgBtn').onclick = () => setBg(!S.bg);
 $('#swNight').onclick = () => setNight(!S.night);
 /* tap the now-playing screen: bring up the video, even if Audio is on (and even from night mode) */
 function showVideo() { if (!P.id) return; S.av = 'video'; if (S.night) setNight(false); syncSwitches(); setPopup(); }
-$('#lcd').onclick = showVideo;
-$('#lcd').onkeydown = e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); showVideo(); } };
+document.querySelectorAll('.lcd').forEach(l => {
+  l.onclick = () => { showVideo(); $('#rack').classList.remove('open'); $('#menuBtn').setAttribute('aria-expanded', 'false'); };
+  l.onkeydown = e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); l.onclick(); } };
+});
 $('#swMode').onclick = () => setSel(activeMode() === 'move' ? 'breathe' : 'move', true);
 document.querySelectorAll('.swAv').forEach(s => s.onclick = () => { S.av = S.av === 'video' ? 'audio' : 'video'; syncSwitches(); setPopup(); if (S.av === 'video' && S.night) toast('Video is on, but it stays hidden while night mode is on.'); });
 document.querySelectorAll('.sec').forEach(sec => {
