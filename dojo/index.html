@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- DOJO (v10) -->
+<!-- DOJO (v12) -->
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -38,7 +38,8 @@ html.night #bgShade { background: rgba(4, 4, 14, 0.88); }
 /* ---------- top: the singing bowl (breathe) and the rolled yoga mat (move) ---------- */
 #content { transition: opacity 0.7s ease, visibility 0.7s; }
 html.night #content { opacity: 0; visibility: hidden; pointer-events: none; }
-.scene-wrap { width: min(100%, 620px); margin: 0 auto; aspect-ratio: 700 / 180; position: relative; }
+.scene-wrap { width: min(100%, 680px); margin: 0 auto; aspect-ratio: 700 / 230; position: relative; }
+@media (max-width: 600px) { .scene-wrap { width: 100%; aspect-ratio: 360 / 172; } }
 #scene { width: 100%; height: 100%; display: block; touch-action: manipulation; }
 /* ---------- the little welcome line at the very top ---------- */
 .welcome { line-height: 1.05; margin: 0 0 2px; }
@@ -74,6 +75,12 @@ html.night #content { opacity: 0; visibility: hidden; pointer-events: none; }
 /* ---------- the lists ---------- */
 .cat { margin: 20px auto 4px; width: 100%; }
 .cat-title { font-size: 1.35rem; letter-spacing: 3px; text-transform: uppercase; color: #ffd580; text-shadow: 0 0 12px rgba(255,213,128,0.55), 0 2px 6px rgba(0,0,0,0.8); margin: 0 0 16px; padding-bottom: 8px; border-bottom: 1px solid rgba(255,213,128,0.45); }
+.cat-title small { font-size: 0.62em; letter-spacing: 1.5px; margin-left: 10px; opacity: 0.85; white-space: nowrap; }
+.cat-morebtn { display: block; margin: -2px auto 12px; padding: 6px 18px; border-radius: 999px; background: rgba(0,0,0,0.35); border: 1px solid rgba(255,213,128,0.35); color: var(--gold); font-size: 0.8rem; letter-spacing: 2px; text-transform: uppercase; text-shadow: 0 2px 4px rgba(0,0,0,0.8); transition: border-color 0.2s, background 0.2s; }
+.cat-morebtn:hover { border-color: var(--gold); background: rgba(0,0,0,0.55); }
+.cat-more { display: none; } .cat.open .cat-more { display: block; }
+#tip { position: fixed; left: 0; top: 0; z-index: 98; max-width: min(86vw, 300px); padding: 8px 12px; border-radius: 10px; background: rgba(10,10,14,0.94); border: 1px solid rgba(255,213,128,0.4); font-size: 0.82rem; line-height: 1.3; letter-spacing: 0.3px; text-align: left; color: #ffe9bf; pointer-events: none; opacity: 0; transition: opacity 0.15s; }
+#tip.show { opacity: 1; }
 .vid {
   display: flex; align-items: center; gap: 14px; width: 100%; margin: 0 auto 11px; padding: 12px 18px;
   background: rgba(14, 10, 12, 0.5); -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px);
@@ -90,6 +97,8 @@ html.night #content { opacity: 0; visibility: hidden; pointer-events: none; }
 @keyframes beat { 50% { transform: scale(0.55); opacity: 0.55; } }
 .sleep-h { margin: 30px auto 12px; width: 100%; font-size: 0.95rem; letter-spacing: 3px; text-transform: uppercase; color: #b9c6ff; padding-bottom: 8px; border-bottom: 1px solid rgba(185,198,255,0.25); }
 .vid.sleepy { border-color: rgba(185,198,255,0.35); }
+.sleep-h.tonight { margin-top: 6px; margin-bottom: 12px; }   /* late evening: the sleep video sits at the top of Breathe */
+.vid.sleepy.tonight { margin-bottom: 20px; border-color: rgba(185,198,255,0.6); box-shadow: 0 0 20px rgba(185,198,255,0.22); }
 .vid.sleepy .txt { color: #dfe5ff; }
 .sec-h { margin: 38px 0 14px; font-size: 1rem; font-weight: normal; letter-spacing: 3px; text-transform: uppercase; color: #d6cdbd; }
 .ext { display: block; margin: 12px 0; font-size: 1.15rem; color: var(--gold); text-decoration: none; }
@@ -146,7 +155,8 @@ html.night .rack .row > :not(#swNight), html.night .rack-menu { filter: brightne
 .rk:active, .rk.lit, .rk[aria-pressed="true"] { transform: translateY(3px); color: var(--c); text-shadow: 0 0 8px var(--c); background: linear-gradient(#2a2a2f, #3a3a40); border-color: var(--c); box-shadow: 0 0 0 #131315, inset 0 3px 8px rgba(0,0,0,0.8), 0 0 12px var(--c); }
 .c-tr { --c: #9ad1ff; min-width: 40px; font-size: 0.85rem; }
 .c-repeat { --c: #c9a2ff; }
-.c-play { --c: #6dff9a; min-width: 46px; font-size: 0.95rem; }
+.c-play { --c: #6dff9a; min-width: 46px; font-size: 1.3rem; line-height: 1; }
+.c-play { padding-top: 5px; padding-bottom: 5px; }
 .c-bg { --c: #ffd36b; }
 .c-menu { --c: #6fb4ff; }
 .burger { display: block; width: 14px; height: 9px; background: linear-gradient(currentColor, currentColor) 0 0 / 100% 2px no-repeat, linear-gradient(currentColor, currentColor) 0 50% / 100% 2px no-repeat, linear-gradient(currentColor, currentColor) 0 100% / 100% 2px no-repeat; }
@@ -169,7 +179,7 @@ html.night .rack .row > :not(#swNight), html.night .rack-menu { filter: brightne
 .lcd.still .lcd-track { width: 100%; justify-content: center; animation: none; }
 .lcd.still .lcd-track span { padding-right: 0; } .lcd.still .lcd-track span + span, .lcd.still .lcd-track span + span + span { display: none; }
 @keyframes lcdScroll { to { transform: translateX(-33.3333%); } }
-.rack-menu { position: absolute; left: 0; bottom: calc(100% + 14px); display: flex; flex-direction: column; gap: 8px; padding: 10px; border-radius: 14px; background: linear-gradient(#2c2c31, #151517); border: 1px solid #4a4a50; box-shadow: 0 8px 22px rgba(0,0,0,0.6); opacity: 0; transform: translateY(14px); pointer-events: none; visibility: hidden; transition: opacity 0.18s, transform 0.18s, visibility 0.18s; }
+.rack-menu { position: absolute; left: 0; bottom: calc(100% + 14px); max-height: calc(100vh - var(--bar-h) - 30px); max-height: calc(100dvh - var(--bar-h) - 30px); overflow-y: auto; display: flex; flex-direction: column; gap: 8px; padding: 10px; border-radius: 14px; background: linear-gradient(#2c2c31, #151517); border: 1px solid #4a4a50; box-shadow: 0 8px 22px rgba(0,0,0,0.6); opacity: 0; transform: translateY(14px); pointer-events: none; visibility: hidden; transition: opacity 0.18s, transform 0.18s, visibility 0.18s; }
 .rack.open .rack-menu { opacity: 1; transform: none; pointer-events: auto; visibility: visible; }
 .rack-menu .lcd { flex: none; width: 100%; min-width: 230px; max-width: none; display: block; cursor: var(--hand); }
 .rack-menu .menu-tr { display: flex; gap: 8px; } .rack-menu .menu-tr .rk { flex: 1; min-width: 0; justify-content: center; padding: 8px 10px; }
@@ -177,6 +187,9 @@ html.night .rack .row > :not(#swNight), html.night .rack-menu { filter: brightne
 .rack-menu .sw { align-self: flex-start; margin: 0 0 2px; }
 .rack-menu .rk { font-size: 0.8rem; letter-spacing: 1px; padding: 9px 18px; justify-content: flex-start; min-width: 150px; }
 .rack-menu .rk.c-bg { font-size: 0.66rem; letter-spacing: 0.6px; }
+.rack-menu .rk.c-play { font-size: 1.4rem; line-height: 1; }
+.menu-h { font-family: 'KCStrikerSans', sans-serif; font-size: 0.6rem; letter-spacing: 3px; text-transform: uppercase; text-align: center; color: #9a9aa4; line-height: 1; margin: 0; }
+.menu-h.club { border-top: 1px solid #4a4a50; padding-top: 11px; margin-top: 5px; }
 .c-home { --c: #6fb4ff; } .c-game { --c: #6dff9a; } .c-store { --c: #d28bff; }
 
 @media (min-width: 900px) { .row-a .lcd { height: 40px; max-width: 480px; flex-basis: 260px; } .row-a .lcd-track span { line-height: 40px; font-size: 1.05rem; } }
@@ -270,28 +283,31 @@ html.night .rack .row > :not(#swNight), html.night .rack-menu { filter: brightne
 </div>
 <div class="prompt" id="floatPrompt" hidden></div>
 <div id="toast" role="status" aria-live="polite"></div>
+<div id="tip" aria-hidden="true"></div>
 
 <!-- THE PLAYER BAR -->
 <div class="rack" id="rack" role="toolbar" aria-label="Player">
 <div class="rack-in">
   <nav class="rack-menu" id="rackMenu" aria-label="Menu">
+    <div class="menu-h">Dojo</div>
     <div class="lcd lcd-mini still" id="lcdMini" role="button" tabindex="0" aria-label="Show the video that is playing"><div class="lcd-track"><span>DOJO</span></div></div>
     <div class="menu-tr">
       <button type="button" class="rk c-tr" id="rwd" aria-label="Previous video">&#9198;</button>
-      <button type="button" class="rk c-play playBtn" aria-label="Play or pause" aria-pressed="false">&#9654;</button>
+      <button type="button" class="rk c-play playBtn" aria-label="Play or pause" aria-pressed="false">&#9654;&#65038;</button>
       <button type="button" class="rk c-tr" id="ff" aria-label="Next video">&#9197;</button>
     </div>
     <button type="button" class="rk c-repeat" id="repeat" aria-pressed="false" aria-label="Repeat: play the video again when it ends">&#128257; Repeat</button>
-    <button type="button" class="rk c-bg" id="bgBtn" aria-pressed="false" aria-label="Background play (desktop): keep playing when you leave this tab">Background play (desktop)</button>
+    <button type="button" class="rk c-bg" id="bgBtn" aria-pressed="false" aria-label="Background play (desktop): keep playing when you leave this tab">Background play (desktop) - on</button>
     <button type="button" class="sw" id="swMode" role="switch" aria-checked="false" aria-label="Breathe or Move"><i></i><span class="l">Breathe</span><span class="r">Move</span></button>
     <button type="button" class="sw swAv" role="switch" aria-checked="false" aria-label="Video or Audio only"><i></i><span class="l">Video</span><span class="r">Audio</span></button>
+    <div class="menu-h club">Freejoy Club</div>
     <a class="rk c-home" href="https://freejoy.club">Home</a>
     <a class="rk c-game" href="/game/">Game room</a>
     <a class="rk c-store" href="/store/">Store</a>
   </nav>
   <div class="row row-a">
     <button type="button" class="rk c-menu" id="menuBtn" aria-label="Open the menu" aria-expanded="false"><span class="burger"></span></button>
-    <button type="button" class="rk c-play playBtn" id="play" aria-label="Play or pause" aria-pressed="false">&#9654;</button>
+    <button type="button" class="rk c-play playBtn" id="play" aria-label="Play or pause" aria-pressed="false">&#9654;&#65038;</button>
     <div class="lcd still" id="lcd" role="button" tabindex="0" aria-label="Show the video that is playing"><div class="lcd-track" id="lcdTrack"><span>DOJO</span></div></div>
     <span class="rk-vol"><span class="rk-knob" id="knob" role="slider" tabindex="0" aria-label="Volume" aria-valuemin="0" aria-valuemax="100" aria-valuenow="70"></span></span>
     <button type="button" class="rk c-mute" id="mute" aria-pressed="false" aria-label="Mute">Mute</button>
@@ -314,10 +330,10 @@ const SLEEP = { fadeAt: 585, fadeLen: 12 };   // seconds: start fading this vide
 /* ============ THE VIDEOS ============ */
 const INFO = {
   '2trV_-lU4Ds': ['1m-10m', 'background chill ⭐🔔4-in/6-out (HRV)'],
-  'd3-K6FZAXLM': ['4m', '2-inhale 🫁 ☮️'], 'LFyVJIlSYkA': ['5m', 'Sample Platter 📦🔥+'], 'Vi0_7idqcFI': ['5m', 'HRV Coherence (Huberman/Rubin)'],
-  'iTiDZNhr1WI': ['5m', 'Breathe w/ Arms'], '5m2s8TTOKIA': ['5m', 'Tummo - TT5'], '61-mn1d5RIM': ['7m', '7 Up Then Down (Sandy)'],
+  'd3-K6FZAXLM': ['4m', '2-inhale 🫁 ☮️'], 'LFyVJIlSYkA': ['5m', 'Sample Platter 📦🔥+'], 'Vi0_7idqcFI': ['5m', 'HRV Coherence 💓 (Huberman/Rubin)'],
+  'iTiDZNhr1WI': ['5m', 'Breathe w/ Arms 🙌'], '5m2s8TTOKIA': ['5m', 'Tummo - TT5 🔥'], '61-mn1d5RIM': ['7m', '7 Up Then Down ⬆️⬇️ (Sandy)'],
   'errP3gH9OlE': ['8m', 'Energy 🔋 🐍 (Sandy)'], 'esr7Wug7-88': ['8m', 'Fast Energy 🔋'], 'GwIqNs8wWyY': ['10m', 'Chill (Tim) 🐌 3-part'],
-  'YtAD8pDUEzo': ['10m', 'Energy 🔋 🫁 ☕️'], 'ThV8kV_mnz4': ['10m', 'Tummo - TT10 Light'], 'cIApIwfQDm0': ['11m', 'Multi ☕️ 🐌 11'],
+  'YtAD8pDUEzo': ['10m', 'Energy 🔋 🫁 ☕️'], 'ThV8kV_mnz4': ['10m', 'Tummo - TT10 Light 🔥☁️'], 'cIApIwfQDm0': ['11m', 'Multi ☕️ 🐌 11'],
   'oVzwUB28nLQ': ['5m', '☯️ Qi Gong !'], 'gSPgDpebM-Y': ['5m', 'B&F Flow'], 'VG3j8r2Ag_k': ['5m', 'Tim Flow'], 'PVi1Vh6Dcok': ['10m', 'Tim Mobility'],
   'FsBMyiLP_G0': ['10m', 'Tim 1'], 'w2xk84OCTVo': ['10m', 'MOVE 🦵'], 'O38rtX9Luds': ['10m', '☯️ Qi Gong'], 'aRVFt79LqCM': ['10m', 'Mobility - Julia'],
   'UxU8OCsNbYY': ['12m', 'Yoga - Mid Gentle'], 'keyWzojUHbs': ['14m', 'ENGAGE 💪 Tim'], '4xLEDm6xjgg': ['14m', 'Full Body Mobility'], 'loIwcMca6n8': ['15m', 'Tim Semi Chill'],
@@ -326,14 +342,33 @@ const INFO = {
   'DxN0HZA-Ayo': ['22m', 'Tim Daily'], 'a9ZNCoNM604': ['25m', 'Yoga Tim'], '5cubPXdQ0ds': ['30m', 'Feel Good Primal Rolls'], '612k-CjtoqU': ['41m', 'Yoga Tim Long']
 };
 if (SLEEP_ID) INFO[SLEEP_ID] = ['10m', '🌙NIGHT TIME 4-7-8😴'];
+/* little summaries that show when you hover a video (mouse only). Add a line here for any video id. */
+const TIPS = {
+  '2trV_-lU4Ds': 'A soft background breathing guide: 4 seconds in, 6 out, to settle your heart rate. Pick 1 to 10 minutes.',
+  'd3-K6FZAXLM': 'Two quick inhales, then one long exhale. A fast way to unwind.',
+  'LFyVJIlSYkA': 'A sampler of several breathing styles in one session. Good for trying things out.',
+  'Vi0_7idqcFI': 'Slow, even coherence breathing for heart rate variability (the style Huberman and Rubin talk about).',
+  'iTiDZNhr1WI': 'Breathing paced with arm movements to open up the chest.',
+  '5m2s8TTOKIA': 'Tummo (inner fire) breathing, the short version. Warming and energizing.',
+  '61-mn1d5RIM': 'Sandy leads a breathing pattern that builds up, then winds back down.',
+  'errP3gH9OlE': 'Sandy leads an energizing session to wake you up.',
+  'esr7Wug7-88': 'A faster, punchier energizing breath session.',
+  'GwIqNs8wWyY': 'Tim leads a slow, calming session in three parts.',
+  'YtAD8pDUEzo': 'An energizing breath session: a pick-me-up without the coffee.',
+  'ThV8kV_mnz4': 'Tummo (inner fire) breathing, the lighter 10 minute version.',
+  'cIApIwfQDm0': 'A mixed session that moves between calm, slow and a little energizing.'
+};
+if (SLEEP_ID) TIPS[SLEEP_ID] = 'The 4-7-8 breath for falling asleep. It fades out by itself after about 10 minutes.';
 const MODES = {
   breathe: {
     title: '🫁 BREATHE 🫁',
     time: ['2trV_-lU4Ds', 'd3-K6FZAXLM', 'LFyVJIlSYkA', 'Vi0_7idqcFI', 'iTiDZNhr1WI', '5m2s8TTOKIA', '61-mn1d5RIM', 'errP3gH9OlE', 'esr7Wug7-88', 'GwIqNs8wWyY', 'YtAD8pDUEzo', 'ThV8kV_mnz4', 'cIApIwfQDm0'],
+    fold: true,   /* By Vibe: only the first video of each group shows, the rest sit under a More button */
     cats: [
-      ['🌊 Chill Out', ['2trV_-lU4Ds', 'd3-K6FZAXLM', 'Vi0_7idqcFI', 'GwIqNs8wWyY']],
-      ['⚡ Power Up', ['iTiDZNhr1WI', '5m2s8TTOKIA', 'errP3gH9OlE', 'esr7Wug7-88', 'YtAD8pDUEzo', 'ThV8kV_mnz4']],
-      ['🌀 Various Vibes', ['LFyVJIlSYkA', '61-mn1d5RIM', 'cIApIwfQDm0']]
+      ['🌟 Nice calm background', ['2trV_-lU4Ds', 'Vi0_7idqcFI'], '(Try me!)'],
+      ['🌊 Chill out', ['d3-K6FZAXLM', 'GwIqNs8wWyY']],
+      ['☯️ Various Vibes', ['LFyVJIlSYkA', '61-mn1d5RIM', 'cIApIwfQDm0']],
+      ['⚡️ Power up', ['YtAD8pDUEzo', 'iTiDZNhr1WI', '5m2s8TTOKIA', 'errP3gH9OlE', 'esr7Wug7-88', 'ThV8kV_mnz4']]
     ]
   },
   move: {
@@ -350,6 +385,7 @@ const MODES = {
 /* ============ STATE ============ */
 const S = {
   sel: null,                       /* null = nothing picked yet: both lists show; or 'breathe' / 'move' */
+  catOpen: {},                     /* which By Vibe groups have their More list open */
   open: { breathe: false, move: false },   /* the dropdown of the NOT picked one */
   view: { breathe: store.get('breathe-view') === 'cat' ? 'cat' : 'time', move: store.get('move-view') === 'cat' ? 'cat' : 'time' },
   av: 'video',   /* always starts in video mode */
@@ -367,6 +403,7 @@ function mkVid(id) {
   const b = document.createElement('button'); b.type = 'button'; b.className = 'vid'; b.dataset.id = id;
   const c = document.createElement('span'); c.className = 'chip'; c.textContent = INFO[id][0];
   const t = document.createElement('span'); t.className = 'txt'; t.textContent = INFO[id][1];
+  if (TIPS[id]) b.dataset.tip = TIPS[id];
   b.append(c, t); return b;
 }
 /* which list the bar's previous / next buttons walk: the picked one, else the one the playing video belongs to, else Breathe */
@@ -379,10 +416,24 @@ function queue() {
   const m = MODES[activeMode()];
   return S.view[activeMode()] === 'cat' ? [].concat(...m.cats.map(c => c[1])) : m.time.slice();
 }
+function setMoreLabel(d) { const b = d.querySelector('.cat-morebtn'), open = d.classList.contains('open'); b.textContent = open ? '\u25B2 Less' : '\u25BC More (' + d.querySelectorAll('.cat-more .vid').length + ')'; b.setAttribute('aria-expanded', String(open)); }
+let lastRev = null;   /* the video we last made sure was visible */
 function fillList(mode) {
+  lastRev = null;
   const m = MODES[mode], host = document.querySelector('#sec-' + mode + ' .vlist'); host.textContent = '';
   if (S.view[mode] === 'cat') {
-    m.cats.forEach(c => { const d = document.createElement('div'); d.className = 'cat'; const h = document.createElement('div'); h.className = 'cat-title'; h.textContent = c[0]; d.appendChild(h); c[1].forEach(id => d.appendChild(mkVid(id))); host.appendChild(d); });
+    m.cats.forEach((c, ci) => {
+      const d = document.createElement('div'); d.className = 'cat'; const h = document.createElement('div'); h.className = 'cat-title'; h.textContent = c[0];
+      if (c[2]) { const n = document.createElement('small'); n.textContent = c[2]; h.appendChild(n); }
+      d.appendChild(h);
+      if (m.fold && c[1].length > 1) {
+        const key = mode + ci; d.dataset.key = key; d.classList.add('foldable'); d.classList.toggle('open', !!S.catOpen[key]);
+        d.appendChild(mkVid(c[1][0]));
+        const b = document.createElement('button'); b.type = 'button'; b.className = 'cat-morebtn'; d.appendChild(b);
+        const more = document.createElement('div'); more.className = 'cat-more'; c[1].slice(1).forEach(id => more.appendChild(mkVid(id))); d.appendChild(more); setMoreLabel(d);
+      } else c[1].forEach(id => d.appendChild(mkVid(id)));
+      host.appendChild(d);
+    });
   } else { m.time.forEach(id => host.appendChild(mkVid(id))); }
 }
 function renderList() { fillList('breathe'); fillList('move'); layout(); markPlaying(); }
@@ -408,7 +459,14 @@ function layout() {
   });
   fitTitles();
 }
-function markPlaying() { document.querySelectorAll('.vid').forEach(b => b.classList.toggle('playing', !!P.id && b.dataset.id === P.id)); }
+function markPlaying() {
+  document.querySelectorAll('.vid').forEach(b => b.classList.toggle('playing', !!P.id && b.dataset.id === P.id));
+  if (P.id !== lastRev) {   /* a new video started (e.g. with next / previous): open the More list it sits in, once */
+    lastRev = P.id;
+    const v = document.querySelector('.cat.foldable:not(.open) .cat-more .vid.playing');
+    if (v) { const d = v.closest('.cat'); d.classList.add('open'); S.catOpen[d.dataset.key] = true; setMoreLabel(d); }
+  }
+}
 function syncSwitches() {
   const mv = activeMode() === 'move';
   ['breathe', 'move'].forEach(m => {
@@ -419,7 +477,7 @@ function syncSwitches() {
   $('#swMode').classList.toggle('on', mv); $('#swMode').setAttribute('aria-checked', mv);
   document.querySelectorAll('.swAv').forEach(s => { s.classList.toggle('on', S.av === 'audio'); s.setAttribute('aria-checked', S.av === 'audio'); });
   $('#swNight').classList.toggle('on', S.night); $('#swNight').setAttribute('aria-checked', S.night);
-  $('#repeat').setAttribute('aria-pressed', S.repeat); $('#bgBtn').setAttribute('aria-pressed', S.bg); $('#mute').setAttribute('aria-pressed', S.muted);
+  $('#repeat').setAttribute('aria-pressed', S.repeat); $('#bgBtn').setAttribute('aria-pressed', S.bg); $('#bgBtn').textContent = 'Background play (desktop) - ' + (S.bg ? 'on' : 'off'); $('#mute').setAttribute('aria-pressed', S.muted);
   document.title = 'Dojo - FJ';
 }
 /* pick Breathe or Move (tap the bowl / mat, a section header, or the bar switch). Tapping the picked one again un-picks it. */
@@ -599,7 +657,7 @@ document.addEventListener('visibilitychange', () => {
 /* ============ UPDATING THE BAR ============ */
 function updateUI() {
   markPlaying(); syncSwitches();
-  document.querySelectorAll('.playBtn').forEach(pb => { pb.innerHTML = isPlaying() ? '&#9208;' : '&#9654;'; pb.setAttribute('aria-pressed', String(isPlaying())); });
+  document.querySelectorAll('.playBtn').forEach(pb => { pb.innerHTML = isPlaying() ? '&#10074;&#10074;' : '&#9654;&#65038;'; pb.setAttribute('aria-pressed', String(isPlaying())); });
   const txt = P.id && INFO[P.id] ? (INFO[P.id][0] + ' ') + INFO[P.id][1] : 'DOJO';
   const long = txt.length > 26;
   document.querySelectorAll('.lcd').forEach(lcd => {
@@ -638,10 +696,25 @@ document.querySelectorAll('.sec').forEach(sec => {
   };
 });
 document.addEventListener('click', e => {
+  const mb = e.target.closest('.cat-morebtn');
+  if (mb) { const d = mb.closest('.cat'); const o = d.classList.toggle('open'); S.catOpen[d.dataset.key] = o; setMoreLabel(d); }
   const v = e.target.closest('.vid'); if (v) { if (v.dataset.id) playId(v.dataset.id); else toast('This video is coming soon.'); }
   if (!e.target.closest('#rack')) { $('#rack').classList.remove('open'); $('#menuBtn').setAttribute('aria-expanded', 'false'); }
 });
 $('#menuBtn').onclick = e => { e.stopPropagation(); const o = $('#rack').classList.toggle('open'); $('#menuBtn').setAttribute('aria-expanded', String(o)); };
+/* hover summaries (only where there is a mouse) */
+const tipEl = $('#tip'), canHover = window.matchMedia && matchMedia('(hover: hover)').matches;
+function hideTip() { tipEl.classList.remove('show'); }
+if (canHover) {
+  document.addEventListener('mouseover', e => {
+    const v = e.target.closest && e.target.closest('.vid[data-tip]'); if (!v) { hideTip(); return; }
+    tipEl.textContent = v.dataset.tip; tipEl.classList.add('show');
+    const r = v.getBoundingClientRect(), w = tipEl.offsetWidth, h = tipEl.offsetHeight;
+    const x = Math.min(Math.max(8, r.left + r.width / 2 - w / 2), innerWidth - w - 8); let y = r.top - h - 8; if (y < 8) y = r.bottom + 8;
+    tipEl.style.left = x + 'px'; tipEl.style.top = y + 'px';
+  });
+  document.addEventListener('mouseleave', hideTip); window.addEventListener('scroll', hideTip, { passive: true });
+}
 const closePop = () => stopAll();
 $('#popClose').onclick = closePop;
 $('#pop').addEventListener('click', e => { if (e.target === $('#pop') || e.target === $('#popIn')) closePop(); });   /* soft close: tap beside or around the video */
@@ -687,7 +760,10 @@ function initScene() {
   let R; try { R = new THREE.WebGLRenderer({ canvas: cv, antialias: true, alpha: true }); } catch (e) { return null; }
   R.setClearColor(0x000000, 0); R.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
   const sc = new THREE.Scene(), cam = new THREE.PerspectiveCamera(21, 3.9, 0.1, 60);
-  cam.position.set(0, 3.7, 9.6); cam.lookAt(0, 0.45, 0);
+  const CT = new THREE.Vector3(0.1, 0.75, 0), CD = new THREE.Vector3(0, 3.25, 9.15).normalize();
+  /* pull the camera as close as the bowl + mat allow: they fill the width on a phone and the height on a wide screen */
+  function fitCam() { const th = Math.tan(cam.fov * Math.PI / 360), dW = 4.25 / (th * cam.aspect), dH = 1.75 / th; cam.position.copy(CT).addScaledVector(CD, Math.max(dW, dH)); cam.lookAt(CT); }
+  fitCam();
   sc.add(new THREE.AmbientLight(0xfff1dd, 0.85));
   const dl = new THREE.DirectionalLight(0xffffff, 0.95); dl.position.set(3, 7, 6); sc.add(dl);
   const pl = new THREE.PointLight(0xffc27a, 0.75, 20); pl.position.set(-3, 3, 4); sc.add(pl);
@@ -710,18 +786,18 @@ function initScene() {
     const g = pilCv.getContext('2d');
     g.fillStyle = '#8a1f3c'; g.fillRect(0, 0, 1024, 512);
     for (let i = 0; i < 2500; i++) { g.fillStyle = Math.random() < 0.5 ? 'rgba(255,200,210,0.06)' : 'rgba(40,0,10,0.1)'; g.fillRect(Math.random() * 1024, Math.random() * 512, 3, 1.5); }
-    g.save(); g.translate(256, 196); g.scale(1, 1.5); g.textAlign = 'center'; g.textBaseline = 'middle'; g.lineJoin = 'round';
-    let px = 72; g.font = px + 'px ' + F;
-    while (px > 20 && g.measureText('BREATHE').width > 350) { px -= 2; g.font = px + 'px ' + F; }
+    g.save(); g.translate(256, 190); g.scale(1, 1.5); g.textAlign = 'center'; g.textBaseline = 'middle'; g.lineJoin = 'round';
+    let px = 100; g.font = px + 'px ' + F;
+    while (px > 20 && g.measureText('BREATHE').width > 420) { px -= 2; g.font = px + 'px ' + F; }
     g.lineWidth = 8; g.strokeStyle = '#4a0f1f'; g.strokeText('BREATHE', 0, 0);
     g.fillStyle = '#ecd9a4'; g.fillText('BREATHE', 0, 0);
     g.setLineDash([4, 3]); g.lineWidth = 1.6; g.strokeStyle = 'rgba(110,60,40,0.85)'; g.strokeText('BREATHE', 0, 0);
     g.restore(); pilTex.needsUpdate = true;
   };
   drawPillow();
-  const bowlPillow = new THREE.Mesh(new THREE.SphereGeometry(1, 48, 24), new THREE.MeshStandardMaterial({ map: pilTex, roughness: 0.9 })); bowlPillow.scale.set(0.64, 0.15, 0.64); bowlPillow.position.y = 0.11; bowlG.add(bowlPillow);
-  const bowlPipe = new THREE.Mesh(new THREE.TorusGeometry(0.64, 0.022, 8, 56), bowlGold); bowlPipe.rotation.x = Math.PI / 2; bowlPipe.position.y = 0.11; bowlG.add(bowlPipe);
-  [[1, 0], [-1, 0], [0, 1], [0, -1]].forEach(q => { const t = new THREE.Mesh(new THREE.SphereGeometry(0.045, 10, 8), bowlGold); t.position.set(q[0] * 0.64 * 0.72, 0.11, q[1] * 0.64 * 0.72); bowlG.add(t); });
+  const bowlPillow = new THREE.Mesh(new THREE.SphereGeometry(1, 48, 24), new THREE.MeshStandardMaterial({ map: pilTex, roughness: 0.9 })); bowlPillow.scale.set(0.7, 0.18, 0.7); bowlPillow.position.y = 0.08; bowlG.add(bowlPillow);
+  const bowlPipe = new THREE.Mesh(new THREE.TorusGeometry(0.7, 0.024, 8, 56), bowlGold); bowlPipe.rotation.x = Math.PI / 2; bowlPipe.position.y = 0.08; bowlG.add(bowlPipe);
+  [[1, 0], [-1, 0], [0, 1], [0, -1]].forEach(q => { const t = new THREE.Mesh(new THREE.SphereGeometry(0.045, 10, 8), bowlGold); t.position.set(q[0] * 0.7 * 0.72, 0.08, q[1] * 0.7 * 0.72); bowlG.add(t); });
   const bowlBrass = new THREE.MeshStandardMaterial({ color: 0xcf9d3e, roughness: 0.36, metalness: 0.55, emissive: 0x3a2606, side: THREE.DoubleSide });
   const bowlUp = new THREE.Group(); bowlUp.position.y = 0.245; bowlUp.scale.setScalar(1.2); bowlG.add(bowlUp);
   const prof = [[0, 0], [0.12, 0], [0.2, 0.02], [0.33, 0.1], [0.43, 0.24], [0.48, 0.36], [0.5, 0.42], [0.47, 0.42], [0.45, 0.36], [0.4, 0.24], [0.3, 0.12], [0.18, 0.05], [0, 0.04]].map(p => new THREE.Vector2(p[0], p[1]));
@@ -750,15 +826,15 @@ function initScene() {
   roll.rotation.z = Math.PI / 2; roll.position.y = MR; matG.add(roll);
   const strapMat = std(0xD5B38E, 0.8);
   [-0.95, 0.95].forEach(x => { const s = new THREE.Mesh(new THREE.CylinderGeometry(MR + 0.014, MR + 0.014, 0.1, 44, 1, true), new THREE.MeshStandardMaterial({ color: 0xD5B38E, roughness: 0.8, side: THREE.DoubleSide })); s.rotation.z = Math.PI / 2; s.position.set(x, MR, 0); matG.add(s); });
-  const BAND_L = 0.84, bandW = 1024, bandH = Math.round(1024 * BAND_L / (2 * Math.PI * (MR + 0.02)));
+  const BAND_L = 1.2, bandW = 1024, bandH = Math.round(1024 * BAND_L / (2 * Math.PI * (MR + 0.02)));
   const bandTex = mkTex(bandW, bandH, () => {});
   const drawBand = () => {
     const g = bandTex.image.getContext('2d');
     g.fillStyle = '#D5B38E'; g.fillRect(0, 0, bandW, bandH);
     g.strokeStyle = 'rgba(67,6,31,0.55)'; g.lineWidth = 3; g.setLineDash([10, 8]); g.strokeRect(14, 14, bandW - 28, bandH - 28); g.setLineDash([]);
     g.save(); g.translate(bandW / 2, bandH / 2); g.rotate(Math.PI / 2); g.textAlign = 'center'; g.textBaseline = 'middle'; g.lineJoin = 'round';
-    let px = 120; g.font = px + 'px ' + F;
-    while (px > 20 && g.measureText('MOVE').width > bandH - 60) { px -= 4; g.font = px + 'px ' + F; }
+    let px = 170; g.font = px + 'px ' + F;
+    while (px > 20 && g.measureText('MOVE').width > bandH - 50) { px -= 4; g.font = px + 'px ' + F; }
     g.lineWidth = 7; g.strokeStyle = 'rgba(255,240,210,0.7)'; g.strokeText('MOVE', 0, 0);
     g.fillStyle = '#43061F'; g.fillText('MOVE', 0, 0); g.restore();
     bandTex.needsUpdate = true;
@@ -776,31 +852,38 @@ function initScene() {
   [['breathe', bowlG], ['move', matG]].forEach(([k, g]) => g.traverse(o => { if (!o.isMesh) return; (Array.isArray(o.material) ? o.material : [o.material]).forEach(m => { if (!dimList[k].some(d => d.m === m)) dimList[k].push({ m, c: m.color.clone(), e: m.emissive ? m.emissive.clone() : null }); }); }));
   function setDim(k, d) { dimList[k].forEach(o => { o.m.color.copy(o.c).multiplyScalar(1 - 0.5 * d); if (o.e) o.m.emissive.copy(o.e).multiplyScalar(1 - d); }); }
   let sel = S.sel, bowlK = 0, matK = 0, paused = false, vis = true;
-  const cur = { bs: 1, ms: 1, bd: 0, md: 0 };
+  const cur = { bs: 1, ms: 1, bd: 0, md: 0, bh: 0, mh: 0 };
   const ray = new THREE.Raycaster(), ndc = new THREE.Vector2();
   function pickAt(e) { const r = cv.getBoundingClientRect(); ndc.set(((e.clientX - r.left) / r.width) * 2 - 1, -((e.clientY - r.top) / r.height) * 2 + 1); ray.setFromCamera(ndc, cam); const h = ray.intersectObjects([bowlHit, matHit], false); return h.length ? h[0].object.userData.mode : null; }
-  cv.addEventListener('pointermove', e => { cv.style.cursor = pickAt(e) ? 'var(--hand)' : 'default'; });
+  let hov = null;   /* which one the mouse is over (mouse and pen only) */
+  cv.addEventListener('pointermove', e => { const m = pickAt(e); cv.style.cursor = m ? 'var(--hand)' : 'default'; hov = e.pointerType === 'touch' ? null : m; });
+  cv.addEventListener('pointerleave', () => { hov = null; cv.style.cursor = 'default'; });
   cv.addEventListener('click', e => { const m = pickAt(e); if (!m) return; if (m === 'breathe') bowlK = 1; else matK = 1; setSel(m); });
-  function size() { const w = cv.clientWidth, h = cv.clientHeight; if (!w || !h) return; R.setSize(w, h, false); cam.aspect = w / h; cam.updateProjectionMatrix(); }
+  function size() { const w = cv.clientWidth, h = cv.clientHeight; if (!w || !h) return; R.setSize(w, h, false); cam.aspect = w / h; cam.updateProjectionMatrix(); fitCam(); }
   if (window.ResizeObserver) new ResizeObserver(size).observe(cv); window.addEventListener('resize', size); size();
   if (window.IntersectionObserver) new IntersectionObserver(es => { vis = es[0].isIntersecting; }, { threshold: 0 }).observe(cv);
   const REDUCE = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+  let lastT = 0;
   function frame(now) {
     requestAnimationFrame(frame);
     if (paused || !vis || document.hidden) return;
-    const t = now / 1000, ab = sel === 'breathe', am = sel === 'move';
+    if (now - lastT < 32) return;   /* about 30 frames a second is plenty for a slow float, and easy on the battery */
+    lastT = now;
+    const t = now / 1000, hb = hov === 'breathe', hm = hov === 'move', ab = sel === 'breathe', am = sel === 'move';
     const tbs = sel ? (ab ? 1.08 : 0.9) : 1, tms = sel ? (am ? 1.08 : 0.9) : 1, tbd = am ? 1 : 0, tmd = ab ? 1 : 0;
-    cur.bs += (tbs - cur.bs) * 0.12; cur.ms += (tms - cur.ms) * 0.12;
-    if (Math.abs(tbd - cur.bd) > 0.004 || Math.abs(tmd - cur.md) > 0.004) { cur.bd += (tbd - cur.bd) * 0.12; cur.md += (tmd - cur.md) * 0.12; setDim('breathe', cur.bd); setDim('move', cur.md); }
-    bowlGlow.material.opacity += ((ab ? 0.34 + (REDUCE ? 0 : Math.sin(t * 1.6) * 0.08) : 0) - bowlGlow.material.opacity) * 0.1;
-    matGlow.material.opacity += ((am ? 0.34 + (REDUCE ? 0 : Math.sin(t * 1.6) * 0.08) : 0) - matGlow.material.opacity) * 0.1;
-    bowlRoot.position.y = ab && !REDUCE ? Math.sin(t * 1.3) * 0.05 : 0;
-    matRoot.position.y = am && !REDUCE ? Math.sin(t * 1.3) * 0.05 : 0;
+    cur.bs += (tbs - cur.bs) * 0.2; cur.ms += (tms - cur.ms) * 0.2; cur.bh += ((hb ? 1 : 0) - cur.bh) * 0.22; cur.mh += ((hm ? 1 : 0) - cur.mh) * 0.22;
+    if (Math.abs(tbd - cur.bd) > 0.004 || Math.abs(tmd - cur.md) > 0.004) { cur.bd += (tbd - cur.bd) * 0.2; cur.md += (tmd - cur.md) * 0.2; setDim('breathe', cur.bd); setDim('move', cur.md); }
+    bowlGlow.material.opacity += ((ab ? 0.34 + (REDUCE ? 0 : Math.sin(t * 1.6) * 0.08) : (hb ? 0.2 : 0)) - bowlGlow.material.opacity) * 0.18;
+    matGlow.material.opacity += ((am ? 0.34 + (REDUCE ? 0 : Math.sin(t * 1.6) * 0.08) : (hm ? 0.2 : 0)) - matGlow.material.opacity) * 0.18;
+    /* both float gently all the time (a bit more when picked), and lift when the mouse is over them */
+    bowlRoot.position.y = (REDUCE ? 0 : Math.sin(t * 1.1) * (ab ? 0.06 : 0.04)) + 0.14 * cur.bh;
+    matRoot.position.y = (REDUCE ? 0 : Math.sin(t * 1.1 + 1.9) * (am ? 0.06 : 0.04)) + 0.14 * cur.mh;
+    bowlBlob.scale.setScalar(1 - bowlRoot.position.y * 0.5); matBlob.scale.setScalar(1 - matRoot.position.y * 0.5);
     bowlK = Math.max(0, bowlK - 0.012); matK = Math.max(0, matK - 0.012);
-    bowlG.rotation.z = REDUCE ? 0 : Math.sin(bowlK * Math.PI * 7) * bowlK * 0.07;
-    bowlG.scale.setScalar(1.75 * cur.bs);
-    matG.rotation.y = -0.42 + (REDUCE ? 0 : Math.sin(matK * Math.PI * 6) * matK * 0.18);
-    matG.scale.setScalar(1.28 * cur.ms);
+    bowlG.rotation.z = REDUCE ? 0 : Math.sin(bowlK * Math.PI * 7) * bowlK * 0.07 + Math.sin(t * 2.4) * 0.035 * cur.bh;
+    bowlG.scale.setScalar(1.75 * cur.bs * (1 + 0.07 * cur.bh));
+    matG.rotation.y = -0.42 + (REDUCE ? 0 : Math.sin(matK * Math.PI * 6) * matK * 0.18 + Math.sin(t * 2.1) * 0.06 * cur.mh);
+    matG.scale.setScalar(1.28 * cur.ms * (1 + 0.07 * cur.mh));
     R.render(sc, cam);
   }
   requestAnimationFrame(frame);
@@ -809,8 +892,18 @@ function initScene() {
 }
 
 /* ============ START ============ */
-$('#sleepBtn').dataset.id = SLEEP_ID;
-barH(); layout(); syncSwitches(); renderList(); setVol(S.vol); updateUI(); initSession(); parallax();
+/* late evening (9 pm to 4 am on the visitor's own clock): the 4-7-8 sleep video moves to the top of Breathe as a suggestion; any other time it sits at the bottom */
+function placeSleep() {
+  const h = new Date().getHours(), late = h >= 21 || h < 4;
+  const sec = $('#sec-breathe'), list = sec.querySelector('.vlist'), head = sec.querySelector('.sleep-h'), btn = $('#sleepBtn');
+  if (head.classList.contains('tonight') === late) return;
+  head.classList.toggle('tonight', late); btn.classList.toggle('tonight', late);
+  head.textContent = late ? '\u{1F319} Suggested for tonight' : '\u{1F319}FOR SLEEP';
+  if (late) list.before(head, btn); else list.after(head, btn);
+}
+setInterval(placeSleep, 60000);
+$('#sleepBtn').dataset.id = SLEEP_ID; if (TIPS[SLEEP_ID]) $('#sleepBtn').dataset.tip = TIPS[SLEEP_ID];
+placeSleep(); barH(); layout(); syncSwitches(); renderList(); setVol(S.vol); updateUI(); initSession(); parallax();
 scene = initScene(); if (scene) scene.setSel(S.sel);
 window.addEventListener('load', () => { barH(); parallax(); fitTitles(); });
 window.addEventListener('resize', fitTitles);
