@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- HOME (v34) -->
+<!-- HOME (v36) -->
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
@@ -2200,7 +2200,7 @@ function makeDesk(el) {
   let stBuilt = false;
 
   /* ---- the room picture: a 360 photo on the inside of a big ball around the camera, softened with a box blur (ctx.filter does not work on Safari) ---- */
-  const PANO = { mesh: null }, PANO_YAW = -0.4, PANO_DIM = 0x9a8f8a, BG_FOV = 66, BG_DOWN = 0.14, BG_GAIN = 1.3;   /* v33: a shallower room (less bowl-shaped), turning slower, with the seam of the picture pushed round behind you */   /* BG_GAIN: the room turns this much faster than the view, because its own camera is much wider (a plain 1:1 turn made the room crawl while the table flew past) */
+  const PANO = { mesh: null }, PANO_YAW = -0.4, PANO_DIM = 0x9a8f8a, BG_FOV = 66, BG_DOWN = 0.3, BG_GAIN = 1.3;   /* v33: a shallower room (less bowl-shaped), turning slower, with the seam of the picture pushed round behind you */   /* BG_GAIN: the room turns this much faster than the view, because its own camera is much wider (a plain 1:1 turn made the room crawl while the table flew past) */
   const bgScene = new THREE.Scene(), bgCam = new THREE.PerspectiveCamera(BG_FOV, 1.6, 0.5, 100);   /* the room has its own, wider camera, so it shows more of the room (and less blow-up) than the desk camera would */
   bgCam.rotation.order = 'YXZ';
   function boxBlur(g, W, H, R) {
@@ -2258,11 +2258,18 @@ function makeDesk(el) {
     _f.set(0, 0, -1).applyQuaternion(_q);   /* where the back of the phone points */
     const yaw = Math.atan2(-_f.x, -_f.z), pit = Math.asin(Math.max(-1, Math.min(1, _f.y)));
     const tn = performance.now();
-    if (!MO.base) MO.base = { yaw, pit, t: tn };   /* wherever you hold it when motion starts counts as "straight ahead" */
+    if (!MO.base) { MO.base = { yaw, pit, t: tn }; MO.pg = null; }   /* wherever you hold it when motion starts counts as "straight ahead" */
     const dtp = Math.min(0.5, Math.max(0, (tn - (MO.base.t || tn)) / 1000)); MO.base.t = tn;
     MO.base.pit += (pit - MO.base.pit) * (1 - Math.exp(-dtp / 2.5));   /* v33: the up / down "straight ahead" follows how you are sitting or lying, so looking up never gets stuck wanting you to look back down */
     let dy = yaw - MO.base.yaw; dy = Math.atan2(Math.sin(dy), Math.cos(dy));
-    LK.gyro = clampArc(dy * 1.1); LK.gpitch = Math.max(-0.1, Math.min(0.1, (pit - MO.base.pit) * 0.3));   /* a little more than real life, so you do not have to spin all the way round */
+    const rw = dy * 1.1, g = clampArc(rw), stp = rw - (MO.pg == null ? rw : MO.pg);   /* rw: how far the phone says to turn (before any limit) */
+    if (rw !== g) MO.base.yaw += (rw - g) / 1.1;   /* v36: turning the phone past an end never banks extra: "straight ahead" is pulled along, so turning back moves the view at once */
+    MO.pg = g; LK.gyro = g;
+    if (!LK.dn) {   /* v36: a dragged-in offset and the phone's turn share one range: turning the phone the other way first uses the offset up (so the far side is always reachable), and nothing is ever stuck past an end */
+      if (LK.drag * stp < 0 && Math.abs(stp) > 0.002) LK.drag -= Math.sign(LK.drag) * Math.min(Math.abs(LK.drag), Math.abs(stp));
+      LK.drag = clampArc(LK.drag + g) - g;
+    }
+    LK.gpitch = Math.max(-0.03, Math.min(0.03, (pit - MO.base.pit) * 0.1));   /* a little more than real life, so you do not have to spin all the way round */
   }
   const mBtn = document.createElement('button');
   mBtn.id = 'motionBtn'; mBtn.type = 'button'; mBtn.setAttribute('aria-label', 'Look around by moving your phone'); document.body.appendChild(mBtn);
@@ -2343,7 +2350,7 @@ function makeDesk(el) {
     }
     const now = performance.now(), dy = (e.clientX - d.lx) * lookRadPerPx(), dt = Math.max(8, now - d.lt);
     LK.drag = clampArc(LK.drag + dy);
-    LK.dragP = Math.max(-0.2, Math.min(0.2, LK.dragP + (e.clientY - d.ly) * lookRadPerPx() * 0.55));   /* v33: dragging up and down tilts the view a little too (also in VR mode, where drag and tilt work together) */
+    LK.dragP = Math.max(-0.05, Math.min(0.05, LK.dragP + (e.clientY - d.ly) * lookRadPerPx() * 0.2));   /* v33: dragging up and down tilts the view a little too (also in VR mode, where drag and tilt work together) */
     d.v = d.v * 0.6 + (dy / dt * 1000) * 0.4;
     d.lx = e.clientX; d.ly = e.clientY; d.lt = now; hoverGroup = null;
     return true;
@@ -2374,7 +2381,7 @@ function makeDesk(el) {
     } else LK.vel = 0;
     if (intro.peekT && (LK.dn || LK.keys || LK.hot_edge || Math.abs(LK.drag) > 0.01 || now - intro.peekT > 1700)) intro.peekT = 0;   /* (anything the visitor does cancels it) */
     LK.peek = intro.peekT && now > intro.peekT ? peekAt((now - intro.peekT) / 1000) : 0;
-    const tgt = intro.busy ? 0 : clampArc(LK.drag + LK.gyro + LK.peek), tp = intro.busy ? 0 : Math.max(-0.2, Math.min(0.2, LK.dragP + LK.gpitch)), k = 1 - Math.exp(-dt * 12);
+    const tgt = intro.busy ? 0 : clampArc(LK.drag + LK.gyro + LK.peek), tp = intro.busy ? 0 : Math.max(-0.06, Math.min(0.06, LK.dragP + LK.gpitch)), k = 1 - Math.exp(-dt * 12);
     const y1 = LK.yaw + (tgt - LK.yaw) * k, p1 = LK.pitch + (tp - LK.pitch) * k;
     if (Math.abs(y1 - LK.yaw) > 1e-5 || Math.abs(p1 - LK.pitch) > 1e-5 || LK.dirty) { LK.yaw = y1; LK.pitch = p1; LK.dirty = false; v.applyLook(); }
     SATS.forEach(s => { s.g.visible = Math.abs(LK.yaw - s.a) < ring.hh + 0.45; });   /* a group is only drawn while it is near the picture */
@@ -2529,13 +2536,13 @@ function makeDesk(el) {
         if (a > 1) { tex.repeat.x = 1 / a; tex.offset.x = (1 - 1 / a) / 2; } else if (a < 1) { tex.repeat.y = a; tex.offset.y = (1 - a) / 2; }
       });
       vd.addEventListener('playing', () => { IV.ok = true; });
-      vd.addEventListener('pause', () => { if (!document.hidden) IV.ok = false; });
+      vd.addEventListener('pause', () => { if (!document.hidden && !(IV.hold && performance.now() < IV.hold)) IV.ok = false; });   /* (a pause we asked for does not count) */
       vd.addEventListener('error', () => { IV.ok = false; });
       vd.src = src; IV.el = vd; IV.m = m;
       const pr = vd.play(); if (pr && pr.catch) pr.catch(() => {});
     } catch (x) {}
   }
-  document.addEventListener('visibilitychange', () => { const vd = IV.el; if (!vd) return; if (document.hidden) { try { vd.pause(); } catch (x) {} } else { const pr = vd.play(); if (pr && pr.catch) pr.catch(() => {}); } });   /* (no video running in a hidden tab) */
+  document.addEventListener('visibilitychange', () => { const vd = IV.el; if (!vd) return; if (document.hidden) { try { vd.pause(); } catch (x) {} } else if (IV.m && IV.m.visible) { const pr = vd.play(); if (pr && pr.catch) pr.catch(() => {}); } });   /* (no video running in a hidden tab) */
   function introChoose(vr) {   /* the buttons on the TV. VR asks for motion right here, inside the tap. */
     if (intro.chosen) return; intro.chosen = true;
     let done = false;
@@ -2629,7 +2636,7 @@ function makeDesk(el) {
   const tableBlob = blob(7.6, 4.9, 0, TZ, 0.75); tableBlob.position.y = FLOOR + 0.004;   /* shadow on the floor under the table */
 
   /* the board game: a white square, half an inch thick, with the TV picture on top. Everything else sits on `deck`, the board's top surface. */
-  const BS = 3.1, BT = 0.09, BX = -0.9, VT = 0.04, BROT = 0.09;   /* VT = thickness of the record under the board; BROT = board is a little askew */
+  const BS = 3.1, BT = 0.09, BX = -1.3, VT = 0.04, BROT = 0.09;   /* VT = thickness of the record under the board; BROT = board is a little askew */
   const boardWhite = std(0xf4f1ea, 0.6), boardTop = new THREE.MeshStandardMaterial({ color: 0xf4f1ea, roughness: 0.55 });
   const board = new THREE.Mesh(new THREE.BoxGeometry(BS, BT, BS), [boardWhite, boardWhite, boardTop, boardWhite, boardWhite, boardWhite]);
   board.position.set(BX, BT / 2 + VT, TZ);
@@ -3009,6 +3016,7 @@ function makeDesk(el) {
     if (chCache && chCacheN === pics.length) return chCache;
     const out = [], groups = Math.max(1, Math.ceil(pics.length / 2));
     for (let g = 0; g < groups; g++) {
+      if (g === 0) out.push({ k: 'video' });   /* v35: the clip is the first channel of the round */
       out.push({ k: 'coin' }, { k: 'ad' });
       if (pics.length) out.push({ k: 'pic', name: pics[(g * 2) % pics.length].name });
       out.push({ k: 'vinyl' });
@@ -3027,6 +3035,7 @@ function makeDesk(el) {
     chPos = i;
     if (e.k === 'pic') { startLore(loreItems().find(p => p.name === e.name)); return; }
     endLore();
+    if (e.k === 'video') { hideInfoTV(); tvBlip(() => { gameCh = 0; chPos = i; defScreen(!menuOn && !secret && !info && !lore); }); return; }
     if (e.k === 'game') { hideInfoTV(); tvBlip(() => { gameCh = performance.now(); chPos = i; defScreen(!menuOn && !secret && !info && !lore); }); return; }
     tvBlip(() => { showInfoTV(auto, e.k); chPos = i; if (!info) defScreen(!menuOn && !secret && !lore); });
   }
@@ -3312,7 +3321,14 @@ function makeDesk(el) {
   function defScreen(on) {
     if (intro.busy) { jesse.visible = false; return; }   /* (the opening runs its own picture) */
     on = !!on;
-    if (IV.m && IV.ok) { IV.m.visible = on && !gameCh; jesse.visible = on && !!gameCh; if (on && !gameCh && IV.el && IV.el.paused && !document.hidden) { const pr = IV.el.play(); if (pr && pr.catch) pr.catch(() => {}); } }
+    if (IV.m && IV.ok) {
+      const sv = on && !gameCh;
+      IV.m.visible = sv; jesse.visible = on && !!gameCh;
+      if (IV.el && !document.hidden) {   /* v35: while another channel is on, the clip waits where it was and carries on from there */
+        if (sv) { if (IV.el.paused) { const pr = IV.el.play(); if (pr && pr.catch) pr.catch(() => {}); } }
+        else if (!IV.el.paused) { IV.hold = performance.now() + 700; try { IV.el.pause(); } catch (x) {} }
+      }
+    }
     else { if (IV.m) IV.m.visible = false; jesse.visible = on; }
   }
   const path = new THREE.CatmullRomCurve3([[22, 32], [58, 24], [78, 46], [60, 74], [30, 70], [16, 50]]
@@ -3486,7 +3502,7 @@ function makeDesk(el) {
   /* ---------- the back wall, and a framed painting hanging on it: it goes to the Patreon (CONFIG.patreonUrl, empty until it exists) ---------- */
   const wallTex = mkTex(256, 256, (g, w, h) => { const gr = g.createRadialGradient(w / 2, h / 2, 0, w / 2, h / 2, w / 2); gr.addColorStop(0, '#fff'); gr.addColorStop(0.5, '#fff'); gr.addColorStop(1, '#000'); g.fillStyle = gr; g.fillRect(0, 0, w, h); });
   const wallM = noHit(new THREE.Mesh(new THREE.PlaneGeometry(20, 11), new THREE.MeshStandardMaterial({ color: 0x3b1d19, roughness: 0.95, transparent: true, opacity: 0.9, alphaMap: wallTex, depthWrite: false })));
-  wallM.position.set(0, 3.4, -3.7); wallM.renderOrder = -6; stage.add(wallM);   /* a soft wall that fades out toward its edges, so there are no hard lines */
+  wallM.position.set(0, 3.4, -3.7); wallM.renderOrder = -6; stage.add(wallM); wallM.visible = false;   /* v35: no dark halo behind the TV */   /* a soft wall that fades out toward its edges, so there are no hard lines */
   const paintG = new THREE.Group(); paintG.position.set(-3.8, 3.6, -3.45); paintG.rotation.z = 0.02; paintG.visible = false; stage.add(paintG);
   let paintT = 0;
   const onPaintTex = tex => {
@@ -3607,12 +3623,12 @@ function makeDesk(el) {
     const bx = 76, by = 394, bw = 360, bh = 66;
     g.fillStyle = infoBlink ? '#2bd45c' : '#ffe14a'; g.strokeStyle = '#1a0a05'; g.lineWidth = 5;
     g.beginPath(); g.moveTo(bx + 34, by); g.lineTo(bx + bw - 34, by); g.arc(bx + bw - 34, by + 34, 34, -Math.PI / 2, Math.PI / 2); g.lineTo(bx + 34, by + bh); g.arc(bx + 34, by + 34, 34, Math.PI / 2, Math.PI * 1.5); g.closePath(); g.fill(); g.stroke();
-    g.fillStyle = '#1a0a05'; g.textAlign = 'center'; g.font = '44px ' + INFO_FONT; g.fillText(big, W / 2, by + bh / 2 + 3);
+    g.fillStyle = '#1a0a05'; g.textAlign = 'center'; g.font = '44px ' + INFO_FONT; g.fillText(big, W / 2, by + bh / 2 + 3, 290);
     g.save(); g.translate(bx + 8, by - 14); g.rotate(-0.1); g.textAlign = 'left'; g.font = 'italic 30px ' + INFO_FONT; g.lineWidth = 7; g.lineJoin = 'round'; g.strokeStyle = '#1a0a05'; g.strokeText('click to', 0, 0); g.fillStyle = '#ffffff'; g.fillText('click to', 0, 0); g.restore(); g.textAlign = 'center';
   }
   function drawVinylAd() {   /* the second ad: the record on vinyl (a real spinning record floats in front of it) */
     const g = infoCv.getContext('2d'), W = INFO_PX;
-    const outlined = (txt, x, y, fill) => { g.lineWidth = 8; g.lineJoin = 'round'; g.strokeStyle = '#1a0a05'; g.strokeText(txt, x, y); g.fillStyle = fill; g.fillText(txt, x, y); };
+    const outlined = (txt, x, y, fill) => { g.lineWidth = 8; g.lineJoin = 'round'; g.strokeStyle = '#1a0a05'; g.strokeText(txt, x, y, 440); g.fillStyle = fill; g.fillText(txt, x, y, 440); };
     g.fillStyle = '#13737A'; g.fillRect(0, 0, W, W);
     g.save(); g.translate(W / 2, W / 2 + 10);   /* sunburst */
     for (let i = 0; i < 24; i++) { g.rotate(Math.PI * 2 / 24); g.fillStyle = i % 2 ? '#0e5c62' : '#1b8d94'; g.beginPath(); g.moveTo(0, 0); g.lineTo(520, -62); g.lineTo(520, 62); g.closePath(); g.fill(); }
@@ -3642,7 +3658,7 @@ function makeDesk(el) {
     g.strokeStyle = '#ffd36b'; g.lineWidth = 6; g.strokeRect(24, 24, W - 48, W - 48);
     g.strokeStyle = '#ff7a59'; g.lineWidth = 2; g.strokeRect(38, 38, W - 76, W - 76);
     g.textAlign = 'center'; g.textBaseline = 'middle';
-    g.fillStyle = infoBlink ? '#ffd36b' : '#b89a3e'; g.font = '108px ' + INFO_FONT;
+    g.fillStyle = infoBlink ? '#ffd36b' : '#b89a3e'; fitText(g, 'INSERT', 360, 108, INFO_FONT);   /* v35: sized to fit, whatever the header font is */
     g.fillText('INSERT', W / 2, 132); g.fillText('COIN', W / 2, 240);
     fitText(g, '(TO START A NEW GAME)', 360, 28, INFO_FONT); g.fillStyle = '#bcd8ff'; g.fillText('(TO START A NEW GAME)', W / 2 - 20, 318);
     const ax = 408 + (infoBlink ? 0 : 10);   /* a little arrow at the bottom right, pointing at the coin slot (it is just right of the screen) */
@@ -3654,7 +3670,7 @@ function makeDesk(el) {
     if (infoKind === 'coin') { drawCoinScr(); return; }
     if (infoKind === 'vinyl') { drawVinylAd(); return; }
     const g = infoCv.getContext('2d'), W = INFO_PX;
-    const outlined = (txt, x, y, fill) => { g.lineWidth = 8; g.lineJoin = 'round'; g.strokeStyle = '#1a0a05'; g.strokeText(txt, x, y); g.fillStyle = fill; g.fillText(txt, x, y); };
+    const outlined = (txt, x, y, fill) => { g.lineWidth = 8; g.lineJoin = 'round'; g.strokeStyle = '#1a0a05'; g.strokeText(txt, x, y, 440); g.fillStyle = fill; g.fillText(txt, x, y, 440); };
     g.fillStyle = '#ffd23a'; g.fillRect(0, 0, W, W);
     g.save(); g.translate(W / 2, W / 2 + 10);   /* sunburst */
     for (let i = 0; i < 24; i++) { g.rotate(Math.PI * 2 / 24); g.fillStyle = i % 2 ? '#ff4d2e' : '#ffb21a'; g.beginPath(); g.moveTo(0, 0); g.lineTo(520, -62); g.lineTo(520, 62); g.closePath(); g.fill(); }
@@ -3676,7 +3692,7 @@ function makeDesk(el) {
     const bx = 76, by = 394, bw = 360, bh = 66;   /* blinking order button */
     g.fillStyle = infoBlink ? '#2bd45c' : '#ffe14a'; g.strokeStyle = '#1a0a05'; g.lineWidth = 5;
     g.beginPath(); g.moveTo(bx + 34, by); g.lineTo(bx + bw - 34, by); g.arc(bx + bw - 34, by + 34, 34, -Math.PI / 2, Math.PI / 2); g.lineTo(bx + 34, by + bh); g.arc(bx + 34, by + 34, 34, Math.PI / 2, Math.PI * 1.5); g.closePath(); g.fill(); g.stroke();
-    g.fillStyle = '#1a0a05'; g.textAlign = 'center'; g.font = '44px ' + INFO_FONT; g.fillText('ORDER NOW!', W / 2, by + bh / 2 + 3);   /* the button reads: ORDER NOW! */
+    g.fillStyle = '#1a0a05'; g.textAlign = 'center'; g.font = '44px ' + INFO_FONT; g.fillText('ORDER NOW!', W / 2, by + bh / 2 + 3, 290);   /* the button reads: ORDER NOW! */
     g.save(); g.translate(bx + 8, by - 14); g.rotate(-0.1); g.textAlign = 'left'; g.font = 'italic 30px ' + INFO_FONT; g.lineWidth = 7; g.lineJoin = 'round'; g.strokeStyle = '#1a0a05'; g.strokeText('click to', 0, 0); g.fillStyle = '#ffffff'; g.fillText('click to', 0, 0); g.restore(); g.textAlign = 'center';   /* "click to" is a little note above the upper left of the button */
     infoTex.needsUpdate = true;
   }
@@ -4056,17 +4072,21 @@ function makeDesk(el) {
     ldM.visible = false; defScreen(!menuOn && !secret && !info && !lore);   /* v33: no static and no pearl shoot picture: the video just carries on as the main channel */
   }
   function introTick(now) {
-    if (!intro.t0) { intro.t0 = now; introVideoInit(); }
+    if (!intro.init) { intro.init = true; introVideoInit(); warmUp(); return; }   /* v35: the heavy one-off work (the clip, shaders, textures) is done first, before the clock and the zoom start, so nothing can stall the zoom */
+    if (!intro.t0) { intro.t0 = now; intro.tl = now; }
     const sec = (now - intro.t0) / 1000;
-    if (sec < 0.65) drawStatic();   /* a short burst of static first */
-    else if (!intro.tl) { intro.tl = now; staticM.visible = false; warmUp(); }
     if (intro.tl && !intro.posterOk && ldImg.complete) { intro.posterOk = true; drawIntro(now); }
-    if (IV.m && IV.ok && !IV.shown && intro.tl) { IV.shown = true; IV.m.visible = true; ldM.visible = false; }   /* the clip is playing: it takes over from the camcorder picture */
+    if (!IV.shown) {   /* static on the screen while the camera zooms in, then straight to the clip once it plays (its first frame is loaded under the static) */
+      if (IV.m && IV.ok && !IV.okT) { IV.okT = now; IV.m.visible = true; }
+      if (IV.okT && now - IV.okT > 300) { IV.shown = true; ldM.visible = false; staticM.visible = false; }
+      else if (!REDUCE && sec < 6) { staticM.visible = true; drawStatic(); }
+      else if (!IV.okT) staticM.visible = false;   /* (no clip: the camcorder picture shows instead) */
+    }
     /* the camera: zooms into the TV right away; after the choice it pulls back to the desk */
     /* v34: the zoom is stepped in small, capped slices of time and only starts once the one-off warm-up render (which stalls a frame or two) is over, so a stall can no longer make the camera jump */
     const dz = Math.min(0.04, Math.max(0, (now - (intro.zl || now)) / 1000)); intro.zl = now;
     if (intro.back) intro.zp = Math.max(0, (intro.zp == null ? 1 : intro.zp) - dz / 1.5);
-    else if (intro.tl && now - intro.tl > 250) intro.zp = Math.min(1, (intro.zp || 0) + dz / 1.5);
+    else if (intro.tl) intro.zp = Math.min(1, (intro.zp || 0) + dz / 1.5);
     const kk = intro.zp || 0;
     if (kk !== INT.k) { INT.k = kk; INT.e = kk * kk * (3 - 2 * kk); LK.dirty = true; }
     if (intro.tl && !intro.back && IU.box) {
