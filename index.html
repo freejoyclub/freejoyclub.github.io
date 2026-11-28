@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- HOME (v33) -->
+<!-- HOME (v34) -->
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
@@ -2184,7 +2184,7 @@ function makeDesk(el) {
   [stG.dojo, stG.store, satL, satP, satR, satE].forEach(g => stage.add(g));
   const SATS = [   /* side: 1 = left, -1 = right. step: 1 = nearest to the desk, 2 = next, 3 = the stand-in rooms, 4 = past the Store. y = how far the group is lifted. rk = how close to the camera its ring is (under 1 = nearer, so it stands on the floor in front of the desk) */
     { g: satL, side: 1, step: 1, y: 1.0, rk: 0.8 }, { g: satP, side: 1, step: 2, y: 0.2 }, { g: stG.dojo, side: 1, step: 3, y: 0 },
-    { g: satR, side: -1, step: 1, y: 0.95, rk: 0.8 }, { g: stG.store, side: -1, step: 3, y: 0 }, { g: satE, side: -1, step: 4, y: 0, rk: 1.08 }
+    { g: satR, side: -1, step: 1, y: 0.8, rk: 0.9, da: 0.07 }, { g: stG.store, side: -1, step: 3, y: 0 }, { g: satE, side: -1, step: 4, y: 0, rk: 1.08 }
   ];
   const ring = { a1: 0.3, hh: 0.4 };
   function ringCalc() {
@@ -2194,7 +2194,7 @@ function makeDesk(el) {
     const EGG = A[3] + 0.2;
     ARC = Math.min(ARC_MAX, A[3] - 0.06);   /* you can turn until the Dojo is about in the middle, no further */
     ARC_R = Math.min(ARC_MAX, EGG - 0.06);   /* ... and a little more on the right, to the egg */
-    SATS.forEach(s => { s.a = s.side * (s.step === 4 ? EGG : A[s.step]); });
+    SATS.forEach(s => { s.a = s.side * ((s.step === 4 ? EGG : A[s.step]) + (s.da || 0)); });
     LK.drag = clampArc(LK.drag);
   }
   let stBuilt = false;
@@ -3506,6 +3506,10 @@ function makeDesk(el) {
   satP.add(paintG); paintG.position.set(0, FLOOR + 2.9, 0);
   [-0.95, 0.95].forEach(x => box(0.1, 4.1, 0.1, legWood, x, -0.85, -0.12, paintG));   /* the painting's stand */
   satR.add(bagG, bagBlob); bagG.position.set(0, FLOOR, 0); bagBlob.position.x = 0; bagBlob.position.z = 0;
+  /* v34: the radio stands on the floor next to the gift bag (it used to sit on the TV roof), a little bigger */
+  const RADX = -1.55, RADZ = 0.95;
+  satR.add(radio); radio.position.set(RADX, FLOOR, RADZ); radio.rotation.y = 0.15; radio.scale.setScalar(1.05);
+  const radBlob = blob(1.9, 0.95, 0, 0, 0.5); satR.add(radBlob); radBlob.position.set(RADX, FLOOR + 0.004, RADZ);
   satE.add(eggG, eggBlob); eggG.position.set(0, FLOOR, 0); eggG.scale.setScalar(1.25); eggBlob.position.set(0, FLOOR + 0.004, 0); eggBlob.scale.setScalar(1.25);   /* v32: the Clemmy G egg sits on the ground past the Store */
   stG.dojo.add(bowlG, bowlBlob); bowlG.position.set(-1.0, FLOOR, 0.45); bowlG.scale.setScalar(1.5); bowlBlob.position.set(-1.0, FLOOR + 0.006, 0.45); bowlBlob.scale.setScalar(1.5);
 
@@ -4020,7 +4024,7 @@ function makeDesk(el) {
     wrapDrop([wallM], 0, 0, [], 0);
     wrapDrop([vinylG], 0.05, 6, [], 0.05);
     wrapDrop([board, deck], 0.2, 7, [boardBlob], 0.12, tvDep);
-    wrapDrop([radio], 0.45, 6, [], 0.1, sndDep);
+    wrapDrop([radio], 0.45, 6, [radBlob], 0.1, sndDep);
     wrapDrop([joyG], 0.55, 6, [joyBlob, joyCable], 0.1);
     crew.forEach((h, i) => wrapDrop([h], 0.9 + i * 0.1, 5, [crewBlobs[i]], 0.12, busDep));
     wrapDrop([dieRoot], 1.2, 5, [dieShadow], 0.14);
@@ -4059,7 +4063,11 @@ function makeDesk(el) {
     if (intro.tl && !intro.posterOk && ldImg.complete) { intro.posterOk = true; drawIntro(now); }
     if (IV.m && IV.ok && !IV.shown && intro.tl) { IV.shown = true; IV.m.visible = true; ldM.visible = false; }   /* the clip is playing: it takes over from the camcorder picture */
     /* the camera: zooms into the TV right away; after the choice it pulls back to the desk */
-    const kk = intro.back ? 1 - Math.min(1, (now - intro.back) / 1500) : Math.min(1, Math.max(0, (sec - 0.35) / 1.5));
+    /* v34: the zoom is stepped in small, capped slices of time and only starts once the one-off warm-up render (which stalls a frame or two) is over, so a stall can no longer make the camera jump */
+    const dz = Math.min(0.04, Math.max(0, (now - (intro.zl || now)) / 1000)); intro.zl = now;
+    if (intro.back) intro.zp = Math.max(0, (intro.zp == null ? 1 : intro.zp) - dz / 1.5);
+    else if (intro.tl && now - intro.tl > 250) intro.zp = Math.min(1, (intro.zp || 0) + dz / 1.5);
+    const kk = intro.zp || 0;
     if (kk !== INT.k) { INT.k = kk; INT.e = kk * kk * (3 - 2 * kk); LK.dirty = true; }
     if (intro.tl && !intro.back && IU.box) {
       if (!intro.welT && INT.k >= 0.995 && (intro.fontDep.ok || now - intro.tl > 4500)) {   /* the camera has arrived: the words fade in and out */
