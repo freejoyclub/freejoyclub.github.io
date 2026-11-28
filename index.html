@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- HOME (v32) -->
+<!-- HOME (v33) -->
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
@@ -16,6 +16,11 @@ src: url('/KCOraleSans.otf') format('opentype');
 font-family: 'KCStrikerSans';
 src: url('/KCStrikerSans.otf') format('opentype');
 unicode-range: U+0020-0022, U+0024, U+0026-0029, U+002B-002E, U+0030-003B, U+003D, U+003F, U+0041-005A, U+0061-007A, U+00C0-00FF, U+2018-2019, U+201C-201D;
+}
+@font-face {
+font-family: 'ArchivoExpBlack';
+src: url('/Archivo-ExpandedBlackPlus.ttf') format('truetype');
+font-display: swap;
 }
 /* Body text. unicode-range = only the characters this font really draws. Characters it shows as a filler logo (# & * + ; < > @ [ \ ] ^ ` { | } ~) fall through to Courier New. */
 @font-face {
@@ -611,8 +616,9 @@ body { padding-bottom: 64px; }
 html, body { height: 100%; overflow: hidden; }
 body { padding-bottom: 0; }
 .content { height: 100vh; height: calc(100dvh - var(--rackh)); min-height: 0; padding: max(14px, calc(env(safe-area-inset-top) + 8px)) 0 0; margin: 0; justify-content: flex-start; align-items: stretch; box-sizing: border-box; }
-h1.title { flex: none; align-self: center; position: relative; z-index: 3; pointer-events: none; font-size: min(3rem, 4.4vw, 6.6vh); line-height: 1.15; margin: 0 0 -0.6em; letter-spacing: 3px; }
+h1.title { flex: none; align-self: center; position: relative; z-index: 3; pointer-events: none; font-size: min(2.5rem, 3.6vw, 5.6vh); line-height: 1.15; margin: 0 0 -0.6em; letter-spacing: 3px; }
 h1.title .title-die { pointer-events: auto; width: 0.95em; height: 0.95em; margin: 0; }
+h1.title, h1.title span { font-family: 'ArchivoExpBlack', 'KCOraleSans', sans-serif; }   /* v33 */
 @media (max-width: 760px) {
 h1.title { flex-direction: column; font-size: 2.3rem; gap: 0; line-height: 1.12; margin: 0 0 -1.4rem; letter-spacing: 2px; }
 h1.title .title-die { width: 1em; height: 1em; margin: -0.12em 0; }
@@ -666,6 +672,17 @@ dialog.big { width: 100vw; max-height: 86vh; max-height: 86dvh; margin: auto 0 0
 .rack-nav > .rk, .rack-nav .rack-sub .rk { min-width: 230px; width: auto; height: 36px; box-sizing: border-box; line-height: 1; justify-content: flex-start; text-align: left; }   /* every menu button the same size, words on the left */
 .rk-slide { display: flex; align-items: center; gap: 10px; padding: 6px 12px; font-family: 'KCStrikerSans', sans-serif; font-size: 0.8rem; letter-spacing: 1px; text-transform: uppercase; color: #d8d8de; }
 .rk-slide input { flex: 1; min-width: 110px; accent-color: #ffc27a; cursor: var(--hand); }
+/* v33: the VR / classic switch in the menu */
+.rk-view { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 7px 12px; cursor: default; }
+.rack-nav > .rk.rk-view { height: auto; }
+.rk-view[hidden] { display: none; }
+.rk-view .vw-l, .rk-view .vw-r { flex: 1; font-size: 0.68rem; line-height: 1.25; letter-spacing: 0.6px; text-transform: uppercase; text-align: center; opacity: 0.5; }
+.rk-view small { display: block; font-size: 0.5rem; letter-spacing: 0.3px; opacity: 0.9; }
+.rk-view:not(.vr-on) .vw-l, .rk-view.vr-on .vw-r { opacity: 1; color: #ffd36b; }
+.vw-sw { position: relative; flex: none; width: 46px; height: 24px; padding: 0; border-radius: 12px; border: 1px solid #101012; background: #1d1d21; cursor: var(--hand); }
+.vw-sw::after { content: ""; position: absolute; top: 2px; left: 2px; width: 18px; height: 18px; border-radius: 50%; background: #cfcfd6; transition: left 0.18s; }
+.rk-view.vr-on .vw-sw { background: #2a6b3b; }
+.rk-view.vr-on .vw-sw::after { left: 24px; background: #8dffad; }
 @media (max-width: 700px) { .rack-sub { left: 0; right: 0; bottom: 0 !important; } }
 @media (max-height: 560px) { .rack-nav { max-height: calc(100dvh - var(--rackh) - 40px); overflow-y: auto; } }
 .rk.rk-off { opacity: 0.4; filter: grayscale(1); pointer-events: none; cursor: default; }   /* the full store: grayed out until it opens */
@@ -754,12 +771,13 @@ html.edge-on #motionBtn.has { display: block; }
 #motionNote { position: fixed; left: 50%; bottom: calc(130px + env(safe-area-inset-bottom)); transform: translateX(-50%); z-index: 61; max-width: min(86vw, 340px); text-align: center; font: 12px/1.35 'KCPelletierTyped', 'Courier New', monospace; color: #f2dcee; background: rgba(20, 12, 24, 0.9); border: 1px solid rgba(217, 138, 196, 0.6); border-radius: 10px; padding: 9px 12px; opacity: 0; pointer-events: none; transition: opacity 0.3s; }
 #motionNote.on { opacity: 1; }
 /* v32: the opening: words and the CLASSIC / VR choice, laid exactly over the TV screen (under the TV's own scan lines) */
-#introTV { display: none; position: absolute; z-index: 6; overflow: hidden; border-radius: 7%; pointer-events: none; color: #fff; text-align: center; font-family: 'KCStrikerSans', 'Arial Black', sans-serif; opacity: 1; transition: opacity 0.35s; }
+#introTV { display: none; position: absolute; z-index: 6; overflow: hidden; border-radius: 7%; pointer-events: none; color: #fff; text-align: center; font-family: 'ArchivoExpBlack', 'Arial Black', sans-serif; opacity: 1; transition: opacity 0.35s; }
 #introTV.out { opacity: 0; }
 #introTV .itWel { position: absolute; left: 0; right: 0; top: 13%; opacity: 0; line-height: 1; text-shadow: 0 0 calc(var(--u) * 3) rgba(255, 211, 107, 0.7), 0 calc(var(--u) * 0.5) calc(var(--u) * 1.5) rgba(0, 0, 0, 0.9); }
 #introTV .itWel.go { animation: itWel 2s ease-in-out both; }
 #introTV .itSm { display: block; font: calc(var(--u) * 5.2) 'KCPelletierTyped', 'Courier New', monospace; letter-spacing: 0.12em; color: #ffe9b0; }
-#introTV .itBig { display: block; margin-top: calc(var(--u) * 1.5); font-size: calc(var(--u) * 17); letter-spacing: 0.03em; }
+#introTV .itBig { display: block; margin-top: calc(var(--u) * 1.5); font-size: calc(var(--u) * 13); letter-spacing: 0.01em; white-space: nowrap; }
+#introTV .itFit { display: inline-block; white-space: nowrap; }
 @keyframes itWel { 0% { opacity: 0; transform: translateY(calc(var(--u) * -1.5)); } 22% { opacity: 1; transform: none; } 72% { opacity: 1; } 100% { opacity: 0; } }
 #introTV .itSel { position: absolute; left: 0; right: 0; bottom: 0; height: 58%; padding: 4% 0 6%; box-sizing: border-box; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; opacity: 0; transition: opacity 0.6s; background: linear-gradient(to bottom, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.5) 40%); }
 #introTV .itSel.on { opacity: 1; }
@@ -767,7 +785,7 @@ html.edge-on #motionBtn.has { display: block; }
 #introTV .itBtn { display: block; pointer-events: none; width: 68%; margin: 0 auto calc(var(--u) * 2); padding: calc(var(--u) * 1.3) 0 calc(var(--u) * 1.2); background: rgba(7, 11, 28, 0.62); border: calc(var(--u) * 0.6) solid #ffd36b; border-radius: calc(var(--u) * 2.4); color: #ffd36b; cursor: pointer; font-family: inherit; -webkit-tap-highlight-color: transparent; touch-action: manipulation; box-shadow: 0 0 calc(var(--u) * 2.5) rgba(255, 211, 107, 0.35); }
 #introTV .itSel.on .itBtn { pointer-events: auto; }
 #introTV .itSel.busy .itBtn { pointer-events: none; opacity: 0.55; }
-#introTV .itBtn b { display: block; font-weight: normal; font-size: calc(var(--u) * 7); letter-spacing: 0.06em; line-height: 1.05; }
+#introTV .itBtn b { display: block; font-weight: normal; font-size: calc(var(--u) * 6); letter-spacing: 0.02em; line-height: 1.05; white-space: nowrap; }
 #introTV .itBtn i { display: block; font: calc(var(--u) * 3.4) 'KCPelletierTyped', 'Courier New', monospace; font-style: normal; color: #bcd8ff; margin-top: calc(var(--u) * 0.6); }
 #introTV .itBtn:active { background: rgba(255, 211, 107, 0.25); }
 #introTV .itFx { position: absolute; inset: 0; pointer-events: none; background: repeating-linear-gradient(0deg, rgba(0, 0, 0, 0.2) 0 1px, transparent 1px 3px), radial-gradient(ellipse at center, transparent 62%, rgba(0, 0, 0, 0.3) 100%); }
@@ -928,8 +946,6 @@ try { if (location.hash) history.replaceState(null, '', location.pathname + loca
 </dialog>
 
 <div class="toast" id="toast" role="status"></div>
-<a class="edge edge-l" href="/dojo/" aria-label="Go to the dojo"><span class="arr" aria-hidden="true">&#8249;</span><span class="txt"><span class="w-full">dojo</span><span class="w-short">dojo</span></span><svg class="neon-arrow" viewBox="0 0 90 80" aria-hidden="true"><path d="M74 4 C74 38 54 58 14 62"/><path d="M30 46 L12 62 L32 76"/></svg></a>
-<a class="edge edge-r" href="/store/" aria-label="Go to the store"><span class="txt"><span class="w-full">store</span><span class="w-short">store</span></span><span class="arr" aria-hidden="true">&#8250;</span><svg class="neon-arrow" viewBox="0 0 90 80" aria-hidden="true"><path d="M16 4 C16 38 36 58 76 62"/><path d="M60 46 L78 62 L58 76"/></svg></a>
 <div class="rack" role="toolbar" aria-label="Site menu and music">
 <div class="rack-in">
 <button type="button" class="rk c-menu" id="rackMenu" aria-label="Open the menu" aria-expanded="false" aria-controls="rackNav"><span class="burger"></span><span class="rk-menu-txt">Menu</span></button>
@@ -940,6 +956,7 @@ try { if (location.hash) history.replaceState(null, '', location.pathname + loca
 <button type="button" class="rk c-game" data-open="game">Play Online</button>
 <button type="button" class="rk rk-grp rk-keep c-breathe" data-sub="bm" aria-haspopup="true" aria-expanded="false">Breathe / Move<span class="rk-arrow">&#9656;</span></button>
 <button type="button" class="rk rk-grp rk-keep c-contact" data-sub="touch" aria-haspopup="true" aria-expanded="false">Get in touch<span class="rk-arrow">&#9656;</span></button>
+<div class="rk rk-keep rk-view" id="rackView" hidden><span class="vw-l">classic<small>(drag to look)</small></span><button type="button" class="vw-sw" id="viewSw" role="switch" aria-checked="false" aria-label="VR: look around by moving your phone"></button><span class="vw-r">VR<small>(motion)</small></span></div>
 <button type="button" class="rk rk-grp rk-keep c-bg" data-sub="audio" aria-haspopup="true" aria-expanded="false">Audio<span class="rk-arrow">&#9656;</span></button>
 <div class="rack-sub" id="sub-album" role="menu">
 <button type="button" class="rk rk-back rk-keep">&#9666; Menu</button>
@@ -1024,6 +1041,7 @@ const CONFIG = {
   bg360: '/images/BG/360 mcm room 1.jpg',   // the room picture all around the desk when you look left and right (a 360 degree picture, 2:1 wide). Empty = no room picture.
   bgBlur: 1,                       // how soft that room picture is, in pixels (0 = raw)
   lookArc: 80,                     // how far you can look left and right, in degrees (the Dojo and Store rooms sit 10 degrees inside this)
+  vinylLabel: '/images/LabelAjpg.jpg',   // the round label picture on the black record on the table (its square corners get cut off)
   introVideo: '/vids/fj-siz-small-1.mp4',   // the clip that plays on the TV in the opening close-up (muted, loops)
   vinylUrl: '',                    // where the record on the table sends you to buy it. Empty = the "Send me the album" email form opens instead.
   shippingNote: 'Shipping is confirmed by reply before you pay.'
@@ -1600,14 +1618,14 @@ function recolorDie(mesh, colorId) {
 }
 
 /* Coin: FEAR on one face, JOY on the other. Lettering is the Striker Sans subheader font; the textures redraw once that font has loaded. */
-const COIN_FONT = "'KCStrikerSans', 'Arial Black', Arial, sans-serif";
+const COIN_FONT = "'ArchivoExpBlack', 'Arial Black', Arial, sans-serif";
 const COIN_REDRAW = [];
 function setCoinFont(g, text) {
   let px = 64;
   g.font = px + 'px ' + COIN_FONT;
   while (px > 24 && g.measureText(text).width > 170) { px -= 4; g.font = px + 'px ' + COIN_FONT; }
 }
-if (document.fonts && document.fonts.load) document.fonts.load("64px 'KCStrikerSans'").then(() => COIN_REDRAW.forEach(f => f())).catch(() => {});
+if (document.fonts && document.fonts.load) document.fonts.load("64px 'ArchivoExpBlack'").then(() => COIN_REDRAW.forEach(f => f())).catch(() => {});
 function coinFace(text, base, ink, useMarble) {
   const c = document.createElement('canvas');
   c.width = c.height = 256;
@@ -1884,7 +1902,7 @@ function buildExtras(v, painted, st) {
     const tkS = mkSub(TRAYS.ticket), shS = mkSub(TRAYS.shirt);
     v.backSubs = [tkS, shS];
     [tkS, shS].forEach(sc => { const bp = pedestal(0.8, true); sc.stage.add(bp); v.glowSub.push(bp); });
-    const FONT_S = "'KCStrikerSans', 'Arial Black', sans-serif";
+    const FONT_S = "'ArchivoExpBlack', 'Arial Black', sans-serif";
     /* the ticket: a notched gold slab with a printed face */
     const hw = 0.85, hh = 0.45, nr = 0.1, tkShape = new THREE.Shape();
     tkShape.moveTo(-hw, -hh); tkShape.lineTo(hw, -hh); tkShape.lineTo(hw, -nr); tkShape.absarc(hw, 0, nr, -Math.PI / 2, Math.PI / 2, true);
@@ -2153,7 +2171,7 @@ function makeDesk(el) {
      Ways to turn: drag, the mouse at the edge of the picture (faster at the very edge), the left / right arrow keys, or the phone's own motion.
      Nothing here touches the other pages. Easy edit values are in CONFIG (bg360, bgBlur, lookArc, gateSeconds). */
   const DEG = Math.PI / 180, Y_AXIS = new THREE.Vector3(0, 1, 0);
-  const LK = { act: 0, yaw: 0, drag: 0, gyro: 0, peek: 0, pitch: 0, gpitch: 0, vel: 0, hx: 0, hot: false, dn: null, keys: 0, last: 0, dirty: true, stT: 0 };
+  const LK = { act: 0, yaw: 0, drag: 0, dragP: 0, gyro: 0, peek: 0, pitch: 0, gpitch: 0, vel: 0, hx: 0, hot: false, dn: null, keys: 0, last: 0, dirty: true, stT: 0 };
   v.look = LK;   /* (open to the page, so the look can be read or set from the console) */
   const ARC_MAX = (CONFIG.lookArc || 80) * DEG;   /* the farthest you can ever look */
   let ARC = ARC_MAX, ARC_R = ARC_MAX;             /* (ARC: how far left you can turn, to the Dojo. ARC_R: how far right, to the egg past the Store. Both shrink on screens where the things sit closer.) */
@@ -2166,22 +2184,23 @@ function makeDesk(el) {
   [stG.dojo, stG.store, satL, satP, satR, satE].forEach(g => stage.add(g));
   const SATS = [   /* side: 1 = left, -1 = right. step: 1 = nearest to the desk, 2 = next, 3 = the stand-in rooms, 4 = past the Store. y = how far the group is lifted. rk = how close to the camera its ring is (under 1 = nearer, so it stands on the floor in front of the desk) */
     { g: satL, side: 1, step: 1, y: 1.0, rk: 0.8 }, { g: satP, side: 1, step: 2, y: 0.2 }, { g: stG.dojo, side: 1, step: 3, y: 0 },
-    { g: satR, side: -1, step: 1, y: 0.95, rk: 0.8 }, { g: stG.store, side: -1, step: 3, y: 0 }, { g: satE, side: -1, step: 4, y: 0.85, rk: 0.84 }
+    { g: satR, side: -1, step: 1, y: 0.95, rk: 0.8 }, { g: stG.store, side: -1, step: 3, y: 0 }, { g: satE, side: -1, step: 4, y: 0, rk: 1.08 }
   ];
   const ring = { a1: 0.3, hh: 0.4 };
   function ringCalc() {
     const hh = Math.atan(Math.tan(15 * DEG) * v.camera.aspect);   /* half of the picture's width, as an angle */
-    ring.hh = hh; ring.a1 = Math.max(0.29, Math.min(0.5, hh - 0.12));   /* v32: a little closer together */
-    const OFF = [0, 0, 0.26, 0.48, 0.74];   /* how much further out each step sits than the first */
-    ARC = Math.min(ARC_MAX, ring.a1 + OFF[3]);   /* you can turn until the Dojo is in the middle, no further */
-    ARC_R = Math.min(ARC_MAX, ring.a1 + OFF[4]);   /* ... and to the egg on the right */
-    SATS.forEach(s => { s.a = s.side * (ring.a1 + OFF[s.step]); });
+    ring.hh = hh; ring.a1 = Math.max(0.32, Math.min(0.46, hh - 0.1));
+    const A = [0, 1, 1.5, 2].map(k => ring.a1 * k);   /* v33: evenly spaced: the mailbox and bag are midway to the rooms; the painting is midway between the mailbox and the Dojo */
+    const EGG = A[3] + 0.2;
+    ARC = Math.min(ARC_MAX, A[3] - 0.06);   /* you can turn until the Dojo is about in the middle, no further */
+    ARC_R = Math.min(ARC_MAX, EGG - 0.06);   /* ... and a little more on the right, to the egg */
+    SATS.forEach(s => { s.a = s.side * (s.step === 4 ? EGG : A[s.step]); });
     LK.drag = clampArc(LK.drag);
   }
   let stBuilt = false;
 
   /* ---- the room picture: a 360 photo on the inside of a big ball around the camera, softened with a box blur (ctx.filter does not work on Safari) ---- */
-  const PANO = { mesh: null }, PANO_YAW = 0, PANO_DIM = 0x9a8f8a, BG_FOV = 92, BG_DOWN = 0.2, BG_GAIN = 2.6;   /* BG_GAIN: the room turns this much faster than the view, because its own camera is much wider (a plain 1:1 turn made the room crawl while the table flew past) */
+  const PANO = { mesh: null }, PANO_YAW = -0.4, PANO_DIM = 0x9a8f8a, BG_FOV = 66, BG_DOWN = 0.14, BG_GAIN = 1.3;   /* v33: a shallower room (less bowl-shaped), turning slower, with the seam of the picture pushed round behind you */   /* BG_GAIN: the room turns this much faster than the view, because its own camera is much wider (a plain 1:1 turn made the room crawl while the table flew past) */
   const bgScene = new THREE.Scene(), bgCam = new THREE.PerspectiveCamera(BG_FOV, 1.6, 0.5, 100);   /* the room has its own, wider camera, so it shows more of the room (and less blow-up) than the desk camera would */
   bgCam.rotation.order = 'YXZ';
   function boxBlur(g, W, H, R) {
@@ -2238,16 +2257,20 @@ function makeDesk(el) {
     _q.setFromEuler(_e); _q.multiply(_q1); _q.multiply(_q0.setFromAxisAngle(ZEE, -so));
     _f.set(0, 0, -1).applyQuaternion(_q);   /* where the back of the phone points */
     const yaw = Math.atan2(-_f.x, -_f.z), pit = Math.asin(Math.max(-1, Math.min(1, _f.y)));
-    if (!MO.base) MO.base = { yaw, pit };   /* wherever you hold it when motion starts counts as "straight ahead" */
+    const tn = performance.now();
+    if (!MO.base) MO.base = { yaw, pit, t: tn };   /* wherever you hold it when motion starts counts as "straight ahead" */
+    const dtp = Math.min(0.5, Math.max(0, (tn - (MO.base.t || tn)) / 1000)); MO.base.t = tn;
+    MO.base.pit += (pit - MO.base.pit) * (1 - Math.exp(-dtp / 2.5));   /* v33: the up / down "straight ahead" follows how you are sitting or lying, so looking up never gets stuck wanting you to look back down */
     let dy = yaw - MO.base.yaw; dy = Math.atan2(Math.sin(dy), Math.cos(dy));
-    LK.gyro = clampArc(dy * 1.0); LK.gpitch = (pit - MO.base.pit) * 0.4;   /* a little more than real life, so you do not have to spin all the way round */
+    LK.gyro = clampArc(dy * 1.1); LK.gpitch = Math.max(-0.1, Math.min(0.1, (pit - MO.base.pit) * 0.3));   /* a little more than real life, so you do not have to spin all the way round */
   }
   const mBtn = document.createElement('button');
   mBtn.id = 'motionBtn'; mBtn.type = 'button'; mBtn.setAttribute('aria-label', 'Look around by moving your phone'); document.body.appendChild(mBtn);
   const mNote = document.createElement('div'); mNote.id = 'motionNote'; document.body.appendChild(mNote);
   let mNoteT = 0;
   function motionNote(t) { mNote.textContent = t; mNote.classList.add('on'); clearTimeout(mNoteT); mNoteT = setTimeout(() => mNote.classList.remove('on'), 5200); }
-  function syncBtn() { mBtn.textContent = MO.on ? 'TILT: ON' : 'TILT: OFF'; mBtn.classList.toggle('on', MO.on); if (v.vrDraw) v.vrDraw(); }
+  const vRow = document.getElementById('rackView'), vSw = document.getElementById('viewSw');
+  function syncBtn() { mBtn.textContent = MO.on ? 'TILT: ON' : 'TILT: OFF'; mBtn.classList.toggle('on', MO.on); if (v.vrDraw) v.vrDraw(); if (vRow) { vRow.classList.toggle('vr-on', MO.on); vSw.setAttribute('aria-checked', MO.on ? 'true' : 'false'); } }
   function motionStart() { if (MO.on) return; MO.on = true; MO.base = null; MO.seen = false; window.addEventListener('deviceorientation', onOrient, true); syncBtn(); }
   function motionStop() { MO.on = false; window.removeEventListener('deviceorientation', onOrient, true); LK.gyro = 0; LK.gpitch = 0; syncBtn(); }
   function motionAsk() {   /* must be called straight from a tap on iPhone / iPad */
@@ -2263,6 +2286,7 @@ function makeDesk(el) {
   if (hasSensor) {
     mBtn.classList.add('has'); syncBtn();
     mBtn.addEventListener('click', () => { if (MO.on) motionStop(); else motionAsk(); });
+    if (vRow) { vRow.hidden = false; vSw.addEventListener('click', () => { if (MO.on) motionStop(); else motionAsk(); }); }   /* v33: the switch in the menu (phones and tablets only) */
     document.addEventListener('visibilitychange', () => { if (!document.hidden) MO.base = null; });
     window.addEventListener('orientationchange', () => { MO.base = null; });
   }
@@ -2295,7 +2319,7 @@ function makeDesk(el) {
   v.render = function () {   /* the room first, then the desk on top of it */
     const r = v.renderer;
     if (!PANO.mesh) { r.render(v.scene, v.camera); return; }
-    bgCam.rotation.set(-BG_DOWN * (1 - INT.e) + LK.pitch * 1.4, LK.yaw * BG_GAIN, 0);
+    bgCam.rotation.set(-BG_DOWN * (1 - INT.e) + LK.pitch * 0.9, LK.yaw * BG_GAIN, 0);
     r.autoClear = false; r.clear(); r.render(bgScene, bgCam); r.clearDepth(); r.render(v.scene, v.camera); r.autoClear = true;
   };
   function placeSats() {   /* each group sits on the ring at the same distance as the middle of the desk, turned to face the camera */
@@ -2306,21 +2330,22 @@ function makeDesk(el) {
   function lookDown(e) {
     LK.dn = null;
     if (!lookOk() || (e.pointerType === 'mouse' && e.button > 0)) return;
-    LK.dn = { id: e.pointerId, x: e.clientX, y: e.clientY, lx: e.clientX, lt: performance.now(), on: false, v: 0 };
+    LK.dn = { id: e.pointerId, x: e.clientX, y: e.clientY, lx: e.clientX, ly: e.clientY, lt: performance.now(), on: false, v: 0 };
     LK.vel = 0;
   }
   function lookMove(e) {   /* true while a drag-to-look is going on (the other pointer code then leaves the move alone) */
     const d = LK.dn; if (!d || d.id !== e.pointerId) return false;
     if (!d.on) {
       if (Math.hypot(e.clientX - d.x, e.clientY - d.y) < 7) return false;
-      d.on = true; d.lx = e.clientX; d.lt = performance.now(); suppressClick = true;
+      d.on = true; d.lx = e.clientX; d.ly = e.clientY; d.lt = performance.now(); suppressClick = true;
       try { el.setPointerCapture(e.pointerId); } catch (x) {}
       el.style.cursor = 'grabbing';
     }
     const now = performance.now(), dy = (e.clientX - d.lx) * lookRadPerPx(), dt = Math.max(8, now - d.lt);
     LK.drag = clampArc(LK.drag + dy);
+    LK.dragP = Math.max(-0.2, Math.min(0.2, LK.dragP + (e.clientY - d.ly) * lookRadPerPx() * 0.55));   /* v33: dragging up and down tilts the view a little too (also in VR mode, where drag and tilt work together) */
     d.v = d.v * 0.6 + (dy / dt * 1000) * 0.4;
-    d.lx = e.clientX; d.lt = now; hoverGroup = null;
+    d.lx = e.clientX; d.ly = e.clientY; d.lt = now; hoverGroup = null;
     return true;
   }
   function lookUp() {
@@ -2336,6 +2361,7 @@ function makeDesk(el) {
     if (okNow && !lookWas) MO.base = null;   /* the intro is over: wherever the phone is held right now counts as straight ahead */
     lookWas = okNow;
     if (okNow) {
+      if (!LK.dn && SNAP_ON && now - LK.act > 2500 && Math.abs(LK.drag) < 0.22 && Math.abs(LK.dragP) > 0.001) LK.dragP -= LK.dragP * (1 - Math.exp(-dt * 1.6));   /* (computers: the up / down tilt settles back too, near the desk) */
       if (!LK.dn) {
         if (Math.abs(LK.vel) > 0.01) { LK.drag = clampArc(LK.drag + LK.vel * dt); LK.vel *= Math.exp(-3.2 * dt); } else LK.vel = 0;
         let sp = LK.keys * 0.65;
@@ -2348,7 +2374,7 @@ function makeDesk(el) {
     } else LK.vel = 0;
     if (intro.peekT && (LK.dn || LK.keys || LK.hot_edge || Math.abs(LK.drag) > 0.01 || now - intro.peekT > 1700)) intro.peekT = 0;   /* (anything the visitor does cancels it) */
     LK.peek = intro.peekT && now > intro.peekT ? peekAt((now - intro.peekT) / 1000) : 0;
-    const tgt = intro.busy ? 0 : clampArc(LK.drag + LK.gyro + LK.peek), tp = Math.max(-0.14, Math.min(0.14, LK.gpitch)), k = 1 - Math.exp(-dt * 12);
+    const tgt = intro.busy ? 0 : clampArc(LK.drag + LK.gyro + LK.peek), tp = intro.busy ? 0 : Math.max(-0.2, Math.min(0.2, LK.dragP + LK.gpitch)), k = 1 - Math.exp(-dt * 12);
     const y1 = LK.yaw + (tgt - LK.yaw) * k, p1 = LK.pitch + (tp - LK.pitch) * k;
     if (Math.abs(y1 - LK.yaw) > 1e-5 || Math.abs(p1 - LK.pitch) > 1e-5 || LK.dirty) { LK.yaw = y1; LK.pitch = p1; LK.dirty = false; v.applyLook(); }
     SATS.forEach(s => { s.g.visible = Math.abs(LK.yaw - s.a) < ring.hh + 0.45; });   /* a group is only drawn while it is near the picture */
@@ -2361,8 +2387,8 @@ function makeDesk(el) {
     g.fillStyle = '#1a0f16'; g.fillRect(0, 0, w, h);
     g.lineJoin = 'round'; g.strokeStyle = rgb; g.lineWidth = 9; g.shadowColor = rgb; g.shadowBlur = 16; g.strokeRect(16, 16, w - 32, h - 32);
     g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillStyle = '#ffffff'; g.shadowBlur = 20;
-    fitText(g, title, w - 90, Math.round(h * 0.46), "'KCStrikerSans', 'Arial Black', sans-serif"); g.fillText(title, w / 2, h * 0.38);
-    g.shadowBlur = 10; g.fillStyle = rgb; g.font = (subPx || Math.round(h * 0.13)) + "px 'KCPelletierTyped', 'Courier New', monospace"; g.fillText(sub, w / 2, h * 0.78);
+    fitText(g, title, w - 130, Math.round(h * 0.42), "'ArchivoExpBlack', 'Arial Black', sans-serif"); g.fillText(title, w / 2, h * 0.38);
+    g.shadowBlur = 10; g.fillStyle = rgb; fitText(g, sub, w - 190, subPx || Math.round(h * 0.13), "'KCPelletierTyped', 'Courier New', monospace"); g.fillText(sub, w / 2, h * 0.76);   /* v33: the small words keep a wide margin to the edge of the sign */
     const t = new THREE.CanvasTexture(c); t.anisotropy = 4; return t;
   }
   function cyl(rt, rb, h, mat, x, y, z, par, seg) { const m = new THREE.Mesh(new THREE.CylinderGeometry(rt, rb, h, seg || 14), mat); m.position.set(x, y, z); (par || stage).add(m); return m; }
@@ -2374,7 +2400,7 @@ function makeDesk(el) {
     const sh = blob(6.0, 3.6, 0, 0, 0.7, g); sh.position.y = FLOOR + 0.004;
     /* the white tee, laid flat, with the feathered camcorder print like the real store's */
     const sp = new THREE.Shape();
-    [[-0.45, -0.7], [0.45, -0.7], [0.45, 0.3], [0.88, 0.12], [1.05, 0.5], [0.32, 0.72], [0.18, 0.72], [0, 0.58], [-0.18, 0.72], [-0.32, 0.72], [-1.05, 0.5], [-0.88, 0.12], [-0.45, 0.3]].forEach((q, i) => { if (i) sp.lineTo(q[0], q[1]); else sp.moveTo(q[0], q[1]); });
+    [[-0.45, -0.7], [0.45, -0.7], [0.45, 0.28], [0.74, 0.3], [0.8, 0.54], [0.32, 0.72], [0.18, 0.72], [0, 0.58], [-0.18, 0.72], [-0.32, 0.72], [-0.8, 0.54], [-0.74, 0.3], [-0.45, 0.28]].forEach((q, i) => { if (i) sp.lineTo(q[0], q[1]); else sp.moveTo(q[0], q[1]); });
     const shGeo = new THREE.ExtrudeGeometry(sp, { depth: 0.05, bevelEnabled: true, bevelThickness: 0.015, bevelSize: 0.015, bevelSegments: 2 }); shGeo.rotateX(-Math.PI / 2);
     const tee = new THREE.Group(); tee.position.set(-1.3, 0.004, -0.1); tee.rotation.y = 0.12; tee.scale.setScalar(1.2); g.add(tee);
     tee.add(new THREE.Mesh(shGeo, std(0xefede6, 0.9)));
@@ -2388,7 +2414,7 @@ function makeDesk(el) {
     const cvTop = new THREE.MeshStandardMaterial({ color: 0xf4f1ea, roughness: 0.55 }); if (boardTop.map) { cvTop.map = boardTop.map; cvTop.color.setHex(0xe0e0e0); }
     const cvSide = std(0xf4f1ea, 0.6);
     const cover = new THREE.Mesh(new THREE.BoxGeometry(1.7, 0.03, 1.7), [cvSide, cvSide, cvTop, cvSide, cvSide, cvSide]); cover.position.set(0.75, 0.015, -0.5); cover.rotation.y = -0.1; g.add(cover);
-    const vc = new THREE.MeshStandardMaterial({ map: vinylTex, color: 0xc4c4c4, roughness: 0.35, metalness: 0.1 });
+    const vc = new THREE.MeshStandardMaterial({ map: vinylCreamTex, color: 0xc4c4c4, roughness: 0.35, metalness: 0.1 });
     const rec = new THREE.Mesh(new THREE.CylinderGeometry(0.7, 0.7, 0.035, 56), [std(0xb8a878, 0.5), vc, vc]); rec.position.set(1.45, 0.06, 0.45); g.add(rec);
     /* the CD in its clear case */
     const cdG2 = new THREE.Group(); cdG2.position.set(0.1, 0.06, 0.9); cdG2.rotation.set(-Math.PI / 2, 0, 0.1); g.add(cdG2);
@@ -2401,14 +2427,14 @@ function makeDesk(el) {
     const postM = std(0x573822, 0.7);
     [-1.9, 1.9].forEach(x => cyl(0.07, 0.07, 4.95, postM, x, FLOOR + 2.475, -1.2, g, 10)); box(4.0, 0.08, 0.08, postM, 0, 3.6, -1.2, g);
     [-1.5, 1.5].forEach(x => cyl(0.02, 0.02, 0.45, postM, x, 3.35, -1.2, g, 6));
-    const sign = new THREE.Mesh(new THREE.PlaneGeometry(3.6, 1.5), new THREE.MeshBasicMaterial({ map: signTex(512, 214, 'MERCH', 'tap to shop  >', '#d98ac4', 40) })); sign.position.set(0, 2.65, -1.15); noHit(sign); g.add(sign);
+    const sign = new THREE.Mesh(new THREE.PlaneGeometry(3.6, 1.5), new THREE.MeshBasicMaterial({ map: signTex(512, 214, 'MERCH', 'visit the store', '#d98ac4', 40) })); sign.position.set(0, 2.65, -1.15); noHit(sign); g.add(sign);
     hitBox(5.2, 5.4, 3.2, 0, 1.2, 0, 'stStore', g);
   }
   function buildDojoStation() {   /* the singing bowl (moved here from the TV) and the rolled yoga mat from the Dojo page, under a sign */
     const g = stG.dojo;
     const matRoot = new THREE.Group(); matRoot.position.set(1.55, FLOOR, 0.45); g.add(matRoot);
     const matG = new THREE.Group(); matG.scale.setScalar(1.15); matG.rotation.y = -0.42; matRoot.add(matG);
-    const MR = 0.46, ML = 2.5, F = "'KCStrikerSans', 'Arial Black', sans-serif";
+    const MR = 0.46, ML = 2.5, F = "'ArchivoExpBlack', 'Arial Black', sans-serif";
     const sideTex = mkTex(128, 128, (c, w, h) => { c.fillStyle = '#13737A'; c.fillRect(0, 0, w, h); for (let i = 0; i < 900; i++) { c.fillStyle = Math.random() < 0.5 ? 'rgba(255,255,255,0.07)' : 'rgba(0,30,35,0.12)'; c.fillRect(Math.random() * w, Math.random() * h, 2, 2); } });
     const capTex = mkTex(256, 256, (c, w, h) => {
       c.fillStyle = '#0f5e64'; c.fillRect(0, 0, w, h); c.strokeStyle = '#1d8f98'; c.lineWidth = 6; c.beginPath();
@@ -2431,7 +2457,7 @@ function makeDesk(el) {
     const postM = std(0x573822, 0.7);
     [-2.5, 2.5].forEach(x => cyl(0.07, 0.07, 5.4, postM, x, FLOOR + 2.7, -1.4, g, 10)); box(5.2, 0.08, 0.08, postM, 0, 4.05, -1.4, g);
     [-1.7, 1.7].forEach(x => cyl(0.02, 0.02, 0.45, postM, x, 3.8, -1.4, g, 6));
-    const sign = new THREE.Mesh(new THREE.PlaneGeometry(4.2, 1.8), new THREE.MeshBasicMaterial({ map: signTex(512, 220, 'DOJO', 'breathe  .  move', '#7fc9d6', 50) })); sign.position.set(0, 3.0, -1.35); noHit(sign); g.add(sign);
+    const sign = new THREE.Mesh(new THREE.PlaneGeometry(4.2, 1.8), new THREE.MeshBasicMaterial({ map: signTex(512, 220, 'DOJO', 'breathe / move', '#7fc9d6', 50) })); sign.position.set(0, 3.0, -1.35); noHit(sign); g.add(sign);
     hitBox(6.0, 5.6, 3.4, 0, 1.4, 0.1, 'stDojo', g);
   }
   function buildStations() {
@@ -2443,15 +2469,16 @@ function makeDesk(el) {
   /* ---- v32: the opening. The view zooms head-on into the TV, a video plays behind the CRT lines, "welcome to FEARJOY" fades in and out, then (phones and tablets) the TV asks: CLASSIC (drag to look) or VR (allow motion). VR asks for motion from that very tap. Nothing on the table can be tapped until this is over. ---- */
   const needChoice = !REDUCE && hasSensor && !sessDenied;
   function gateOn() { return !!intro.gate && !intro.back; }
-  const INT = { k: 0, e: 0 };   /* the opening camera: k = 0 desk view .. 1 TV close-up, e = the eased version */
+  const INT = { k: 0, e: 0 };
+  let gameCh = 0;   /* v33: while the TV is on the game channel (Jesse's bust floating over the board), the time it came on */   /* the opening camera: k = 0 desk view .. 1 TV close-up, e = the eased version */
   const IU = { box: null, wel: null, sel: null }, IV = { el: null, m: null, ok: false, shown: false };
   (function buildIntroUI() {
     if (REDUCE) return;
     const b = document.createElement('div'); b.id = 'introTV';
-    b.innerHTML = '<div class="itWel"><span class="itSm">welcome to</span><span class="itBig">FEARJOY</span></div>' +
+    b.innerHTML = '<div class="itWel"><span class="itSm">welcome to</span><span class="itBig"><span class="itFit">FEARJOY</span></span></div>' +
       '<div class="itSel"><div class="itLbl">site style:</div>' +
-      '<button type="button" class="itBtn" data-m="classic"><b>CLASSIC</b><i>(drag to look)</i></button>' +
-      '<button type="button" class="itBtn" data-m="vr"><b>VR</b><i>(allow motion)</i></button></div>' +
+      '<button type="button" class="itBtn" data-m="classic"><b><span class="itFit">CLASSIC</span></b><i>(drag to look)</i></button>' +
+      '<button type="button" class="itBtn" data-m="vr"><b><span class="itFit">VR</span></b><i>(allow motion)</i></button></div>' +
       '<div class="itFx"></div>';
     el.appendChild(b);
     IU.box = b; IU.wel = b.querySelector('.itWel'); IU.sel = b.querySelector('.itSel');
@@ -2473,7 +2500,19 @@ function makeDesk(el) {
       x0 = Math.min(x0, px); x1 = Math.max(x1, px); y0 = Math.min(y0, py); y1 = Math.max(y1, py);
     });
     const st = IU.box.style; st.left = x0.toFixed(1) + 'px'; st.top = y0.toFixed(1) + 'px'; st.width = (x1 - x0).toFixed(1) + 'px'; st.height = (y1 - y0).toFixed(1) + 'px';
-    st.setProperty('--u', ((x1 - x0) / 100).toFixed(3) + 'px');
+    const uu = (x1 - x0) / 100;
+    if (!IU.u || Math.abs(uu / IU.u - 1) > 0.02) { IU.u = uu; st.setProperty('--u', uu.toFixed(3) + 'px'); introFit(); }
+  }
+  function introFit() {   /* the big words and button words shrink to fit whatever the font's width turns out to be */
+    if (!IU.box) return;
+    const W = parseFloat(IU.box.style.width) || 300;
+    IU.box.querySelectorAll('.itBig, .itBtn b').forEach(n => {
+      const lim = n.classList.contains('itBig') ? W * 0.9 : W * 0.68 * 0.84, sp = n.firstElementChild;
+      if (!sp) return;
+      n.style.fontSize = '';
+      const w = sp.getBoundingClientRect().width, fs = parseFloat(getComputedStyle(n).fontSize);
+      if (w > lim && w > 0) n.style.fontSize = (fs * lim / w).toFixed(2) + 'px';
+    });
   }
   function introVideoInit() {   /* the clip plays on the TV behind the scan lines (muted, so every phone lets it start). Until it plays, the camcorder picture stays up. */
     const src = CONFIG.introVideo; if (!src || REDUCE) return;
@@ -2490,12 +2529,13 @@ function makeDesk(el) {
         if (a > 1) { tex.repeat.x = 1 / a; tex.offset.x = (1 - 1 / a) / 2; } else if (a < 1) { tex.repeat.y = a; tex.offset.y = (1 - a) / 2; }
       });
       vd.addEventListener('playing', () => { IV.ok = true; });
+      vd.addEventListener('pause', () => { if (!document.hidden) IV.ok = false; });
       vd.addEventListener('error', () => { IV.ok = false; });
       vd.src = src; IV.el = vd; IV.m = m;
       const pr = vd.play(); if (pr && pr.catch) pr.catch(() => {});
     } catch (x) {}
   }
-  function introVideoEnd() { if (IV.m) IV.m.visible = false; if (IV.el) { try { IV.el.pause(); } catch (x) {} } }
+  document.addEventListener('visibilitychange', () => { const vd = IV.el; if (!vd) return; if (document.hidden) { try { vd.pause(); } catch (x) {} } else { const pr = vd.play(); if (pr && pr.catch) pr.catch(() => {}); } });   /* (no video running in a hidden tab) */
   function introChoose(vr) {   /* the buttons on the TV. VR asks for motion right here, inside the tap. */
     if (intro.chosen) return; intro.chosen = true;
     let done = false;
@@ -2504,6 +2544,7 @@ function makeDesk(el) {
       if (IU.sel) IU.sel.classList.remove('on'); if (IU.box) IU.box.classList.add('out');
       intro.back = performance.now(); LK.dirty = true;
     };
+    if (IV.el && IV.el.paused) { const pr = IV.el.play(); if (pr && pr.catch) pr.catch(() => {}); }   /* (a tap is also what lets a phone in low-power mode start the clip) */
     if (!vr) { go(false); return; }
     const p = motionAsk();   /* (first thing, straight from the tap) */
     if (IU.sel) IU.sel.classList.add('busy');
@@ -2656,7 +2697,7 @@ function makeDesk(el) {
   })();
   const spkTex = new THREE.CanvasTexture(spkCv); spkTex.anisotropy = 4;
   const spk = new THREE.Group();
-  spk.position.set(PNX, 1.665, 0.48); spk.scale.setScalar(0.62);   /* v32: smaller, to make room for the VR toggle below it */
+  spk.position.set(PNX, hasSensor ? 1.665 : 1.55, 0.48); if (hasSensor) spk.scale.setScalar(0.62);   /* v32: smaller, to make room for the VR toggle below it */
   tv.add(spk);
   const spkRim = new THREE.Mesh(roundedSlab(0.27, 0.34, 0.04, 0.045, 0.012), std(0x4a4e53, 0.45, 0.3));
   spkRim.position.z = 0.02;
@@ -2664,7 +2705,7 @@ function makeDesk(el) {
   const spkFace = new THREE.Mesh(roundedScreenGeo(0.22, 0.29, 0.03), new THREE.MeshStandardMaterial({ map: spkTex, roughness: 0.7 }));
   spkFace.position.z = 0.0405;
   spk.add(spkFace);
-  const STREAM_FONT = "'KCStrikerSans', 'Arial Black', sans-serif";
+  const STREAM_FONT = "'ArchivoExpBlack', 'Arial Black', sans-serif";
   const CHANS = [{ dir: 1, y: 1.21 }, { dir: -1, y: 0.954 }];
   const chBtns = [];
   const chDraws = [];
@@ -2699,6 +2740,7 @@ function makeDesk(el) {
     chBtns.push(grp);
     hitBox(0.26, 0.2, 0.25, PNX, c.y, 0.55, 'chan', tv).userData = { tag: 'chan', btn: grp, dir: c.dir };
   });
+  if (hasSensor) {   /* v33: only on phones and tablets (a computer has no motion to turn on) */
   /* v32: a VR toggle above the arrow buttons: tap to turn tilt-to-look on or off (the light shows when it is on) */
   const vrCv = document.createElement('canvas'); vrCv.width = 192; vrCv.height = 128;
   const vrTex = new THREE.CanvasTexture(vrCv); vrTex.anisotropy = 4;
@@ -2708,7 +2750,7 @@ function makeDesk(el) {
     const bg = g.createLinearGradient(0, 0, 0, H); bg.addColorStop(0, '#b4b9bf'); bg.addColorStop(1, '#7d838a');
     g.fillStyle = bg;
     g.beginPath(); g.moveTo(R, 0); g.lineTo(W - R, 0); g.quadraticCurveTo(W, 0, W, R); g.lineTo(W, H - R); g.quadraticCurveTo(W, H, W - R, H); g.lineTo(R, H); g.quadraticCurveTo(0, H, 0, H - R); g.lineTo(0, R); g.quadraticCurveTo(0, 0, R, 0); g.closePath(); g.fill();
-    g.fillStyle = '#1b1d1f'; g.font = "62px 'KCStrikerSans', 'Arial Black', sans-serif"; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText('VR', W / 2 - 12, H / 2 + 6);
+    g.fillStyle = '#1b1d1f'; g.font = "62px 'ArchivoExpBlack', 'Arial Black', sans-serif"; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText('VR', W / 2 - 12, H / 2 + 6);
     g.save(); g.beginPath(); g.arc(W - 28, 28, 11, 0, Math.PI * 2);
     if (on) { g.shadowColor = '#4dff7c'; g.shadowBlur = 18; g.fillStyle = '#5cff86'; } else g.fillStyle = '#4a3a3a';
     g.fill(); g.restore();
@@ -2720,7 +2762,8 @@ function makeDesk(el) {
   const vrFace = new THREE.Mesh(roundedScreenGeo(0.18, 0.12, 0.025), new THREE.MeshStandardMaterial({ map: vrTex, roughness: 0.4 })); vrFace.position.z = 0.0642; vrBtn.add(vrFace);
   vrBtn.userData.press = 0; chBtns.push(vrBtn);
   hitBox(0.26, 0.2, 0.25, PNX, 1.435, 0.55, 'vr', tv).userData = { tag: 'vr', btn: vrBtn };
-  if (document.fonts && document.fonts.load) document.fonts.load("30px 'KCStrikerSans'").then(() => chDraws.forEach(f => f())).catch(() => {});
+  }
+  if (document.fonts && document.fonts.load) document.fonts.load("30px 'ArchivoExpBlack'").then(() => chDraws.forEach(f => f())).catch(() => {});
   /* a coin slot below the arrow buttons. The loading screen asks for a coin: the coin on the table slides in here. */
   const SLOT_Y = 0.70, SLOT_ZF = 0.48 + 0.0642;   /* height of the slot, and where the front of its plate is */
   const slotCv = document.createElement('canvas'); slotCv.width = 192; slotCv.height = 128;
@@ -2843,15 +2886,15 @@ function makeDesk(el) {
       const on = menuSel === o.id, cy = (o.y0 + o.y1) / 2;
       if (on) { g.fillStyle = '#ffd36b'; g.fillRect(MENU_X0, o.y0, MENU_X1 - MENU_X0, o.y1 - o.y0); }
       g.fillStyle = on ? '#12162e' : '#ffd36b';
-      fitText(g, o.label, 230, 42, "'KCStrikerSans', 'Arial Black', sans-serif");
+      fitText(g, o.label, 230, 42, "'ArchivoExpBlack', 'Arial Black', sans-serif");
       g.fillText(o.label, W / 2 + 12, cy + 2);
       if (on && menuBlink) { g.beginPath(); g.moveTo(MENU_X0 + 22, cy - 13); g.lineTo(MENU_X0 + 22, cy + 13); g.lineTo(MENU_X0 + 46, cy); g.closePath(); g.fill(); }   /* blinking selector arrow */
     });
     menuTex.needsUpdate = true;
   }
-  if (document.fonts && document.fonts.load) Promise.all([document.fonts.load("66px 'KCOraleSans'"), document.fonts.load("36px 'KCStrikerSans'"), document.fonts.load("20px 'KCPelletierTyped'")]).then(() => { if (menuOn) drawMenu(); }).catch(() => {});
+  if (document.fonts && document.fonts.load) Promise.all([document.fonts.load("66px 'KCOraleSans'"), document.fonts.load("36px 'ArchivoExpBlack'"), document.fonts.load("20px 'KCPelletierTyped'")]).then(() => { if (menuOn) drawMenu(); }).catch(() => {});
   function showMenu(on) {
-    menuOn = on; menuM.visible = on; jesse.visible = !on;
+    menuOn = on; menuM.visible = on; if (on) gameCh = 0; defScreen(!on);
     if (on) { menuSel = 'start'; menuBlink = true; menuBlinkT = performance.now(); drawMenu(); }
   }
   function menuAt(e) {   /* which menu choice is under the pointer ('' if none) */
@@ -2956,7 +2999,7 @@ function makeDesk(el) {
     if (lore.tex) lore.tex.dispose();
     loreMat.map = null; loreMat.needsUpdate = true;
     loreM.visible = false; loreBg.visible = false; staticM.visible = false; titleM.visible = false;
-    jesse.visible = !menuOn && !secret && !info;
+    defScreen(!menuOn && !secret && !info);
     lore = null;
   }
   /* the fixed channel order, the same for the CH buttons and for the TV changing by itself: INSERT COIN, the player pieces ad, picture, the record ad, picture, and around again (the pictures go in the order of CONFIG.pearlShoot). CH up goes forward, CH down goes back, so a missed screen is always one press back. */
@@ -2969,6 +3012,7 @@ function makeDesk(el) {
       out.push({ k: 'coin' }, { k: 'ad' });
       if (pics.length) out.push({ k: 'pic', name: pics[(g * 2) % pics.length].name });
       out.push({ k: 'vinyl' });
+      if (g === 0) out.push({ k: 'game' });   /* v33: the old main screen (Jesse floating over the board) is one channel now */
       if (pics.length) out.push({ k: 'pic', name: pics[(g * 2 + 1) % pics.length].name });
     }
     chCache = out; chCacheN = pics.length;
@@ -2983,7 +3027,8 @@ function makeDesk(el) {
     chPos = i;
     if (e.k === 'pic') { startLore(loreItems().find(p => p.name === e.name)); return; }
     endLore();
-    tvBlip(() => { showInfoTV(auto, e.k); chPos = i; if (!info) jesse.visible = !menuOn && !secret && !lore; });
+    if (e.k === 'game') { hideInfoTV(); tvBlip(() => { gameCh = performance.now(); chPos = i; defScreen(!menuOn && !secret && !info && !lore); }); return; }
+    tvBlip(() => { showInfoTV(auto, e.k); chPos = i; if (!info) defScreen(!menuOn && !secret && !lore); });
   }
   function chNext(dir) {   /* the position one step in a direction, skipping INSERT COIN while the coin is busy */
     const cl = chList(), n = cl.length;
@@ -2997,12 +3042,13 @@ function makeDesk(el) {
   }
   function startLore(forced) {   /* forced = a specific channel (the CH buttons); otherwise a random pick (the die) */
     if (menuOn || v.tvT || v.navigated || secret || info) return;
+    gameCh = 0;
     const item = forced || pickLore();
     if (!item) return;
     cancelBlip();
     endLore();
     lore = { phase: 'in', t0: performance.now(), tex: null, item, failed: 0, paused: false, file: null };
-    jesse.visible = false; staticM.visible = !REDUCE; loreM.visible = false; loreBg.visible = false; titleM.visible = false;
+    defScreen(false); staticM.visible = !REDUCE; loreM.visible = false; loreBg.visible = false; titleM.visible = false;
     loadLore(lore, item);
   }
   function showLore(now) {   /* static is over: the picture appears with its channel bar */
@@ -3113,14 +3159,14 @@ function makeDesk(el) {
   const joyTxCv = document.createElement('canvas'); joyTxCv.width = 512; joyTxCv.height = 128;
   const joyTxTex = new THREE.CanvasTexture(joyTxCv); joyTxTex.anisotropy = 4;
   const drawJoyTx = () => {   /* PLAY ONLINE in white Striker Sans on the front of the base */
-    const g = joyTxCv.getContext('2d'), F = "'KCStrikerSans', 'Arial Black', sans-serif"; g.clearRect(0, 0, 512, 128);
+    const g = joyTxCv.getContext('2d'), F = "'ArchivoExpBlack', 'Arial Black', sans-serif"; g.clearRect(0, 0, 512, 128);
     g.fillStyle = '#ffffff'; g.textAlign = 'center'; g.textBaseline = 'middle';
     let px = 110; g.font = px + 'px ' + F;
     while (px > 20 && g.measureText('PLAY ONLINE').width > 488) { px -= 2; g.font = px + 'px ' + F; }
     g.fillText('PLAY ONLINE', 256, 66); joyTxTex.needsUpdate = true;
   };
   drawJoyTx();
-  if (document.fonts && document.fonts.load) document.fonts.load("40px 'KCStrikerSans'").then(drawJoyTx).catch(() => {});
+  if (document.fonts && document.fonts.load) document.fonts.load("40px 'ArchivoExpBlack'").then(drawJoyTx).catch(() => {});
   const joyTxt = new THREE.Mesh(new THREE.PlaneGeometry(0.62, 0.155), new THREE.MeshBasicMaterial({ map: joyTxTex, transparent: true, depthWrite: false })); joyTxt.position.set(0, 0.12, 0.2535); noHit(joyTxt); joyG.add(joyTxt);
   const joyBtn = new THREE.Mesh(new THREE.CylinderGeometry(0.07, 0.08, 0.05, 20), std(0xe8c13a, 0.4)); joyBtn.position.set(0.19, 0.265, 0.05); joyG.add(joyBtn);
   const joyStick = new THREE.Group(); joyStick.position.set(-0.12, 0.24, 0); joyG.add(joyStick);
@@ -3176,7 +3222,7 @@ function makeDesk(el) {
   /* the letter: a cream envelope with air-mail edges that says CONTACT US, leaning against the bottom of the pole */
   const letterG = new THREE.Group();
   const LS = 0.8, LEAN = 0.2;   /* size, and how far it leans back from straight up */
-  letterG.position.set(PLX + 0.1, FLOOR + 0.5 * 0.85 * LS * Math.cos(LEAN) + 0.1, PLZ + 0.06 + 0.5 * 0.85 * LS * Math.sin(LEAN) + 0.04);
+  letterG.position.set(PLX + 0.1, FLOOR + 0.5 * 0.85 * LS * Math.cos(LEAN) + 0.1, PLZ + 0.28 + 0.5 * 0.85 * LS * Math.sin(LEAN) + 0.04);   /* v33: out in front of the thicker post */
   letterG.rotation.y = -0.12;
   stage.add(letterG);
   const letterLean = new THREE.Group(); letterLean.rotation.x = Math.PI / 2 - LEAN; letterLean.scale.setScalar(LS); letterG.add(letterLean);   /* stood up on its long edge, leaning back */
@@ -3194,7 +3240,7 @@ function makeDesk(el) {
     g.beginPath(); g.moveTo(24, 24); g.lineTo(w / 2, h * 0.52); g.lineTo(w - 24, 24); g.stroke();
     g.fillStyle = '#c9382c'; g.fillRect(w - 112, 34, 70, 82);   /* a stamp */
     g.strokeStyle = '#efe4c6'; g.lineWidth = 3; g.setLineDash([5, 4]); g.strokeRect(w - 108, 38, 62, 74); g.setLineDash([]);
-    g.fillStyle = '#efe4c6'; g.font = "bold 30px 'KCStrikerSans', sans-serif"; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText('FJ', w - 77, 76);
+    g.fillStyle = '#efe4c6'; g.font = "bold 30px 'ArchivoExpBlack', sans-serif"; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText('FJ', w - 77, 76);
     g.fillStyle = '#3a2a1c';
     g.font = "bold 76px 'KCPelletierTyped', 'Courier New', monospace"; g.fillText('CONTACT', w / 2 - 12, h * 0.64); g.fillText('US', w / 2 - 12, h * 0.85);
   };
@@ -3202,22 +3248,43 @@ function makeDesk(el) {
   const letterSide = std(0xcdbf9e, 0.85);
   const letterBox = new THREE.Mesh(new THREE.BoxGeometry(1.3, 0.04, 0.85), [letterSide, letterSide, new THREE.MeshStandardMaterial({ map: letterTex, color: 0xd8d8d8, roughness: 0.8 }), letterSide, letterSide, letterSide]);
   letterLean.add(letterBox);
-  if (document.fonts && document.fonts.load) Promise.all([document.fonts.load("76px 'KCPelletierTyped'"), document.fonts.load("30px 'KCStrikerSans'")]).then(() => {   /* redraw once the fonts are ready */
+  if (document.fonts && document.fonts.load) Promise.all([document.fonts.load("76px 'KCPelletierTyped'"), document.fonts.load("30px 'ArchivoExpBlack'")]).then(() => {   /* redraw once the fonts are ready */
     drawLetter(letterTex.image.getContext('2d'), lcW, lcH); letterTex.needsUpdate = true;
     drawDoor(mbDoorTex.image.getContext('2d'), 256, 256); mbDoorTex.needsUpdate = true;
   }).catch(() => {});
-  const letterBlob = blob(1.1, 0.7, PLX + 0.1, PLZ + 0.3, 0.45); letterBlob.position.y = FLOOR + 0.004;
+  const letterBlob = blob(1.1, 0.7, PLX + 0.1, PLZ + 0.52, 0.45); letterBlob.position.y = FLOOR + 0.004;
   hitBox(1.05, 0.75, 0.4, 0, 0.38, 0, 'letter', letterG);
   let letterT = 0;
 
   /* ---------- cream vinyl record lying on the table, poking out from under the board (its red center label shows a little). Hover: it slides out a little. Click: it wiggles, then the buy popup opens. ---------- */
-  const VR = 1.45, VX = BX + 1.45, VZ = TZ + 0.1;
-  const vinylTex = mkTex(256, 256, (g, w, h) => {
+  const VR = 1.45, VX = BX + 1.78, VZ = TZ + 0.1;
+  const vinLabel = new Image(); let vinLabelOk = false;
+  const drawVinyl = (g, w, h) => {   /* v33: classic black, with the grooves and the gaps between songs, and a round label */
+    g.save(); g.scale(w / 256, h / 256);
+    g.fillStyle = '#17171a'; g.fillRect(0, 0, 256, 256);
+    g.strokeStyle = 'rgba(255,255,255,0.045)'; g.lineWidth = 1;
+    for (let r = 50; r < 126; r += 2.4) { g.beginPath(); g.arc(128, 128, r, 0, Math.PI * 2); g.stroke(); }
+    [[57, 1.8], [72, 2.4], [81, 1.7], [99, 2.2], [113, 1.9]].forEach(q => { g.strokeStyle = 'rgba(255,255,255,0.16)'; g.lineWidth = q[1]; g.beginPath(); g.arc(128, 128, q[0], 0, Math.PI * 2); g.stroke(); });   /* the smooth, shinier gaps between songs */
+    if (vinLabelOk) {
+      g.save(); g.beginPath(); g.arc(128, 128, 44, 0, Math.PI * 2); g.clip();   /* the picture's corners are cut off by the round clip */
+      const iw = vinLabel.naturalWidth, ih = vinLabel.naturalHeight, sq = Math.min(iw, ih);
+      g.drawImage(vinLabel, (iw - sq) / 2, (ih - sq) / 2, sq, sq, 84, 84, 88, 88); g.restore();
+    } else {
+      g.fillStyle = '#c8442a'; g.beginPath(); g.arc(128, 128, 44, 0, Math.PI * 2); g.fill();
+      g.fillStyle = '#f6ecd0'; g.font = 'bold 11px sans-serif'; g.textAlign = 'center'; g.fillText('FEARJOY', 128, 112); g.fillText('THE GAME', 128, 156);
+    }
+    g.fillStyle = '#0c0c0e'; g.beginPath(); g.arc(128, 128, 4, 0, Math.PI * 2); g.fill();   /* the spindle hole */
+    g.restore();
+  };
+  const vinylTex = mkTex(512, 512, drawVinyl);
+  vinLabel.onload = () => { vinLabelOk = true; drawVinyl(vinylTex.image.getContext('2d'), 512, 512); vinylTex.needsUpdate = true; };
+  vinLabel.src = CONFIG.vinylLabel;
+  const vinylCreamTex = mkTex(256, 256, (g, w, h) => {   /* (the store's record keeps the old cream look for now) */
     g.fillStyle = '#e6d6a6'; g.fillRect(0, 0, w, h);
     g.strokeStyle = 'rgba(90,60,30,0.10)'; g.lineWidth = 1;
     for (let r = 50; r < 126; r += 3) { g.beginPath(); g.arc(128, 128, r, 0, Math.PI * 2); g.stroke(); }
-    g.strokeStyle = 'rgba(82,42,20,0.17)'; g.lineWidth = 1.8;   /* the gaps between songs: subtle rings */
-    [[57, 1.6], [72, 2.2], [81, 1.5], [99, 2.0], [113, 1.7]].forEach(q => { g.lineWidth = q[1]; g.beginPath(); g.arc(128, 128, q[0], 0, Math.PI * 2); g.stroke(); });   /* a few uneven gaps, like real songs */
+    g.strokeStyle = 'rgba(82,42,20,0.17)'; g.lineWidth = 1.8;
+    [[57, 1.6], [72, 2.2], [81, 1.5], [99, 2.0], [113, 1.7]].forEach(q => { g.lineWidth = q[1]; g.beginPath(); g.arc(128, 128, q[0], 0, Math.PI * 2); g.stroke(); });
     g.fillStyle = '#c8442a'; g.beginPath(); g.arc(128, 128, 44, 0, Math.PI * 2); g.fill();
     g.fillStyle = '#f6ecd0'; g.font = 'bold 11px sans-serif'; g.textAlign = 'center';
     g.fillText('FEARJOY', 128, 112); g.fillText('THE GAME', 128, 156);
@@ -3226,8 +3293,8 @@ function makeDesk(el) {
   const vinylG = new THREE.Group();
   vinylG.position.set(VX, VT / 2 + 0.002, VZ);
   stage.add(vinylG);
-  const vCap = new THREE.MeshStandardMaterial({ map: vinylTex, color: 0xc4c4c4, roughness: 0.35, metalness: 0.1 });   /* the grey tint keeps the cream from washing out to white under the lights */
-  vinylG.add(new THREE.Mesh(new THREE.CylinderGeometry(VR, VR, VT, 72), [std(0xb8a878, 0.5), vCap, vCap]));
+  const vCap = new THREE.MeshStandardMaterial({ map: vinylTex, color: 0xe0e0e0, roughness: 0.3, metalness: 0.15 });
+  vinylG.add(new THREE.Mesh(new THREE.CylinderGeometry(VR, VR, VT, 72), [std(0x121214, 0.4), vCap, vCap]));
   hitBox(VR * 2, VT * 2, VR * 2, 0, 0, 0, 'vinyl', vinylG);
   let vSlide = 0;
   let wigList = null, wigLast = null;   /* hover wiggle: a quick damped yaw shake when the pointer lands on an item */
@@ -3241,6 +3308,13 @@ function makeDesk(el) {
   const jesse = headFor(jIdx, marble().clone());
   jesse.scale.setScalar(0.22);
   screenGrp.add(jesse);
+  /* v33: "nothing else is on" now means the video loop. Jesse floating over the board is just one of the channels (gameCh). If the video cannot play, the old game screen is shown instead. */
+  function defScreen(on) {
+    if (intro.busy) { jesse.visible = false; return; }   /* (the opening runs its own picture) */
+    on = !!on;
+    if (IV.m && IV.ok) { IV.m.visible = on && !gameCh; jesse.visible = on && !!gameCh; if (on && !gameCh && IV.el && IV.el.paused && !document.hidden) { const pr = IV.el.play(); if (pr && pr.catch) pr.catch(() => {}); } }
+    else { if (IV.m) IV.m.visible = false; jesse.visible = on; }
+  }
   const path = new THREE.CatmullRomCurve3([[22, 32], [58, 24], [78, 46], [60, 74], [30, 70], [16, 50]]
     .map(p => new THREE.Vector3((p[0] - 50) / 100 * 1.35, (50 - p[1]) / 100 * 1.35, 0.04)), true);
   const PATH_MS = 36000;
@@ -3275,7 +3349,7 @@ function makeDesk(el) {
   const bagCv = document.createElement('canvas'); bagCv.width = 512; bagCv.height = 555;
   const bagTex = new THREE.CanvasTexture(bagCv); bagTex.anisotropy = 4;
   function drawBag() {
-    const g = bagCv.getContext('2d'), W = 512, H = 555, F = "'KCStrikerSans', 'Arial Black', sans-serif";
+    const g = bagCv.getContext('2d'), W = 512, H = 555, F = "'ArchivoExpBlack', 'Arial Black', sans-serif";
     g.fillStyle = '#13737A'; g.fillRect(0, 0, W, H);
     const sh = g.createLinearGradient(0, 0, W, 0); sh.addColorStop(0, 'rgba(0,0,0,0.18)'); sh.addColorStop(0.5, 'rgba(255,255,255,0.06)'); sh.addColorStop(1, 'rgba(0,0,0,0.2)'); g.fillStyle = sh; g.fillRect(0, 0, W, H);
     g.fillStyle = 'rgba(0,0,0,0.14)'; g.fillRect(0, H - 22, W, 22);   /* the bottom fold */
@@ -3288,7 +3362,7 @@ function makeDesk(el) {
     bagTex.needsUpdate = true;
   }
   drawBag();
-  if (document.fonts && document.fonts.load) document.fonts.load("40px 'KCStrikerSans'").then(drawBag).catch(() => {});
+  if (document.fonts && document.fonts.load) document.fonts.load("40px 'ArchivoExpBlack'").then(drawBag).catch(() => {});
   const bagSide = std(0x0e5c62, 0.8), bagIn = std(0x061f21, 0.9), bagFront = new THREE.MeshStandardMaterial({ map: bagTex, roughness: 0.75 });
   /* a hollow bag: a front panel (the only thing that hides what is inside), a back panel, two sides and a bottom, all thin. The inside faces are darker. */
   const BGT = 0.03;
@@ -3379,7 +3453,7 @@ function makeDesk(el) {
   const pilCv = document.createElement('canvas'); pilCv.width = 1024; pilCv.height = 512;
   const pilTex = new THREE.CanvasTexture(pilCv); pilTex.anisotropy = 4;
   const drawPillow = () => {   /* the pillow's cover: velvet with DOJO embroidered on its front edge (the picture wraps around the sphere, so the word curves with the pillow) */
-    const g = pilCv.getContext('2d'), F = "'KCStrikerSans', 'Arial Black', sans-serif";
+    const g = pilCv.getContext('2d'), F = "'ArchivoExpBlack', 'Arial Black', sans-serif";
     g.fillStyle = '#8a1f3c'; g.fillRect(0, 0, 1024, 512);
     for (let i = 0; i < 2500; i++) { g.fillStyle = Math.random() < 0.5 ? 'rgba(255,200,210,0.06)' : 'rgba(40,0,10,0.1)'; g.fillRect(Math.random() * 1024, Math.random() * 512, 3, 1.5); }   /* velvet grain */
     g.save(); g.translate(256, 178); g.scale(1.2, 1.4); g.textAlign = 'center'; g.textBaseline = 'middle'; g.lineJoin = 'round';
@@ -3391,7 +3465,7 @@ function makeDesk(el) {
     g.restore(); pilTex.needsUpdate = true;
   };
   drawPillow();
-  if (document.fonts && document.fonts.load) document.fonts.load("40px 'KCStrikerSans'").then(drawPillow).catch(() => {});
+  if (document.fonts && document.fonts.load) document.fonts.load("40px 'ArchivoExpBlack'").then(drawPillow).catch(() => {});
   const bowlPillow = new THREE.Mesh(new THREE.SphereGeometry(1, 48, 24), new THREE.MeshStandardMaterial({ map: pilTex, roughness: 0.9 })); bowlPillow.scale.set(0.64, 0.15, 0.64); bowlPillow.position.y = 0.11; bowlG.add(bowlPillow);
   const bowlPipe = new THREE.Mesh(new THREE.TorusGeometry(0.64, 0.022, 8, 56), bowlGold); bowlPipe.rotation.x = Math.PI / 2; bowlPipe.position.y = 0.11; bowlG.add(bowlPipe);   /* gold piping around the pillow's edge */
   [[1, 0], [-1, 0], [0, 1], [0, -1]].forEach(q => { const tsl = new THREE.Mesh(new THREE.SphereGeometry(0.045, 10, 8), bowlGold); tsl.position.set(q[0] * 0.64 * 0.72, 0.11, q[1] * 0.64 * 0.72); bowlG.add(tsl); });   /* four little gold tassel balls (the one at the front sits below the word) */
@@ -3432,7 +3506,7 @@ function makeDesk(el) {
   satP.add(paintG); paintG.position.set(0, FLOOR + 2.9, 0);
   [-0.95, 0.95].forEach(x => box(0.1, 4.1, 0.1, legWood, x, -0.85, -0.12, paintG));   /* the painting's stand */
   satR.add(bagG, bagBlob); bagG.position.set(0, FLOOR, 0); bagBlob.position.x = 0; bagBlob.position.z = 0;
-  satE.add(eggG, eggBlob); eggG.position.set(0, FLOOR, 0); eggG.scale.setScalar(2.5); eggBlob.position.set(0, FLOOR + 0.004, 0); eggBlob.scale.setScalar(2.5);   /* v32: the Clemmy G egg sits on the ground past the Store */
+  satE.add(eggG, eggBlob); eggG.position.set(0, FLOOR, 0); eggG.scale.setScalar(1.25); eggBlob.position.set(0, FLOOR + 0.004, 0); eggBlob.scale.setScalar(1.25);   /* v32: the Clemmy G egg sits on the ground past the Store */
   stG.dojo.add(bowlG, bowlBlob); bowlG.position.set(-1.0, FLOOR, 0.45); bowlG.scale.setScalar(1.5); bowlBlob.position.set(-1.0, FLOOR + 0.006, 0.45); bowlBlob.scale.setScalar(1.5);
 
   /* ---------- layout: wide screens spread the table and the things around it outward (v.layout is called from v.fit); phones keep it tight ---------- */
@@ -3524,7 +3598,7 @@ function makeDesk(el) {
   screenGrp.add(adJesse);
   const adRecG = new THREE.Group(); adRecG.position.set(0.4, -0.14, 0.2); adRecG.visible = false; screenGrp.add(adRecG);   /* a spinning record in front of the vinyl ad */
   const adRec = new THREE.Mesh(new THREE.CylinderGeometry(0.14, 0.14, 0.012, 40), [std(0xb8a878, 0.5), vCap, vCap]); adRec.rotation.x = Math.PI / 2; adRecG.add(adRec);
-  const INFO_FONT = "'KCStrikerSans', 'Arial Black', sans-serif", INFO_HEAD = "'KCOraleSans', 'Arial Black', sans-serif";
+  const INFO_FONT = "'ArchivoExpBlack', 'Arial Black', sans-serif", INFO_HEAD = "'ArchivoExpBlack', 'Arial Black', sans-serif";
   function drawInfoBtn(g, W, big) {   /* the blinking order button: ORDER NOW!, with "click to" as a little note above its upper left */
     const bx = 76, by = 394, bw = 360, bh = 66;
     g.fillStyle = infoBlink ? '#2bd45c' : '#ffe14a'; g.strokeStyle = '#1a0a05'; g.lineWidth = 5;
@@ -3602,25 +3676,25 @@ function makeDesk(el) {
     g.save(); g.translate(bx + 8, by - 14); g.rotate(-0.1); g.textAlign = 'left'; g.font = 'italic 30px ' + INFO_FONT; g.lineWidth = 7; g.lineJoin = 'round'; g.strokeStyle = '#1a0a05'; g.strokeText('click to', 0, 0); g.fillStyle = '#ffffff'; g.fillText('click to', 0, 0); g.restore(); g.textAlign = 'center';   /* "click to" is a little note above the upper left of the button */
     infoTex.needsUpdate = true;
   }
-  if (document.fonts && document.fonts.load) Promise.all([document.fonts.load("46px 'KCStrikerSans'"), document.fonts.load("60px 'KCOraleSans'"), document.fonts.load("18px 'KCPelletierTyped'")]).then(() => { if (info) drawInfo(); }).catch(() => {});
+  if (document.fonts && document.fonts.load) Promise.all([document.fonts.load("46px 'ArchivoExpBlack'"), document.fonts.load("60px 'KCOraleSans'"), document.fonts.load("18px 'KCPelletierTyped'")]).then(() => { if (info) drawInfo(); }).catch(() => {});
   /* a short burst of static on the TV, then fn (used to switch to the ad and back) */
   let blip = null, piecesTouched = false, autoAd = 0, autoAdT0 = 0, infoAuto = false;
-  function tvBlip(fn) { blip = { t0: performance.now(), fn }; staticM.visible = !REDUCE; jesse.visible = false; }
-  function cancelBlip() { if (!blip) return; blip = null; staticM.visible = false; jesse.visible = !menuOn && !secret && !info && !lore; }
+  function tvBlip(fn) { blip = { t0: performance.now(), fn }; staticM.visible = !REDUCE; defScreen(false); }
+  function cancelBlip() { if (!blip) return; blip = null; staticM.visible = false; defScreen(!menuOn && !secret && !info && !lore); }
   let adSndDone = false;   /* v31: the little ad sound plays the first time, and whenever something is clicked, but not on every automatic channel change */
   function showInfoTV(auto, kind) {
     if (menuOn || v.tvT || v.navigated || intro.busy) return;
-    infoAuto = auto === true; infoKind = kind || 'ad'; infoMs = infoKind === 'coin' ? 7000 : 6000;
+    gameCh = 0; infoAuto = auto === true; infoKind = kind || 'ad'; infoMs = infoKind === 'coin' ? 7000 : 6000;
     hideSecretTV(); endLore();
     infoBlink = true; infoBlinkT = performance.now(); drawInfo();
-    infoM.visible = true; adJesse.visible = infoKind === 'ad'; adRecG.visible = infoKind === 'vinyl'; jesse.visible = false; info = performance.now();
+    infoM.visible = true; adJesse.visible = infoKind === 'ad'; adRecG.visible = infoKind === 'vinyl'; defScreen(false); info = performance.now();
     if (infoKind !== 'coin' && (!infoAuto || !adSndDone)) { Sound.oneUp(); adSndDone = true; }
   }
-  function hideInfoTV() { if (!info) return; info = 0; infoAuto = false; infoM.visible = false; adJesse.visible = false; adRecG.visible = false; jesse.visible = !menuOn && !secret && !lore; }
+  function hideInfoTV() { if (!info) return; info = 0; infoAuto = false; infoM.visible = false; adJesse.visible = false; adRecG.visible = false; defScreen(!menuOn && !secret && !lore); }
   function adNow(kind) {   /* a little static, then the ad / the record ad / INSERT COIN on the TV */
     if (menuOn || v.tvT || v.navigated || intro.busy) return;
     cancelBlip(); endLore(); hideInfoTV(); chMark(kind);   /* (remember where this screen sits in the channel order, so CH up / down continue from here) */
-    tvBlip(() => { showInfoTV(false, kind); if (!info) jesse.visible = !menuOn && !secret && !lore; });
+    tvBlip(() => { showInfoTV(false, kind); if (!info) defScreen(!menuOn && !secret && !lore); });
   }
   function tvTick(now) {   /* called every frame */
     if (blip) {
@@ -3633,9 +3707,11 @@ function makeDesk(el) {
     welcomeTick(now);
     if (intro.phase === 'done' && !intro.busy) idleTick(now);   /* (the old once-only ad after 5 seconds is replaced by this) */
     if (ldM.visible && intro.phase === 'done' && !blip) ldM.visible = false;   /* (safety: the welcome picture never stays up once the intro is over) */
+    if (gameCh && !blip && now - gameCh > 7000) { gameCh = 0; tvBlip(() => { defScreen(!menuOn && !secret && !info && !lore); }); }   /* (the game channel is over: back to the video) */
+    if (IV.m && intro.phase === 'done' && IV.ok !== IV.lastOk) { IV.lastOk = IV.ok; if (!blip && !lore && !info && !menuOn && !welcome && !secret) defScreen(true); }   /* (the video started or stopped by itself) */
     if (info) {
       if (infoKind === 'coin' && (icDrag || intro.cs === 'fly')) info = now;   /* INSERT COIN waits while the coin is held or on its way in */
-      if (now - info > infoMs) { hideInfoTV(); tvBlip(() => { jesse.visible = !menuOn && !secret && !info && !lore; }); }
+      if (now - info > infoMs) { hideInfoTV(); tvBlip(() => { defScreen(!menuOn && !secret && !info && !lore); }); }
       else if (now - infoBlinkT > 380) { infoBlinkT = now; infoBlink = !infoBlink; drawInfo(); }
     }
     if (!lore) return;
@@ -3683,7 +3759,7 @@ function makeDesk(el) {
     fitText(g, 'CLICK AROUND!', 400, 56, LD_STRIKER); g.fillStyle = '#ffffff'; g.fillText('CLICK AROUND!', W / 2, 306);
     welTex.needsUpdate = true;
   }
-  if (document.fonts && document.fonts.load) document.fonts.load("40px 'KCStrikerSans'").then(() => { if (welcome) drawWelcome(); }).catch(() => {});
+  if (document.fonts && document.fonts.load) document.fonts.load("40px 'ArchivoExpBlack'").then(() => { if (welcome) drawWelcome(); }).catch(() => {});
   const wV = new THREE.Vector3();
   function scrPt(obj, dy, local) {   /* where a 3D thing is on the page, in pixels (a point on it, or its middle, a little higher if dy) */
     const r = el.getBoundingClientRect();
@@ -3695,7 +3771,7 @@ function makeDesk(el) {
   function startWelcome() {
     if (welcome || REDUCE) return;
     welcome = performance.now(); drawWelcome();
-    welM.visible = true; jesse.visible = false;
+    welM.visible = true; defScreen(false);
     welTargets = [{ g: crew[0], dy: 0.45 }, { g: dieRoot, dy: 0.12 }, { g: crew[2], dy: 0.45 }, { g: coinRoot, dy: 0.1 }, { g: joyG, dy: 0.75 }, { g: bagG, dy: 0.7 }, { g: null }];   /* a head, the dice, another head, the coin, the joystick, the gift bag, then back to the TV (g null) */
     wPtr.style.opacity = '1';
   }
@@ -3704,8 +3780,8 @@ function makeDesk(el) {
     welcome = 0; welM.visible = false; wPtr.style.opacity = '0';
     if (hoverGroup === welHover) hoverGroup = null;
     welHover = null;
-    if (quiet) jesse.visible = !menuOn && !secret && !info && !lore;
-    else tvBlip(() => { jesse.visible = !menuOn && !secret && !info && !lore; });   /* a little static, then the game screen again */
+    if (quiet) defScreen(!menuOn && !secret && !info && !lore);
+    else tvBlip(() => { defScreen(!menuOn && !secret && !info && !lore); });   /* a little static, then the game screen again */
   }
   function welcomeTick(now) {
     if (!welcome) return;
@@ -3737,9 +3813,9 @@ function makeDesk(el) {
     const gameEl = document.getElementById('gameOverlay');
     if (welcome || menuOn || v.tvT || v.navigated || secret || document.hidden || document.querySelector('dialog[open]') || (gameEl && !gameEl.hidden) || now - lastAct < 3000) { idleNext = 0; return; }   /* someone is doing something: start the wait over */
     if (lore || info || blip) return;   /* its own show is still on */
-    if (!idleNext) { idleNext = now + 6000 + Math.random() * 2000; return; }
+    if (!idleNext) { idleNext = now + 9000 + Math.random() * 4000; return; }
     if (now < idleNext) return;
-    idleNext = now + 6000 + Math.random() * 2000;
+    idleNext = now + 9000 + Math.random() * 4000;
     const i = chNext(1);   /* the next channel in the fixed order */
     if (i >= 0) chShow(i, true);
   }
@@ -3747,7 +3823,7 @@ function makeDesk(el) {
   /* ---------- page-load intro: static, then the TV shows the camcorder picture with a loading bar; it blurs and the welcome words fade in. Each thing on the table drops in as soon as what it needs has loaded. When all have landed: static, then a random pearl shoot picture. ---------- */
   const intro = { phase: 'done', busy: false, t0: 0, tl: 0, tw: 0, allT: 0, shown: 0, cs: '', coinT: 0, viaScreen: false, fontDep: null };
   const drops = [];
-  const LD_PX = 512, LD_STRIKER = "'KCStrikerSans', 'Arial Black', sans-serif";
+  const LD_PX = 512, LD_STRIKER = "'ArchivoExpBlack', 'Arial Black', sans-serif";
   const ldCv = document.createElement('canvas'); ldCv.width = ldCv.height = LD_PX;
   const ldTex = new THREE.CanvasTexture(ldCv);
   const ldM = new THREE.Mesh(scrGeo, new THREE.MeshBasicMaterial({ map: ldTex }));
@@ -3938,7 +4014,7 @@ function makeDesk(el) {
   if (!REDUCE) {
     intro.phase = 'run'; intro.busy = true; intro.gate = !REDUCE;
     const tvDep = trackDep(tvImgP), busDep = trackDep(kickLoads(v)), sndDep = trackDep(Sound.whenLoaded());
-    const fontDep = trackDep(document.fonts && document.fonts.load ? Promise.all([document.fonts.load("64px 'KCOraleSans'"), document.fonts.load("40px 'KCStrikerSans'"), document.fonts.load("20px 'KCPelletierTyped'")]) : null);
+    const fontDep = trackDep(document.fonts && document.fonts.load ? Promise.all([document.fonts.load("64px 'KCOraleSans'"), document.fonts.load("40px 'ArchivoExpBlack'"), document.fonts.load("20px 'KCPelletierTyped'")]) : null);
     trackDep(new Promise(res => { if (ldImg.complete) res(); else { ldImg.onload = res; ldImg.onerror = res; } }));
     intro.fontDep = fontDep;
     wrapDrop([wallM], 0, 0, [], 0);
@@ -3955,15 +4031,15 @@ function makeDesk(el) {
     wrapDrop([paintG], 1.6, 3, [], 0.05);
     wrapDrop([bowlG], 1.8, 4, [bowlBlob], 0.06);
     drops.forEach(d => { d.g.visible = false; d.sh.forEach(s => { s.visible = false; }); });
-    jesse.visible = false; ldM.visible = true; staticM.visible = true; drawIntro(0);
+    defScreen(false); ldM.visible = true; staticM.visible = true; drawIntro(0);
   }
   const introLive = () => intro.busy && !!intro.allT;   /* everything has landed: the table can be used even while the welcome words are still on the TV */
   function skipIntro() {   /* something was tapped while the welcome screen was still up: end the intro right now */
     drops.forEach(d => { d.g.visible = true; d.g.position.y = 0; d.landed = true; d.sh.forEach(s => { s.visible = true; }); });
     intro.phase = 'done'; intro.busy = false; edgeOn();
-    ldM.visible = false; staticM.visible = false; introVideoEnd();
+    ldM.visible = false; staticM.visible = false;
     INT.k = INT.e = 0; LK.dirty = true; if (IU.box) IU.box.style.display = 'none';
-    jesse.visible = !menuOn && !secret && !info && !lore;
+    defScreen(!menuOn && !secret && !info && !lore);
   }
   function warmUp() {   /* draw every falling thing once, unseen (it is hidden again before the screen updates), so shaders and textures are ready before they drop */
     drops.forEach(d => { d.g.visible = true; d.sh.forEach(s => { s.visible = true; }); });
@@ -3973,7 +4049,7 @@ function makeDesk(el) {
   function finishIntro() {   /* everything has landed and the words have had their time: static, then a random pearl shoot picture */
     intro.phase = 'done'; intro.busy = false; edgeOn();
     if (!intro.vr && !intro.peeked) { intro.peeked = true; intro.peekT = performance.now() + 900; }   /* v32: classic only: one very slight nudge to the side, after the load */
-    tvBlip(() => { ldM.visible = false; introVideoEnd(); startLore(); if (!lore) jesse.visible = !menuOn && !secret && !info; });
+    ldM.visible = false; defScreen(!menuOn && !secret && !info && !lore);   /* v33: no static and no pearl shoot picture: the video just carries on as the main channel */
   }
   function introTick(now) {
     if (!intro.t0) { intro.t0 = now; introVideoInit(); }
@@ -3987,7 +4063,7 @@ function makeDesk(el) {
     if (kk !== INT.k) { INT.k = kk; INT.e = kk * kk * (3 - 2 * kk); LK.dirty = true; }
     if (intro.tl && !intro.back && IU.box) {
       if (!intro.welT && INT.k >= 0.995 && (intro.fontDep.ok || now - intro.tl > 4500)) {   /* the camera has arrived: the words fade in and out */
-        intro.welT = now; IU.box.style.display = 'block'; introPlace(); IU.wel.classList.add('go');
+        intro.welT = now; IU.box.style.display = 'block'; IU.u = 0; introPlace(); IU.wel.classList.add('go'); if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { IU.u = 0; introFit(); });
       }
       if (intro.welT) {
         introPlace();
