@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- HOME (v29) -->
+<!-- HOME (v31) -->
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
@@ -972,7 +972,7 @@ try { if (location.hash) history.replaceState(null, '', location.pathname + loca
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/STLLoader.js"></script>
 <script>
-// HOME (v29): look-around room. A 360 room picture sits behind the desk; drag, mouse at the screen edge, arrow keys or phone tilt turn the view (Dojo stand-in on the left, Store stand-in on the right). On iPhone / iPad the page opens on an INSERT COIN screen that asks for motion.
+// HOME (v31): look-around room. A 360 room picture sits behind the desk; drag, mouse at the screen edge, arrow keys or phone tilt turn the view (Dojo stand-in on the left, Store stand-in on the right). On iPhone / iPad the page opens on an INSERT COIN screen that asks for motion.
 const toTop = () => { try { window.scrollTo({ top: 0, left: 0, behavior: 'instant' }); } catch (e) { window.scrollTo(0, 0); } };
 toTop();
 window.addEventListener('load', toTop);
@@ -1004,7 +1004,7 @@ const CONFIG = {
   patreonUrl: '',                  // the Patreon link once it exists (the framed painting on the wall goes there). Empty = a "coming soon" popup.
   paintingImage: '/images/patronage.jpg',   // the framed painting on the back wall
   bg360: '/images/BG/360 mcm room 1.jpg',   // the room picture all around the desk when you look left and right (a 360 degree picture, 2:1 wide). Empty = no room picture.
-  bgBlur: 4,                       // how soft that room picture is, in pixels
+  bgBlur: 1,                       // how soft that room picture is, in pixels (0 = raw)
   lookArc: 80,                     // how far you can look left and right, in degrees (the Dojo and Store rooms sit 10 degrees inside this)
   gateSeconds: 12,                 // iPhone / iPad: how long the INSERT COIN motion screen waits before the page just carries on
   vinylUrl: '',                    // where the record on the table sends you to buy it. Empty = the "Send me the album" email form opens instead.
@@ -2102,13 +2102,15 @@ function makeDesk(el) {
 
   /* camera: fixed, looking down at the table. The distance is worked out from a few key points so the TV fills the width on any screen shape. */
   const EL = THREE.MathUtils.degToRad(36), LOOK = new THREE.Vector3(0, 1.85, 0);
-  const FIT_PTS = [[3.15, 4.0, -1.5], [1.05, 5.1, -2.1], [2.2, 6.3, -2.1], [2.95, 0, 2.6, 1], [2.9, -1.0, 3.05, 1], [-2.9, -1.0, 3.05, 1], [-3.8, 3.6, -3.45, 0.45]];   /* the 4th number: how much the point moves outward when the screen is wide (see v.layout); the last point is the middle of the painting on the back wall (phones zoom out a little to show it) */
+  const FIT_PTS = [[3.15, 4.0, -1.5], [1.05, 5.1, -2.1], [2.2, 6.3, -2.1], [2.95, 0, 2.6, 1], [-2.95, 0, 2.6, 1]];   /* the 4th number: how much the point moves outward when the screen is wide (see v.layout); the last point is the middle of the painting on the back wall (phones zoom out a little to show it) */
   v.fit = function () {
-    const w = el.clientWidth || 640, h = el.clientHeight || 400;
-    v.renderer.setPixelRatio(Math.max(0.75, Math.min(window.devicePixelRatio || 1, 1.75, Math.sqrt(2600000 / (w * h)))));   /* the desk fills the screen now, so cap the total pixels on very big windows */
-    v.renderer.setSize(w, h, false);
+    const par = el.parentElement, TX = par ? Math.max(0, Math.round(par.getBoundingClientRect().top)) : 0;   /* v31: the picture reaches up to the very top of the page (behind the logo), so there is no blank strip above it */
+    if (TX !== v.topExt) { v.topExt = TX; el.style.top = -TX + 'px'; el.style.height = 'calc(100% + ' + TX + 'px)'; }
+    const w = el.clientWidth || 640, h = (el.clientHeight || 400) - TX;
+    v.renderer.setPixelRatio(Math.max(0.75, Math.min(window.devicePixelRatio || 1, 1.75, Math.sqrt(2600000 / (w * (h + TX))))));   /* the desk fills the screen now, so cap the total pixels on very big windows */
+    v.renderer.setSize(w, h + TX, false);
     v.camera.aspect = w / h;
-    v.camera.updateProjectionMatrix();
+    if (TX) v.camera.setViewOffset(w, h, 0, -TX, w, h + TX); else { v.camera.clearViewOffset(); v.camera.updateProjectionMatrix(); }   /* (the same framing as before, with the extra strip filled in at the top) */
     const t = Math.tan(THREE.MathUtils.degToRad(15)) * 0.97, sn = Math.sin(EL), cs = Math.cos(EL);
     const need = spr => {
       let d = 0;
@@ -2133,18 +2135,35 @@ function makeDesk(el) {
      Ways to turn: drag, the mouse at the edge of the picture (faster at the very edge), the left / right arrow keys, or the phone's own motion.
      Nothing here touches the other pages. Easy edit values are in CONFIG (bg360, bgBlur, lookArc, gateSeconds). */
   const DEG = Math.PI / 180, Y_AXIS = new THREE.Vector3(0, 1, 0);
-  const LK = { yaw: 0, drag: 0, gyro: 0, peek: 0, pitch: 0, gpitch: 0, vel: 0, hx: 0, hot: false, dn: null, keys: 0, last: 0, dirty: true, stT: 0 };
+  const LK = { act: 0, yaw: 0, drag: 0, gyro: 0, peek: 0, pitch: 0, gpitch: 0, vel: 0, hx: 0, hot: false, dn: null, keys: 0, last: 0, dirty: true, stT: 0 };
   v.look = LK;   /* (open to the page, so the look can be read or set from the console) */
-  const ARC = (CONFIG.lookArc || 80) * DEG, ST_A = Math.max(30, (CONFIG.lookArc || 80) - 10) * DEG;   /* the two rooms sit a little inside the limit */
+  const ARC_MAX = (CONFIG.lookArc || 80) * DEG;   /* the farthest you can ever look */
+  let ARC = ARC_MAX;                              /* (shrinks to just past the Dojo and Store on screens where they sit closer) */
   const clampArc = a => Math.max(-ARC, Math.min(ARC, a));
   const lookOk = () => intro.phase === 'done' && !intro.busy && !menuOn && !v.tvT && !v.navigated;
+  /* Things that stand on their own, off to the sides of the desk, on a ring around the camera. Left: mailbox + contact card, the painting, the Dojo. Right: the gift bag, the Store.
+     On wide screens the first ones sit near the edges of the picture (so they are in view straight away); on phones they sit just out of view, a small turn away. */
   const stG = { dojo: new THREE.Group(), store: new THREE.Group() };   /* the two stand-in rooms (built a moment after the intro, so the first load stays light) */
-  stG.dojo.visible = stG.store.visible = false; stage.add(stG.dojo, stG.store);
-  const STS = [{ g: stG.dojo, a: ST_A }, { g: stG.store, a: -ST_A }];
-  let stBuilt = false, stR = 0;
+  const satL = new THREE.Group(), satP = new THREE.Group(), satR = new THREE.Group();
+  [stG.dojo, stG.store, satL, satP, satR].forEach(g => stage.add(g));
+  const SATS = [   /* side: 1 = left, -1 = right. step: 1 = nearest to the desk, 2 = next, 3 = the stand-in rooms. y = how far the group is lifted so its things sit in the middle of the picture */
+    { g: satL, side: 1, step: 1, y: 1.3 }, { g: satP, side: 1, step: 2, y: 0.2 }, { g: stG.dojo, side: 1, step: 3, y: 0 },
+    { g: satR, side: -1, step: 1, y: 1.8 }, { g: stG.store, side: -1, step: 3, y: 0 }
+  ];
+  const ring = { a1: 0.3, hh: 0.4 };
+  function ringCalc() {
+    const hh = Math.atan(Math.tan(15 * DEG) * v.camera.aspect);   /* half of the picture's width, as an angle */
+    ring.hh = hh; ring.a1 = Math.max(0.34, Math.min(0.55, hh - 0.11));
+    ARC = Math.min(ARC_MAX, ring.a1 + 0.62);   /* you can turn until the Dojo / Store is in the middle, no further */
+    SATS.forEach(s => { s.a = s.side * (ring.a1 + (s.step === 1 ? 0 : s.step === 2 ? 0.32 : 0.62)); });
+    LK.drag = clampArc(LK.drag);
+  }
+  let stBuilt = false;
 
   /* ---- the room picture: a 360 photo on the inside of a big ball around the camera, softened with a box blur (ctx.filter does not work on Safari) ---- */
-  const PANO = { mesh: null }, PANO_YAW = 0, PANO_TILT = 0.45, PANO_DIM = 0x8f8480;
+  const PANO = { mesh: null }, PANO_YAW = 0, PANO_DIM = 0x9a8f8a, BG_FOV = 92, BG_DOWN = 0.2;
+  const bgScene = new THREE.Scene(), bgCam = new THREE.PerspectiveCamera(BG_FOV, 1.6, 0.5, 100);   /* the room has its own, wider camera, so it shows more of the room (and less blow-up) than the desk camera would */
+  bgCam.rotation.order = 'YXZ';
   function boxBlur(g, W, H, R) {
     if (R < 1) return;
     const im = g.getImageData(0, 0, W, H), a = im.data, b = new Uint8ClampedArray(a.length); b.set(a);
@@ -2173,12 +2192,12 @@ function makeDesk(el) {
         const W = Math.min(1024, im.naturalWidth || 720), H = Math.round(W / 2);
         const c = document.createElement('canvas'); c.width = W; c.height = H;
         const g = c.getContext('2d'); g.drawImage(im, 0, 0, W, H);
-        boxBlur(g, W, H, Math.round(CONFIG.bgBlur == null ? 4 : CONFIG.bgBlur));
+        boxBlur(g, W, H, Math.round(CONFIG.bgBlur == null ? 2 : CONFIG.bgBlur));
         const tex = new THREE.CanvasTexture(c); tex.minFilter = THREE.LinearFilter; tex.generateMipmaps = false;
         const geo = new THREE.SphereGeometry(40, 40, 24); geo.scale(-1, 1, 1);   /* turned inside out so the picture faces the camera */
         const m = new THREE.Mesh(geo, new THREE.MeshBasicMaterial({ map: tex, color: PANO_DIM, depthWrite: false }));
-        m.renderOrder = -20; m.frustumCulled = false; m.rotation.y = PANO_YAW; m.rotation.x = PANO_TILT;
-        v.scene.add(m); PANO.mesh = m; if (v.base) m.position.copy(v.base);
+        m.frustumCulled = false; m.rotation.y = PANO_YAW;
+        bgScene.add(m); PANO.mesh = m;
       } catch (x) {}
     };
     im.src = src;
@@ -2189,7 +2208,7 @@ function makeDesk(el) {
   const hasSensor = typeof window.DeviceOrientationEvent !== 'undefined' && ((window.matchMedia && matchMedia('(pointer: coarse)').matches) || DEBUG_GATE);
   const needsAsk = hasSensor && typeof DeviceOrientationEvent.requestPermission === 'function';   /* iPhone / iPad: the page has to ask first */
   let sessDenied = false; try { sessDenied = sessionStorage.getItem('fj_motion') === 'no'; } catch (x) {}
-  const MO = { on: false, base: null, seen: false };
+  const MO = { on: false, base: null, seen: false, state: '' };
   const _e = new THREE.Euler(), _q = new THREE.Quaternion(), _q1 = new THREE.Quaternion(-Math.SQRT1_2, 0, 0, Math.SQRT1_2), _q0 = new THREE.Quaternion(), _f = new THREE.Vector3(), ZEE = new THREE.Vector3(0, 0, 1);
   function onOrient(e) {
     if (e.alpha == null || e.beta == null || e.gamma == null) return;
@@ -2215,6 +2234,7 @@ function makeDesk(el) {
     if (!needsAsk) { motionStart(); return Promise.resolve('granted'); }
     let p; try { p = DeviceOrientationEvent.requestPermission(); } catch (x) { return Promise.resolve('error'); }
     return Promise.resolve(p).then(s => {
+      MO.state = s;
       if (s === 'granted') { motionStart(); try { sessionStorage.removeItem('fj_motion'); } catch (x) {} }
       else { motionNote('Motion is blocked. Close and reopen the page (or allow Motion in Safari settings) to try again.'); try { sessionStorage.setItem('fj_motion', 'no'); } catch (x) {} }
       return s;
@@ -2235,14 +2255,19 @@ function makeDesk(el) {
     if (LK.yaw) cam.rotateOnWorldAxis(Y_AXIS, LK.yaw);   /* turn on the spot (left is positive) */
     if (LK.pitch) cam.rotateX(LK.pitch);
     cam.updateMatrixWorld();
-    if (PANO.mesh) PANO.mesh.position.copy(v.base);
-    placeStations();
+    const asp = v.renderer.domElement.width / Math.max(1, v.renderer.domElement.height);
+    if (Math.abs(asp - bgCam.aspect) > 1e-4) { bgCam.aspect = asp; bgCam.updateProjectionMatrix(); }
+    ringCalc(); placeSats();
   };
-  function placeStations() {   /* the rooms sit on a ring around the camera, at the same distance as the middle of the desk, each turned to face the camera */
-    if (!stBuilt) return;
+  v.render = function () {   /* the room first, then the desk on top of it */
+    const r = v.renderer;
+    if (!PANO.mesh) { r.render(v.scene, v.camera); return; }
+    bgCam.rotation.set(-BG_DOWN + LK.pitch * 0.5, LK.yaw, 0);
+    r.autoClear = false; r.clear(); r.render(bgScene, bgCam); r.clearDepth(); r.render(v.scene, v.camera); r.autoClear = true;
+  };
+  function placeSats() {   /* each group sits on the ring at the same distance as the middle of the desk, turned to face the camera */
     const r = v.base.z - LOOK.z;
-    STS.forEach(s => { s.g.position.set(-Math.sin(s.a) * r, 0, v.base.z - Math.cos(s.a) * r); s.g.rotation.y = s.a; });
-    stR = r;
+    SATS.forEach(s => { s.g.position.set(-Math.sin(s.a) * r, s.y, v.base.z - Math.cos(s.a) * r); s.g.rotation.y = s.a; });
   }
   const lookRadPerPx = () => 2 * Math.atan(Math.tan(15 * DEG) * v.camera.aspect) / Math.max(1, el.clientWidth) * 2.2;   /* a bit quicker than "grab the picture" so a swipe or two reaches the rooms */
   function lookDown(e) {
@@ -2269,8 +2294,9 @@ function makeDesk(el) {
     const d = LK.dn; LK.dn = null;
     if (d && d.on) { LK.vel = REDUCE ? 0 : Math.max(-3, Math.min(3, d.v)); el.style.cursor = 'default'; }
   }
-  const peekAt = gt => { let a = 0; [2, 7.5].forEach(s => { const k = (gt - s) / 1.4; if (k > 0 && k < 1) a += Math.sin(k * Math.PI * 2) * Math.sin(k * Math.PI) * 0.2; }); return a; };   /* the little left-and-right peek on the INSERT COIN screen */
+  const peekAt = gt => { let a = 0; [2].forEach(s => { const k = (gt - s) / 1.4; if (k > 0 && k < 1) a += Math.sin(k * Math.PI * 2) * Math.sin(k * Math.PI) * 0.3; }); return a; };   /* the little left-and-right peek on the INSERT COIN screen */
   let lookWas = false;
+  const SNAP_ON = !(window.matchMedia && matchMedia('(pointer: coarse)').matches);   /* computers only: on a phone the drag is easy to control, so no snapping */
   function lookTick(now) {
     const dt = Math.min(0.05, Math.max(0, (now - (LK.last || now)) / 1000)); LK.last = now;
     const okNow = lookOk();
@@ -2280,8 +2306,10 @@ function makeDesk(el) {
       if (!LK.dn) {
         if (Math.abs(LK.vel) > 0.01) { LK.drag = clampArc(LK.drag + LK.vel * dt); LK.vel *= Math.exp(-3.2 * dt); } else LK.vel = 0;
         let sp = LK.keys * 0.9;
-        if (LK.hot && !REDUCE) { const a = Math.abs(LK.hx); if (a > 0.72) sp -= Math.sign(LK.hx) * 0.8 * Math.pow((a - 0.72) / 0.28, 2); }   /* slow at first, quicker toward the very edge */
+        LK.hot_edge = false;
+        if (LK.hot && !REDUCE) { const a = Math.abs(LK.hx); if (a > 0.72) LK.hot_edge = true; if (a > 0.72) sp -= Math.sign(LK.hx) * 0.8 * Math.pow((a - 0.72) / 0.28, 2); }   /* slow at first, quicker toward the very edge */
         if (sp) LK.drag = clampArc(LK.drag + sp * dt);
+        else if (SNAP_ON && Math.abs(LK.vel) < 0.02 && !LK.hot_edge && now - LK.act > 2500 && Math.abs(LK.drag) < 0.22 && Math.abs(LK.drag) > 0.0008) LK.drag -= LK.drag * (1 - Math.exp(-dt * 1.6));   /* a few seconds of nothing, and nearly centered on the desk: glide the rest of the way (not when you are over by the Dojo or the Store) */
       }
       if (!stBuilt) { if (!LK.stT) LK.stT = now; if (now - LK.stT > 700) buildStations(); }
     } else LK.vel = 0;
@@ -2289,70 +2317,93 @@ function makeDesk(el) {
     const tgt = clampArc(LK.drag + LK.gyro + LK.peek), tp = Math.max(-0.14, Math.min(0.14, LK.gpitch)), k = 1 - Math.exp(-dt * 12);
     const y1 = LK.yaw + (tgt - LK.yaw) * k, p1 = LK.pitch + (tp - LK.pitch) * k;
     if (Math.abs(y1 - LK.yaw) > 1e-5 || Math.abs(p1 - LK.pitch) > 1e-5 || LK.dirty) { LK.yaw = y1; LK.pitch = p1; LK.dirty = false; v.applyLook(); }
-    if (stBuilt) STS.forEach(s => { s.g.visible = Math.abs(LK.yaw - s.a) < 0.95; });   /* a room is only drawn while it is near the middle of the picture */
+    SATS.forEach(s => { s.g.visible = Math.abs(LK.yaw - s.a) < ring.hh + 0.45; });   /* a group is only drawn while it is near the picture */
   }
 
   /* ---- the two stand-in rooms. They are simple stand-ins for now: tap one to go to the real page. ---- */
-  function signTex(w, h, title, sub, rgb) {
+  function signTex(w, h, title, sub, rgb, subPx) {
     const c = document.createElement('canvas'); c.width = w; c.height = h;
     const g = c.getContext('2d');
     g.fillStyle = '#1a0f16'; g.fillRect(0, 0, w, h);
     g.lineJoin = 'round'; g.strokeStyle = rgb; g.lineWidth = 9; g.shadowColor = rgb; g.shadowBlur = 16; g.strokeRect(16, 16, w - 32, h - 32);
     g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillStyle = '#ffffff'; g.shadowBlur = 20;
-    fitText(g, title, w - 90, Math.round(h * 0.5), "'KCStrikerSans', 'Arial Black', sans-serif"); g.fillText(title, w / 2, h * 0.42);
-    g.shadowBlur = 8; g.fillStyle = rgb; g.font = Math.round(h * 0.13) + "px 'KCPelletierTyped', 'Courier New', monospace"; g.fillText(sub, w / 2, h * 0.79);
+    fitText(g, title, w - 90, Math.round(h * 0.46), "'KCStrikerSans', 'Arial Black', sans-serif"); g.fillText(title, w / 2, h * 0.38);
+    g.shadowBlur = 10; g.fillStyle = rgb; g.font = (subPx || Math.round(h * 0.13)) + "px 'KCPelletierTyped', 'Courier New', monospace"; g.fillText(sub, w / 2, h * 0.78);
     const t = new THREE.CanvasTexture(c); t.anisotropy = 4; return t;
   }
   function cyl(rt, rb, h, mat, x, y, z, par, seg) { const m = new THREE.Mesh(new THREE.CylinderGeometry(rt, rb, h, seg || 14), mat); m.position.set(x, y, z); (par || stage).add(m); return m; }
-  function buildStoreStation() {
+  function buildStoreStation() {   /* a plain table with one white tee, one record and one CD, under a sign */
     const g = stG.store;
     const topM = new THREE.MeshStandardMaterial({ map: wood, roughness: 0.75 }), sideM = std(0x47291a, 0.8), legM = std(0x573822, 0.75);
-    const top = new THREE.Mesh(new THREE.BoxGeometry(5.4, 0.16, 2.7), [sideM, sideM, topM, sideM, sideM, sideM]); top.position.y = -0.08; g.add(top);
-    [[-2.5, -1.1], [2.5, -1.1], [-2.5, 1.1], [2.5, 1.1]].forEach(p => box(0.22, -0.16 - FLOOR, 0.22, legM, p[0], (FLOOR - 0.16) / 2, p[1], g));
-    const sh = blob(6.8, 4.0, 0, 0, 0.7, g); sh.position.y = FLOOR + 0.004;
-    [[-1.9, 0xd98ac4, 0x7a2f63], [-0.6, 0x7fc9d6, 0x1f5560], [0.7, 0xf0e4cc, 0xb0453f]].forEach((s, si) => {   /* three stacks of folded tees */
-      const m = std(s[1], 0.85);
-      for (let i = 0; i < 4; i++) { const t = box(1.15, 0.12, 1.3, m, s[0] + Math.sin(i * 2.1 + si) * 0.05, 0.06 + i * 0.125, 0.3, g); t.rotation.y = Math.sin(i * 1.7 + si * 2) * 0.07; }
-      box(0.5, 0.012, 0.5, std(s[2], 0.9), s[0], 0.06 + 3 * 0.125 + 0.07, 0.3, g);   /* the print on the top one */
-    });
-    const capM = std(0x2b2b3a, 0.8);
-    const dome = new THREE.Mesh(new THREE.SphereGeometry(0.42, 18, 10, 0, Math.PI * 2, 0, Math.PI / 2), capM); dome.position.set(1.95, 0, 0.4); g.add(dome);
-    const brim = cyl(0.4, 0.4, 0.04, capM, 1.95, 0.02, 0.85, g, 18); brim.scale.set(1, 1, 0.7);
+    const top = new THREE.Mesh(new THREE.BoxGeometry(4.8, 0.16, 2.8), [sideM, sideM, topM, sideM, sideM, sideM]); top.position.y = -0.08; g.add(top);
+    [[-2.15, -1.1], [2.15, -1.1], [-2.15, 1.1], [2.15, 1.1]].forEach(p => box(0.22, -0.16 - FLOOR, 0.22, legM, p[0], (FLOOR - 0.16) / 2, p[1], g));
+    const sh = blob(6.0, 3.6, 0, 0, 0.7, g); sh.position.y = FLOOR + 0.004;
+    /* the white tee, laid flat, with the feathered camcorder print like the real store's */
+    const sp = new THREE.Shape();
+    [[-0.45, -0.7], [0.45, -0.7], [0.45, 0.3], [0.88, 0.12], [1.05, 0.5], [0.32, 0.72], [0.18, 0.72], [0, 0.58], [-0.18, 0.72], [-0.32, 0.72], [-1.05, 0.5], [-0.88, 0.12], [-0.45, 0.3]].forEach((q, i) => { if (i) sp.lineTo(q[0], q[1]); else sp.moveTo(q[0], q[1]); });
+    const shGeo = new THREE.ExtrudeGeometry(sp, { depth: 0.05, bevelEnabled: true, bevelThickness: 0.015, bevelSize: 0.015, bevelSegments: 2 }); shGeo.rotateX(-Math.PI / 2);
+    const tee = new THREE.Group(); tee.position.set(-1.3, 0.004, -0.1); tee.rotation.y = 0.12; tee.scale.setScalar(1.2); g.add(tee);
+    tee.add(new THREE.Mesh(shGeo, std(0xefede6, 0.9)));
+    if (ldImg.complete && ldImg.naturalWidth) {
+      const c = document.createElement('canvas'); c.width = c.height = 256; const cx = c.getContext('2d');
+      const s = Math.min(256 / ldImg.naturalWidth, 256 / ldImg.naturalHeight); cx.drawImage(ldImg, (256 - ldImg.naturalWidth * s) / 2, (256 - ldImg.naturalHeight * s) / 2, ldImg.naturalWidth * s, ldImg.naturalHeight * s);
+      cx.globalCompositeOperation = 'destination-in'; const gr = cx.createRadialGradient(128, 128, 40, 128, 128, 126); gr.addColorStop(0, '#fff'); gr.addColorStop(1, 'rgba(255,255,255,0)'); cx.fillStyle = gr; cx.fillRect(0, 0, 256, 256);
+      const pr = new THREE.Mesh(new THREE.PlaneGeometry(0.62, 0.62), new THREE.MeshStandardMaterial({ map: new THREE.CanvasTexture(c), transparent: true, roughness: 0.9, depthWrite: false })); pr.rotation.x = -Math.PI / 2; pr.position.set(0, 0.075, -0.12); noHit(pr); tee.add(pr);
+    }
+    /* the record: the cover (the game board picture) with the vinyl sliding out of it */
+    const cvTop = new THREE.MeshStandardMaterial({ color: 0xf4f1ea, roughness: 0.55 }); if (boardTop.map) { cvTop.map = boardTop.map; cvTop.color.setHex(0xe0e0e0); }
+    const cvSide = std(0xf4f1ea, 0.6);
+    const cover = new THREE.Mesh(new THREE.BoxGeometry(1.7, 0.03, 1.7), [cvSide, cvSide, cvTop, cvSide, cvSide, cvSide]); cover.position.set(0.75, 0.015, -0.5); cover.rotation.y = -0.1; g.add(cover);
+    const vc = new THREE.MeshStandardMaterial({ map: vinylTex, color: 0xc4c4c4, roughness: 0.35, metalness: 0.1 });
+    const rec = new THREE.Mesh(new THREE.CylinderGeometry(0.7, 0.7, 0.035, 56), [std(0xb8a878, 0.5), vc, vc]); rec.position.set(1.45, 0.06, 0.45); g.add(rec);
+    /* the CD in its clear case */
+    const cdG2 = new THREE.Group(); cdG2.position.set(0.1, 0.06, 0.9); cdG2.rotation.set(-Math.PI / 2, 0, 0.1); g.add(cdG2);
+    const cdM2 = new THREE.MeshStandardMaterial({ map: bagCdTex, roughness: 0.3, metalness: 0.1, emissive: 0x808286, emissiveMap: bagCdTex, transparent: true, alphaTest: 0.5, side: THREE.DoubleSide });
+    cdG2.add(new THREE.Mesh(new THREE.BoxGeometry(1.1, 0.98, 0.04), std(0x2b2d33, 0.6)));
+    const cdDisc2 = new THREE.Mesh(new THREE.CircleGeometry(0.46, 48), cdM2); cdDisc2.position.z = 0.025; cdG2.add(cdDisc2);
+    cdG2.add(new THREE.Mesh(new THREE.BoxGeometry(1.14, 1.02, 0.1), new THREE.MeshStandardMaterial({ color: 0xdff3f7, transparent: true, opacity: 0.2, roughness: 0.08, depthWrite: false })));
+    new THREE.TextureLoader().load('/images/cd.png', tex => { tex.anisotropy = 4; const a2 = tex.image && tex.image.height ? tex.image.width / tex.image.height : 1; cdDisc2.geometry = new THREE.PlaneGeometry(0.94 * Math.min(1, a2), 0.94 / Math.max(1, a2)); cdM2.map = tex; cdM2.emissiveMap = tex; cdM2.needsUpdate = true; }, undefined, () => {});
+    /* the sign on two posts */
     const postM = std(0x573822, 0.7);
-    [-2.4, 2.4].forEach(x => cyl(0.07, 0.07, 6.35, postM, x, FLOOR + 3.175, -1.9, g, 10));   /* the rail with tees hanging on it */
-    box(4.9, 0.08, 0.08, postM, 0, 3.2, -1.9, g); box(4.9, 0.08, 0.08, postM, 0, 4.98, -1.9, g);
-    [0xd98ac4, 0x7fc9d6, 0xf0e4cc, 0xd98ac4, 0x7fc9d6].forEach((c, i) => {
-      const m = std(c, 0.85), x = -1.75 + i * 0.88;
-      box(0.62, 0.85, 0.06, m, x, 2.55, -1.9, g);
-      [-1, 1].forEach(sd => { const sl = box(0.26, 0.28, 0.06, m, x + sd * 0.4, 2.85, -1.9, g); sl.rotation.z = -sd * 0.55; });
-    });
-    [-1.5, 1.5].forEach(x => cyl(0.02, 0.02, 0.55, postM, x, 4.7, -1.9, g, 6));
-    const sign = new THREE.Mesh(new THREE.PlaneGeometry(3.6, 1.35), new THREE.MeshBasicMaterial({ map: signTex(512, 192, 'MERCH', 'tap to shop  >', '#d98ac4') })); sign.position.set(0, 4.15, -1.85); noHit(sign); g.add(sign);
-    hitBox(5.8, 6.4, 3.4, 0, 1.85, -0.2, 'stStore', g);
+    [-1.9, 1.9].forEach(x => cyl(0.07, 0.07, 4.95, postM, x, FLOOR + 2.475, -1.2, g, 10)); box(4.0, 0.08, 0.08, postM, 0, 3.6, -1.2, g);
+    [-1.5, 1.5].forEach(x => cyl(0.02, 0.02, 0.45, postM, x, 3.35, -1.2, g, 6));
+    const sign = new THREE.Mesh(new THREE.PlaneGeometry(3.6, 1.5), new THREE.MeshBasicMaterial({ map: signTex(512, 214, 'MERCH', 'tap to shop  >', '#d98ac4', 40) })); sign.position.set(0, 2.65, -1.15); noHit(sign); g.add(sign);
+    hitBox(5.2, 5.4, 3.2, 0, 1.2, 0, 'stStore', g);
   }
-  function buildDojoStation() {
+  function buildDojoStation() {   /* the singing bowl (moved here from the TV) and the rolled yoga mat from the Dojo page, under a sign */
     const g = stG.dojo;
-    cyl(2.4, 2.4, 0.05, std(0x2f7f8a, 0.9), 0, FLOOR + 0.025, 0.2, g, 40); cyl(1.95, 1.95, 0.07, std(0x3a9aa6, 0.9), 0, FLOOR + 0.035, 0.2, g, 40);   /* the mat */
-    const sh = blob(6.4, 4.2, 0, 0.2, 0.6, g); sh.position.y = FLOOR + 0.004;
-    const zafu = new THREE.Mesh(new THREE.SphereGeometry(0.75, 20, 12), std(0xb0453f, 0.9)); zafu.scale.y = 0.42; zafu.position.set(-0.95, FLOOR + 0.4, 0.5); g.add(zafu);   /* the cushion */
-    const ring = new THREE.Mesh(new THREE.TorusGeometry(0.55, 0.15, 10, 24), std(0xb0453f, 0.9)); ring.rotation.x = Math.PI / 2; ring.position.set(1.0, FLOOR + 0.2, 0.4); g.add(ring);   /* the bowl's little pillow */
-    const prof = [[0, 0], [0.28, 0], [0.55, 0.2], [0.72, 0.5], [0.78, 0.62], [0.74, 0.62], [0.68, 0.48], [0.5, 0.22], [0.26, 0.06], [0, 0.06]].map(p => new THREE.Vector2(p[0] * 1.25, p[1] * 1.25));
-    const bowlM = std(0xd8b04a, 0.35, 0.5); bowlM.side = THREE.DoubleSide;
-    const bowl = new THREE.Mesh(new THREE.LatheGeometry(prof, 28), bowlM); bowl.position.set(1.0, FLOOR + 0.32, 0.4); g.add(bowl);
-    [[0.5, 0.34], [0.38, 0.28], [0.26, 0.22]].forEach((s, i) => { const st = new THREE.Mesh(new THREE.SphereGeometry(s[0], 14, 8), std(0x6b6a72, 0.9)); st.scale.y = 0.55; st.position.set(-2.1 + i * 0.05, FLOOR + 0.12 + i * 0.3, -0.5); g.add(st); });   /* a little stack of stones */
-    const pot = cyl(0.36, 0.28, 0.55, std(0x8a4a2e, 0.85), 2.2, FLOOR + 0.28, -0.7, g, 14), leafM = std(0x3f7d4a, 0.8);
-    for (let i = 0; i < 7; i++) { const lf = new THREE.Mesh(new THREE.ConeGeometry(0.13, 1.5 + (i % 3) * 0.3, 6), leafM); const an = i / 7 * Math.PI * 2; lf.position.set(2.2 + Math.cos(an) * 0.12, FLOOR + 1.2, -0.7 + Math.sin(an) * 0.12); lf.rotation.set(Math.sin(an) * 0.35, 0, -Math.cos(an) * 0.35); g.add(lf); }
-    const roll = cyl(0.22, 0.22, 1.7, std(0xd98ac4, 0.85), -2.3, FLOOR + 0.9, -0.9, g, 16); roll.rotation.z = 0.12;   /* a rolled yoga mat leaning on the wall */
+    const matRoot = new THREE.Group(); matRoot.position.set(1.55, FLOOR, 0.45); g.add(matRoot);
+    const matG = new THREE.Group(); matG.scale.setScalar(1.15); matG.rotation.y = -0.42; matRoot.add(matG);
+    const MR = 0.46, ML = 2.5, F = "'KCStrikerSans', 'Arial Black', sans-serif";
+    const sideTex = mkTex(128, 128, (c, w, h) => { c.fillStyle = '#13737A'; c.fillRect(0, 0, w, h); for (let i = 0; i < 900; i++) { c.fillStyle = Math.random() < 0.5 ? 'rgba(255,255,255,0.07)' : 'rgba(0,30,35,0.12)'; c.fillRect(Math.random() * w, Math.random() * h, 2, 2); } });
+    const capTex = mkTex(256, 256, (c, w, h) => {
+      c.fillStyle = '#0f5e64'; c.fillRect(0, 0, w, h); c.strokeStyle = '#1d8f98'; c.lineWidth = 6; c.beginPath();
+      for (let an = 0; an < 6.28 * 6.5; an += 0.08) { const rr = 6 + an * 3.0, x = 128 + Math.cos(an) * rr, y = 128 + Math.sin(an) * rr; if (an === 0) c.moveTo(x, y); else c.lineTo(x, y); }
+      c.stroke(); c.strokeStyle = 'rgba(0,20,25,0.45)'; c.lineWidth = 1.5; c.stroke();
+    });
+    const capMat = new THREE.MeshStandardMaterial({ map: capTex, roughness: 0.8 });
+    const roll = new THREE.Mesh(new THREE.CylinderGeometry(MR, MR, ML, 40), [new THREE.MeshStandardMaterial({ map: sideTex, roughness: 0.75 }), capMat, capMat]); roll.rotation.z = Math.PI / 2; roll.position.y = MR; matG.add(roll);
+    [-0.95, 0.95].forEach(x => { const s = new THREE.Mesh(new THREE.CylinderGeometry(MR + 0.014, MR + 0.014, 0.1, 40, 1, true), new THREE.MeshStandardMaterial({ color: 0xD5B38E, roughness: 0.8, side: THREE.DoubleSide })); s.rotation.z = Math.PI / 2; s.position.set(x, MR, 0); matG.add(s); });
+    const BAND_L = 1.2, bandW = 512, bandH = Math.round(bandW * BAND_L / (2 * Math.PI * (MR + 0.02)));
+    const bandTex = mkTex(bandW, bandH, (c, w, h) => {
+      c.fillStyle = '#D5B38E'; c.fillRect(0, 0, w, h); c.strokeStyle = 'rgba(67,6,31,0.55)'; c.lineWidth = 2; c.setLineDash([8, 6]); c.strokeRect(10, 10, w - 20, h - 20); c.setLineDash([]);
+      c.save(); c.translate(w / 2, h / 2); c.rotate(Math.PI / 2); c.textAlign = 'center'; c.textBaseline = 'middle'; c.lineJoin = 'round';
+      let px = 85; c.font = px + 'px ' + F; while (px > 20 && c.measureText('MOVE').width > h - 30) { px -= 4; c.font = px + 'px ' + F; }
+      c.lineWidth = 5; c.strokeStyle = 'rgba(255,240,210,0.7)'; c.strokeText('MOVE', 0, 0); c.fillStyle = '#43061F'; c.fillText('MOVE', 0, 0); c.restore();
+    });
+    bandTex.wrapS = THREE.RepeatWrapping; bandTex.offset.x = 0.43;
+    const band = new THREE.Mesh(new THREE.CylinderGeometry(MR + 0.02, MR + 0.02, BAND_L, 40, 1, true), new THREE.MeshStandardMaterial({ map: bandTex, roughness: 0.8, side: THREE.DoubleSide })); band.rotation.z = Math.PI / 2; band.position.y = MR; matG.add(band);
+    const mb = blob(3.8, 1.8, 1.55, 0.45, 0.6, g); mb.position.y = FLOOR + 0.004;
     const postM = std(0x573822, 0.7);
-    [-2.3, 2.3].forEach(x => cyl(0.07, 0.07, 5.6, postM, x, FLOOR + 2.8, -1.5, g, 10)); box(4.7, 0.08, 0.08, postM, 0, 4.2, -1.5, g);
-    [-1.5, 1.5].forEach(x => cyl(0.02, 0.02, 0.5, postM, x, 3.95, -1.5, g, 6));
-    const sign = new THREE.Mesh(new THREE.PlaneGeometry(3.6, 1.35), new THREE.MeshBasicMaterial({ map: signTex(512, 192, 'DOJO', 'breathe  .  move', '#7fc9d6') })); sign.position.set(0, 3.45, -1.45); noHit(sign); g.add(sign);
-    hitBox(5.4, 6.0, 3.4, 0, 1.6, 0, 'stDojo', g);
+    [-2.5, 2.5].forEach(x => cyl(0.07, 0.07, 5.4, postM, x, FLOOR + 2.7, -1.4, g, 10)); box(5.2, 0.08, 0.08, postM, 0, 4.05, -1.4, g);
+    [-1.7, 1.7].forEach(x => cyl(0.02, 0.02, 0.45, postM, x, 3.8, -1.4, g, 6));
+    const sign = new THREE.Mesh(new THREE.PlaneGeometry(4.2, 1.8), new THREE.MeshBasicMaterial({ map: signTex(512, 220, 'DOJO', 'breathe  .  move', '#7fc9d6', 50) })); sign.position.set(0, 3.0, -1.35); noHit(sign); g.add(sign);
+    hitBox(6.0, 5.6, 3.4, 0, 1.4, 0.1, 'stDojo', g);
   }
   function buildStations() {
     if (stBuilt) return; stBuilt = true;
     try { buildDojoStation(); buildStoreStation(); } catch (x) { console.warn('stations', x); }
-    placeStations(); LK.dirty = true;
+    LK.dirty = true;
   }
 
   /* ---- the INSERT COIN motion screen (iPhone / iPad) ---- */
@@ -2363,7 +2414,10 @@ function makeDesk(el) {
     intro.gateAsked = true;
     motionAsk().then(s => { if (s === 'error') intro.gateAsked = false; });
   }
-  function gateGoNow() { if (intro.gateGo) return; intro.gateGo = performance.now(); coinRoot.scale.setScalar(1); LK.dirty = true; }
+  function gateGoNow() {
+    if (intro.gateGo) return; intro.gateGo = performance.now(); coinRoot.scale.setScalar(1); LK.dirty = true;
+    setTimeout(() => { if (!MO.on && MO.state !== 'denied') motionNote('Tap TILT to turn motion on.'); }, 2200);   /* the question did not come up or was not answered: point at the button */
+  }
 
   /* ---------- small helpers ---------- */
   const noHit = m => { m.raycast = () => {}; return m; };
@@ -3256,13 +3310,18 @@ function makeDesk(el) {
   };
   new THREE.TextureLoader().load(CONFIG.paintingImage, onPaintTex, undefined, () => onPaintTex(new THREE.CanvasTexture(paintingFallback())));   /* the real file, or the stand-in if it is missing */
 
+  /* v29: some things now stand on their own, off to the sides (the look-around block sets where): the mailbox post and the contact card on the left, the painting on its own stand further left, the gift bag on the right, and the singing bowl moves from the TV to the Dojo area */
+  [poleG, poleBlob, mailG, letterG, letterBlob].forEach(o => { satL.add(o); o.position.x -= PLX; o.position.z -= PLZ; });
+  satP.add(paintG); paintG.position.set(0, FLOOR + 2.9, 0);
+  [-0.95, 0.95].forEach(x => box(0.1, 4.1, 0.1, legWood, x, -0.85, -0.12, paintG));   /* the painting's stand */
+  satR.add(bagG, bagBlob); bagG.position.set(0, FLOOR, 0); bagBlob.position.x = 0; bagBlob.position.z = 0;
+  stG.store.add(eggG, eggBlob); eggG.position.set(2.0, 0, -0.85); eggG.scale.setScalar(1.25); eggBlob.position.set(2.0, 0.004, -0.85);   /* the Clemmy G egg: now on the far end of the merch table */
+  stG.dojo.add(bowlG, bowlBlob); bowlG.position.set(-1.0, FLOOR, 0.45); bowlG.scale.setScalar(1.5); bowlBlob.position.set(-1.0, FLOOR + 0.006, 0.45); bowlBlob.scale.setScalar(1.5);
+
   /* ---------- layout: wide screens spread the table and the things around it outward (v.layout is called from v.fit); phones keep it tight ---------- */
   const LAY = [];
   const lay = (o, k) => { LAY.push({ o, x0: o.position.x, k }); return o; };
-  [poleG, mailG, poleBlob, letterG, letterBlob].forEach(o => lay(o, -1));
-  [eggG, eggBlob].forEach(o => lay(o, -0.5));
-  [joyG, joyBlob, joyCable, bagG, bagBlob].forEach(o => lay(o, 1));
-  lay(paintG, -0.45);
+  [joyG, joyBlob, joyCable].forEach(o => lay(o, 1));
   legMeshes.forEach(m => lay(m, m.position.x > 0 ? 1 : -1));
   v.layout = spr => {
     LAY.forEach(l => { l.o.position.x = l.x0 + l.k * spr; });
@@ -3431,13 +3490,14 @@ function makeDesk(el) {
   let blip = null, piecesTouched = false, autoAd = 0, autoAdT0 = 0, infoAuto = false;
   function tvBlip(fn) { blip = { t0: performance.now(), fn }; staticM.visible = !REDUCE; jesse.visible = false; }
   function cancelBlip() { if (!blip) return; blip = null; staticM.visible = false; jesse.visible = !menuOn && !secret && !info && !lore; }
+  let adSndDone = false;   /* v31: the little ad sound plays the first time, and whenever something is clicked, but not on every automatic channel change */
   function showInfoTV(auto, kind) {
     if (menuOn || v.tvT || v.navigated || intro.busy) return;
     infoAuto = auto === true; infoKind = kind || 'ad'; infoMs = infoKind === 'coin' ? 7000 : 6000;
     hideSecretTV(); endLore();
     infoBlink = true; infoBlinkT = performance.now(); drawInfo();
     infoM.visible = true; adJesse.visible = infoKind === 'ad'; adRecG.visible = infoKind === 'vinyl'; jesse.visible = false; info = performance.now();
-    if (infoKind !== 'coin') Sound.oneUp();
+    if (infoKind !== 'coin' && (!infoAuto || !adSndDone)) { Sound.oneUp(); adSndDone = true; }
   }
   function hideInfoTV() { if (!info) return; info = 0; infoAuto = false; infoM.visible = false; adJesse.visible = false; adRecG.visible = false; jesse.visible = !menuOn && !secret && !lore; }
   function adNow(kind) {   /* a little static, then the ad / the record ad / INSERT COIN on the TV */
@@ -3761,7 +3821,7 @@ function makeDesk(el) {
     g.textAlign = 'center'; g.textBaseline = 'middle';
     g.fillStyle = blink ? '#ffd36b' : '#b89a3e'; g.font = '108px ' + INFO_FONT;
     g.fillText('INSERT', W / 2, 132); g.fillText('COIN', W / 2, 240);
-    fitText(g, '(TO GET A LITTLE MOTION)', 380, 28, INFO_FONT); g.fillStyle = '#bcd8ff'; g.fillText('(TO GET A LITTLE MOTION)', W / 2 - 20, 318);
+    fitText(g, '(FOR MOTION)', 380, 30, INFO_FONT); g.fillStyle = '#bcd8ff'; g.fillText('(FOR MOTION)', W / 2 - 20, 318);
     const ax = 408 + (blink ? 0 : 10);   /* the arrow points at the coin slot, just right of the screen */
     g.fillStyle = '#ffd36b'; g.beginPath(); g.moveTo(ax, 346); g.lineTo(ax + 30, 370); g.lineTo(ax, 394); g.closePath(); g.fill();
     g.fillStyle = '#7f93c8'; g.font = "20px 'KCPelletierTyped', 'Courier New', monospace"; g.fillText('tap or drag the coin to the slot', W / 2, 440);
@@ -3858,7 +3918,7 @@ function makeDesk(el) {
       if (gateOn() && tg !== 'coin') continue;   /* (on the INSERT COIN motion screen only the coin counts) */
       if ((tg === 'stDojo' || tg === 'stStore') && !x.object.parent.visible) continue;   /* (a room that is turned away is not clickable) */
       if (tg === 'coin' && coinOut) continue;   /* the coin is in the slot or in a hand */
-      if (tg !== 'vinyl') { h = x; break; }
+      if (tg !== 'vinyl' && tg !== 'stDojo' && tg !== 'stStore') { h = x; break; }   /* (v30: the big click areas of the two rooms only count when nothing smaller, like the bowl or the egg, is under the finger) */
       if (!h) h = x;
     }
     pickObj = h && h.object.userData.tag !== 'block' ? h.object : null;   /* the table and board hide whatever is behind them */
@@ -3904,12 +3964,13 @@ function makeDesk(el) {
   el.addEventListener('pointermove', e => { if (e.pointerType !== 'mouse') return; const r = el.getBoundingClientRect(); LK.hx = ((e.clientX - r.left) / Math.max(1, r.width)) * 2 - 1; LK.hot = true; });   /* the mouse near the left or right edge turns the view (only over the picture itself, never over the bar, menus or popups) */
   el.addEventListener('pointerleave', () => { LK.hot = false; });
   el.addEventListener('pointerup', lookUp); el.addEventListener('pointercancel', lookUp);
-  el.addEventListener('touchend', () => { if (gateOn() && intro.cs === 'fly') gateAsk(); }, { passive: true });   /* (a second chance to ask, in case the first try was not counted as a tap) */
+  ['touchend', 'click'].forEach(n => el.addEventListener(n, () => { if (gateOn() && intro.cs === 'fly') gateAsk(); }, { passive: true }));   /* (more chances to ask, in case the first try was not counted as a tap: iPhone only counts some kinds of touch) */
+  ['pointermove', 'pointerdown', 'wheel'].forEach(n => el.addEventListener(n, () => { LK.act = performance.now(); }, { passive: true }));
   window.addEventListener('keydown', e => {
     if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return;
     const t = e.target;
     if (!lookOk() || (t && ((t.tagName && /^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName)) || (t.closest && t.closest('#rackKnob,[role=slider]')))) || document.querySelector('dialog[open]')) return;
-    LK.keys = e.key === 'ArrowLeft' ? 1 : -1;
+    LK.keys = e.key === 'ArrowLeft' ? 1 : -1; LK.act = performance.now();
   });
   window.addEventListener('keyup', e => { if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') LK.keys = 0; });
   window.addEventListener('blur', () => { LK.keys = 0; });
